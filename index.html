@@ -3,159 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TWINS Warehouse Intelligence</title>
+    <title>TWINS Warehouse Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --primary: #1e3a8a; --accent: #ef4444; --bg: #f8fafc; }
-        body { background-color: var(--bg); font-family: 'Inter', system-ui, sans-serif; }
-        .glass-nav { background: var(--primary); color: white; border-radius: 0 0 25px 25px; padding: 20px; }
-        .tab-card { border: none; border-radius: 20px; transition: all 0.3s ease; display: none; }
-        .active-tab { display: block; animation: fadeIn 0.5s; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 12px; font-size: 0.9rem; }
-        .nav-btn.active { background: white; color: var(--primary); font-weight: bold; }
-        .input-group-text { background: white; border-right: none; }
-        .form-control { border-left: none; border-radius: 0 12px 12px 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --bg: #f1f5f9; }
+        body { background: var(--bg); font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 80px; }
+        
+        /* Header Moderno */
+        .header-premium { background: var(--primary); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        /* Tarjetas Estilo iOS */
+        .card-modern { background: white; border: none; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        
+        /* Navegación Inferior Fixa */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #e2e8f0; z-index: 1000; }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item span { font-size: 0.65rem; font-weight: 600; margin-top: 4px; }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; background: #dcfce7; color: #166534; }
+        .view-section { display: none; animation: slideUp 0.4s ease; }
+        .active-view { display: block; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="glass-nav shadow-lg mb-4">
-        <div class="container text-center">
-            <h4 class="fw-bold mb-3"><i class="fas fa-boxes-stacked"></i> TWINS HUB</h4>
-            <div class="d-flex justify-content-center gap-2">
-                <button class="nav-btn active" id="btn-p" onclick="switchTab('p')"><i class="fas fa-truck-loading"></i> SALIDAS</button>
-                <button class="nav-btn" id="btn-d" onclick="switchTab('d')"><i class="fas fa-undo"></i> DEVOLUCIÓN</button>
+    <div class="header-premium">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="opacity-75">Bienvenido,</small>
+                <h4 class="mb-0 fw-bold">Inventory Manager</h4>
             </div>
+            <button class="btn btn-light btn-sm rounded-circle" onclick="initApp()"><i class="fas fa-sync-alt"></i></button>
         </div>
     </div>
 
     <div class="container">
-        <div id="tab-p" class="tab-card active-tab card p-4 shadow-sm">
-            <h5 class="fw-bold text-primary mb-4">Registrar Salida Pendiente</h5>
-            
-            <label class="small fw-bold mb-2">DESTINO / CANAL</label>
-            <div class="d-flex gap-2 mb-4">
-                <input type="radio" class="btn-check" name="tipo" id="mkt" value="MARKETING" checked>
-                <label class="btn btn-outline-primary w-100" for="mkt">MARKETING</label>
-                <input type="radio" class="btn-check" name="tipo" id="oficina" value="OFICINA">
-                <label class="btn btn-outline-primary w-100" for="oficina">OFICINA</label>
-                <input type="radio" class="btn-check" name="tipo" id="ventas" value="VENDEDOR">
-                <label class="btn btn-outline-primary w-100" for="ventas">VENDEDOR</label>
-            </div>
-
-            <label class="small fw-bold">SKU PRODUCTO</label>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" id="sku" class="form-control" placeholder="Escriba SKU..." oninput="intelliSearch()">
-            </div>
-
-            <div class="bg-light p-3 rounded-4 mb-3 border border-dashed text-center">
-                <span id="desc-display" class="fw-bold text-dark">Esperando SKU...</span>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-6">
-                    <label class="small fw-bold">CANTIDAD</label>
-                    <input type="number" id="cant" class="form-control p-3 rounded-3" placeholder="0">
+        <div id="view-registro" class="view-section active-view">
+            <div class="card-modern">
+                <h6 class="fw-bold mb-3"><i class="fas fa-plus-circle text-accent"></i> Nueva Salida</h6>
+                <div class="btn-group w-100 mb-3" role="group">
+                    <input type="radio" class="btn-check" name="tipo" id="mkt" value="MARKETING" checked>
+                    <label class="btn btn-outline-secondary border-0 bg-light" for="mkt">MKT</label>
+                    <input type="radio" class="btn-check" name="tipo" id="oficina" value="OFICINA">
+                    <label class="btn btn-outline-secondary border-0 bg-light" for="oficina">OFICINA</label>
+                    <input type="radio" class="btn-check" name="tipo" id="vendedor" value="VENDEDOR">
+                    <label class="btn btn-outline-secondary border-0 bg-light" for="vendedor">VENTAS</label>
                 </div>
-                <div class="col-6">
-                    <label class="small fw-bold">SOLICITANTE</label>
-                    <input type="text" id="quien" class="form-control p-3 rounded-3" placeholder="Nombre">
+                <input type="text" id="sku" class="form-control border-0 bg-light p-3 mb-2" placeholder="Escanear o escribir SKU..." oninput="localSearch()">
+                <div id="desc-box" class="p-3 rounded-3 mb-3 text-center fw-bold bg-white border">Esperando datos...</div>
+                <div class="row g-2 mb-3">
+                    <div class="col-4"><input type="number" id="cant" class="form-control border-0 bg-light p-3" placeholder="Cant."></div>
+                    <div class="col-8"><input type="text" id="quien" class="form-control border-0 bg-light p-3" placeholder="Responsable"></div>
                 </div>
+                <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold shadow-sm" onclick="sendData('pedido')">REGISTRAR EN SAP</button>
             </div>
-
-            <button class="btn btn-primary btn-lg w-100 mt-4 shadow-sm fw-bold" onclick="enviarPedido()">
-                <i class="fas fa-save"></i> REGISTRAR SALIDA
-            </button>
         </div>
 
-        <div id="tab-d" class="tab-card card p-4 shadow-sm">
-            <h5 class="fw-bold text-danger mb-4">Reporte de Devolución</h5>
-            
-            <div class="mb-3">
-                <label class="small fw-bold">CLIENTE O ORIGEN</label>
-                <input type="text" id="dev_cli" class="form-control p-3 rounded-3" placeholder="¿Quién devuelve?">
+        <div id="view-dev" class="view-section">
+            <div class="card-modern">
+                <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-undo"></i> Reportar Devolución</h6>
+                <input type="text" id="dev_cli" class="form-control border-0 bg-light p-3 mb-2" placeholder="Cliente / Origen">
+                <input type="text" id="dev_prod" class="form-control border-0 bg-light p-3 mb-2" placeholder="Producto o SKU">
+                <input type="number" id="dev_cant" class="form-control border-0 bg-light p-3 mb-2" placeholder="Cantidad">
+                <select id="dev_mot" class="form-select border-0 bg-light p-3 mb-3">
+                    <option>Mal estado / Dañado</option>
+                    <option>Error en pedido</option>
+                    <option>Cambio de talla/modelo</option>
+                </select>
+                <button class="btn btn-danger w-100 p-3 rounded-4 fw-bold" onclick="sendData('devolucion')">GENERAR REPORTE</button>
             </div>
-            <div class="mb-3">
-                <label class="small fw-bold">PRODUCTO / SKU</label>
-                <input type="text" id="dev_prod" class="form-control p-3 rounded-3" placeholder="Detalles del producto">
-            </div>
-            <div class="row g-3 mb-3">
-                <div class="col-6">
-                    <label class="small fw-bold">CANTIDAD</label>
-                    <input type="number" id="dev_cant" class="form-control p-3 rounded-3">
+        </div>
+
+        <div id="view-historial" class="view-section">
+            <h6 class="fw-bold mb-3 px-2">Últimos Movimientos</h6>
+            <div id="list-historial">
                 </div>
-                <div class="col-6">
-                    <label class="small fw-bold">ESTADO</label>
-                    <select id="dev_mot" class="form-select p-3 rounded-3">
-                        <option>Mal estado</option>
-                        <option>Error despacho</option>
-                        <option>No solicitado</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn btn-danger btn-lg w-100 mt-3 fw-bold" onclick="enviarDev()">
-                <i class="fas fa-file-export"></i> GENERAR REPORTE
-            </button>
         </div>
     </div>
 
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="nav(this, 'registro')"><i class="fas fa-file-signature"></i><span>Registro</span></button>
+        <button class="nav-item" onclick="nav(this, 'dev')"><i class="fas fa-exchange-alt"></i><span>Devolución</span></button>
+        <button class="nav-item" onclick="nav(this, 'historial')"><i class="fas fa-history"></i><span>Historial</span></button>
+    </nav>
+
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAKMR_Sj3Pw2yglrHSg8L_KUVXWZGVA4bnJHH5vJocgmYGqSPDmR1wXH7xzrUPXTy8Aw/exec"; // REEMPLAZA ESTO
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxmNTAQsOz_tzG0k8acG6zy0N4cM9oXlJLVE_nolwyoHrMg-tLpR-8ms5I0yIalCA2skA/exec"; // REEMPLAZA ESTO
+        let DB_PRODUCTOS = {};
 
-        function switchTab(t) {
-            document.querySelectorAll('.tab-card').forEach(c => c.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.add('active-tab');
-            document.getElementById('btn-'+t).classList.add('active');
-        }
-
-        async function intelliSearch() {
-            const sku = document.getElementById('sku').value;
-            if(sku.length < 5) return;
-            const res = await fetch(WEB_APP_URL, {method: "POST", body: JSON.stringify({action:"buscar", sku: sku})});
+        async function initApp() {
+            const res = await fetch(WEB_APP_URL, {method: "POST", body: JSON.stringify({action:"loadAll"})});
             const data = await res.json();
-            document.getElementById('desc-display').innerText = data.desc;
-            document.getElementById('desc-display').className = data.found ? "fw-bold text-primary" : "fw-bold text-danger";
+            DB_PRODUCTOS = data.productos;
+            renderHistorial(data.historial);
+            console.log("App Sincronizada");
         }
 
-        async function enviarPedido() {
-            const d = {
-                action: "pedido",
-                tipo: document.querySelector('input[name="tipo"]:checked').value,
-                sku: document.getElementById('sku').value,
-                desc: document.getElementById('desc-display').innerText,
-                cant: document.getElementById('cant').value,
-                quien: document.getElementById('quien').value
-            };
-            if(!d.cant || d.desc.includes("NO")) return Swal.fire("Atención", "SKU inválido o falta cantidad", "warning");
-            
-            Swal.fire({title: 'Guardando...', allowOutsideClick:false, didOpen:()=>Swal.showLoading()});
-            await fetch(WEB_APP_URL, {method: "POST", body: JSON.stringify(d)});
-            Swal.fire("Éxito", "Guardado para SAP", "success");
-            limpiar();
+        function localSearch() {
+            const sku = document.getElementById('sku').value.toUpperCase().trim();
+            const desc = DB_PRODUCTOS[sku];
+            const display = document.getElementById('desc-box');
+            if(desc) {
+                display.innerText = desc;
+                display.className = "p-3 rounded-3 mb-3 text-center fw-bold bg-success text-white border-0 animation-fadeIn";
+            } else {
+                display.innerText = "No encontrado";
+                display.className = "p-3 rounded-3 mb-3 text-center fw-bold bg-white text-muted border";
+            }
         }
 
-        async function enviarDev() {
-            const d = {
-                action: "devolucion",
-                cliente: document.getElementById('dev_cli').value,
-                prod: document.getElementById('dev_prod').value,
-                cant: document.getElementById('dev_cant').value,
-                motivo: document.getElementById('dev_mot').value
-            };
-            await fetch(WEB_APP_URL, {method: "POST", body: JSON.stringify(d)});
-            Swal.fire("Reporte Creado", "Historial de devolución actualizado", "info");
-            limpiar();
+        function renderHistorial(lista) {
+            const container = document.getElementById('list-historial');
+            container.innerHTML = lista.map(row => `
+                <div class="card-modern py-2 mb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold small">${row[2]}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">${row[1]} | ${row[5]}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-accent">${row[4]} uds</div>
+                        <span class="status-badge">${row[6]}</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function limpiar() {
-            document.querySelectorAll('input').forEach(i => i.value = '');
-            document.getElementById('desc-display').innerText = "Esperando SKU...";
+        async function sendData(type) {
+            let payload = { action: type };
+            if(type === 'pedido') {
+                payload.tipo = document.querySelector('input[name="tipo"]:checked').value;
+                payload.sku = document.getElementById('sku').value;
+                payload.desc = document.getElementById('desc-box').innerText;
+                payload.cant = document.getElementById('cant').value;
+                payload.quien = document.getElementById('quien').value;
+            } else {
+                payload.cliente = document.getElementById('dev_cli').value;
+                payload.prod = document.getElementById('dev_prod').value;
+                payload.cant = document.getElementById('dev_cant').value;
+                payload.motivo = document.getElementById('dev_mot').value;
+            }
+
+            Swal.fire({title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            await fetch(WEB_APP_URL, {method: "POST", body: JSON.stringify(payload)});
+            Swal.fire("¡Listo!", "Información guardada", "success");
+            initApp(); // Recarga historial y limpia
         }
+
+        function nav(btn, section) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
+            btn.classList.add('active');
+            document.getElementById('view-'+section).classList.add('active-view');
+        }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
