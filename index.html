@@ -3,64 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TWINS Warehouse Pro</title>
+    <title>TWINS Intelligence</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --bg: #f1f5f9; }
-        body { background: var(--bg); font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 80px; }
-        
-        /* Header Moderno */
-        .header-premium { background: var(--primary); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        
-        /* Tarjetas Estilo iOS */
-        .card-modern { background: white; border: none; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        
-        /* Navegación Inferior Fixa */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #e2e8f0; z-index: 1000; }
-        .nav-item { border: none; background: none; color: #94a3b8; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item span { font-size: 0.65rem; font-weight: 600; margin-top: 4px; }
-
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; background: #dcfce7; color: #166534; }
-        .view-section { display: none; animation: slideUp 0.4s ease; }
-        .active-view { display: block; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        :root { --primary: #0f172a; --accent: #2563eb; }
+        body { background: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 80px; }
+        .header { background: var(--primary); color: white; padding: 30px 20px; border-radius: 0 0 25px 25px; shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .card-custom { background: white; border-radius: 20px; border: none; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-top: -20px; }
+        .suggestion-box { position: absolute; z-index: 100; width: 100%; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .suggestion-item { padding: 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 0.9rem; }
+        .suggestion-item:hover { background: #f1f5f9; color: var(--accent); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #e2e8f0; }
+        .nav-btn { border: none; background: none; color: #94a3b8; text-align: center; }
+        .nav-btn.active { color: var(--accent); font-weight: bold; }
+        .view { display: none; } .active-view { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="header-premium">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <small class="opacity-75">Bienvenido,</small>
-                <h4 class="mb-0 fw-bold">Inventory Manager</h4>
+    <div class="header text-center">
+        <h5 class="fw-bold">TWINS SMART HUB</h5>
+        <small class="opacity-75">Control de Inventario Inteligente</small>
+    </div>
+
+    <div class="container mt-3">
+        <div id="v-reg" class="view active-view">
+            <div class="card-custom">
+                <div class="btn-group w-100 mb-3">
+                    <input type="radio" class="btn-check" name="tipo" id="mkt" value="MARKETING" checked>
+                    <label class="btn btn-outline-primary" for="mkt">MKT</label>
+                    <input type="radio" class="btn-check" name="tipo" id="oficina" value="OFICINA">
+                    <label class="btn btn-outline-primary" for="oficina">OFICINA</label>
+                    <input type="radio" class="btn-check" name="tipo" id="vend" value="VENDEDOR">
+                    <label class="btn btn-outline-primary" for="vend">VENTAS</label>
+                </div>
+
+                <div class="position-relative mb-3">
+                    <label class="small fw-bold text-muted">BUSCAR POR SKU O NOMBRE</label>
+                    <input type="text" id="search" class="form-control form-control-lg border-2" placeholder="Escribe 'Cinta', 'Caja' o 'AR-00'..." oninput="smartSearch()">
+                    <div id="suggestions" class="suggestion-box d-none"></div>
+                </div>
+
+                <div id="selected-info" class="p-3 rounded-3 mb-3 bg-light border d-none">
+                    <div id="sel-desc" class="fw-bold small"></div>
+                    <div id="sel-sku" class="text-accent small fw-bold"></div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-4"><input type="number" id="cant" class="form-control form-control-lg" placeholder="Cant."></div>
+                    <div class="col-8"><input type="text" id="quien" class="form-control form-control-lg" placeholder="Quién solicita"></div>
+                </div>
+                <button class="btn btn-primary btn-lg w-100 rounded-4 shadow" onclick="saveData()">REGISTRAR SALIDA</button>
             </div>
-            <button class="btn btn-light btn-sm rounded-circle" onclick="initApp()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+
+        <div id="v-hist" class="view">
+            <h6 class="fw-bold mb-3">Historial Reciente (SAP Pendiente)</h6>
+            <div id="hist-list"></div>
         </div>
     </div>
 
-    <div class="container">
-        <div id="view-registro" class="view-section active-view">
-            <div class="card-modern">
-                <h6 class="fw-bold mb-3"><i class="fas fa-plus-circle text-accent"></i> Nueva Salida</h6>
-                <div class="btn-group w-100 mb-3" role="group">
-                    <input type="radio" class="btn-check" name="tipo" id="mkt" value="MARKETING" checked>
-                    <label class="btn btn-outline-secondary border-0 bg-light" for="mkt">MKT</label>
-                    <input type="radio" class="btn-check" name="tipo" id="oficina" value="OFICINA">
-                    <label class="btn btn-outline-secondary border-0 bg-light" for="oficina">OFICINA</label>
-                    <input type="radio" class="btn-check" name="tipo" id="vendedor" value="VENDEDOR">
-                    <label class="btn btn-outline-secondary border-0 bg-light" for="vendedor">VENTAS</label>
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="nav('reg', this)"><i class="fas fa-edit d-block"></i><small>Registro</small></button>
+        <button class="nav-btn" onclick="nav('hist', this)"><i class="fas fa-list d-block"></i><small>Historial</small></button>
+    </nav>
+
+    <script>
+        const WEB_APP_URL = "TU_NUEVA_URL_AQUI"; // <--- PEGA TU URL
+        let PRODUCTOS = [];
+
+        async function init() {
+            const res = await fetch(WEB_APP_URL, {method:"POST", body:JSON.stringify({action:"loadAll"})});
+            const data = await res.json();
+            PRODUCTOS = data.productos;
+            renderHist(data.historial);
+        }
+
+        function smartSearch() {
+            const val = document.getElementById('search').value.toLowerCase();
+            const sug = document.getElementById('suggestions');
+            if(val.length < 2) { sug.classList.add('d-none'); return; }
+
+            const filtered = PRODUCTOS.filter(p => p.sku.toLowerCase().includes(val) || p.desc.toLowerCase().includes(val)).slice(0, 10);
+            
+            if(filtered.length > 0) {
+                sug.innerHTML = filtered.map(p => `<div class="suggestion-item" onclick="selectProd('${p.sku}', '${p.desc}')"><b>${p.sku}</b> - ${p.desc}</div>`).join('');
+                sug.classList.remove('d-none');
+            } else {
+                sug.classList.add('d-none');
+            }
+        }
+
+        function selectProd(sku, desc) {
+            document.getElementById('search').value = sku;
+            document.getElementById('suggestions').classList.add('d-none');
+            const info = document.getElementById('selected-info');
+            info.classList.remove('d-none');
+            document.getElementById('sel-desc').innerText = desc;
+            document.getElementById('sel-sku').innerText = "SKU: " + sku;
+        }
+
+        async function saveData() {
+            const sku = document.getElementById('search').value;
+            const desc = document.getElementById('sel-desc').innerText;
+            const cant = document.getElementById('cant').value;
+            const quien = document.getElementById('quien').value;
+            const tipo = document.querySelector('input[name="tipo"]:checked').value;
+
+            if(!sku || !cant) return Swal.fire("Error", "Completa SKU y Cantidad", "error");
+
+            Swal.fire({title:'Guardando...', didOpen:()=>Swal.showLoading()});
+            await fetch(WEB_APP_URL, {method:"POST", body: JSON.stringify({action:"pedido", sku, desc, cant, quien, tipo})});
+            
+            Swal.fire("Éxito", "Registrado", "success").then(() => {
+                location.reload();
+            });
+        }
+
+        function renderHist(lista) {
+            document.getElementById('hist-list').innerHTML = lista.map(r => `
+                <div class="card mb-2 border-0 shadow-sm p-3 rounded-4">
+                    <div class="d-flex justify-content-between">
+                        <span class="badge bg-light text-dark">${r[1]}</span>
+                        <small class="text-muted">${new Date(r[0]).toLocaleDateString()}</small>
+                    </div>
+                    <div class="fw-bold mt-2">${r[3]}</div>
+                    <div class="d-flex justify-content-between mt-2 align-items-center">
+                        <small class="text-primary fw-bold">${r[2]}</small>
+                        <span class="text-dark fw-bold">${r[4]} UDS</span>
+                    </div>
                 </div>
-                <input type="text" id="sku" class="form-control border-0 bg-light p-3 mb-2" placeholder="Escanear o escribir SKU..." oninput="localSearch()">
-                <div id="desc-box" class="p-3 rounded-3 mb-3 text-center fw-bold bg-white border">Esperando datos...</div>
-                <div class="row g-2 mb-3">
-                    <div class="col-4"><input type="number" id="cant" class="form-control border-0 bg-light p-3" placeholder="Cant."></div>
-                    <div class="col-8"><input type="text" id="quien" class="form-control border-0 bg-light p-3" placeholder="Responsable"></div>
-                </div>
-                <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold shadow-sm" onclick="sendData('pedido')">REGISTRAR EN SAP</button>
-            </div>
+            `).join('');
+        }
+
+        function nav(id, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('v-'+id).classList.add('active-view');
+            btn.classList.add('active');
+        }
+
+        window.onload = init;
+    </script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>            </div>
         </div>
 
         <div id="view-dev" class="view-section">
@@ -92,7 +182,7 @@
     </nav>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxmNTAQsOz_tzG0k8acG6zy0N4cM9oXlJLVE_nolwyoHrMg-tLpR-8ms5I0yIalCA2skA/exec"; // REEMPLAZA ESTO
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGBhQCOqu2kePqSuR7Q-KV0Y6_1Z40n7sDUOBhN-MTPTTOmwT3Zu-e8ocw5tjJUEzSdg/exec; // REEMPLAZA ESTO
         let DB_PRODUCTOS = {};
 
         async function initApp() {
