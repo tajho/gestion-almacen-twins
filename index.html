@@ -3,231 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS LOGISTICS PRO</title>
+    <title>TWINS G-FORCE | Logistics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { 
-            --log-blue: #0052cc; --log-dark: #091e42; --log-green: #36b37e; 
-            --log-red: #ff5630; --log-bg: #f4f5f7; --white: #ffffff; 
+        :root {
+            --bg: #0A0A0C;
+            --accent: #007AFF;
+            --card: rgba(28, 28, 30, 0.8);
+            --text: #FFFFFF;
+            --danger: #FF453A;
+            --success: #32D74B;
         }
-        body { background: var(--log-bg); font-family: 'Inter', system-ui, -apple-system; padding-bottom: 110px; color: var(--log-dark); }
         
-        .app-bar { background: var(--log-dark); color: white; padding: 25px 20px 45px; border-radius: 0 0 30px 30px; }
-        .app-bar h1 { font-size: 20px; font-weight: 800; margin: 0; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+            padding-bottom: 120px;
+        }
 
-        .main-container { margin-top: -30px; padding: 0 16px; }
-        .glass-card { background: var(--white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(9, 30, 66, 0.08); border: none; margin-bottom: 20px; }
+        /* Header Estilo Minimalista */
+        .header-pro {
+            padding: 40px 25px 20px;
+            background: linear-gradient(to bottom, #1C1C1E, var(--bg));
+        }
+        .header-pro h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 0; }
+        .header-pro span { color: var(--accent); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+
+        /* Tarjetas Estilo Glassmorphism */
+        .action-card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            padding: 25px;
+            margin: 0 15px 20px;
+        }
+
+        /* Buscador Flotante */
+        .search-box-pro { position: relative; }
+        .search-input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 16px 16px 16px 50px;
+            color: white;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .search-input:focus { background: rgba(255,255,255,0.15); border-color: var(--accent); outline: none; }
+        .search-icon { position: absolute; left: 18px; top: 18px; color: var(--accent); }
+
+        /* Sugerencias Inteligentes */
+        .sug-dropdown {
+            background: #1C1C1E;
+            border-radius: 20px;
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .sug-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .sug-item b { display: block; font-size: 14px; }
+        .sug-item small { color: var(--accent); font-weight: 700; }
+
+        /* Botones de Acción Rápida */
+        .btn-main {
+            border-radius: 20px;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            width: 100%;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-danger-pro { background: var(--danger); color: white; }
+        .btn-success-pro { background: var(--success); color: black; }
+        .btn-main:active { transform: scale(0.95); }
+
+        /* Lista de Items (Carrito) */
+        .item-row {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Bottom Tab Navigation */
+        .tab-nav {
+            position: fixed;
+            bottom: 25px;
+            left: 20px;
+            right: 20px;
+            background: rgba(28, 28, 30, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 12px 10px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+        .tab-btn { border: none; background: none; color: #8E8E93; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn i { font-size: 22px; margin-bottom: 5px; }
+        .tab-btn span { font-size: 10px; font-weight: 600; }
+
+        .view { display: none; } .view.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Buscador Inteligente */
-        .search-wrapper { position: relative; }
-        .search-input-pro { background: #ebecf0; border: 2px solid transparent; border-radius: 12px; padding: 12px 12px 12px 40px; width: 100%; font-size: 16px; transition: 0.2s; }
-        .search-input-pro:focus { background: white; border-color: var(--log-blue); outline: none; }
-        .search-icon { position: absolute; left: 15px; top: 15px; color: #6b778c; }
-        
-        .sug-dropdown { position: absolute; width: 100%; background: white; border-radius: 12px; z-index: 1100; box-shadow: 0 15px 30px rgba(0,0,0,0.1); max-height: 250px; overflow-y: auto; display: none; margin-top: 5px; border: 1px solid #dfe1e6; }
-        .sug-item { padding: 12px; border-bottom: 1px solid #f4f5f7; cursor: pointer; }
-
-        /* Botones Logísticos */
-        .log-btn { border-radius: 12px; padding: 14px; font-weight: 700; border: none; width: 100%; transition: 0.2s; }
-        .btn-blue { background: var(--log-blue); color: white; }
-        .btn-red { background: var(--log-red); color: white; }
-        .btn-green { background: var(--log-green); color: white; }
-
-        /* Listas Temporales */
-        .temp-list-item { background: #f8f9fa; border-radius: 12px; padding: 10px 15px; margin-bottom: 8px; border-left: 4px solid var(--log-blue); font-size: 14px; }
-        .dev-item { border-left-color: var(--log-red) !important; }
-
-        .bottom-nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: white; border-radius: 20px; display: flex; justify-content: space-around; padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-tab { border: none; background: none; color: #6b778c; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 600; }
-        .nav-tab.active { color: var(--log-blue); }
-        
-        .view { display: none; } .view.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input, select { background: rgba(255,255,255,0.08) !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 15px !important; padding: 12px !important; }
     </style>
 </head>
 <body>
 
-    <header class="app-bar d-flex justify-content-between align-items-center">
-        <h1>TWINS HUB PRO</h1>
-        <button class="btn text-white p-0" onclick="location.reload()"><i class="fas fa-sync-alt"></i></button>
+    <header class="header-pro">
+        <span>Inventory Warehouse Manager</span>
+        <h1>TWINS G-FORCE</h1>
     </header>
 
-    <main class="main-container">
-        
+    <main id="main">
         <section id="v-salidas" class="view active">
-            <div class="glass-card">
-                <p class="small fw-bold text-muted mb-3"><i class="fas fa-arrow-up me-2"></i>NUEVA SALIDA DE BODEGA</p>
-                <div class="search-wrapper mb-3">
+            <div class="action-card">
+                <div class="search-box-pro mb-4">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="sSal" class="search-input-pro" placeholder="SKU o Nombre..." oninput="smartSearch(this.value, 'sugSal', 'sal')">
+                    <input type="text" id="iSal" class="search-input" placeholder="Buscar Producto / SKU..." oninput="fastSearch(this.value, 'sugSal', 'sal')">
                     <div id="sugSal" class="sug-dropdown"></div>
                 </div>
-                <div id="boxSal" class="d-none">
-                    <div class="p-2 bg-light rounded small mb-2" id="infoSal"></div>
-                    <div class="row g-2 mb-3">
+
+                <div id="selSal" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 mb-3" style="background: rgba(0,122,255,0.1); border-radius: 20px; border-left: 5px solid var(--accent);">
+                        <div id="nSal" class="fw-bold"></div>
+                        <div id="sSal" class="small opacity-50"></div>
+                    </div>
+                    <div class="row g-2 mb-4">
                         <div class="col-4"><input type="number" id="cSal" class="form-control" placeholder="Cant."></div>
-                        <div class="col-8"><button class="log-btn btn-blue" onclick="addToList('sal')">AGREGAR</button></div>
+                        <div class="col-8"><button class="btn-main btn-accent" onclick="add('sal')">AÑADIR <i class="fas fa-plus-circle"></i></button></div>
                     </div>
                 </div>
+
                 <div id="listSalArea" class="d-none">
-                    <div id="listSalCont" class="mb-3"></div>
+                    <h6 class="small fw-bold opacity-50 mb-3 text-uppercase">Lista de Carga</h6>
+                    <div id="contSal" class="mb-4"></div>
                     <input type="text" id="whoSal" class="form-control mb-2" placeholder="Responsable">
-                    <select id="tipoSal" class="form-select mb-3">
-                        <option value="MARKETING">MARKETING</option><option value="OFICINA">OFICINA</option><option value="VENDEDOR">VENDEDOR</option>
+                    <select id="typeSal" class="form-select mb-4">
+                        <option value="MARKETING">MARKETING</option>
+                        <option value="OFICINA">OFICINA</option>
+                        <option value="VENDEDOR">VENDEDOR</option>
                     </select>
-                    <button class="log-btn btn-green" onclick="processAll('Pedidos', 'sal')">CONFIRMAR SALIDA</button>
+                    <button class="btn-main btn-success-pro" onclick="save('Pedidos', 'sal')">CONFIRMAR SALIDA <i class="fas fa-shipping-fast"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-dev" class="view">
-            <div class="glass-card">
-                <p class="small fw-bold text-danger mb-3"><i class="fas fa-arrow-down me-2"></i>RETORNO DE MERCANCÍA (LISTA)</p>
-                <div class="search-wrapper mb-3">
+            <div class="action-card">
+                <div class="search-box-pro mb-4">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="sDev" class="search-input-pro" placeholder="SKU o Nombre del producto..." oninput="smartSearch(this.value, 'sugDev', 'dev')">
+                    <input type="text" id="iDev" class="search-input" placeholder="Buscar para devolver..." oninput="fastSearch(this.value, 'sugDev', 'dev')">
                     <div id="sugDev" class="sug-dropdown"></div>
                 </div>
-                <div id="boxDev" class="d-none">
-                    <div class="p-2 bg-light rounded small mb-2" id="infoDev"></div>
+
+                <div id="selDev" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 mb-3" style="background: rgba(255,69,58,0.1); border-radius: 20px; border-left: 5px solid var(--danger);">
+                        <div id="nDev" class="fw-bold"></div>
+                        <div id="sDev" class="small opacity-50"></div>
+                    </div>
                     <div class="row g-2 mb-3">
                         <div class="col-4"><input type="number" id="cDev" class="form-control" placeholder="Cant."></div>
                         <div class="col-8">
                             <select id="mDev" class="form-select">
-                                <option>Dañado/Mal estado</option><option>Rotación/Sin Venta</option><option>Error Despacho</option>
+                                <option>Dañado / Mal estado</option>
+                                <option>Rotación / Cambio</option>
                             </select>
                         </div>
                     </div>
-                    <button class="log-btn btn-red mb-3" onclick="addToList('dev')">AGREGAR A DEVOLUCIÓN</button>
+                    <button class="btn-main btn-danger-pro" onclick="add('dev')">AÑADIR A RETORNO <i class="fas fa-undo"></i></button>
                 </div>
-                <div id="listDevArea" class="d-none">
-                    <hr>
-                    <div id="listDevCont" class="mb-3"></div>
-                    <input type="text" id="cliDev" class="form-control mb-3" placeholder="Nombre del Cliente / Origen">
-                    <button class="log-btn btn-green shadow" onclick="processAll('Devoluciones', 'dev')">GUARDAR Y GENERAR PDF <i class="fas fa-file-pdf ms-2"></i></button>
+
+                <div id="listDevArea" class="d-none mt-4">
+                    <h6 class="small fw-bold opacity-50 mb-3 text-uppercase">Productos a Recibir</h6>
+                    <div id="contDev" class="mb-4"></div>
+                    <input type="text" id="cliDev" class="form-control mb-4" placeholder="Cliente / Origen">
+                    <button class="btn-main btn-success-pro" onclick="save('Devoluciones', 'dev')">TERMINAR Y PDF <i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-hist" class="view">
-            <h6 class="fw-bold px-2 mb-3">Movimientos Recientes</h6>
-            <div id="histLog">Cargando datos...</div>
+            <div id="histContent" class="px-3">Cargando base de datos...</div>
         </section>
-
     </main>
 
-    <nav class="bottom-nav">
-        <button class="nav-tab active" onclick="nav('salidas', this)"><i class="fas fa-truck-loading"></i><span>Salidas</span></button>
-        <button class="nav-tab" onclick="nav('dev', this)"><i class="fas fa-box-tissue"></i><span>Devolución</span></button>
-        <button class="nav-tab" onclick="nav('hist', this)"><i class="fas fa-history"></i><span>Historial</span></button>
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="nav('salidas', this)"><i class="fas fa-box-open"></i><span>Despacho</span></button>
+        <button class="tab-btn" onclick="nav('dev', this)"><i class="fas fa-box-tissue"></i><span>Retorno</span></button>
+        <button class="tab-btn" onclick="nav('hist', this)"><i class="fas fa-clock-rotate-left"></i><span>Historial</span></button>
     </nav>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec"; // <--- PEGA TU URL DE GOOGLE AQUÍ
-        let DB = []; let LIST_SAL = []; let LIST_DEV = []; let SEL = null;
+        const API = "TU_URL_AQUI"; // <--- PEGA TU URL DE GOOGLE APPS SCRIPT
+        let DB = []; let L_SAL = []; let L_DEV = []; let SEL = null;
 
         async function init() {
-            const r = await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "load"})});
+            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
             const d = await r.json();
             DB = d.p;
             renderHist(d.h);
         }
 
-        function smartSearch(v, bId, t) {
+        function fastSearch(v, bId, t) {
             const b = document.getElementById(bId);
             if(v.length < 2) { b.style.display='none'; return; }
-            const m = DB.filter(p => p[0].toString().toLowerCase().includes(v.toLowerCase()) || p[1].toString().toLowerCase().includes(v.toLowerCase())).slice(0,6);
-            b.innerHTML = m.map(p => `<div class="sug-item" onclick="selectItem('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><small>${p[0]}</small></div>`).join('');
+            const m = DB.filter(p => p[0].toString().toLowerCase().includes(v.toLowerCase()) || p[1].toString().toLowerCase().includes(v.toLowerCase())).slice(0,5);
+            b.innerHTML = m.map(p => `<div class="sug-item" onclick="select('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><small>${p[0]}</small></div>`).join('');
             b.style.display='block';
         }
 
-        function selectItem(s, n, t) {
+        function select(s, n, t) {
             SEL = {s, n};
-            const pref = t === 'sal' ? 'Sal' : 'Dev';
-            document.getElementById('info'+pref).innerHTML = `<b>${n}</b><br><span class="text-primary">${s}</span>`;
-            document.getElementById('box'+pref).classList.remove('d-none');
-            document.getElementById('sug'+pref).style.display='none';
+            document.getElementById('n'+(t==='sal'?'Sal':'Dev')).innerText = n;
+            document.getElementById('s'+(t==='sal'?'Sal':'Dev')).innerText = "SKU: " + s;
+            document.getElementById('sel'+(t==='sal'?'Sal':'Dev')).classList.remove('d-none');
+            document.getElementById('sug'+(t==='sal'?'Sal':'Dev')).style.display='none';
+            document.getElementById('i'+(t==='sal'?'Sal':'Dev')).value = s;
         }
 
-        function addToList(t) {
-            const cant = document.getElementById('c'+(t==='sal'?'Sal':'Dev')).value;
-            if(!cant) return;
+        function add(t) {
+            const c = document.getElementById('c'+(t==='sal'?'Sal':'Dev')).value;
+            if(!c) return;
             if(t === 'sal') {
-                LIST_SAL.push({...SEL, cant});
-                renderListUI('sal');
+                L_SAL.push({...SEL, c});
+                renderUI('sal');
             } else {
-                const mot = document.getElementById('mDev').value;
-                LIST_DEV.push({...SEL, cant, mot});
-                renderListUI('dev');
+                const m = document.getElementById('mDev').value;
+                L_DEV.push({...SEL, c, m});
+                renderUI('dev');
             }
-            document.getElementById('box'+(t==='sal'?'Sal':'Dev')).classList.add('d-none');
-            document.getElementById('s'+(t==='sal'?'Sal':'Dev')).value = "";
+            document.getElementById('sel'+(t==='sal'?'Sal':'Dev')).classList.add('d-none');
+            document.getElementById('i'+(t==='sal'?'Sal':'Dev')).value = "";
         }
 
-        function renderListUI(t) {
-            const cont = document.getElementById('list'+(t==='sal'?'Sal':'Dev')+'Cont');
+        function renderUI(t) {
+            const cont = document.getElementById('cont'+(t==='sal'?'Sal':'Dev'));
             const area = document.getElementById('list'+(t==='sal'?'Sal':'Dev')+'Area');
-            const list = t === 'sal' ? LIST_SAL : LIST_DEV;
+            const list = t === 'sal' ? L_SAL : L_DEV;
             area.classList.remove('d-none');
             cont.innerHTML = list.map(i => `
-                <div class="temp-list-item ${t==='dev'?'dev-item':''} d-flex justify-content-between">
-                    <span>${i.n} ${t==='dev'?'('+i.mot+')':''}</span>
-                    <b>x${i.cant}</b>
+                <div class="item-row">
+                    <div><b>${i.n}</b><br><small class="opacity-50">${i.s} ${i.m ? '| '+i.m : ''}</small></div>
+                    <span class="badge bg-primary rounded-pill px-3">${i.c}</span>
                 </div>
             `).join('');
         }
 
-        async function processAll(sheet, t) {
+        async function save(sheet, t) {
             const q = document.getElementById(t==='sal'?'whoSal':'cliDev').value;
-            if(!q) return Swal.fire("Atención","Escribe el nombre del responsable/cliente","warning");
+            if(!q) return Swal.fire("Datos Faltantes", "Escribe el nombre del responsable", "warning");
             
-            const list = t === 'sal' ? LIST_SAL : LIST_DEV;
-            const payload = list.map(i => [
-                new Date(), 
-                t === 'sal' ? document.getElementById('tipoSal').value : "DEVOLUCIÓN",
-                i.s, i.n, i.cant, q, 
-                t === 'sal' ? "PENDIENTE SAP" : i.mot
-            ]);
-
-            Swal.fire({title:'Guardando...', didOpen:()=>Swal.showLoading()});
-            await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+            const list = t === 'sal' ? L_SAL : L_DEV;
+            const payload = list.map(i => [new Date(), t==='sal'?document.getElementById('typeSal').value:'DEVOLUCION', i.s, i.n, i.c, q, i.m || 'PENDIENTE SAP']);
             
-            if(t === 'dev') generatePDF(q, list);
+            Swal.fire({title: 'Sincronizando...', didOpen: () => Swal.showLoading()});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
             
-            Swal.fire("Éxito","Registros guardados","success").then(()=>location.reload());
+            if(t === 'dev') genPDF(q, list);
+            Swal.fire("¡Completado!", "Datos guardados en la nube", "success").then(()=>location.reload());
         }
 
-        function generatePDF(cli, list) {
+        function genPDF(q, list) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18); doc.text("REPORTE DE DEVOLUCIÓN - TWINS", 20, 20);
-            doc.setFontSize(12); doc.text(`Cliente: ${cli}`, 20, 35);
-            doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 42);
-            doc.line(20, 48, 190, 48);
-            let y = 55;
+            doc.setFontSize(22); doc.text("REPORTE DE BODEGA - TWINS", 20, 25);
+            doc.setFontSize(10); doc.text(`Cliente/Responsable: ${q}`, 20, 40);
+            doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 45);
+            doc.line(20, 50, 190, 50);
+            let y = 60;
             list.forEach(i => {
                 doc.text(`${i.n} (${i.s})`, 20, y);
-                doc.text(`Cant: ${i.cant} - Motivo: ${i.mot}`, 130, y);
+                doc.text(`Cant: ${i.c} | ${i.m}`, 140, y);
                 y += 10;
             });
-            doc.save(`Devolucion_${cli}.pdf`);
+            doc.save(`Reporte_${q}.pdf`);
         }
 
         function renderHist(l) {
-            document.getElementById('histLog').innerHTML = l.map(r => `
-                <div class="temp-list-item d-flex flex-column mb-2" style="border-left-color:#ccc">
-                    <div class="d-flex justify-content-between"><b>${r[3]}</b> <span>x${r[4]}</span></div>
-                    <small class="text-muted">${r[1]} | ${r[5]} | ${new Date(r[0]).toLocaleDateString()}</small>
+            document.getElementById('histContent').innerHTML = l.map(r => `
+                <div class="action-card py-3 mb-2" style="border-radius:20px">
+                    <div class="d-flex justify-content-between small opacity-50 mb-1"><span>${r[1]}</span> <span>${new Date(r[0]).toLocaleDateString()}</span></div>
+                    <div class="fw-bold">${r[3]}</div>
+                    <div class="d-flex justify-content-between mt-2"><small>${r[5]}</small> <b class="text-primary">x${r[4]}</b></div>
                 </div>
             `).join('');
         }
 
         function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
             const id = v === 'salidas' ? 'v-salidas' : (v === 'dev' ? 'v-dev' : 'v-hist');
             document.getElementById(id).classList.add('active');
             b.classList.add('active');
