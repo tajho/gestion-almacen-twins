@@ -3,205 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS Intelligence OS</title>
+    <title>TWINS LOGISTICS PRO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --ios-blue: #007AFF; --ios-bg: #F2F2F7; --ios-card: #FFFFFF; --ios-dark: #1C1C1E; }
-        body { background: var(--ios-bg); font-family: -apple-system, system-ui, sans-serif; padding-bottom: 100px; }
+        :root { 
+            --log-blue: #0052cc; --log-dark: #091e42; --log-green: #36b37e; 
+            --log-red: #ff5630; --log-bg: #f4f5f7; --white: #ffffff; 
+        }
+        body { background: var(--log-bg); font-family: 'Inter', system-ui, -apple-system; padding-bottom: 110px; color: var(--log-dark); }
         
-        /* Header Nativo */
-        .app-header { background: var(--ios-dark); color: white; padding: 45px 20px 65px; border-radius: 0 0 40px 40px; }
-        .app-header h1 { font-size: 26px; font-weight: 800; margin: 0; }
+        /* Header Moderno */
+        .app-bar { background: var(--log-dark); color: white; padding: 30px 20px 50px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .app-bar h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+        .sync-badge { font-size: 10px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* Contenedores */
-        .main-content { margin-top: -45px; padding: 0 16px; }
-        .ios-card { background: var(--ios-card); border-radius: 25px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: none; margin-bottom: 20px; }
+        /* Contenedores de Acción */
+        .main-container { margin-top: -30px; padding: 0 16px; }
+        .glass-card { background: var(--white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(9, 30, 66, 0.08); border: none; margin-bottom: 20px; }
         
-        /* Buscador Predictivo Inteligente */
-        .search-container { position: relative; }
-        .search-input { background: #E3E3E8; border: none; border-radius: 14px; padding: 14px 45px; width: 100%; font-size: 16px; }
-        .sug-list { position: absolute; width: 100%; background: white; border-radius: 18px; z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.2); max-height: 250px; overflow-y: auto; display: none; margin-top: 8px; border: 1px solid #DDD; }
-        .sug-item { padding: 14px 18px; border-bottom: 1px solid #F2F2F7; cursor: pointer; }
-        .sug-item b { display: block; font-size: 14px; }
-        .sug-item small { color: var(--ios-blue); font-weight: bold; }
+        /* Buscador Inteligente Logístico */
+        .search-wrapper { position: relative; }
+        .search-input-pro { background: #ebecf0; border: 2px solid transparent; border-radius: 12px; padding: 14px 14px 14px 45px; width: 100%; font-size: 16px; transition: all 0.2s; font-weight: 500; }
+        .search-input-pro:focus { background: white; border-color: var(--log-blue); outline: none; box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1); }
+        .search-icon { position: absolute; left: 15px; top: 18px; color: #6b778c; }
+        
+        .sug-dropdown { position: absolute; width: 100%; background: white; border-radius: 12px; z-index: 1100; box-shadow: 0 20px 40px rgba(0,0,0,0.15); max-height: 280px; overflow-y: auto; display: none; margin-top: 5px; border: 1px solid #dfe1e6; }
+        .sug-item { padding: 14px 18px; border-bottom: 1px solid #f4f5f7; cursor: pointer; transition: 0.2s; }
+        .sug-item:hover { background: #f4f5f7; }
+        .sug-item b { font-size: 14px; color: var(--log-dark); display: block; }
+        .sug-item span { font-size: 12px; color: var(--log-blue); font-weight: 700; }
 
-        /* Navegación Inferior */
-        .tab-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(28,28,30,0.96); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 15px; border-radius: 28px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); z-index: 1000; }
-        .tab-btn { border: none; background: none; color: #8E8E93; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        .tab-btn.active { color: white; transform: translateY(-5px); }
-        .tab-btn i { font-size: 22px; margin-bottom: 4px; }
-        .tab-btn span { font-size: 10px; font-weight: 600; }
+        /* Botones y Inputs */
+        .log-btn { border-radius: 12px; padding: 15px; font-weight: 700; border: none; transition: 0.2s; width: 100%; }
+        .btn-blue { background: var(--log-blue); color: white; }
+        .btn-green { background: var(--log-green); color: white; }
+        .btn-red { background: var(--log-red); color: white; }
+        .log-btn:active { transform: scale(0.97); opacity: 0.9; }
 
-        .view { display: none; } .view.active { display: block; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .log-input { background: #f4f5f7; border: none; border-radius: 10px; padding: 12px; font-size: 15px; }
 
-        .list-item { background: #F8F9FA; padding: 12px; border-radius: 15px; margin-bottom: 8px; border-left: 5px solid var(--ios-blue); display: flex; justify-content: space-between; align-items: center; }
+        /* Tab Bar Navegación */
+        .bottom-nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: white; border-radius: 20px; display: flex; justify-content: space-around; padding: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1px solid #dfe1e6; z-index: 1000; }
+        .nav-tab { border: none; background: none; color: #6b778c; flex-direction: column; display: flex; align-items: center; font-size: 11px; font-weight: 600; }
+        .nav-tab.active { color: var(--log-blue); }
+        .nav-tab i { font-size: 22px; margin-bottom: 4px; }
+
+        /* Historial */
+        .view { display: none; } .view.active { display: block; animation: fadeInUp 0.4s ease; }
+        .hist-item { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; border: 1px solid #dfe1e6; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>TWINS OS</h1>
-            <i class="fas fa-user-circle fa-2x opacity-50"></i>
+    <header class="app-bar d-flex justify-content-between align-items-center">
+        <div>
+            <span class="sync-badge"><i class="fas fa-database me-1"></i> EN LÍNEA</span>
+            <h1 class="mt-1">TWINS LOGISTICS</h1>
         </div>
+        <button class="btn text-white p-0" onclick="location.reload()"><i class="fas fa-sync-alt fa-lg"></i></button>
     </header>
 
-    <main class="main-content">
-        <section id="v-reg" class="view active">
-            <div class="ios-card">
-                <h6 class="fw-bold small text-muted mb-3 uppercase">BUSCAR PRODUCTOS</h6>
-                <div class="search-container mb-3">
-                    <i class="fas fa-search position-absolute" style="left:15px; top:15px; color:#888;"></i>
-                    <input type="text" id="mSearch" class="search-input" placeholder="Nombre o SKU..." oninput="doSearch(this.value)">
-                    <div id="mSugs" class="sug-list"></div>
+    <main class="main-container">
+        
+        <section id="v-salidas" class="view active">
+            <div class="glass-card">
+                <p class="small fw-bold text-muted mb-3"><i class="fas fa-box-open me-2"></i>DESPACHO DE MERCANCÍA</p>
+                
+                <div class="search-wrapper mb-3">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="sSalida" class="search-input-pro" placeholder="Escribe SKU o nombre..." oninput="smartSearch(this.value, 'sugSalida', 'salida')">
+                    <div id="sugSalida" class="sug-dropdown"></div>
                 </div>
 
-                <div id="mSelectArea" class="d-none">
-                    <div class="p-3 rounded-4 bg-light border-0 mb-3">
-                        <div id="mDispN" class="fw-bold"></div>
-                        <div id="mDispS" class="text-primary small fw-bold"></div>
+                <div id="boxSalida" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 rounded-4 mb-3" style="background: #eef4ff; border-left: 4px solid var(--log-blue);">
+                        <div id="nameSalida" class="fw-bold small"></div>
+                        <div id="skuSalida" class="text-primary small fw-bold"></div>
                     </div>
                     <div class="row g-2 mb-3">
-                        <div class="col-4"><input type="number" id="mCant" class="form-control p-3 rounded-4" placeholder="Cant."></div>
-                        <div class="col-8"><button class="btn btn-primary w-100 p-3 rounded-4 fw-bold shadow" onclick="addToCart()">AÑADIR A LISTA</button></div>
+                        <div class="col-4"><input type="number" id="cantSalida" class="form-control log-input" placeholder="Cant."></div>
+                        <div class="col-8"><button class="log-btn btn-blue" onclick="addItemToList()">AÑADIR A LISTA</button></div>
                     </div>
                 </div>
 
-                <div id="cartArea" class="mt-4 d-none">
-                    <h6 class="fw-bold small mb-3">LISTA POR ENTREGAR</h6>
-                    <div id="cartItems"></div>
-                    <input type="text" id="mWho" class="form-control mt-3 p-3 rounded-4 border-0 bg-light" placeholder="¿Quién solicita?">
-                    <select id="mType" class="form-select mt-2 p-3 rounded-4 border-0 bg-light">
+                <div id="listArea" class="d-none">
+                    <hr>
+                    <div id="currentList" class="mb-3"></div>
+                    <input type="text" id="whoSalida" class="form-control log-input mb-2" placeholder="Responsable / Solicitante">
+                    <select id="tipoSalida" class="form-select log-input mb-4">
                         <option value="MARKETING">MARKETING</option>
                         <option value="OFICINA">OFICINA</option>
-                        <option value="VENDEDOR">VENTAS</option>
+                        <option value="VENDEDOR">VENDEDOR</option>
                     </select>
-                    <button class="btn btn-success w-100 p-3 mt-4 rounded-4 fw-bold shadow-lg" onclick="pushToGoogle()">GUARDAR TODO <i class="fas fa-check-circle ms-2"></i></button>
+                    <button class="log-btn btn-green shadow-sm" onclick="sendToExcel('Pedidos')">PROCESAR DESPACHO <i class="fas fa-shipping-fast ms-2"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-dev" class="view">
-            <div class="ios-card">
-                <h6 class="fw-bold text-danger mb-3">REPORTE DE DEVOLUCIÓN</h6>
-                <input type="text" id="dCli" class="form-control mb-2 p-3 rounded-4 border-0 bg-light" placeholder="Origen / Cliente">
-                <input type="text" id="dPro" class="form-control mb-2 p-3 rounded-4 border-0 bg-light" placeholder="Producto / SKU">
-                <div class="row g-2 mb-3">
-                    <div class="col-4"><input type="number" id="dCan" class="form-control p-3 rounded-4 border-0 bg-light" placeholder="Cant."></div>
-                    <div class="col-8">
-                        <select id="dMot" class="form-select p-3 rounded-4 border-0 bg-light">
-                            <option>Mal estado</option>
-                            <option>Cambio de talla</option>
-                            <option>Error Despacho</option>
-                        </select>
+        <section id="v-devoluciones" class="view">
+            <div class="glass-card">
+                <p class="small fw-bold text-danger mb-3"><i class="fas fa-undo me-2"></i>RETORNO DE MERCANCÍA</p>
+                
+                <div class="search-wrapper mb-3">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="sDev" class="search-input-pro" placeholder="Buscar producto a devolver..." oninput="smartSearch(this.value, 'sugDev', 'dev')">
+                    <div id="sugDev" class="sug-dropdown"></div>
+                </div>
+
+                <div id="boxDev" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 rounded-4 mb-3" style="background: #fff0f0; border-left: 4px solid var(--log-red);">
+                        <div id="nameDev" class="fw-bold small"></div>
+                        <div id="skuDev" class="text-danger small fw-bold"></div>
                     </div>
+                    <input type="text" id="cliDev" class="form-control log-input mb-2" placeholder="Cliente / Origen">
+                    <div class="row g-2 mb-4">
+                        <div class="col-4"><input type="number" id="cantDev" class="form-control log-input" placeholder="Cant."></div>
+                        <div class="col-8">
+                            <select id="motDev" class="form-select log-input">
+                                <option>Mal estado / Dañado</option>
+                                <option>Error de Despacho</option>
+                                <option>Cambio de Producto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="log-btn btn-red shadow-sm" onclick="processDevolucion()">GENERAR REPORTE PDF <i class="fas fa-file-pdf ms-2"></i></button>
                 </div>
-                <button class="btn btn-danger w-100 p-3 rounded-4 fw-bold shadow" onclick="handleDev()">GUARDAR Y GENERAR PDF</button>
             </div>
         </section>
 
-        <section id="v-his" class="view">
-            <div class="ios-card">
-                <h6 class="fw-bold mb-3">HISTORIAL DE HOY</h6>
-                <div id="histLog">Cargando datos...</div>
-            </div>
+        <section id="v-historial" class="view">
+            <h6 class="fw-bold px-2 mb-3">Auditoría de Movimientos</h6>
+            <div id="histLog">Cargando base de datos...</div>
         </section>
+
     </main>
 
-    <nav class="tab-bar">
-        <button class="tab-btn active" onclick="nav('reg', this)"><i class="fas fa-plus-square"></i><span>Registro</span></button>
-        <button class="tab-btn" onclick="nav('dev', this)"><i class="fas fa-undo"></i><span>Devolver</span></button>
-        <button class="tab-btn" onclick="nav('his', this)"><i class="fas fa-history"></i><span>Historial</span></button>
+    <nav class="bottom-nav">
+        <button class="nav-tab active" onclick="nav('salidas', this)"><i class="fas fa-dolly"></i><span>Salidas</span></button>
+        <button class="nav-tab" onclick="nav('devoluciones', this)"><i class="fas fa-exchange-alt"></i><span>Devolver</span></button>
+        <button class="nav-tab" onclick="nav('historial', this)"><i class="fas fa-list-ul"></i><span>Historial</span></button>
     </nav>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec"; // <--- PEGA TU URL DE GOOGLE UNA ÚLTIMA VEZ
-        let DB = []; let CART = [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec"; // <--- PEGA TU URL DE GOOGLE AQUÍ
+        let DB_PRODUCTS = []; let MASTER_LIST = [];
 
         async function init() {
             try {
                 const r = await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                DB = d.p;
-                renderHist(d.h);
-            } catch(e) { Swal.fire("Error","No se pudo conectar","error"); }
+                DB_PRODUCTS = d.p;
+                renderHistorial(d.h);
+            } catch(e) { Swal.fire("Error","Sincronización fallida","error"); }
         }
 
-        function doSearch(v) {
-            const sug = document.getElementById('mSugs');
-            if(v.length < 2) { sug.style.display='none'; return; }
-            const f = DB.filter(p => p[0].toString().toLowerCase().includes(v.toLowerCase()) || p[1].toString().toLowerCase().includes(v.toLowerCase())).slice(0,10);
-            sug.innerHTML = f.map(p => `<div class="sug-item" onclick="selectItem('${p[0]}','${p[1]}')"><b>${p[1]}</b><small>${p[0]}</small></div>`).join('');
-            sug.style.display='block';
+        function smartSearch(val, boxId, type) {
+            const box = document.getElementById(boxId);
+            if(val.length < 2) { box.style.display = 'none'; return; }
+            const matches = DB_PRODUCTS.filter(p => p[0].toString().toLowerCase().includes(val.toLowerCase()) || p[1].toString().toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+            
+            box.innerHTML = matches.map(p => `
+                <div class="sug-item" onclick="selectItem('${p[0]}','${p[1]}','${type}')">
+                    <b>${p[1]}</b>
+                    <span>SKU: ${p[0]}</span>
+                </div>
+            `).join('');
+            box.style.display = 'block';
         }
 
-        function selectItem(s, n) {
-            document.getElementById('mDispN').innerText = n;
-            document.getElementById('mDispS').innerText = s;
-            document.getElementById('mSelectArea').classList.remove('d-none');
-            document.getElementById('mSugs').style.display='none';
-            document.getElementById('mSearch').value = s;
+        function selectItem(sku, name, type) {
+            if(type === 'salida') {
+                document.getElementById('nameSalida').innerText = name;
+                document.getElementById('skuSalida').innerText = sku;
+                document.getElementById('boxSalida').classList.remove('d-none');
+                document.getElementById('sugSalida').style.display = 'none';
+                document.getElementById('sSalida').value = sku;
+            } else {
+                document.getElementById('nameDev').innerText = name;
+                document.getElementById('skuDev').innerText = sku;
+                document.getElementById('boxDev').classList.remove('d-none');
+                document.getElementById('sugDev').style.display = 'none';
+                document.getElementById('sDev').value = sku;
+            }
         }
 
-        function addToCart() {
-            const cant = document.getElementById('mCant').value;
+        function addItemToList() {
+            const sku = document.getElementById('skuSalida').innerText;
+            const name = document.getElementById('nameSalida').innerText;
+            const cant = document.getElementById('cantSalida').value;
             if(!cant) return;
-            CART.push({sku: document.getElementById('mDispS').innerText, name: document.getElementById('mDispN').innerText, cant});
-            updateCartUI();
-            document.getElementById('mSearch').value = "";
-            document.getElementById('mSelectArea').classList.add('d-none');
+            MASTER_LIST.push({sku, name, cant});
+            updateListUI();
+            document.getElementById('boxSalida').classList.add('d-none');
+            document.getElementById('sSalida').value = "";
         }
 
-        function updateCartUI() {
-            const area = document.getElementById('cartArea');
-            const items = document.getElementById('cartItems');
-            if(CART.length > 0) area.classList.remove('d-none');
-            items.innerHTML = CART.map((i, idx) => `<div class="list-item"><span>${i.name}</span><b>x${i.cant}</b></div>`).join('');
+        function updateListUI() {
+            const area = document.getElementById('listArea');
+            const items = document.getElementById('currentList');
+            area.classList.remove('d-none');
+            items.innerHTML = MASTER_LIST.map((i, idx) => `
+                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded-3">
+                    <div class="small"><b>${i.name}</b></div>
+                    <div class="fw-bold text-primary">x${i.cant}</div>
+                </div>
+            `).join('');
         }
 
-        async function pushToGoogle() {
-            const who = document.getElementById('mWho').value;
-            if(!who) return Swal.fire("Datos incompletos","Escribe el solicitante","warning");
-            const payload = CART.map(i => [new Date(), document.getElementById('mType').value, i.sku, i.name, i.cant, who, "PENDIENTE SAP"]);
-            Swal.fire({title:'Guardando...', didOpen:()=>Swal.showLoading()});
-            await fetch(API_URL, {method:"POST", body:JSON.stringify({action:"save", sheet:"Pedidos", payload})});
-            Swal.fire("Éxito","Lote guardado","success").then(()=>location.reload());
+        async function sendToExcel(sheet) {
+            const who = document.getElementById('whoSalida').value;
+            if(!who) return Swal.fire("Atención", "Escribe el responsable", "warning");
+            const payload = MASTER_LIST.map(i => [new Date(), document.getElementById('tipoSalida').value, i.sku, i.name, i.cant, who, "PENDIENTE SAP"]);
+            Swal.fire({title: 'Procesando...', didOpen: () => Swal.showLoading()});
+            await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+            Swal.fire("Éxito", "Despacho guardado", "success").then(() => location.reload());
         }
 
-        async function handleDev() {
-            const d = { cli: document.getElementById('dCli').value, pro: document.getElementById('dPro').value, can: document.getElementById('dCan').value, mot: document.getElementById('dMot').value };
-            if(!d.cli || !d.pro) return Swal.fire("Error","Faltan datos","warning");
-            const payload = [[new Date(), "DEV-"+Date.now(), d.cli, d.pro, d.can, d.mot, "RECIBIDO"]];
-            await fetch(API_URL, {method:"POST", body:JSON.stringify({action:"save", sheet:"Devoluciones", payload})});
+        async function processDevolucion() {
+            const d = { 
+                cli: document.getElementById('cliDev').value, 
+                sku: document.getElementById('skuDev').innerText, 
+                name: document.getElementById('nameDev').innerText,
+                can: document.getElementById('cantDev').value, 
+                mot: document.getElementById('motDev').value 
+            };
+            if(!d.cli || !d.can) return Swal.fire("Error","Completa los datos de devolución","warning");
+            
+            const payload = [[new Date(), "DEV-"+Date.now(), d.cli, d.name, d.can, d.mot, "RECIBIDO"]];
+            Swal.fire({title: 'Guardando...', didOpen: () => Swal.showLoading()});
+            await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
             
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("REPORTE DE DEVOLUCIÓN", 20, 20);
-            doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 40);
-            doc.text(`Cliente: ${d.cli}`, 20, 50);
-            doc.text(`Producto: ${d.pro}`, 20, 60);
-            doc.text(`Cant: ${d.can}`, 20, 70);
-            doc.save("Devolucion.pdf");
+            doc.setFontSize(22); doc.setTextColor(255, 86, 48);
+            doc.text("TWINS - REPORTE DE DEVOLUCIÓN", 20, 30);
+            doc.setFontSize(12); doc.setTextColor(0,0,0);
+            doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 50);
+            doc.text(`Origen: ${d.cli}`, 20, 60);
+            doc.text(`Producto: ${d.name} (${d.sku})`, 20, 70);
+            doc.text(`Cantidad: ${d.can} unidades`, 20, 80);
+            doc.text(`Motivo: ${d.mot}`, 20, 90);
+            doc.save(`Devolucion_${d.cli}.pdf`);
             
-            Swal.fire("Guardado","PDF generado","success").then(()=>location.reload());
+            Swal.fire("Procesado","Reporte guardado y PDF generado","success").then(()=>location.reload());
         }
 
-        function renderHist(l) {
+        function renderHistorial(l) {
             document.getElementById('histLog').innerHTML = l.map(r => `
-                <div class="list-item flex-column align-items-start mb-2">
-                    <div class="d-flex justify-content-between w-100"><b>${r[3]}</b> <small>${r[4]} UDS</small></div>
-                    <small class="text-muted">${r[1]} | ${r[2]}</small>
+                <div class="hist-item">
+                    <div class="d-flex justify-content-between">
+                        <span class="badge bg-light text-dark">${r[1]}</span>
+                        <small class="text-muted">${new Date(r[0]).toLocaleDateString()}</small>
+                    </div>
+                    <div class="fw-bold mt-2" style="font-size:14px;">${r[3]}</div>
+                    <div class="d-flex justify-content-between mt-2 align-items-center">
+                        <small class="text-primary fw-bold">SKU: ${r[2]}</small>
+                        <b class="text-dark">${r[4]} UDS</b>
+                    </div>
                 </div>
             `).join('');
         }
 
         function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('active');
             b.classList.add('active');
         }
