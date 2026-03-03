@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | Logistics Management</title>
+    <title>TITAN ELITE | Gestión Avanzada</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -18,216 +18,184 @@
             --apple-gray: #F2F2F7;
             --apple-text: #1D1D1F;
             --apple-subtext: #86868B;
-            --apple-card: #FFFFFF;
-            --radius-lg: 24px;
-            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
         }
 
         body { 
             background: #F5F5F7; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, "SF Pro Display", sans-serif;
             color: var(--apple-text);
-            padding-bottom: 120px;
-            -webkit-font-smoothing: antialiased;
+            padding-bottom: 110px;
         }
-
-        /* BARRA DE PROGRESO ESTILO APPLE */
-        #sync-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 3px;
-            z-index: 9999; background: transparent;
-        }
-        .syncing { background: var(--apple-blue); animation: loading-pulse 1.5s infinite ease-in-out; }
-        @keyframes loading-pulse { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
 
         .app-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 18px 24px;
-            position: sticky; top: 0; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 20px; position: sticky; top: 0; z-index: 1000;
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
         }
 
-        .brand-title { font-weight: 700; font-size: 20px; letter-spacing: -0.5px; }
-        .brand-accent { color: var(--apple-blue); }
-
         .main-card {
-            background: var(--apple-card);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
-            border: none;
+            background: #FFF; border-radius: var(--radius-lg);
+            padding: 22px; margin: 16px; border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
         }
 
         .label-apple {
-            font-size: 13px; font-weight: 600; color: var(--apple-subtext);
-            margin-left: 4px; margin-bottom: 8px; display: block;
+            font-size: 12px; font-weight: 700; color: var(--apple-subtext);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;
         }
 
-        .input-apple {
-            width: 100%; padding: 14px 16px; border-radius: var(--radius-md);
-            border: 1px solid #D2D2D7; background: #FFF;
-            font-size: 16px; transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-        .input-apple:focus {
-            border-color: var(--apple-blue); outline: none;
-            box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+        .input-apple, .select-apple {
+            width: 100%; padding: 12px 16px; border-radius: var(--radius-md);
+            border: 1px solid #D2D2D7; background: #FFF; font-size: 16px;
+            margin-bottom: 18px; transition: 0.2s; appearance: none;
         }
 
-        .btn-apple-primary {
+        .input-apple:focus { border-color: var(--apple-blue); outline: none; background: #FBFBFF; }
+
+        .btn-apple {
             background: var(--apple-blue); color: white; border: none;
-            padding: 14px; border-radius: var(--radius-md);
-            font-weight: 600; width: 100%; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 16px; border-radius: var(--radius-md);
+            font-weight: 600; width: 100%; transition: 0.2s;
         }
-        .btn-apple-primary:active { transform: scale(0.97); }
+        .btn-apple:active { transform: scale(0.98); opacity: 0.9; }
 
-        /* SEARCH RESULTS */
+        /* SEARCH OVERLAY */
         .search-results {
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-            border-radius: var(--radius-md); border: 1px solid #D2D2D7;
-            margin-top: -15px; margin-bottom: 15px; overflow: hidden; display: none;
+            position: absolute; width: 100%; background: #FFF; border-radius: var(--radius-md);
+            border: 1px solid #D2D2D7; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 200px; overflow-y: auto; display: none; margin-top: -15px;
         }
-        .search-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F2F2F7; }
-        .search-item:last-child { border: none; }
-        .search-item:hover { background: var(--apple-gray); }
 
         /* HISTORIAL CARDS */
         .history-card {
-            background: var(--apple-card); border-radius: var(--radius-md);
-            padding: 18px; margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
+            background: #FFF; border-radius: var(--radius-md); padding: 18px;
+            margin: 12px 16px; border: 0.5px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
-        .history-card:active { transform: scale(0.98); background: var(--apple-gray); }
-        .hc-type-tag { 
-            font-size: 10px; font-weight: 700; padding: 4px 8px; 
-            border-radius: 6px; text-transform: uppercase; margin-bottom: 8px; display: inline-block;
-        }
-        .tag-ent { background: #E1F5FE; color: #0288D1; }
-        .tag-dev { background: #FFF3E0; color: #F57C00; }
 
-        /* NAV BAR */
-        .nav-apple {
-            position: fixed; bottom: 0; width: 100%;
-            background: rgba(249, 249, 249, 0.8);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            display: flex; padding: 10px 0 30px 0;
-            border-top: 0.5px solid rgba(0,0,0,0.1); z-index: 2000;
+        .action-chip {
+            font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px;
+            text-transform: uppercase; margin-bottom: 8px; display: inline-block;
         }
-        .nav-item {
-            flex: 1; border: none; background: none; color: #8E8E93;
-            font-size: 10px; font-weight: 500; display: flex; flex-direction: column; align-items: center;
-        }
-        .nav-item i { font-size: 24px; margin-bottom: 4px; }
-        .nav-item.active { color: var(--apple-blue); }
+        .chip-ent { background: #E3F2FD; color: #007AFF; }
+        .chip-dev { background: #FBE9E7; color: #FF3B30; }
 
         .footer-claim { 
-            font-size: 10px; color: var(--apple-subtext); text-align: center;
-            margin-top: 15px; font-style: italic; border-top: 1px solid #F2F2F7; padding-top: 10px;
+            font-size: 10px; color: #AEAEB2; text-align: center;
+            margin-top: 15px; border-top: 0.5px solid #F2F2F7; padding-top: 10px;
         }
+
+        .nav-apple {
+            position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; padding: 12px 0 35px; border-top: 0.5px solid #D2D2D7;
+        }
+        .nav-item { flex: 1; border: none; background: none; color: #8E8E93; font-size: 10px; font-weight: 600; text-align: center; }
+        .nav-item.active { color: var(--apple-blue); }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="sync-loader"></div>
-
     <header class="app-header">
-        <div class="brand-title">TITAN <span class="brand-accent">ELITE</span></div>
-        <button class="btn btn-link p-0 text-decoration-none" onclick="emergencyCheck()" style="color: var(--apple-text)">
-            <small class="fw-600">Angelo Durand</small>
-            <i class="fas fa-chevron-right ms-1 opacity-50" style="font-size: 10px;"></i>
-        </button>
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold fs-4">TITAN <span style="color:var(--apple-blue)">ELITE</span></span>
+            <span class="badge rounded-pill bg-light text-dark border p-2" onclick="emergencyCheck()">
+                <i class="fas fa-user-circle me-1"></i> Angelo Durand
+            </span>
+        </div>
     </header>
 
-    <main class="container p-0">
+    <main>
         <section id="v-ent" class="view">
             <div class="main-card">
-                <span class="label-apple">Destinatario</span>
-                <input type="text" id="cli-e" class="input-apple" placeholder="Nombre del cliente o área" oninput="sugerirVendor(this.value)">
+                <span class="label-apple">Cliente / Área</span>
+                <input type="text" id="cli-e" class="input-apple" placeholder="Ej: Tienda Central" oninput="sugerirVendor(this.value, 'ven-e')">
                 
-                <span class="label-apple">Canal Sugerido</span>
-                <input type="text" id="ven-e" class="input-apple" readonly style="background: var(--apple-gray); border: none; color: var(--apple-subtext)">
+                <span class="label-apple">Vendor Responsable</span>
+                <input type="text" id="ven-e" class="input-apple" style="background:#F2F2F7" readonly>
 
-                <span class="label-apple">Catálogo de Productos</span>
-                <input type="text" id="src-e" class="input-apple" placeholder="Buscar por SKU o nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
-                <div id="res-e" class="search-results"></div>
+                <span class="label-apple">Buscar Producto</span>
+                <div class="position-relative">
+                    <input type="text" id="src-e" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
+                    <div id="res-e" class="search-results"></div>
+                </div>
 
-                <div id="form-e" class="d-none animate__animated animate__fadeIn">
-                    <div class="p-3 mb-3" style="background: var(--apple-gray); border-radius: var(--radius-md);">
-                        <b id="p-n-e" class="d-block mb-2"></b>
-                        <div class="d-flex gap-2">
-                            <input type="number" id="q-e" class="input-apple m-0" placeholder="Cantidad">
-                            <button class="btn-apple-primary" style="width: 60px;" onclick="addToCart('e')"><i class="fas fa-plus"></i></button>
-                        </div>
+                <div id="form-e" class="d-none p-3 rounded-4 mb-3" style="background:#F2F2F7">
+                    <b id="p-n-e" class="d-block mb-2"></b>
+                    <div class="d-flex gap-2">
+                        <input type="number" id="q-e" class="input-apple m-0" placeholder="Cant.">
+                        <button class="btn btn-primary rounded-3 px-4" onclick="addToCart('e')"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
 
                 <div id="cart-e" class="d-none">
-                    <div id="items-e" class="mb-4"></div>
-                    <button class="btn-apple-primary" onclick="finalizarOp('Pedidos', 'e')">Registrar Entrega</button>
+                    <div id="items-e" class="mb-3"></div>
+                    <button class="btn-apple" onclick="finalizarOp('Pedidos', 'e')">FINALIZAR ENTREGA</button>
                 </div>
             </div>
         </section>
 
         <section id="v-dev" class="view d-none">
             <div class="main-card">
-                <span class="label-apple">Origen</span>
-                <input type="text" id="cli-d" class="input-apple" placeholder="Proveedor / Tienda">
+                <span class="label-apple">Cliente / Origen</span>
+                <input type="text" id="cli-d" class="input-apple" placeholder="¿Quién devuelve?" oninput="sugerirVendor(this.value, 'ven-d')">
 
-                <span class="label-apple">Seleccionar Item</span>
-                <input type="text" id="src-d" class="input-apple" placeholder="Buscar SKU..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
-                <div id="res-d" class="search-results"></div>
+                <span class="label-apple">Vendedor / Vendor</span>
+                <input type="text" id="ven-d" class="input-apple" placeholder="Especifique Vendedor">
 
-                <div id="form-d" class="d-none">
-                    <div class="p-3 mb-3 border" style="border-radius: var(--radius-md);">
-                        <b id="p-n-d" class="d-block mb-3 text-primary"></b>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <span class="label-apple">Cant. Guía</span>
-                                <input type="number" id="cg-d" class="input-apple">
-                            </div>
-                            <div class="col-6">
-                                <span class="label-apple">Cant. Real</span>
-                                <input type="number" id="cr-d" class="input-apple">
-                            </div>
-                        </div>
-                        <span class="label-apple">Estado de recepción</span>
-                        <select id="st-d" class="input-apple">
-                            <option value="MERMA">MERMA / FALLADO</option>
-                            <option value="REPARACION">PARA REPARACIÓN</option>
-                        </select>
-                        <button class="btn-apple-primary" style="background: #000;" onclick="addToCart('d')">Agregar a Retorno</button>
-                    </div>
+                <span class="label-apple">Producto a Retornar</span>
+                <div class="position-relative">
+                    <input type="text" id="src-d" class="input-apple" placeholder="Buscar por SKU..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
+                    <div id="res-d" class="search-results"></div>
                 </div>
 
-                <div id="cart-d" class="d-none">
-                    <div id="items-d" class="mb-3"></div>
-                    <button class="btn-apple-primary" onclick="finalizarOp('Devoluciones', 'd')">Procesar Devolución</button>
+                <div id="form-d" class="d-none p-3 rounded-4 border">
+                    <b id="p-n-d" class="d-block mb-3 text-primary"></b>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <span class="label-apple">Cant. Guía</span>
+                            <input type="number" id="cg-d" class="input-apple">
+                        </div>
+                        <div class="col-6">
+                            <span class="label-apple">Cant. Recibida</span>
+                            <input type="number" id="cr-d" class="input-apple">
+                        </div>
+                    </div>
+                    
+                    <span class="label-apple">Motivo de Devolución</span>
+                    <select id="st-d" class="select-apple">
+                        <option value="MERMA">MERMA / DAÑADO</option>
+                        <option value="FALLA IMPORTACION">FALLA DE IMPORTACIÓN</option>
+                        <option value="SE ARREGLO">SE ARREGLÓ (REPARADO)</option>
+                        <option value="REINGRESO">REINGRESO A STOCK</option>
+                    </select>
+
+                    <span class="label-apple">Observaciones Adicionales</span>
+                    <textarea id="obs-d" class="input-apple" rows="2" placeholder="Detalles del estado..."></textarea>
+
+                    <button class="btn-apple" style="background:#000" onclick="addToCart('d')">AGREGAR A LA LISTA</button>
+                </div>
+
+                <div id="cart-d" class="d-none mt-3">
+                    <div id="items-d" class="mb-3 border-top pt-2"></div>
+                    <button class="btn-apple" onclick="finalizarOp('Devoluciones', 'd')">PROCESAR TODO EL RETORNO</button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view d-none">
-            <div id="feed-his" class="p-3"></div>
+            <div id="feed-his"></div>
         </section>
     </main>
 
     <nav class="nav-apple">
-        <button class="nav-item active" onclick="nav('ent', this)">
-            <i class="fas fa-shipping-fast"></i>
-            <span>Entregas</span>
-        </button>
-        <button class="nav-item" onclick="nav('dev', this)">
-            <i class="fas fa-arrow-left-rotate"></i>
-            <span>Retornos</span>
-        </button>
-        <button class="nav-item" onclick="nav('his', this)">
-            <i class="fas fa-clock"></i>
-            <span>Historial</span>
-        </button>
+        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-truck-loading"></i>ENTREGA</button>
+        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-box-open"></i>RETORNOS</button>
+        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-list-ul"></i>HISTORIAL</button>
     </nav>
 
     <script>
@@ -240,17 +208,14 @@
                 const d = await r.json();
                 MASTER = d.p;
                 processHis(d.h);
-            } catch(e) { console.warn("Modo Offline"); }
+            } catch(e) { console.warn("Offline"); }
         }
 
         function motorBusqueda(v, boxId, t) {
             const box = document.getElementById(boxId);
             if(v.length < 1) { box.style.display='none'; return; }
             const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = m.map(p => `<div class="search-item" onclick="pick('${p[0]}','${p[1]}','${t}')">
-                <div class="fw-600" style="font-size:14px">${p[1]}</div>
-                <div class="text-muted" style="font-size:11px">SKU: ${p[0]}</div>
-            </div>`).join('');
+            box.innerHTML = m.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small class="text-muted">SKU: ${p[0]}</small></div>`).join('');
             box.style.display = m.length ? 'block' : 'none';
         }
 
@@ -270,11 +235,18 @@
             if(t === 'd') {
                 item.cg = document.getElementById('cg-d').value;
                 item.st = document.getElementById('st-d').value;
+                item.obs = document.getElementById('obs-d').value || "Sin obs.";
                 item.type = "DEVOLUCION";
             } else { item.type = "ENTREGA"; }
 
             cart.push(item);
             document.getElementById(`form-${t}`).classList.add('d-none');
+            // Limpiar campos de devolución
+            if(t === 'd') {
+                document.getElementById('cr-d').value = '';
+                document.getElementById('cg-d').value = '';
+                document.getElementById('obs-d').value = '';
+            }
             renderCart(t);
         }
 
@@ -284,39 +256,35 @@
             const items = document.getElementById(`items-${t}`);
             cont.classList.toggle('d-none', cart.length === 0);
             items.innerHTML = cart.map((i, idx) => `
-                <div class="d-flex justify-content-between align-items-center mb-2 p-2" style="background:#F9F9F9; border-radius:10px">
-                    <span style="font-size:14px"><b>${i.q}</b> · ${i.name}</span>
-                    <button class="btn btn-sm text-danger border-0" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');">
-                        <i class="fas fa-minus-circle"></i>
-                    </button>
+                <div class="p-2 border-bottom d-flex justify-content-between align-items-center" style="font-size:13px">
+                    <span><b>${i.q}</b> x ${i.name} ${t==='d' ? `<br><small class="text-danger">${i.st}</small>` : ''}</span>
+                    <i class="fas fa-times-circle text-muted" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');"></i>
                 </div>
             `).join('');
         }
 
         async function finalizarOp(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
-            if(!cli) return Swal.fire({ title: "Falta Cliente", icon: "warning", confirmButtonColor: "#007AFF" });
+            const ven = document.getElementById(`ven-${t}`).value;
+            if(!cli || !ven) return Swal.fire("Atención", "Cliente y Vendedor son obligatorios", "warning");
 
-            const bar = document.getElementById('sync-loader');
             const cart = t === 'e' ? CART_E : CART_D;
             const payload = cart.map(i => [
                 new Date(), i.type, i.sku, i.name, i.q, cli, 
-                t === 'e' ? `Vendor: ${document.getElementById('ven-e').value}` : `Guía: ${i.cg} | Estado: ${i.st}`
+                t === 'e' ? `Vendedor: ${ven}` : `Guía: ${i.cg} | Motivo: ${i.st} | Obs: ${i.obs} | Vendedor: ${ven}`
             ]);
 
-            bar.className = 'syncing';
-            if(t==='e') CART_E = []; else CART_D = [];
-            renderCart(t);
-            document.getElementById(`cli-${t}`).value = '';
-
+            Swal.fire({ title: 'Sincronizando...', didOpen: () => Swal.showLoading() });
+            
             try {
-                fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})})
-                .then(() => {
-                    bar.className = '';
-                    init(); 
-                    Swal.fire({ title: "Guardado", icon: "success", timer: 1500, showConfirmButton: false });
-                });
-            } catch(e) { bar.className = ''; }
+                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+                if(t==='e') CART_E = []; else CART_D = [];
+                renderCart(t);
+                document.getElementById(`cli-${t}`).value = '';
+                document.getElementById(`ven-${t}`).value = '';
+                await init();
+                Swal.fire("Éxito", "Registro guardado correctamente", "success");
+            } catch(e) { Swal.fire("Error", "No se pudo conectar", "error"); }
         }
 
         function processHis(data) {
@@ -334,14 +302,19 @@
 
         function renderHis() {
             const feed = document.getElementById('feed-his');
-            feed.innerHTML = Object.values(HIS_DATA).reverse().slice(0, 15).map(g => `
-                <div class="history-card" onclick="verDetalle('${btoa(JSON.stringify(g))}')">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="hc-type-tag ${g.tipo === 'ENTREGA' ? 'tag-ent' : 'tag-dev'}">${g.tipo}</span>
-                        <small class="text-muted fw-600" style="font-size:11px">${g.hora}</small>
+            feed.innerHTML = Object.values(HIS_DATA).reverse().slice(0, 20).map(g => `
+                <div class="history-card">
+                    <span class="action-chip ${g.tipo === 'ENTREGA' ? 'chip-ent' : 'chip-dev'}">${g.tipo}</span>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold fs-5">${g.cliente}</span>
+                        <small class="text-muted">${g.hora}</small>
                     </div>
-                    <div class="fw-700" style="font-size:17px; margin: 4px 0;">${g.cliente}</div>
-                    <div class="text-muted" style="font-size:13px">${g.prods.length} productos</div>
+                    <div class="text-muted mb-3" style="font-size:12px">${g.prods.length} items registrados el ${g.fecha}</div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm w-100 fw-bold" onclick="verDetalle('${btoa(JSON.stringify(g))}')">LISTA ITEMS</button>
+                        <button class="btn btn-outline-primary btn-sm w-100 fw-bold" onclick="genPDF(JSON.parse(atob('${btoa(JSON.stringify(g))}')))">PDF</button>
+                    </div>
                     <div class="footer-claim">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
                 </div>
             `).join('');
@@ -350,60 +323,51 @@
         function verDetalle(dataStr) {
             const g = JSON.parse(atob(dataStr));
             Swal.fire({
-                title: 'Detalle de Movimiento',
+                title: 'Detalle de Carga',
                 html: `
                     <div class="text-start" style="font-size:14px">
-                        <div class="p-3 bg-light rounded-4 mb-3">
-                            <b>${g.cliente}</b><br>
-                            <span class="text-muted">${g.fecha} a las ${g.hora}</span>
-                        </div>
+                        <div class="mb-3 p-2 bg-light rounded"><b>Origen/Destino:</b> ${g.cliente}</div>
                         <div class="list-group list-group-flush">
                             ${g.prods.map(p => `
-                                <div class="list-group-item px-0 border-0 border-bottom">
-                                    <div class="d-flex justify-content-between">
-                                        <span><b>${p.q}</b> ${p.n}</span>
-                                    </div>
-                                    <small class="text-muted">SKU: ${p.s}</small>
+                                <div class="list-group-item px-0">
+                                    <b>${p.q}</b> - ${p.n}<br>
+                                    <small class="text-muted">${p.obs}</small>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
                 `,
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-file-pdf"></i> PDF',
-                cancelButtonText: 'Cerrar',
-                confirmButtonColor: '#007AFF',
-                customClass: { popup: 'rounded-4' }
-            }).then((result) => { if (result.isConfirmed) genPDF(g); });
+                confirmButtonColor: '#007AFF'
+            });
         }
 
         function genPDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(22); doc.text("TITAN ELITE", 14, 20);
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`DESTINO/ORIGEN: ${g.cliente}`, 14, 30);
-            doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora} | TIPO: ${g.tipo}`, 14, 35);
+            doc.setFontSize(18); doc.text("REPORTE DE MOVIMIENTO - TITAN ELITE", 14, 20);
+            doc.setFontSize(10); 
+            doc.text(`CLIENTE: ${g.cliente} | TIPO: ${g.tipo}`, 14, 30);
+            doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora}`, 14, 35);
 
             doc.autoTable({
                 startY: 45,
-                head: [['Cant', 'Producto', 'SKU', 'Referencia']],
+                head: [['Cant', 'Producto', 'SKU', 'Referencia / Motivo']],
                 body: g.prods.map(p => [p.q, p.n, p.s, p.obs]),
-                headStyles: { fillColor: [0, 122, 255] },
-                theme: 'striped'
+                headStyles: { fillColor: [0, 122, 255] }
             });
 
             const finalY = doc.lastAutoTable.finalY + 20;
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align: 'center'});
-            doc.save(`TITAN_${g.cliente}.pdf`);
+            doc.save(`TITAN_${g.cliente}_${g.fecha}.pdf`);
         }
 
-        function sugerirVendor(v) {
-            let s = "GENERAL";
+        function sugerirVendor(v, targetId) {
+            let s = "";
             if(v.toUpperCase().includes("GLOBAL")) s = "GLOBAL LOGISTICS";
-            document.getElementById('ven-e').value = s;
+            else if(v.toUpperCase().includes("TIENDA")) s = "VENDEDOR INTERNO";
+            
+            if(s) document.getElementById(targetId).value = s;
         }
 
         function nav(v, btn) {
@@ -411,18 +375,15 @@
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.remove('d-none');
             btn.classList.add('active');
-            window.scrollTo(0,0);
         }
 
         function emergencyCheck() {
             Swal.fire({
-                title: 'Configuración',
-                text: "¿Desea cambiar el responsable del inventario?",
-                icon: 'question',
+                title: 'Acceso Restringido',
+                text: "¿Desea cambiar el responsable asignado?",
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Cambiar',
-                confirmButtonColor: '#007AFF',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: 'Sí, Cambiar'
             });
         }
 
