@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO | TITAN ULTRA-VISION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TITAN PRIME | Auditoría Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,279 +11,318 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
         :root {
-            --bg: #05070A;
-            --glass: rgba(17, 25, 40, 0.75);
-            --border: rgba(255, 255, 255, 0.125);
-            --accent: #00D1FF;
-            --success: #10B981;
-            --danger: #FF4D4D;
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --accent: #38BDF8;
+            --success: #22C55E;
+            --danger: #EF4444;
             --text: #F8FAFC;
+            --border: #334155;
         }
 
         body { 
-            background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text);
+            background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--text);
             margin: 0; padding-bottom: 110px; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, #003366 0%, #05070A 100%);
         }
 
-        /* Header Industrial */
-        .ultra-header {
-            padding: 25px 20px; border-bottom: 1px solid var(--border);
-            background: var(--glass); backdrop-filter: blur(16px);
+        .main-header {
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
+            padding: 20px; border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .brand-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; color: var(--accent); letter-spacing: -1px; }
 
-        /* Cuadros Modernos (Cards) */
-        .ultra-card {
-            background: var(--glass); backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: 24px;
-            margin: 20px 15px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        .title-brand { font-weight: 800; font-size: 22px; color: var(--accent); letter-spacing: -1px; }
+
+        .card-modern {
+            background: var(--surface); border-radius: 20px; padding: 25px;
+            margin: 15px; border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .label-tech { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+        .label-tech { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; opacity: 0.8; }
 
-        /* Inputs Profesionales */
-        .ultra-input {
-            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border);
-            border-radius: 14px; padding: 16px; width: 100%; color: #fff;
-            font-size: 16px; transition: 0.3s; margin-bottom: 15px;
+        .input-titan {
+            background: #0F172A; border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 14px; width: 100%; color: #fff;
+            font-size: 15px; margin-bottom: 15px; transition: 0.3s;
         }
-        .ultra-input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(0, 209, 255, 0.15); background: rgba(0, 0, 0, 0.5); }
+        .input-titan:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); }
 
-        /* Chips Vendedores */
-        .scroller-chips { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scrollbar-width: none; }
-        .chip {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
-            padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
-            white-space: nowrap; transition: 0.3s; cursor: pointer;
+        .scroller-v { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
+        .chip-v {
+            background: #334155; border: 1px solid var(--border); padding: 10px 18px;
+            border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; transition: 0.3s;
         }
-        .chip.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 209, 255, 0.4); }
+        .chip-v.active { background: var(--accent); color: #0F172A; font-weight: 800; border-color: var(--accent); }
 
-        /* Botones de Acción */
-        .btn-ultra {
-            border-radius: 16px; padding: 18px; font-weight: 800; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            text-transform: uppercase; font-size: 14px; transition: 0.3s; cursor: pointer;
+        .btn-action {
+            border-radius: 14px; padding: 16px; font-weight: 800; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-transform: uppercase; font-size: 13px; transition: 0.3s;
         }
-        .btn-blue { background: var(--accent); color: #000; }
-        .btn-green { background: var(--success); color: #fff; }
-        .btn-ultra:active { transform: scale(0.96); }
+        .btn-accent { background: var(--accent); color: #0F172A; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
 
-        /* Historial Item */
-        .his-row {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
-            border-radius: 18px; padding: 18px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
+        .item-row {
+            background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; margin-bottom: 10px;
+            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* Nav Tab Bar */
-        .ultra-tabs {
-            position: fixed; bottom: 0; width: 100%; background: var(--glass);
-            backdrop-filter: blur(20px); display: flex; justify-content: space-around;
-            padding: 15px 0 30px 0; border-top: 1px solid var(--border); z-index: 1000;
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: #1E293B;
+            display: flex; justify-content: space-around; padding: 15px 0 30px 0;
+            border-top: 1px solid var(--border); z-index: 1000;
         }
-        .tab-btn { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; text-align: center; }
-        .tab-btn.active { color: var(--accent); }
-        .tab-btn i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-link-t { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; text-align: center; }
+        .nav-link-t.active { color: var(--accent); }
+        .nav-link-t i { font-size: 20px; display: block; margin-bottom: 5px; }
 
         .view { display: none; }
-        .active-view { display: block; animation: fadeInUp 0.4s ease forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active-view { display: block; }
     </style>
 </head>
 <body>
 
-    <header class="ultra-header d-flex justify-content-between align-items-center">
+    <header class="main-header d-flex justify-content-between align-items-center">
         <div>
-            <div class="brand-name">TAJHO <span style="color:white; font-weight:300">ULTRA</span></div>
-            <div style="font-size: 9px; color: var(--accent); font-weight: 700;">LOGISTICS SYSTEM v3.0</div>
+            <div class="title-brand">TITAN <span style="color:white">PRIME</span></div>
+            <div style="font-size: 9px; color: var(--accent); letter-spacing: 1px;">AUDITORÍA LOGÍSTICA</div>
         </div>
         <div class="text-end">
-            <div style="font-size: 12px; font-weight: 700;">J. ANGELO</div>
-            <div style="font-size: 9px; color: var(--success);"><i class="fas fa-signal"></i> LIVE</div>
+            <div style="font-size: 11px; font-weight: 800;">J. ANGELO</div>
+            <div style="font-size: 9px; color: var(--success);">ESTADO: ACTIVO</div>
         </div>
     </header>
 
     <main>
         <section id="v-del" class="view active-view">
-            <div class="ultra-card">
-                <span class="label-tech">Datos de Despacho</span>
-                <input type="text" id="cli-d" class="ultra-input" placeholder="Nombre del Cliente / Destino" oninput="saveSt()">
+            <div class="card-modern">
+                <span class="label-tech">Datos de Salida</span>
+                <input type="text" id="cli-d" class="input-titan" placeholder="Cliente / Empresa" oninput="persistState()">
                 
-                <span class="label-tech">Vendedor Asignado</span>
-                <div class="scroller-chips" id="vend-d">
-                    <div class="chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
-                    <div class="chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
-                    <div class="chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
-                    <div class="chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
-                    <div class="chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
+                <span class="label-tech">Responsable Comercial</span>
+                <div class="scroller-v" id="vend-d">
+                    <div class="chip-v" onclick="selVend('ELIAS AVILA', 'd')">ELIAS AVILA</div>
+                    <div class="chip-v" onclick="selVend('EVELYN MURO', 'd')">EVELYN MURO</div>
+                    <div class="chip-v" onclick="selVend('JHAYRO MAURICIO', 'd')">JHAYRO MAURICIO</div>
+                    <div class="chip-v" onclick="selVend('PAULA GARCIA', 'd')">PAULA GARCIA</div>
+                    <div class="chip-v" onclick="setV('REGULO ANTEZA', 'd')">REGULO ANTEZA</div>
                 </div>
 
                 <div class="mt-4">
-                    <span class="label-tech">Carga de Mercadería</span>
-                    <input type="text" id="sku-in" class="ultra-input" placeholder="🔍 SKU / Descripción del Producto">
-                    <input type="number" id="qty-in" class="ultra-input" placeholder="Cantidad de Unidades">
-                    <button class="btn-ultra btn-blue" onclick="addI()">Añadir a la Carga <i class="fas fa-plus"></i></button>
+                    <span class="label-tech">Ingreso de Producto</span>
+                    <input type="text" id="sku-d" class="input-titan" placeholder="SKU o Descripción">
+                    <input type="number" id="qty-d" class="input-titan" placeholder="Cantidad de Unidades">
+                    <button class="btn-action btn-accent" onclick="addToList('d')">Añadir Item <i class="fas fa-plus"></i></button>
                 </div>
 
-                <div id="temp-list" class="mt-4"></div>
-                <button id="sync-btn" class="btn-ultra btn-green mt-3 d-none" onclick="syncAll()">Sincronizar Inventario <i class="fas fa-sync-alt"></i></button>
+                <div id="list-d" class="mt-4"></div>
+                <button id="sync-d" class="btn-action btn-success mt-3 d-none" onclick="syncProcess('d')">Sincronizar Entrega <i class="fas fa-check-circle"></i></button>
             </div>
         </section>
 
         <section id="v-ret" class="view">
-            <div class="ultra-card">
-                <span class="label-tech" style="color:var(--danger)">Control de Devoluciones / QC</span>
-                <input type="text" id="cli-r" class="ultra-input" placeholder="Cliente de Origen" oninput="saveSt()">
-                <input type="text" id="sku-r" class="ultra-input" placeholder="SKU Fallado">
-                <textarea id="obs-r" class="ultra-input" style="height: 100px;" placeholder="Notas de estado físico (Lápiz)..."></textarea>
-                <button class="btn-ultra btn-blue" style="background:var(--danger); color:#fff">Registrar Retorno <i class="fas fa-undo-alt"></i></button>
+            <div class="card-modern">
+                <span class="label-tech">Auditoría de Devolución</span>
+                <input type="text" id="cli-r" class="input-titan" placeholder="Origen del Retorno" oninput="persistState()">
+                
+                <span class="label-tech">Producto en Inspección</span>
+                <input type="text" id="sku-r" class="input-titan" placeholder="SKU del Producto">
+                
+                <div class="row g-2">
+                    <div class="col-6">
+                        <span class="label-tech">Cant. Guía</span>
+                        <input type="number" id="qg-r" class="input-titan" placeholder="0">
+                    </div>
+                    <div class="col-6">
+                        <span class="label-tech">Cant. Real</span>
+                        <input type="number" id="qr-r" class="input-titan" placeholder="0">
+                    </div>
+                </div>
+
+                <span class="label-tech">Estado de Revisión</span>
+                <select id="st-r" class="input-titan">
+                    <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO</option>
+                    <option value="FALLA DE FÁBRICA">FALLA DE FÁBRICA</option>
+                    <option value="MERMA / DAÑADO">MERMA / DAÑADO</option>
+                    <option value="EMPAQUE DAÑADO">EMPAQUE DAÑADO</option>
+                </select>
+
+                <span class="label-tech"><i class="fas fa-pen"></i> Observaciones Detalladas</span>
+                <textarea id="obs-r" class="input-titan" style="height: 100px;" placeholder="Escribe aquí los detalles encontrados..."></textarea>
+                
+                <button class="btn-action btn-danger" onclick="addToList('r')">Validar e Incluir <i class="fas fa-shield-alt"></i></button>
+
+                <div id="list-r" class="mt-4"></div>
+                <button id="sync-r" class="btn-action btn-success mt-3 d-none" onclick="syncProcess('r')">Confirmar Retorno <i class="fas fa-save"></i></button>
             </div>
         </section>
 
         <section id="v-his" class="view">
-            <div class="px-3 py-2">
-                <span class="label-tech">Registro de Movimientos</span>
-                <div id="his-feed"></div>
-            </div>
+            <div class="px-3 py-2" id="his-feed"></div>
         </section>
     </main>
 
-    <nav class="ultra-tabs">
-        <button class="tab-btn active" onclick="nav('del', this)"><i class="fas fa-pallet"></i><span>ENTREGA</span></button>
-        <button class="tab-btn" onclick="nav('ret', this)"><i class="fas fa-box-open"></i><span>RETORNO</span></button>
-        <button class="tab-btn" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
+    <nav class="bottom-nav">
+        <button class="nav-link-t active" onclick="switchTab('del', this)"><i class="fas fa-truck-loading"></i><span>ENTREGA</span></button>
+        <button class="nav-link-t" onclick="switchTab('ret', this)"><i class="fas fa-exchange-alt"></i><span>DEVOLUCIÓN</span></button>
+        <button class="nav-link-t" onclick="switchTab('his', this)"><i class="fas fa-clipboard-list"></i><span>HISTORIAL</span></button>
     </nav>
 
     <script>
-        let currentLoad = []; let selectedV = "";
+        let session = { d: [], r: [], vendorD: '', vendorR: '' };
 
-        // Recuperar Sesión Persistentemente
         window.onload = () => {
-            const session = JSON.parse(localStorage.getItem('TAJHO_SESSION'));
-            if(session) {
-                currentLoad = session.items || [];
-                selectedV = session.vendor || "";
-                document.getElementById('cli-d').value = session.client || "";
-                if(selectedV) setV(selectedV, 'd');
-                renderItems();
+            const saved = JSON.parse(localStorage.getItem('TITAN_PRIME_DATA'));
+            if(saved) {
+                session = saved;
+                document.getElementById('cli-d').value = session.clientD || '';
+                document.getElementById('cli-r').value = session.clientR || '';
+                if(session.vendorD) selVend(session.vendorD, 'd');
+                renderList('d'); renderList('r');
             }
         };
 
-        function setV(v, t) {
-            selectedV = v;
-            document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.innerText === v));
-            saveSt();
+        function selVend(v, type) {
+            session[`vendor${type.toUpperCase()}`] = v;
+            document.querySelectorAll(`#vend-${type} .chip-v`).forEach(c => c.classList.toggle('active', c.innerText === v));
+            persistState();
         }
 
-        function saveSt() {
-            const data = { client: document.getElementById('cli-d').value, vendor: selectedV, items: currentLoad };
-            localStorage.setItem('TAJHO_SESSION', JSON.stringify(data));
+        function persistState() {
+            session.clientD = document.getElementById('cli-d').value;
+            session.clientR = document.getElementById('cli-r').value;
+            localStorage.setItem('TITAN_PRIME_DATA', JSON.stringify(session));
         }
 
-        function addI() {
-            const sku = document.getElementById('sku-in').value;
-            const qty = document.getElementById('qty-in').value;
-            if(!sku || !qty) return;
-
-            currentLoad.push({ sku, qty, time: new Date().toLocaleString() });
-            
-            // Limpieza inteligente de campos de ITEM
-            document.getElementById('sku-in').value = "";
-            document.getElementById('qty-in').value = "";
-            
-            renderItems();
-            saveSt();
+        function addToList(type) {
+            if(type === 'd') {
+                const sku = document.getElementById('sku-d').value;
+                const qty = document.getElementById('qty-d').value;
+                if(!sku || !qty) return;
+                session.d.push({ sku, qty, time: new Date().toLocaleString() });
+                document.getElementById('sku-d').value = ''; document.getElementById('qty-d').value = '';
+            } else {
+                const sku = document.getElementById('sku-r').value;
+                const qg = document.getElementById('qg-r').value;
+                const qr = document.getElementById('qr-r').value;
+                if(!sku || !qg || !qr) return;
+                session.r.push({ 
+                    sku, qg, qr, 
+                    st: document.getElementById('st-r').value, 
+                    obs: document.getElementById('obs-r').value,
+                    time: new Date().toLocaleString()
+                });
+                // Limpiar campos de item pero mantener cliente
+                ['sku-r', 'qg-r', 'qr-r', 'obs-r'].forEach(id => document.getElementById(id).value = '');
+            }
+            renderList(type); persistState();
         }
 
-        function renderItems() {
-            const list = document.getElementById('temp-list');
-            const sync = document.getElementById('sync-btn');
-            sync.classList.toggle('d-none', currentLoad.length === 0);
-            list.innerHTML = currentLoad.map((i, idx) => `
-                <div class="his-row">
-                    <div><b style="color:var(--accent)">${i.sku}</b><br><small class="text-muted">Carga pendiente</small></div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="fw-bold fs-5">x${i.qty}</span>
-                        <i class="fas fa-trash text-danger" onclick="rem(${idx})"></i>
+        function renderList(t) {
+            const container = document.getElementById(`list-${t}`);
+            const btn = document.getElementById(`sync-${t}`);
+            const data = session[t];
+            btn.classList.toggle('d-none', data.length === 0);
+            container.innerHTML = data.map((item, idx) => `
+                <div class="item-row">
+                    <div><b>${item.sku}</b><br><small>${t==='d' ? 'Cant: '+item.qty : 'Guía: '+item.qg+' | Real: '+item.qr}</small></div>
+                    <i class="fas fa-trash text-danger" onclick="removeItem('${t}', ${idx})"></i>
+                </div>
+            `).join('');
+        }
+
+        function removeItem(t, idx) { session[t].splice(idx, 1); renderList(t); persistState(); }
+
+        function syncProcess(t) {
+            Swal.fire({title: 'Sincronizando...', didOpen: () => Swal.showLoading(), background: '#1E293B', color: '#fff'});
+            setTimeout(() => {
+                const history = JSON.parse(localStorage.getItem('TITAN_HISTORY') || '[]');
+                const client = document.getElementById(`cli-${t}`).value;
+                const vendor = session[`vendor${t.toUpperCase()}`];
+                
+                session[t].forEach(i => history.unshift({...i, client, vendor, type: t==='d'?'ENTREGA':'DEVOLUCIÓN'}));
+                localStorage.setItem('TITAN_HISTORY', JSON.stringify(history));
+                
+                session[t] = [];
+                if(t==='d') document.getElementById('cli-d').value = ''; else document.getElementById('cli-r').value = '';
+                persistState();
+                Swal.fire('Completado', 'Registro almacenado en historial', 'success').then(() => location.reload());
+            }, 1000);
+        }
+
+        function switchTab(v, el) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.nav-link-t').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active-view');
+            el.classList.add('active');
+            if(v === 'his') loadHistory();
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('TITAN_HISTORY') || '[]');
+            document.getElementById('his-feed').innerHTML = h.map((r, idx) => `
+                <div class="item-row" onclick="showOptions(${idx})">
+                    <div>
+                        <span class="badge ${r.type==='ENTREGA'?'bg-info':'bg-danger'}" style="font-size:9px">${r.type}</span>
+                        <div class="fw-bold">${r.client}</div>
+                        <small class="text-muted">${r.sku} • ${r.vendor || 'S/V'}</small>
+                    </div>
+                    <div class="text-end">
+                        <b class="fs-5">${r.qty || r.qr}</b><br>
+                        <small style="font-size:9px">${r.time.split(',')[0]}</small>
                     </div>
                 </div>
             `).join('');
         }
 
-        function rem(idx) { currentLoad.splice(idx, 1); renderItems(); saveSt(); }
-
-        function syncAll() {
-            Swal.fire({title: 'Sincronizando...', didOpen: () => Swal.showLoading(), background: '#0A0C10', color: '#fff'});
-            setTimeout(() => {
-                const history = JSON.parse(localStorage.getItem('TAJHO_HISTORY') || '[]');
-                const client = document.getElementById('cli-d').value;
-                currentLoad.forEach(i => history.unshift({...i, client, vendor: selectedV}));
-                localStorage.setItem('TAJHO_HISTORY', JSON.stringify(history));
-                
-                localStorage.removeItem('TAJHO_SESSION');
-                currentLoad = []; selectedV = "";
-                document.getElementById('cli-d').value = "";
-                Swal.fire('Éxito', 'Inventario actualizado en nube', 'success').then(() => location.reload());
-            }, 1200);
-        }
-
-        function nav(v, el) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('active-view');
-            el.classList.add('active');
-            if(v === 'his') loadHis();
-        }
-
-        function loadHis() {
-            const h = JSON.parse(localStorage.getItem('TAJHO_HISTORY') || '[]');
-            document.getElementById('his-feed').innerHTML = h.map((r, idx) => `
-                <div class="his-row" onclick="options(${idx})">
-                    <div><b>${r.client}</b><br><small>${r.sku} • ${r.vendor}</small></div>
-                    <div class="text-end"><b>x${r.qty}</b><br><small style="font-size:9px" class="opacity-50">${r.time.split(',')[0]}</small></div>
-                </div>
-            `).join('');
-        }
-
-        function options(idx) {
-            const r = JSON.parse(localStorage.getItem('TAJHO_HISTORY'))[idx];
+        function showOptions(idx) {
+            const r = JSON.parse(localStorage.getItem('TITAN_HISTORY'))[idx];
             Swal.fire({
-                title: 'Operación de Registro',
-                text: `¿Qué acción deseas para ${r.client}?`,
+                title: 'Reporte de Movimiento',
+                text: `Generar PDF y enviar a ${r.vendor || 'vendedor'}`,
                 showCancelButton: true,
-                confirmButtonText: '<i class="fab fa-whatsapp"></i> PDF + WhatsApp',
-                confirmButtonColor: '#10B981',
-                background: '#0A0C10', color: '#fff'
-            }).then(res => { if(res.isConfirmed) genPDF(r); });
+                confirmButtonText: 'WhatsApp + PDF',
+                confirmButtonColor: '#22C55E',
+                background: '#1E293B', color: '#fff'
+            }).then(res => { if(res.isConfirmed) generatePDF(r); });
         }
 
-        function genPDF(r) {
+        function generatePDF(r) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            doc.setFillColor(0, 209, 255); doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(0, 0, 0); doc.setFontSize(18); doc.text("REPORTE DE MOVIMIENTO TAJHO", 105, 20, {align: 'center'});
+            // Estética de Reporte
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("TITAN PRIME LOGISTICS", 105, 20, {align: 'center'});
+            doc.setFontSize(10); doc.text(`REPORTE OFICIAL DE ${r.type}`, 105, 30, {align: 'center'});
             
+            const body = r.type === 'ENTREGA' ? 
+                [['CLIENTE', r.client], ['VENDEDOR', r.vendor], ['PRODUCTO', r.sku], ['CANTIDAD', r.qty], ['FECHA', r.time]] :
+                [['CLIENTE', r.client], ['PRODUCTO', r.sku], ['CANT. GUÍA', r.qg], ['CANT. REAL', r.qr], ['ESTADO QC', r.st], ['OBSERVACIÓN', r.obs], ['FECHA', r.time]];
+
             doc.autoTable({
-                startY: 40,
-                head: [['CAMPO', 'DETALLE']],
-                body: [['CLIENTE', r.client], ['PRODUCTO', r.sku], ['CANTIDAD', r.qty], ['VENDEDOR', r.vendor], ['FECHA/HORA', r.time]],
-                theme: 'striped'
+                startY: 50,
+                head: [['CONCEPTO', 'DESCRIPCIÓN']],
+                body: body,
+                theme: 'striped',
+                headStyles: { fillColor: [56, 189, 248] }
             });
 
-            // Pie de página oficial centrado
-            const pY = doc.internal.pageSize.getHeight();
-            const pW = doc.internal.pageSize.getWidth();
-            doc.setFontSize(10); doc.setTextColor(100);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", pW/2, pY - 20, {align: 'center'});
+            // Pie de página autorizado por J. Angelo
+            const pY = doc.internal.pageSize.height;
+            const pW = doc.internal.pageSize.width;
+            doc.setTextColor(100); doc.setFontSize(9);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", pW/2, pY - 15, {align: 'center'});
             
-            doc.save(`TAJHO_${r.client}.pdf`);
-            window.open(`https://wa.me/?text=${encodeURIComponent(`*Reporte Logístico TAJHO*\nCliente: ${r.client}\nItem: ${r.sku}\nCantidad: ${r.qty}\n_Revision autorizada por J. Angelo._`)}`);
+            doc.save(`TITAN_${r.client}.pdf`);
+            
+            const msg = `Hola, envío reporte de *${r.type}*.\nCliente: ${r.client}\nProducto: ${r.sku}\nEstado: ${r.st || 'Entregado'}\n_Revisión autorizada por J. Angelo._`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
         }
     </script>
 </body>
