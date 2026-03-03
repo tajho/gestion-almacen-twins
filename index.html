@@ -3,104 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN ELITE v4.5 | Auditoría Exacta</title>
+    <title>TITAN ELITE v5.0 | Excel Conectado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;800&display=swap');
-
-        :root {
-            --bg: #05070A;
-            --surface: #11141D;
-            --accent: #00D1FF;
-            --success: #10B981;
-            --danger: #FF4D4D;
-            --border: #222933;
-        }
-
-        body { 
-            background: var(--bg); font-family: 'Inter', sans-serif; color: #fff;
-            margin: 0; padding-bottom: 100px;
-        }
-
-        .titan-header {
-            background: var(--surface); padding: 15px 20px; border-bottom: 2px solid var(--accent);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .ultra-card {
-            background: var(--surface); border-radius: 16px; padding: 20px;
-            margin: 15px; border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-
-        .label-audit { font-family: 'Space Grotesk', sans-serif; font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; }
-
-        .titan-input {
-            background: #080A0F; border: 1.5px solid var(--border);
-            border-radius: 10px; padding: 14px; width: 100%; color: #fff;
-            font-size: 15px; margin-bottom: 15px; transition: 0.2s;
-        }
+        :root { --bg: #05070A; --surface: #11141D; --accent: #00D1FF; --border: #222933; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #fff; margin: 0; padding-bottom: 110px; }
+        .titan-header { background: var(--surface); padding: 15px 20px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        .ultra-card { background: var(--surface); border-radius: 16px; padding: 20px; margin: 15px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .label-audit { font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; }
+        .titan-input { background: #080A0F; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; width: 100%; color: #fff; font-size: 15px; margin-bottom: 15px; }
         .titan-input:focus { border-color: var(--accent); outline: none; }
+        
+        /* Buscador Flotante */
+        .search-engine { position: relative; }
+        .suggest-box { position: absolute; width: 100%; background: #1A1F2B; border: 1px solid var(--accent); border-radius: 0 0 10px 10px; z-index: 2000; max-height: 220px; overflow-y: auto; display: none; }
+        .suggest-item { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; }
+        .suggest-item:hover { background: var(--accent); color: #000; }
 
-        .btn-titan {
-            border-radius: 12px; padding: 16px; font-weight: 800; border: none; width: 100%;
-            text-transform: uppercase; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        .btn-titan { border-radius: 12px; padding: 16px; font-weight: 800; border: none; width: 100%; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .btn-blue { background: var(--accent); color: #000; }
-        .btn-green { background: var(--success); color: #fff; }
-
-        .row-item {
-            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px; margin-bottom: 8px;
-            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .nav-titan {
-            position: fixed; bottom: 0; width: 100%; background: var(--surface);
-            display: flex; justify-content: space-around; padding: 15px 0 30px 0;
-            border-top: 1px solid var(--border); z-index: 1000;
-        }
-        .nav-btn { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; text-align: center; }
+        .btn-green { background: #10B981; color: #fff; }
+        
+        .nav-titan { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 15px 0 30px 0; border-top: 1px solid var(--border); }
+        .nav-btn { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; }
         .nav-btn.active { color: var(--accent); }
         .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
-
-        .view { display: none; }
-        .view-active { display: block; }
+        .view { display: none; } .view-active { display: block; }
     </style>
 </head>
 <body>
 
     <header class="titan-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1 style="font-size: 18px; font-weight: 800; margin:0; color:var(--accent)">TAJHO | TITAN ELITE</h1>
-            <small style="font-size: 9px; color: #64748B;">SISTEMA DE AUDITORÍA EXACTA</small>
-        </div>
-        <div class="text-end">
-            <div style="font-size: 11px; font-weight: 800;">J. ANGELO</div>
-            <div style="font-size: 8px; color: var(--success);">ESTADO: CONECTADO</div>
-        </div>
+        <div><h1 style="font-size: 18px; font-weight: 800; margin:0; color:var(--accent)">TAJHO | TITAN</h1></div>
+        <div class="text-end"><small id="sync-indicator" style="font-size: 9px; color: #64748B;">CONECTANDO EXCEL...</small></div>
     </header>
-
-    <datalist id="db-productos">
-        <option value="1001 - LAPICERO AZUL FABER CASTELL">
-        <option value="1002 - LAPICERO ROJO FABER CASTELL">
-        <option value="2045 - CUADERNO A4 ESPIRAL LORO">
-        <option value="2046 - CUADERNO A4 ESPIRAL STANFORD">
-        <option value="5001 - PAPEL BOND REPORTE 80GR A4">
-        <option value="8088 - FOLDER MANILA PAQUETE X100">
-    </datalist>
 
     <main>
         <section id="v-del" class="view view-active">
             <div class="ultra-card">
-                <span class="label-audit">Datos del Despacho</span>
-                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente" oninput="saveSt()">
-                
-                <select id="ven-d" class="titan-input" onchange="saveSt()">
+                <span class="label-audit">Logística de Salida</span>
+                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente">
+                <select id="ven-d" class="titan-input">
                     <option value="">Seleccionar Vendedor...</option>
                     <option value="ELIAS AVILA">ELIAS AVILA</option>
                     <option value="EVELYN MURO">EVELYN MURO</option>
@@ -109,136 +58,116 @@
                     <option value="REGULO ANTEZA">REGULO ANTEZA</option>
                 </select>
 
-                <div class="mt-2">
-                    <span class="label-audit">Buscador Inteligente de Producto</span>
-                    <input type="text" id="prod-d" class="titan-input" placeholder="Escriba SKU o Nombre..." list="db-productos">
-                    <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad de Unidades">
-                    <button class="btn-titan btn-blue" onclick="add('d')">Añadir Item <i class="fas fa-plus"></i></button>
+                <div class="search-engine">
+                    <span class="label-audit">Buscador SKU / Nombre</span>
+                    <input type="text" id="prod-d" class="titan-input" placeholder="🔍 Escriba para buscar..." oninput="doSearch(this.value, 'd')">
+                    <div id="res-d" class="suggest-box"></div>
                 </div>
 
+                <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad">
+                <button class="btn-titan btn-blue" onclick="addItem('d')">Añadir Item <i class="fas fa-plus"></i></button>
                 <div id="list-d" class="mt-4"></div>
-                <button id="sync-d" class="btn-titan btn-green mt-3 d-none" onclick="sync('d')">Confirmar Registro <i class="fas fa-cloud-upload"></i></button>
+                <button id="sync-d" class="btn-titan btn-green mt-3 d-none" onclick="finalize('d')">Confirmar Todo <i class="fas fa-check-circle"></i></button>
             </div>
         </section>
 
         <section id="v-ret" class="view">
             <div class="ultra-card">
-                <span class="label-audit">Control de Retornos</span>
-                <input type="text" id="cli-r" class="titan-input" placeholder="Cliente / Origen">
-                <input type="text" id="prod-r" class="titan-input" placeholder="SKU o Nombre del producto" list="db-productos">
-                
-                <div class="row g-2">
-                    <div class="col-6">
-                        <span class="label-audit">Cantidad Guía</span>
-                        <input type="number" id="qg-r" class="titan-input" placeholder="0">
-                    </div>
-                    <div class="col-6">
-                        <span class="label-audit">Cantidad Real</span>
-                        <input type="number" id="qr-r" class="titan-input" placeholder="0">
-                    </div>
+                <span class="label-audit">Auditoría de Retorno</span>
+                <input type="text" id="cli-r" class="titan-input" placeholder="Cliente Origen">
+                <div class="search-engine">
+                    <span class="label-audit">Producto Devuelto</span>
+                    <input type="text" id="prod-r" class="titan-input" placeholder="🔍 SKU o Nombre..." oninput="doSearch(this.value, 'r')">
+                    <div id="res-r" class="suggest-box"></div>
                 </div>
 
-                <span class="label-audit">Detalle de Revisión</span>
+                <div class="row g-2">
+                    <div class="col-6"><span class="label-audit">Cant. Guía</span><input type="number" id="qg-r" class="titan-input"></div>
+                    <div class="col-6"><span class="label-audit">Cant. Real</span><input type="number" id="qr-r" class="titan-input"></div>
+                </div>
+
+                <span class="label-audit">Estado QC</span>
                 <select id="st-r" class="titan-input">
                     <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO</option>
                     <option value="FALLA DE FÁBRICA">FALLA DE FÁBRICA</option>
-                    <option value="EMPAQUE DAÑADO">EMPAQUE DAÑADO</option>
+                    <option value="DAÑO POR TRANSPORTE">DAÑO POR TRANSPORTE</option>
                 </select>
 
-                <span class="label-audit"><i class="fas fa-pencil-alt"></i> Observaciones Especiales</span>
-                <textarea id="obs-r" class="titan-input" style="height: 100px;" placeholder="Detalla aquí cualquier observación física..."></textarea>
+                <span class="label-audit"><i class="fas fa-pencil-alt"></i> Observaciones</span>
+                <textarea id="obs-r" class="titan-input" style="height: 80px;"></textarea>
                 
-                <button class="btn-titan btn-blue" onclick="add('r')">Validar Ingreso <i class="fas fa-save"></i></button>
+                <button class="btn-titan btn-blue" onclick="addItem('r')">Validar Ingreso <i class="fas fa-save"></i></button>
                 <div id="list-r" class="mt-4"></div>
-                <button id="sync-r" class="btn-titan btn-green mt-3 d-none" onclick="sync('r')">Sincronizar Devolución <i class="fas fa-check-double"></i></button>
+                <button id="sync-r" class="btn-titan btn-green mt-3 d-none" onclick="finalize('r')">Sincronizar <i class="fas fa-cloud-upload-alt"></i></button>
             </div>
         </section>
 
-        <section id="v-his" class="view">
-            <div class="p-3">
-                <input type="text" id="search-his" class="titan-input" placeholder="🔍 Filtrar por Cliente o SKU..." onkeyup="filterH()">
-                <div id="his-feed"></div>
-            </div>
-        </section>
+        <section id="v-his" class="view"><div class="p-3" id="his-feed"></div></section>
     </main>
 
     <nav class="nav-titan">
-        <button class="nav-btn active" onclick="tab('del', this)"><i class="fas fa-pallet"></i><span>SALIDA</span></button>
-        <button class="nav-btn" onclick="tab('ret', this)"><i class="fas fa-box-open"></i><span>RETORNO</span></button>
-        <button class="nav-btn" onclick="tab('his', this)"><i class="fas fa-history"></i><span>REGISTRO</span></button>
+        <button class="nav-btn active" onclick="tab('del', this)"><i class="fas fa-truck-loading"></i><span>SALIDA</span></button>
+        <button class="nav-btn" onclick="tab('ret', this)"><i class="fas fa-box"></i><span>RETORNO</span></button>
+        <button class="nav-btn" onclick="tab('his', this)"><i class="fas fa-list-alt"></i><span>REGISTRO</span></button>
     </nav>
 
     <script>
-        let app = { d: [], r: [], cliD: '', venD: '' };
+        // REEMPLAZAR CON TU URL DE GOOGLE SHEETS (Publicado como CSV)
+        const URL_EXCEL = 'TU_URL_DE_GOOGLE_SHEETS_AQUÍ';
+        
+        let DB = [];
+        let temp = { d: [], r: [] };
 
-        window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('TITAN_DATA_PRO'));
-            if(saved) {
-                app = saved;
-                document.getElementById('cli-d').value = app.cliD || '';
-                document.getElementById('ven-d').value = app.venD || '';
-                render('d'); render('r');
+        function loadDB() {
+            Papa.parse(URL_EXCEL, {
+                download: true, header: true,
+                complete: (r) => { DB = r.data; document.getElementById('sync-indicator').innerHTML = 'EXCEL EN LÍNEA <i class="fas fa-circle text-success"></i>'; },
+                error: () => { document.getElementById('sync-indicator').innerHTML = 'SIN CONEXIÓN <i class="fas fa-circle text-danger"></i>'; }
+            });
+        }
+        window.onload = loadDB;
+
+        function doSearch(val, t) {
+            const res = document.getElementById(`res-${t}`);
+            if(val.length < 2) { res.style.display = 'none'; return; }
+            const match = DB.filter(p => (p.SKU && p.SKU.toLowerCase().includes(val.toLowerCase())) || (p.NOMBRE && p.NOMBRE.toLowerCase().includes(val.toLowerCase())));
+            if(match.length) {
+                res.style.display = 'block';
+                res.innerHTML = match.slice(0, 10).map(p => `<div class="suggest-item" onclick="pick('${p.SKU}', '${p.NOMBRE}', '${t}')"><b>${p.SKU}</b> - ${p.NOMBRE}</div>`).join('');
             }
-        };
-
-        function saveSt() {
-            app.cliD = document.getElementById('cli-d').value;
-            app.venD = document.getElementById('ven-d').value;
-            localStorage.setItem('TITAN_DATA_PRO', JSON.stringify(app));
         }
 
-        function add(t) {
-            const prodVal = document.getElementById(`prod-${t}`).value;
-            if(!prodVal) return Swal.fire('Error', 'Debe seleccionar o escribir un producto', 'error');
+        function pick(sku, name, t) {
+            document.getElementById(`prod-${t}`).value = `${sku} | ${name}`;
+            document.getElementById(`res-${t}`).style.display = 'none';
+        }
 
+        function addItem(t) {
+            const item = document.getElementById(`prod-${t}`).value;
+            if(!item) return;
             if(t === 'd') {
-                const qty = document.getElementById('qty-d').value;
-                if(!qty) return;
-                app.d.push({ sku: prodVal, qty, time: new Date().toLocaleString() });
-                document.getElementById('prod-d').value = ''; 
-                document.getElementById('qty-d').value = '';
+                temp.d.push({ item, qty: document.getElementById('qty-d').value });
+                document.getElementById('prod-d').value = ''; document.getElementById('qty-d').value = '';
             } else {
-                const qr = document.getElementById('qr-r').value;
-                if(!qr) return;
-                app.r.push({
-                    sku: prodVal, qg: document.getElementById('qg-r').value, qr: qr,
-                    st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value,
-                    time: new Date().toLocaleString()
-                });
+                temp.r.push({ item, qg: document.getElementById('qg-r').value, qr: document.getElementById('qr-r').value, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value });
                 ['prod-r','qg-r','qr-r','obs-r'].forEach(id => document.getElementById(id).value = '');
             }
-            render(t); saveSt();
+            render(t);
         }
 
         function render(t) {
-            const cont = document.getElementById(`list-${t}`);
-            const btn = document.getElementById(`sync-${t}`);
-            btn.classList.toggle('d-none', app[t].length === 0);
-            cont.innerHTML = app[t].map((i, idx) => `
-                <div class="row-item">
-                    <div style="max-width:70%"><b>${i.sku}</b><br><small class="text-muted">${t==='d' ? 'Cantidad' : 'Real'}: ${i.qty || i.qr}</small></div>
-                    <i class="fas fa-times-circle text-danger fs-5" onclick="rem('${t}', ${idx})"></i>
-                </div>
-            `).join('');
+            const c = document.getElementById(`list-${t}`);
+            document.getElementById(`sync-${t}`).classList.toggle('d-none', temp[t].length === 0);
+            c.innerHTML = temp[t].map((i, idx) => `<div class="p-2 border-bottom d-flex justify-content-between"><small>${i.item}</small> <b>x${i.qty || i.qr}</b></div>`).join('');
         }
 
-        function rem(t, idx) { app[t].splice(idx, 1); render(t); saveSt(); }
-
-        function sync(t) {
-            Swal.fire({title: 'Guardando...', didOpen: () => Swal.showLoading(), background: '#11141D', color: '#fff'});
-            setTimeout(() => {
-                const history = JSON.parse(localStorage.getItem('TITAN_FINAL_HIST') || '[]');
-                const client = document.getElementById(`cli-${t}`).value;
-                const vendor = t==='d' ? document.getElementById('ven-d').value : 'AUDITORÍA QC';
-                
-                app[t].forEach(i => history.unshift({...i, client, vendor, type: t==='d'?'ENTREGA':'RETORNO'}));
-                localStorage.setItem('TITAN_FINAL_HIST', JSON.stringify(history));
-                
-                app[t] = [];
-                if(t==='d') document.getElementById('cli-d').value = '';
-                saveSt();
-                Swal.fire('Completado', 'Registro guardado con éxito', 'success').then(() => location.reload());
-            }, 800);
+        function finalize(t) {
+            const h = JSON.parse(localStorage.getItem('TITAN_AUDIT_LOG') || '[]');
+            const cli = document.getElementById(`cli-${t}`).value;
+            temp[t].forEach(i => h.unshift({...i, cli, t: t==='d'?'ENTREGA':'RETORNO', date: new Date().toLocaleString()}));
+            localStorage.setItem('TITAN_AUDIT_LOG', JSON.stringify(h));
+            temp[t] = [];
+            Swal.fire('Guardado', '', 'success').then(() => location.reload());
         }
 
         function tab(v, el) {
@@ -246,71 +175,10 @@
             document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('view-active');
             el.classList.add('active');
-            if(v === 'his') loadH();
-        }
-
-        function loadH() {
-            const h = JSON.parse(localStorage.getItem('TITAN_FINAL_HIST') || '[]');
-            window.fullH = h;
-            displayH(h);
-        }
-
-        function displayH(data) {
-            const feed = document.getElementById('his-feed');
-            feed.innerHTML = data.map((r, idx) => `
-                <div class="row-item" onclick="pdf('${idx}')">
-                    <div>
-                        <span class="badge ${r.type==='ENTREGA'?'bg-info':'bg-danger'}" style="font-size:8px">${r.type}</span>
-                        <div class="fw-bold">${r.client}</div>
-                        <small class="opacity-50">${r.sku.substring(0,25)}...</small>
-                    </div>
-                    <div class="text-end"><b>x${r.qty || r.qr}</b><br><small style="font-size:9px">${r.time.split(',')[0]}</small></div>
-                </div>
-            `).join('');
-        }
-
-        function filterH() {
-            const q = document.getElementById('search-his').value.toLowerCase();
-            const filtered = window.fullH.filter(r => r.client.toLowerCase().includes(q) || r.sku.toLowerCase().includes(q));
-            displayH(filtered);
-        }
-
-        function pdf(idx) {
-            const r = window.fullH[idx];
-            Swal.fire({
-                title: 'Exportar Reporte',
-                text: `¿Generar PDF para ${r.client}?`,
-                showCancelButton: true, confirmButtonText: 'Generar PDF',
-                background: '#11141D', color: '#fff'
-            }).then(res => { if(res.isConfirmed) genPDF(r); });
-        }
-
-        function genPDF(r) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFillColor(5, 7, 10); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("TITAN ELITE LOGISTICS", 105, 18, {align:'center'});
-            doc.setFontSize(10); doc.text(`REPORTE OFICIAL - ${r.type}`, 105, 28, {align:'center'});
-
-            const body = r.type === 'ENTREGA' ? 
-                [['CLIENTE', r.client], ['VENDEDOR', r.vendor], ['PRODUCTO/SKU', r.sku], ['CANTIDAD', r.qty], ['FECHA', r.time]] :
-                [['CLIENTE', r.client], ['PRODUCTO/SKU', r.sku], ['CANT. GUÍA', r.qg], ['CANT. REAL', r.qr], ['ESTADO QC', r.st], ['NOTAS', r.obs], ['FECHA', r.time]];
-
-            doc.autoTable({
-                startY: 45,
-                head: [['CAMPO', 'VALOR']],
-                body: body,
-                theme: 'striped',
-                headStyles: { fillColor: [0, 209, 255] }
-            });
-
-            const pY = doc.internal.pageSize.height;
-            doc.setTextColor(150); doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, pY - 15, {align:'center'});
-            
-            doc.save(`REPORTE_${r.client}.pdf`);
-            window.open(`https://wa.me/?text=${encodeURIComponent(`*TITAN ELITE*\nReporte de ${r.type}\nCliente: ${r.client}\nProducto: ${r.sku}\n_Revisión autorizada por J. Angelo._`)}`);
+            if(v === 'his') {
+                const h = JSON.parse(localStorage.getItem('TITAN_AUDIT_LOG') || '[]');
+                document.getElementById('his-feed').innerHTML = h.map(r => `<div class="ultra-card mb-2"><span class="badge ${r.t==='ENTREGA'?'bg-info':'bg-danger'}">${r.t}</span><div class="fw-bold">${r.cli}</div><small>${r.item}</small></div>`).join('');
+            }
         }
     </script>
 </body>
