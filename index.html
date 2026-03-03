@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | Gestión Avanzada</title>
+    <title>TITAN ELITE | Central de Inteligencia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -18,74 +18,63 @@
             --apple-gray: #F2F2F7;
             --apple-text: #1D1D1F;
             --apple-subtext: #86868B;
-            --radius-lg: 20px;
-            --radius-md: 12px;
+            --radius-apple: 16px;
         }
 
         body { 
             background: #F5F5F7; 
             font-family: -apple-system, "SF Pro Display", sans-serif;
             color: var(--apple-text);
-            padding-bottom: 110px;
+            padding-bottom: 120px;
         }
 
         .app-header {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 20px; position: sticky; top: 0; z-index: 1000;
             border-bottom: 0.5px solid rgba(0,0,0,0.1);
         }
 
         .main-card {
-            background: #FFF; border-radius: var(--radius-lg);
-            padding: 22px; margin: 16px; border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            background: #FFF; border-radius: var(--radius-apple);
+            padding: 20px; margin: 15px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
 
-        .label-apple {
-            font-size: 12px; font-weight: 700; color: var(--apple-subtext);
-            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;
-        }
-
-        .input-apple, .select-apple {
-            width: 100%; padding: 12px 16px; border-radius: var(--radius-md);
+        .input-apple {
+            width: 100%; padding: 12px 16px; border-radius: 12px;
             border: 1px solid #D2D2D7; background: #FFF; font-size: 16px;
-            margin-bottom: 18px; transition: 0.2s; appearance: none;
+            margin-bottom: 15px; transition: 0.2s;
         }
 
-        .input-apple:focus { border-color: var(--apple-blue); outline: none; background: #FBFBFF; }
-
-        .btn-apple {
-            background: var(--apple-blue); color: white; border: none;
-            padding: 16px; border-radius: var(--radius-md);
-            font-weight: 600; width: 100%; transition: 0.2s;
+        /* FILTROS DE HISTORIAL - ESTILO APPLE */
+        .filter-bar {
+            background: #FFF; padding: 15px; margin-bottom: 10px;
+            position: sticky; top: 80px; z-index: 999;
+            border-bottom: 0.5px solid #D2D2D7;
         }
-        .btn-apple:active { transform: scale(0.98); opacity: 0.9; }
-
-        /* SEARCH OVERLAY */
-        .search-results {
-            position: absolute; width: 100%; background: #FFF; border-radius: var(--radius-md);
-            border: 1px solid #D2D2D7; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-height: 200px; overflow-y: auto; display: none; margin-top: -15px;
+        .search-pill {
+            background: var(--apple-gray); border: none; border-radius: 10px;
+            padding: 10px 15px; font-size: 14px; width: 100%;
         }
 
-        /* HISTORIAL CARDS */
+        /* TARJETAS DE HISTORIAL */
         .history-card {
-            background: #FFF; border-radius: var(--radius-md); padding: 18px;
-            margin: 12px 16px; border: 0.5px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            background: #FFF; border-radius: 18px; padding: 18px;
+            margin: 12px 15px; border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
         }
 
-        .action-chip {
-            font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px;
-            text-transform: uppercase; margin-bottom: 8px; display: inline-block;
+        .type-badge {
+            font-size: 10px; font-weight: 800; padding: 4px 10px; 
+            border-radius: 20px; text-transform: uppercase;
         }
-        .chip-ent { background: #E3F2FD; color: #007AFF; }
-        .chip-dev { background: #FBE9E7; color: #FF3B30; }
+        .bg-ent { background: #E3F2FD; color: #007AFF; }
+        .bg-dev { background: #FBE9E7; color: #FF3B30; }
 
-        .footer-claim { 
-            font-size: 10px; color: #AEAEB2; text-align: center;
-            margin-top: 15px; border-top: 0.5px solid #F2F2F7; padding-top: 10px;
+        .history-footer {
+            font-size: 9px; color: #AEAEB2; text-align: center;
+            margin-top: 12px; border-top: 0.5px solid #F2F2F7; padding-top: 8px;
         }
 
         .nav-apple {
@@ -103,112 +92,109 @@
     <header class="app-header">
         <div class="d-flex justify-content-between align-items-center">
             <span class="fw-bold fs-4">TITAN <span style="color:var(--apple-blue)">ELITE</span></span>
-            <span class="badge rounded-pill bg-light text-dark border p-2" onclick="emergencyCheck()">
-                <i class="fas fa-user-circle me-1"></i> Angelo Durand
-            </span>
+            <div class="text-end">
+                <small class="d-block text-muted" style="font-size:10px">SISTEMA DE INVENTARIO</small>
+                <span class="fw-bold" style="font-size:14px">Angelo Durand</span>
+            </div>
         </div>
     </header>
 
     <main>
         <section id="v-ent" class="view">
             <div class="main-card">
-                <span class="label-apple">Cliente / Área</span>
-                <input type="text" id="cli-e" class="input-apple" placeholder="Ej: Tienda Central" oninput="sugerirVendor(this.value, 'ven-e')">
+                <label class="fw-bold mb-1 small text-muted">CLIENTE / ÁREA</label>
+                <input type="text" id="cli-e" class="input-apple" placeholder="Destino" oninput="sugerirVendor(this.value, 'ven-e')">
                 
-                <span class="label-apple">Vendor Responsable</span>
-                <input type="text" id="ven-e" class="input-apple" style="background:#F2F2F7" readonly>
+                <label class="fw-bold mb-1 small text-muted">VENDOR RESPONSABLE</label>
+                <input type="text" id="ven-e" class="input-apple" placeholder="Nombre Vendedor">
 
-                <span class="label-apple">Buscar Producto</span>
-                <div class="position-relative">
-                    <input type="text" id="src-e" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
-                    <div id="res-e" class="search-results"></div>
-                </div>
+                <label class="fw-bold mb-1 small text-muted">BUSCAR PRODUCTO</label>
+                <input type="text" id="src-e" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
+                <div id="res-e" class="search-results" style="display:none; position:absolute; background:white; z-index:100; width:80%; border:1px solid #ddd; border-radius:10px;"></div>
 
-                <div id="form-e" class="d-none p-3 rounded-4 mb-3" style="background:#F2F2F7">
+                <div id="form-e" class="d-none p-3 rounded-4 mb-3 bg-light">
                     <b id="p-n-e" class="d-block mb-2"></b>
-                    <div class="d-flex gap-2">
-                        <input type="number" id="q-e" class="input-apple m-0" placeholder="Cant.">
-                        <button class="btn btn-primary rounded-3 px-4" onclick="addToCart('e')"><i class="fas fa-plus"></i></button>
-                    </div>
+                    <input type="number" id="q-e" class="input-apple" placeholder="Cantidad">
+                    <button class="btn btn-primary w-100 rounded-3" onclick="addToCart('e')">Agregar Item</button>
                 </div>
 
                 <div id="cart-e" class="d-none">
                     <div id="items-e" class="mb-3"></div>
-                    <button class="btn-apple" onclick="finalizarOp('Pedidos', 'e')">FINALIZAR ENTREGA</button>
+                    <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold" onclick="finalizarOp('Pedidos', 'e')">FINALIZAR ENTREGA</button>
                 </div>
             </div>
         </section>
 
         <section id="v-dev" class="view d-none">
             <div class="main-card">
-                <span class="label-apple">Cliente / Origen</span>
-                <input type="text" id="cli-d" class="input-apple" placeholder="¿Quién devuelve?" oninput="sugerirVendor(this.value, 'ven-d')">
+                <label class="fw-bold mb-1 small text-muted">ORIGEN / CLIENTE</label>
+                <input type="text" id="cli-d" class="input-apple" placeholder="Quién devuelve" oninput="sugerirVendor(this.value, 'ven-d')">
+                
+                <label class="fw-bold mb-1 small text-muted">VENDEDOR / VENDOR</label>
+                <input type="text" id="ven-d" class="input-apple" placeholder="Vendedor">
 
-                <span class="label-apple">Vendedor / Vendor</span>
-                <input type="text" id="ven-d" class="input-apple" placeholder="Especifique Vendedor">
+                <label class="fw-bold mb-1 small text-muted">PRODUCTO</label>
+                <input type="text" id="src-d" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
+                <div id="res-d" class="search-results" style="display:none; position:absolute; background:white; z-index:100; width:80%; border:1px solid #ddd; border-radius:10px;"></div>
 
-                <span class="label-apple">Producto a Retornar</span>
-                <div class="position-relative">
-                    <input type="text" id="src-d" class="input-apple" placeholder="Buscar por SKU..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
-                    <div id="res-d" class="search-results"></div>
-                </div>
-
-                <div id="form-d" class="d-none p-3 rounded-4 border">
+                <div id="form-d" class="d-none border p-3 rounded-4">
                     <b id="p-n-d" class="d-block mb-3 text-primary"></b>
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <span class="label-apple">Cant. Guía</span>
-                            <input type="number" id="cg-d" class="input-apple">
-                        </div>
-                        <div class="col-6">
-                            <span class="label-apple">Cant. Recibida</span>
-                            <input type="number" id="cr-d" class="input-apple">
-                        </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6"><small class="text-muted">Cant. Guía</small><input type="number" id="cg-d" class="input-apple"></div>
+                        <div class="col-6"><small class="text-muted">Cant. Recibida</small><input type="number" id="cr-d" class="input-apple"></div>
                     </div>
-                    
-                    <span class="label-apple">Motivo de Devolución</span>
-                    <select id="st-d" class="select-apple">
-                        <option value="MERMA">MERMA / DAÑADO</option>
+                    <label class="fw-bold mb-1 small text-muted">MOTIVO</label>
+                    <select id="st-d" class="input-apple">
+                        <option value="MERMA">MERMA / FALLADO</option>
                         <option value="FALLA IMPORTACION">FALLA DE IMPORTACIÓN</option>
-                        <option value="SE ARREGLO">SE ARREGLÓ (REPARADO)</option>
-                        <option value="REINGRESO">REINGRESO A STOCK</option>
+                        <option value="SE ARREGLO">SE ARREGLÓ</option>
+                        <option value="REINGRESO">REINGRESO STOCK</option>
                     </select>
-
-                    <span class="label-apple">Observaciones Adicionales</span>
-                    <textarea id="obs-d" class="input-apple" rows="2" placeholder="Detalles del estado..."></textarea>
-
-                    <button class="btn-apple" style="background:#000" onclick="addToCart('d')">AGREGAR A LA LISTA</button>
+                    <textarea id="obs-d" class="input-apple" placeholder="Observaciones adicionales..."></textarea>
+                    <button class="btn btn-dark w-100 p-3 rounded-4 fw-bold" onclick="addToCart('d')">AÑADIR A LISTA</button>
                 </div>
 
                 <div id="cart-d" class="d-none mt-3">
                     <div id="items-d" class="mb-3 border-top pt-2"></div>
-                    <button class="btn-apple" onclick="finalizarOp('Devoluciones', 'd')">PROCESAR TODO EL RETORNO</button>
+                    <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold" onclick="finalizarOp('Devoluciones', 'd')">PROCESAR RETORNO</button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view d-none">
+            <div class="filter-bar">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="date" id="filter-date" class="search-pill" onchange="renderHis()">
+                    </div>
+                    <div class="col-6">
+                        <input type="text" id="filter-text" class="search-pill" placeholder="Buscar cliente..." oninput="renderHis()">
+                    </div>
+                </div>
+                <div id="his-count" class="mt-2 text-muted" style="font-size:11px"></div>
+            </div>
             <div id="feed-his"></div>
         </section>
     </main>
 
     <nav class="nav-apple">
-        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-truck-loading"></i>ENTREGA</button>
-        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-box-open"></i>RETORNOS</button>
-        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-list-ul"></i>HISTORIAL</button>
+        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-truck-loading"></i>SALIDA</button>
+        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-undo"></i>RETORNO</button>
+        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = []; let CART_E = []; let CART_D = []; let HIS_DATA = {};
+        let MASTER = []; let CART_E = []; let CART_D = []; let HIS_RAW = [];
 
         async function init() {
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p;
-                processHis(d.h);
-            } catch(e) { console.warn("Offline"); }
+                HIS_RAW = d.h;
+                renderHis();
+            } catch(e) { console.error("Error cargando datos"); }
         }
 
         function motorBusqueda(v, boxId, t) {
@@ -230,34 +216,25 @@
             const cart = t === 'e' ? CART_E : CART_D;
             const q = t === 'e' ? document.getElementById('q-e').value : document.getElementById('cr-d').value;
             if(!q) return;
-
             const item = { ...window.lastPick, q: q };
             if(t === 'd') {
                 item.cg = document.getElementById('cg-d').value;
                 item.st = document.getElementById('st-d').value;
-                item.obs = document.getElementById('obs-d').value || "Sin obs.";
+                item.obs = document.getElementById('obs-d').value || "S/O";
                 item.type = "DEVOLUCION";
             } else { item.type = "ENTREGA"; }
-
             cart.push(item);
             document.getElementById(`form-${t}`).classList.add('d-none');
-            // Limpiar campos de devolución
-            if(t === 'd') {
-                document.getElementById('cr-d').value = '';
-                document.getElementById('cg-d').value = '';
-                document.getElementById('obs-d').value = '';
-            }
             renderCart(t);
         }
 
         function renderCart(t) {
             const cart = t === 'e' ? CART_E : CART_D;
-            const cont = document.getElementById(`cart-${t}`);
             const items = document.getElementById(`items-${t}`);
-            cont.classList.toggle('d-none', cart.length === 0);
+            document.getElementById(`cart-${t}`).classList.toggle('d-none', cart.length === 0);
             items.innerHTML = cart.map((i, idx) => `
                 <div class="p-2 border-bottom d-flex justify-content-between align-items-center" style="font-size:13px">
-                    <span><b>${i.q}</b> x ${i.name} ${t==='d' ? `<br><small class="text-danger">${i.st}</small>` : ''}</span>
+                    <span><b>${i.q}</b> x ${i.name}</span>
                     <i class="fas fa-times-circle text-muted" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');"></i>
                 </div>
             `).join('');
@@ -266,7 +243,7 @@
         async function finalizarOp(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
             const ven = document.getElementById(`ven-${t}`).value;
-            if(!cli || !ven) return Swal.fire("Atención", "Cliente y Vendedor son obligatorios", "warning");
+            if(!cli || !ven) return Swal.fire("Error", "Faltan datos", "error");
 
             const cart = t === 'e' ? CART_E : CART_D;
             const payload = cart.map(i => [
@@ -274,8 +251,7 @@
                 t === 'e' ? `Vendedor: ${ven}` : `Guía: ${i.cg} | Motivo: ${i.st} | Obs: ${i.obs} | Vendedor: ${ven}`
             ]);
 
-            Swal.fire({ title: 'Sincronizando...', didOpen: () => Swal.showLoading() });
-            
+            Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
                 if(t==='e') CART_E = []; else CART_D = [];
@@ -283,39 +259,48 @@
                 document.getElementById(`cli-${t}`).value = '';
                 document.getElementById(`ven-${t}`).value = '';
                 await init();
-                Swal.fire("Éxito", "Registro guardado correctamente", "success");
-            } catch(e) { Swal.fire("Error", "No se pudo conectar", "error"); }
+                Swal.fire("Éxito", "Movimiento guardado", "success");
+            } catch(e) { Swal.fire("Error", "No se pudo guardar", "error"); }
         }
 
-        function processHis(data) {
-            const groups = {};
-            data.forEach(r => {
-                const dateObj = new Date(r[0]);
-                const time = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const key = r[5] + "_" + time;
-                if(!groups[key]) groups[key] = { cliente: r[5], hora: time, fecha: dateObj.toLocaleDateString(), tipo: r[1], prods: [] };
-                groups[key].prods.push({ n: r[3], q: r[4], s: r[2], obs: r[6] });
-            });
-            HIS_DATA = groups;
-            renderHis();
-        }
-
+        // --- RENDERIZADO DE HISTORIAL CON FILTROS ---
         function renderHis() {
             const feed = document.getElementById('feed-his');
-            feed.innerHTML = Object.values(HIS_DATA).reverse().slice(0, 20).map(g => `
+            const dateVal = document.getElementById('filter-date').value;
+            const textVal = document.getElementById('filter-text').value.toLowerCase();
+            
+            const groups = {};
+            HIS_RAW.forEach(r => {
+                const fechaObj = new Date(r[0]);
+                const isoDate = fechaObj.toISOString().split('T')[0];
+                const hora = fechaObj.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const cliente = r[5];
+                
+                // Aplicar Filtros
+                if(dateVal && isoDate !== dateVal) return;
+                if(textVal && !cliente.toLowerCase().includes(textVal)) return;
+
+                const key = cliente + "_" + hora + "_" + isoDate;
+                if(!groups[key]) groups[key] = { cli: cliente, hora, fecha: isoDate, tipo: r[1], items: [] };
+                groups[key].items.push({ sku: r[2], nom: r[3], cant: r[4], obs: r[6] });
+            });
+
+            const data = Object.values(groups).reverse();
+            document.getElementById('his-count').innerText = `Mostrando ${data.length} movimientos`;
+
+            feed.innerHTML = data.map(g => `
                 <div class="history-card">
-                    <span class="action-chip ${g.tipo === 'ENTREGA' ? 'chip-ent' : 'chip-dev'}">${g.tipo}</span>
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-bold fs-5">${g.cliente}</span>
-                        <small class="text-muted">${g.hora}</small>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="type-badge ${g.tipo === 'ENTREGA' ? 'bg-ent' : 'bg-dev'}">${g.tipo}</span>
+                        <small class="text-muted fw-bold">${g.fecha} • ${g.hora}</small>
                     </div>
-                    <div class="text-muted mb-3" style="font-size:12px">${g.prods.length} items registrados el ${g.fecha}</div>
-                    
+                    <div class="fw-bold fs-5 mb-1">${g.cli}</div>
+                    <div class="text-muted small mb-3"><i class="fas fa-layer-group"></i> ${g.items.length} productos</div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-light btn-sm w-100 fw-bold" onclick="verDetalle('${btoa(JSON.stringify(g))}')">LISTA ITEMS</button>
-                        <button class="btn btn-outline-primary btn-sm w-100 fw-bold" onclick="genPDF(JSON.parse(atob('${btoa(JSON.stringify(g))}')))">PDF</button>
+                        <button class="btn btn-light btn-sm w-100 fw-bold py-2" style="border-radius:10px" onclick="verDetalle('${btoa(JSON.stringify(g))}')">LISTA</button>
+                        <button class="btn btn-outline-primary btn-sm w-100 fw-bold py-2" style="border-radius:10px" onclick="genPDF(${JSON.stringify(g).replace(/"/g, '&quot;')})">PDF</button>
                     </div>
-                    <div class="footer-claim">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
+                    <div class="history-footer">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
                 </div>
             `).join('');
         }
@@ -323,20 +308,10 @@
         function verDetalle(dataStr) {
             const g = JSON.parse(atob(dataStr));
             Swal.fire({
-                title: 'Detalle de Carga',
-                html: `
-                    <div class="text-start" style="font-size:14px">
-                        <div class="mb-3 p-2 bg-light rounded"><b>Origen/Destino:</b> ${g.cliente}</div>
-                        <div class="list-group list-group-flush">
-                            ${g.prods.map(p => `
-                                <div class="list-group-item px-0">
-                                    <b>${p.q}</b> - ${p.n}<br>
-                                    <small class="text-muted">${p.obs}</small>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `,
+                title: 'Detalles del Movimiento',
+                html: `<div class="text-start small">
+                    ${g.items.map(p => `<div class="mb-2 border-bottom pb-1"><b>${p.cant}</b> x ${p.nom}<br><i class="text-muted">${p.obs}</i></div>`).join('')}
+                </div>`,
                 confirmButtonColor: '#007AFF'
             });
         }
@@ -344,30 +319,23 @@
         function genPDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18); doc.text("REPORTE DE MOVIMIENTO - TITAN ELITE", 14, 20);
-            doc.setFontSize(10); 
-            doc.text(`CLIENTE: ${g.cliente} | TIPO: ${g.tipo}`, 14, 30);
+            doc.setFontSize(16); doc.text("TITAN ELITE - REPORTE LOGÍSTICO", 14, 20);
+            doc.setFontSize(10);
+            doc.text(`TIPO: ${g.tipo} | CLIENTE: ${g.cli}`, 14, 30);
             doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora}`, 14, 35);
-
             doc.autoTable({
                 startY: 45,
-                head: [['Cant', 'Producto', 'SKU', 'Referencia / Motivo']],
-                body: g.prods.map(p => [p.q, p.n, p.s, p.obs]),
+                head: [['Cant', 'Producto', 'SKU', 'Referencia']],
+                body: g.items.map(p => [p.cant, p.nom, p.sku, p.obs]),
                 headStyles: { fillColor: [0, 122, 255] }
             });
-
-            const finalY = doc.lastAutoTable.finalY + 20;
             doc.setFontSize(8);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align: 'center'});
-            doc.save(`TITAN_${g.cliente}_${g.fecha}.pdf`);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align: 'center'});
+            doc.save(`Reporte_${g.cli}_${g.fecha}.pdf`);
         }
 
         function sugerirVendor(v, targetId) {
-            let s = "";
-            if(v.toUpperCase().includes("GLOBAL")) s = "GLOBAL LOGISTICS";
-            else if(v.toUpperCase().includes("TIENDA")) s = "VENDEDOR INTERNO";
-            
-            if(s) document.getElementById(targetId).value = s;
+            if(v.toUpperCase().includes("GLOBAL")) document.getElementById(targetId).value = "GLOBAL LOGISTICS";
         }
 
         function nav(v, btn) {
@@ -375,16 +343,7 @@
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.remove('d-none');
             btn.classList.add('active');
-        }
-
-        function emergencyCheck() {
-            Swal.fire({
-                title: 'Acceso Restringido',
-                text: "¿Desea cambiar el responsable asignado?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, Cambiar'
-            });
+            if(v === 'his') renderHis();
         }
 
         window.onload = init;
