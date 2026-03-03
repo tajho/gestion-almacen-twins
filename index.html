@@ -1,106 +1,348 @@
-<main>
-    <section id="v-del" class="view active-view">
-        <div class="card-elite">
-            <span class="label-tech">Tipo de Movimiento</span>
-            <div class="d-flex gap-2 mb-3">
-                <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
-                <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
-                <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
-            </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TITAN ELITE | J. Angelo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
-            <span class="label-tech">Solicitante / Cliente</span>
-            <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Solicitante / Cliente" oninput="autoSave()">
-            
-            <div class="position-relative mt-2">
-                <span class="label-tech">1. Busca el Producto</span>
-                <input type="text" id="src-d" class="input-elite" style="border-left: 4px solid var(--accent)" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
-                <div id="res-d" class="search-results"></div>
-            </div>
+        :root {
+            --bg: #f4f7fa;
+            --card: #ffffff;
+            --accent: #1e40af;
+            --success: #15803d;
+            --danger: #b91c1c;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
 
-            <div id="form-d" class="d-none mt-3 animate__animated animate__fadeIn" style="border-top: 2px dashed var(--border); pt-3">
-                <div class="p-3 mb-3 rounded-3" style="background: var(--bg); border-left: 4px solid var(--accent)">
-                    <b id="p-n-d" class="d-block" style="color: var(--accent); font-size: 14px;"></b>
-                    <small class="text-muted" id="p-s-d"></small>
+        body { 
+            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text); margin: 0; padding-bottom: 100px;
+        }
+
+        .premium-header {
+            background: var(--card); padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 2000;
+        }
+
+        .brand-logo { font-weight: 800; font-size: 20px; color: var(--accent); letter-spacing: -0.5px; }
+
+        .card-elite {
+            background: var(--card); border-radius: 16px; padding: 20px;
+            margin: 15px; border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .label-tech { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+
+        .input-elite {
+            background: #fff; border: 1.5px solid var(--border);
+            border-radius: 10px; padding: 12px; width: 100%; font-size: 15px;
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .input-elite:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1); }
+
+        .v-chip {
+            background: #f1f5f9; border: 1px solid var(--border); padding: 8px 12px;
+            border-radius: 8px; font-size: 12px; font-weight: 700; transition: 0.2s; color: var(--text);
+            cursor: pointer;
+        }
+        .v-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .vendor-scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; }
+
+        .btn-elite {
+            border-radius: 10px; padding: 14px; font-weight: 700; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+        }
+        .btn-blue { background: var(--accent); color: #fff; }
+        .btn-green { background: var(--success); color: #fff; }
+
+        .search-results {
+            background: #fff; border-radius: 10px; border: 1px solid var(--border);
+            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .history-card {
+            background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 10px;
+            border: 1px solid var(--border); border-left: 4px solid var(--accent);
+        }
+
+        .nav-elite {
+            position: fixed; bottom: 0; width: 100%; background: #fff;
+            display: flex; justify-content: space-around; padding: 12px 0 25px 0;
+            border-top: 1px solid var(--border); z-index: 2000;
+        }
+        .nav-tab { background: none; border: none; color: var(--muted); text-align: center; }
+        .nav-tab.active { color: var(--accent); }
+        .nav-tab i { font-size: 20px; display: block; }
+        .nav-tab span { font-size: 10px; font-weight: 700; }
+
+        .view { display: none; }
+        .active-view { display: block; }
+    </style>
+</head>
+<body>
+
+    <header class="premium-header d-flex justify-content-between align-items-center">
+        <div>
+            <div class="brand-logo">TITAN ELITE</div>
+            <div style="font-size: 10px; color: var(--muted);">Control de Inventario Logístico</div>
+        </div>
+        <div class="text-end">
+            <div style="font-size: 11px; font-weight: 700;">J. Angelo</div>
+            <div style="font-size: 9px; color: var(--success);">ONLINE</div>
+        </div>
+    </header>
+
+    <main>
+        <section id="v-del" class="view active-view">
+            <div class="card-elite">
+                <span class="label-tech">Tipo de Movimiento</span>
+                <div class="d-flex gap-2 mb-3">
+                    <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
+                    <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
+                    <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
                 </div>
-                
-                <span class="label-tech">2. Ingresa Cantidad</span>
-                <input type="number" id="q-d" class="input-elite" placeholder="¿Cuántos salen?">
-                
-                <button class="btn-elite btn-blue w-100" onclick="addItem('d')">
-                    AÑADIR ITEM <i class="fas fa-plus-circle ms-2"></i>
-                </button>
-            </div>
 
-            <div id="list-d" class="mt-4 d-none">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="label-tech">Solicitante / Cliente</span>
+                <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
+                
+                <div class="position-relative mt-2">
+                    <span class="label-tech">1. Busca el Producto</span>
+                    <input type="text" id="src-d" class="input-elite" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
+                    <div id="res-d" class="search-results"></div>
+                </div>
+
+                <div id="form-d" class="d-none mt-3" style="border-top: 2px dashed var(--border); padding-top: 15px;">
+                    <div class="p-3 mb-3 rounded-3" style="background: var(--bg); border-left: 4px solid var(--accent)">
+                        <b id="p-n-d" class="d-block" style="color: var(--accent);"></b>
+                        <small id="p-s-d" class="text-muted"></small>
+                    </div>
+                    <span class="label-tech">2. Cantidad</span>
+                    <input type="number" id="q-d" class="input-elite" placeholder="¿Cuántos salen?">
+                    <button class="btn-elite btn-blue" onclick="addItem('d')">AÑADIR ITEM <i class="fas fa-plus"></i></button>
+                </div>
+
+                <div id="list-d" class="mt-4 d-none">
                     <span class="label-tech">Items por Procesar</span>
-                    <span class="text-danger" style="font-size: 10px; font-weight: 800; cursor: pointer;" onclick="clearAll('d')">BORRAR TODO</span>
+                    <div id="items-d"></div>
+                    <button class="btn-elite btn-blue mt-3" onclick="sync('Pedidos', 'd')">CONFIRMAR SALIDA <i class="fas fa-check-double"></i></button>
                 </div>
-                <div id="items-d"></div>
-                <button class="btn-elite btn-blue mt-3 w-100 shadow" onclick="sync('Pedidos', 'd')">
-                    CONFIRMAR SALIDA <i class="fas fa-check-double ms-2"></i>
-                </button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="v-ret" class="view">
-        <div class="card-elite">
-            <span class="label-tech">¿Quién devuelve?</span>
-            <input type="text" id="cli-r" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
-            
-            <span class="label-tech">Vendedor que recibe</span>
-            <div class="vendor-scroller mb-3" id="vend-r">
-                <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
-                <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
-                <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
-                <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
-                <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
-            </div>
-
-            <div class="position-relative">
-                <span class="label-tech">1. Busca el Producto Devuelto</span>
-                <input type="text" id="src-r" class="input-elite" style="border-left: 4px solid var(--danger)" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
-                <div id="res-r" class="search-results"></div>
-            </div>
-
-            <div id="form-r" class="d-none mt-3 animate__animated animate__fadeIn" style="border-top: 2px dashed var(--danger); pt-3">
-                <div class="p-3 mb-3 rounded-3" style="background: #fff5f5; border-left: 4px solid var(--danger)">
-                    <b id="p-n-r" class="d-block" style="color: var(--danger); font-size: 14px;"></b>
-                </div>
-
-                <div class="row g-2">
-                    <div class="col-6">
-                        <span class="label-tech">Cant. Guía</span>
-                        <input type="number" id="cg-r" class="input-elite" placeholder="En papel">
-                    </div>
-                    <div class="col-6">
-                        <span class="label-tech">Cant. Real</span>
-                        <input type="number" id="cr-r" class="input-elite" placeholder="Físico">
-                    </div>
-                </div>
-
-                <span class="label-tech">Estado Técnico</span>
-                <select id="st-r" class="input-elite">
-                    <option value="MERMA">FALLADO A MERMA</option>
-                    <option value="ARREGLO">SE ARREGLO EL PRODUCTO</option>
-                    <option value="FALLA IMPORTACION">FALLA DE IMPORTACION</option>
-                </select>
-
-                <span class="label-tech">Observaciones (Lápiz)</span>
-                <textarea id="obs-r" class="input-elite" style="height: 80px;" placeholder="¿Qué tiene el producto?"></textarea>
+        <section id="v-ret" class="view">
+            <div class="card-elite">
+                <span class="label-tech">¿Quién devuelve?</span>
+                <input type="text" id="cli-r" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
                 
-                <button class="btn-elite btn-green w-100" onclick="addItem('r')">
-                    VALIDAR RETORNO <i class="fas fa-arrow-down ms-2"></i>
-                </button>
-            </div>
+                <span class="label-tech">Vendedor que recibe</span>
+                <div class="vendor-scroller mb-3" id="vend-r">
+                    <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
+                    <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
+                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
+                    <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
+                    <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
+                </div>
 
-            <div id="list-r" class="mt-4 d-none">
-                <div id="items-r"></div>
-                <button class="btn-elite btn-green mt-3 w-100 shadow" onclick="sync('Devoluciones', 'r')">
-                    ENVIAR A SAP <i class="fas fa-cloud-upload-alt ms-2"></i>
-                </button>
+                <div class="position-relative">
+                    <span class="label-tech">1. Busca el Producto</span>
+                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
+                    <div id="res-r" class="search-results"></div>
+                </div>
+
+                <div id="form-r" class="d-none mt-3" style="border-top: 2px dashed var(--danger); padding-top: 15px;">
+                    <div class="p-3 mb-3 rounded-3" style="background: #fff5f5; border-left: 4px solid var(--danger)">
+                        <b id="p-n-r" class="d-block" style="color: var(--danger);"></b>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6"><span class="label-tech">Guía</span><input type="number" id="cg-r" class="input-elite"></div>
+                        <div class="col-6"><span class="label-tech">Real</span><input type="number" id="cr-r" class="input-elite"></div>
+                    </div>
+                    <span class="label-tech">Estado Técnico</span>
+                    <select id="st-r" class="input-elite">
+                        <option value="MERMA">FALLADO A MERMA</option>
+                        <option value="ARREGLO">SE ARREGLO EL PRODUCTO</option>
+                        <option value="FALLA IMPORTACION">FALLA DE IMPORTACION</option>
+                    </select>
+                    <textarea id="obs-r" class="input-elite" style="height: 80px;" placeholder="Observaciones..."></textarea>
+                    <button class="btn-elite btn-green" onclick="addItem('r')">VALIDAR RETORNO <i class="fas fa-check"></i></button>
+                </div>
+
+                <div id="list-r" class="mt-4 d-none">
+                    <div id="items-r"></div>
+                    <button class="btn-elite btn-green mt-3" onclick="sync('Devoluciones', 'r')">ENVIAR A SAP <i class="fas fa-cloud-upload-alt"></i></button>
+                </div>
             </div>
-        </div>
-    </section>
-</main>
+        </section>
+
+        <section id="v-his" class="view">
+            <div class="px-3 py-2" id="his-feed"></div>
+        </section>
+    </main>
+
+    <nav class="nav-elite">
+        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-box-open"></i><span>ENTREGA</span></button>
+        <button class="nav-tab" onclick="nav('ret', this)"><i class="fas fa-undo"></i><span>RETORNO</span></button>
+        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
+    </nav>
+
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
+        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {d:'', r:''}; let FULL_HIS = [];
+
+        async function init() {
+            const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_DATA'));
+            if(saved) {
+                QD = saved.QD || []; QR = saved.QR || [];
+                document.getElementById('cli-d').value = saved.cliD || '';
+                document.getElementById('cli-r').value = saved.cliR || '';
+                if(saved.venR) setV(saved.venR, 'r');
+                setM(saved.MODE || 'VENTA');
+                render('d'); render('r');
+            }
+            try {
+                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+                const d = await r.json();
+                DB_P = d.p; FULL_HIS = d.h;
+                renderHistory(d.h);
+            } catch(e) { console.warn("Offline"); }
+        }
+
+        function autoSave() {
+            const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venR: VEN.r };
+            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
+        }
+
+        function setM(m) {
+            MODE = m;
+            document.querySelectorAll('#v-del .v-chip').forEach(c => c.classList.remove('active'));
+            document.getElementById('m-'+m).classList.add('active');
+            autoSave();
+        }
+
+        function setV(n, t) {
+            document.querySelectorAll(`#vend-${t} .v-chip`).forEach(c => c.classList.remove('active'));
+            VEN[t] = n;
+            Array.from(document.querySelectorAll(`#vend-${t} .v-chip`)).find(c => c.innerText.includes(n.split(' ')[0]))?.classList.add('active');
+            autoSave();
+        }
+
+        function find(v, boxId, type) {
+            const box = document.getElementById(boxId);
+            if(v.length < 1) { box.style.display='none'; return; }
+            const matches = DB_P.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            box.style.display = matches.length ? 'block' : 'none';
+        }
+
+        function pick(s, n, t) {
+            document.getElementById(`p-n-${t}`).innerText = n;
+            if(t==='d') document.getElementById(`p-s-${t}`).innerText = s;
+            document.getElementById(`form-${t}`).classList.remove('d-none');
+            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
+            window.lastPick = {sku:s, name:n};
+        }
+
+        function addItem(t) {
+            if(t==='d') {
+                const q = document.getElementById('q-d').value;
+                if(!q) return;
+                QD.push({...window.lastPick, q, mode: MODE});
+                document.getElementById('q-d').value = '';
+                document.getElementById('src-d').value = '';
+            } else {
+                const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
+                if(!cg || !cr) return;
+                QR.push({...window.lastPick, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
+                document.getElementById('src-r').value = '';
+                document.getElementById('cg-r').value = '';
+                document.getElementById('cr-r').value = '';
+            }
+            render(t);
+            document.getElementById(`form-${t}`).classList.add('d-none');
+            autoSave();
+        }
+
+        function render(t) {
+            const list = t==='d' ? QD : QR;
+            document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
+            document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
+                <div class="history-card">
+                    <div class="d-flex justify-content-between">
+                        <div><b>${i.name}</b><br><small>${i.mode || i.st}</small></div>
+                        <div class="text-end">
+                            <span class="fw-bold">x${i.q || i.cr}</span><br>
+                            <i class="fas fa-trash text-danger" onclick="removeIdx('${t}', ${idx})"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeIdx(t, idx) {
+            if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1);
+            render(t); autoSave();
+        }
+
+        async function sync(sheet, t) {
+            const cli = document.getElementById(`cli-${t}`).value;
+            if(!cli || (t==='r' && !VEN.r)) return Swal.fire("Atención", "Completa los datos", "warning");
+
+            const list = t==='d' ? QD : QR;
+            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? 'Salida Almacén' : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${VEN.r}`]);
+
+            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+            localStorage.removeItem('TITAN_ELITE_DATA');
+            location.reload();
+        }
+
+        function renderHistory(h) {
+            document.getElementById('his-feed').innerHTML = h.slice(0,20).map(r => `
+                <div class="history-card" onclick="genPDF('${r[5]}','${r[1]}','${r[3]}','${r[4]}','${r[6]}')">
+                    <span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'} mb-1">${r[1]}</span>
+                    <div><b>${r[5]}</b></div>
+                    <small>${r[3]} (x${r[4]})</small>
+                </div>
+            `).join('');
+        }
+
+        function genPDF(cli, tipo, prod, cant, obs) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18); doc.text("REPORTE TITAN ELITE", 14, 20);
+            doc.setFontSize(12);
+            doc.text(`Cliente: ${cli}`, 14, 30);
+            doc.text(`Movimiento: ${tipo}`, 14, 40);
+            doc.text(`Producto: ${prod}`, 14, 50);
+            doc.text(`Cantidad: ${cant}`, 14, 60);
+            doc.text(`Detalle: ${obs}`, 14, 70);
+            doc.setFontSize(10);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", 14, 100);
+            doc.save(`Reporte_${cli}.pdf`);
+        }
+
+        function nav(v, b) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active-view');
+            b.classList.add('active');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
