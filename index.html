@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN OS | J. Angelo</title>
+    <title>TITAN OS | Robust Interface</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,329 +11,372 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
         :root {
-            --ios-blue: #007AFF;
-            --ios-red: #FF3B30;
-            --ios-orange: #FF9500;
-            --ios-green: #34C759;
-            --ios-gray: #8E8E93;
-            --bg: #F2F2F7;
+            --primary: #0051FF;
+            --accent: #FF3B30;
+            --bg-heavy: #EBEDF0;
+            --card-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff;
+            --inner-shadow: inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff;
         }
 
         body { 
-            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #1C1C1E; margin: 0; padding-bottom: 110px;
+            background: var(--bg-heavy); font-family: 'Inter', sans-serif;
+            color: #2c3e50; margin: 0; padding-bottom: 120px;
         }
 
-        .glass-header {
-            position: sticky; top: 0; z-index: 1000;
-            background: rgba(255,255,255,0.7); backdrop-filter: blur(20px);
-            padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
+        /* Header Robusto */
+        .robust-header {
+            background: #2c3e50; color: white; padding: 20px;
+            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Tarjetas con Peso Visual */
+        .card-robust {
+            background: var(--bg-heavy); border-radius: 30px; padding: 25px;
+            margin: 20px 15px; border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-title { font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; color: #5f6769; margin-bottom: 15px; display: block; }
+
+        /* Inputs Estilo "Slot" */
+        .input-robust {
+            background: var(--bg-heavy); border: none; border-radius: 15px;
+            padding: 16px; width: 100%; font-size: 16px; font-weight: 600;
+            box-shadow: var(--inner-shadow); margin-bottom: 15px; transition: 0.3s;
+        }
+        .input-robust:focus { outline: none; box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff; color: var(--primary); }
+
+        /* Selector de Vendedores Robusto */
+        .vendor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .vendor-chip { 
+            background: white; border-radius: 12px; padding: 10px; text-align: center;
+            font-size: 11px; font-weight: 700; border: 2px solid transparent; cursor: pointer;
+            box-shadow: 4px 4px 8px #bebebe; transition: 0.2s;
+        }
+        .vendor-chip.active { border-color: var(--primary); background: #eef4ff; color: var(--primary); }
+
+        /* Segmented Control de Alto Relieve */
+        .mode-selector {
+            display: flex; background: #d1d9e6; padding: 5px; border-radius: 18px;
+            margin-bottom: 20px; box-shadow: inset 4px 4px 8px #b8b9be, inset -4px -4px 8px #ffffff;
+        }
+        .mode-btn {
+            flex: 1; border: none; background: none; padding: 10px; border-radius: 14px;
+            font-size: 11px; font-weight: 800; color: #666; transition: 0.3s;
+        }
+        .mode-btn.active { background: white; color: var(--primary); box-shadow: 3px 3px 6px #b8b9be; }
+
+        /* Botones Titan */
+        .btn-titan {
+            border-radius: 20px; padding: 20px; font-weight: 900; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-blue { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(0,81,255,0.3); }
+        .btn-red { background: var(--accent); color: white; box-shadow: 0 10px 20px rgba(255,59,48,0.3); }
+        .btn-titan:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Historial Robusto */
+        .log-item {
+            background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
+            border-left: 8px solid var(--primary); box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
         }
 
-        .card-pro {
-            background: #fff; border-radius: 28px; padding: 22px;
-            margin: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            animation: fadeIn 0.5s ease;
+        /* Tab Bar Industrial */
+        .tab-industrial {
+            position: fixed; bottom: 0; width: 100%; background: #2c3e50;
+            display: flex; justify-content: space-around; padding: 15px 0 30px 0;
+            border-top-left-radius: 30px; border-top-right-radius: 30px; z-index: 3000;
         }
+        .tab-btn { border: none; background: none; color: #95a5a6; font-weight: 700; font-size: 10px; text-align: center; }
+        .tab-btn.active { color: white; }
+        .tab-btn i { font-size: 24px; display: block; margin-bottom: 5px; }
 
-        .field-label { font-size: 11px; font-weight: 800; color: var(--ios-gray); margin: 0 0 6px 10px; text-transform: uppercase; }
-        
-        .input-pro {
-            background: #F2F2F7; border: 2px solid transparent;
-            border-radius: 18px; padding: 14px 18px; width: 100%;
-            font-size: 16px; margin-bottom: 12px; transition: 0.3s;
-        }
-        .input-pro:focus { background: #fff; border-color: var(--ios-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
-
-        /* Estilo para el área de notas con lápiz */
-        .notes-wrapper { position: relative; }
-        .notes-wrapper i { position: absolute; right: 15px; top: 15px; color: var(--ios-blue); opacity: 0.5; }
-        .input-notes { padding-right: 40px !important; min-height: 80px; resize: none; }
-
-        /* Segmented Control */
-        .segmented-control {
-            display: flex; background: #E3E3E8; padding: 3px;
-            border-radius: 14px; margin-bottom: 15px;
-        }
-        .segment-btn {
-            flex: 1; border: none; background: none; padding: 8px;
-            font-size: 11px; font-weight: 700; border-radius: 11px; color: var(--ios-gray);
-        }
-        .segment-btn.active { background: #fff; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
-
-        /* Botones Animados */
-        .btn-main {
-            border-radius: 20px; padding: 18px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
-        }
-        .btn-blue { background: var(--ios-blue); color: #fff; }
-        .btn-red { background: var(--ios-red); color: #fff; }
-        .btn-main:active { transform: scale(0.94); }
-
-        /* Tab Bar */
-        .tab-bar {
-            position: fixed; bottom: 25px; left: 20px; right: 20px;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
-            border-radius: 35px; padding: 12px; display: flex;
-            justify-content: space-around; z-index: 3000;
-        }
-        .tab-item { border: none; background: none; color: #666; font-size: 10px; font-weight: 700; text-align: center; }
-        .tab-item.active { color: #fff; }
-        .tab-item i { font-size: 22px; margin-bottom: 4px; display: block; }
-
-        .search-results {
-            position: absolute; width: 100%; background: #fff; border-radius: 20px;
-            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.15); display: none; margin-top: 5px;
-        }
-        .res-item { padding: 15px 20px; border-bottom: 1px solid #f2f2f7; cursor: pointer; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .view { display: none; }
-        .active-view { display: block; }
+        .active-view { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .search-suggest {
+            background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="glass-header">
-        <div class="fw-800 fs-4">TITAN <span class="text-primary">OS</span></div>
-        <div class="badge rounded-pill bg-light text-dark border px-3">J. Angelo <i class="fas fa-check-circle text-primary ms-1"></i></div>
-    </nav>
+    <header class="robust-header d-flex justify-content-between align-items-center">
+        <div>
+            <div style="font-size: 10px; opacity: 0.7; font-weight: 800;">BY TAJHO</div>
+            <div style="font-size: 20px; font-weight: 900;">TAJHO <span class="text-info">v22</span></div>
+        </div>
+        <div class="text-end">
+            <div style="font-size: 12px; font-weight: 700;">J. Angelo N. D.</div>
+            <div class="badge bg-success" style="font-size: 8px;">EN LÍNEA</div>
+        </div>
+    </header>
 
     <main>
-        <section id="v-del" class="view active-view">
-            <div class="card-pro">
-                <span class="field-label">Tipo de Salida</span>
-                <div class="segmented-control">
-                    <button class="segment-btn active" onclick="setMode('VENTA', this)">VENTA</button>
-                    <button class="segment-btn" onclick="setMode('MARKETING', this)">MKT</button>
-                    <button class="segment-btn" onclick="setMode('OFICINA', this)">OFICINA</button>
+        <section id="view-del" class="view active-view">
+            <div class="card-robust">
+                <span class="section-title">Parámetros de Salida</span>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode('VENTA', this)">VENTA</button>
+                    <button class="mode-btn" onclick="setMode('MARKETING', this)">MKT</button>
+                    <button class="mode-btn" onclick="setMode('OFICINA', this)">OFICINA</button>
                 </div>
 
                 <div class="row g-2">
-                    <div class="col-6"><span class="field-label">Cliente / Área</span><input type="text" id="cli-d" class="input-pro" placeholder="..." oninput="iaBrain(this.value)"></div>
-                    <div class="col-6"><span class="field-label">Asistente</span><input type="text" id="ven-d" class="input-pro" placeholder="..." onclick="confirmAction('cambiar el responsable')"></div>
+                    <div class="col-12"><input type="text" id="cli-d" class="input-robust" placeholder="CLIENTE / DESTINO" oninput="iaRecap(this.value)"></div>
                 </div>
 
+                <span class="section-title">Asignar Vendedor</span>
+                <div class="vendor-grid" id="v-list-d">
+                    <div class="vendor-chip" onclick="selVendor('ELIAS AVILA', this, 'd')">ELIAS AVILA</div>
+                    <div class="vendor-chip" onclick="selVendor('EVELYN MURO', this, 'd')">EVELYN MURO</div>
+                    <div class="vendor-chip" onclick="selVendor('JHAYRO MAURICIO', this, 'd')">JHAYRO MAURICIO</div>
+                    <div class="vendor-chip" onclick="selVendor('PAULA GARCIA', this, 'd')">PAULA GARCIA</div>
+                    <div class="vendor-chip" onclick="selVendor('REGULO ANTEZA', this, 'd')">REGULO ANTEZA</div>
+                </div>
+                <input type="hidden" id="ven-d">
+
+                <span class="section-title">Control de Inventario</span>
                 <div class="position-relative">
-                    <span class="field-label">Buscar Producto</span>
-                    <input type="text" id="search-d" class="input-pro" placeholder="SKU o Nombre..." oninput="search(this.value, 'res-d', 'd')">
-                    <div id="res-d" class="search-results"></div>
+                    <input type="text" id="src-d" class="input-robust" placeholder="🔍 ESCANEAR O BUSCAR SKU" oninput="search(this.value, 'sug-d', 'd')">
+                    <div id="sug-d" class="search-suggest"></div>
                 </div>
 
-                <div id="panel-d" class="d-none animate__animated animate__fadeIn">
-                    <div class="p-3 bg-light rounded-4 mb-3 border"><b id="p-name-d"></b></div>
-                    <input type="number" id="q-d" class="input-pro" placeholder="Cantidad a Entregar">
-                    <button class="btn-main btn-blue" onclick="add('d')">Añadir a la lista <i class="fas fa-plus-circle"></i></button>
+                <div id="panel-d" class="d-none">
+                    <div class="p-3 bg-white rounded-4 border-start border-primary border-5 mb-3">
+                        <small class="text-muted" id="p-sku-d"></small><br><b id="p-name-d"></b>
+                    </div>
+                    <input type="number" id="q-d" class="input-robust" placeholder="CANTIDAD A ENTREGAR">
+                    <button class="btn-titan btn-blue" onclick="push('d')">Añadir al Lote <i class="fas fa-plus"></i></button>
                 </div>
 
-                <div id="list-d" class="mt-4 d-none">
+                <div id="queue-d" class="mt-4 d-none">
+                    <hr>
                     <div id="items-d" class="mb-3"></div>
-                    <button class="btn-main btn-blue shadow-lg" onclick="save('Pedidos', 'd')">GUARDAR ENTREGA <i class="fas fa-cloud-upload-alt"></i></button>
+                    <button class="btn-titan btn-blue" onclick="sync('Pedidos', 'd')">Sincronizar Entrega <i class="fas fa-save"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-ret" class="view">
-            <div class="card-pro">
-                <span class="field-label text-danger">Módulo de Retornos & Fallas</span>
-                <div class="row g-2">
-                    <div class="col-6"><span class="field-label">Cliente</span><input type="text" id="cli-r" class="input-pro" placeholder="..." oninput="iaBrain(this.value)"></div>
-                    <div class="col-6"><span class="field-label">Vendedor</span><input type="text" id="ven-r" class="input-pro" placeholder="..."></div>
+        <section id="view-ret" class="view">
+            <div class="card-robust">
+                <span class="section-title text-danger">Inspección de Devolución</span>
+                <input type="text" id="cli-r" class="input-robust" placeholder="CLIENTE ORIGEN" oninput="iaRecap(this.value)">
+                
+                <span class="section-title">Vendedor Responsable</span>
+                <div class="vendor-grid" id="v-list-r">
+                    <div class="vendor-chip" onclick="selVendor('ELIAS AVILA', this, 'r')">ELIAS AVILA</div>
+                    <div class="vendor-chip" onclick="selVendor('EVELYN MURO', this, 'r')">EVELYN MURO</div>
+                    <div class="vendor-chip" onclick="selVendor('JHAYRO MAURICIO', this, 'r')">JHAYRO MAURICIO</div>
+                    <div class="vendor-chip" onclick="selVendor('PAULA GARCIA', this, 'r')">PAULA GARCIA</div>
+                    <div class="vendor-chip" onclick="selVendor('REGULO ANTEZA', this, 'r')">REGULO ANTEZA</div>
                 </div>
+                <input type="hidden" id="ven-r">
 
                 <div class="position-relative">
-                    <span class="field-label">Producto Recibido</span>
-                    <input type="text" id="search-r" class="input-pro" placeholder="Buscar..." oninput="search(this.value, 'res-r', 'r')">
-                    <div id="res-r" class="search-results"></div>
+                    <input type="text" id="src-r" class="input-robust" placeholder="🔍 PRODUCTO RECIBIDO" oninput="search(this.value, 'sug-r', 'r')">
+                    <div id="sug-r" class="search-suggest"></div>
                 </div>
 
-                <div id="panel-r" class="d-none animate__animated animate__fadeIn">
-                    <div class="p-3 bg-light rounded-4 mb-3 border"><b id="p-name-r"></b></div>
-                    
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <span class="field-label">Cant. Guía</span>
-                            <input type="number" id="cg-r" class="input-pro" placeholder="En papel">
-                        </div>
-                        <div class="col-6">
-                            <span class="field-label">Cant. Real</span>
-                            <input type="number" id="cr-r" class="input-pro" placeholder="Físico">
-                        </div>
+                <div id="panel-r" class="d-none">
+                    <div class="p-3 bg-white rounded-4 border-start border-danger border-5 mb-3"><b id="p-name-r"></b></div>
+                    <div class="row g-2">
+                        <div class="col-6"><span class="section-title">Cant. Guía</span><input type="number" id="cg-r" class="input-robust"></div>
+                        <div class="col-6"><span class="section-title">Cant. Real</span><input type="number" id="cr-r" class="input-robust"></div>
                     </div>
-
-                    <span class="field-label">Detalle del Estado</span>
-                    <select id="st-r" class="input-pro">
+                    <span class="section-title">Diagnóstico</span>
+                    <select id="st-r" class="input-robust">
                         <option>FALLADO A MERMA</option>
                         <option>SE ARREGLO EL PRODUCTO</option>
                         <option>PRODUCTO FALLA DE IMPORTACION</option>
-                        <option>CAMBIO POR ERROR</option>
                     </select>
-
-                    <span class="field-label">Observaciones Adicionales</span>
-                    <div class="notes-wrapper">
-                        <i class="fas fa-pen"></i>
-                        <textarea id="obs-r" class="input-pro input-notes" placeholder="Escribe aquí detalles específicos..."></textarea>
+                    <span class="section-title">Observaciones (Lápiz)</span>
+                    <div class="position-relative">
+                        <textarea id="obs-r" class="input-robust" style="height: 100px;" placeholder="Detalles de la falla..."></textarea>
+                        <i class="fas fa-pen" style="position: absolute; right: 15px; top: 15px; color: #ccc;"></i>
                     </div>
-
-                    <button class="btn-main btn-red" onclick="add('r')">Validar Devolución <i class="fas fa-check"></i></button>
+                    <button class="btn-titan btn-red" onclick="push('r')">Validar Inspección <i class="fas fa-check-double"></i></button>
                 </div>
 
-                <div id="list-r" class="mt-4 d-none">
+                <div id="queue-r" class="mt-4 d-none">
                     <div id="items-r" class="mb-3"></div>
-                    <button class="btn-main btn-red shadow-lg" onclick="save('Devoluciones', 'r')">GENERAR REPORTE QC <i class="fas fa-file-pdf"></i></button>
+                    <button class="btn-titan btn-red" onclick="sync('Devoluciones', 'r')">Generar Acta & Sincronizar <i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-his" class="view">
-            <div class="px-3" id="history-list"></div>
+        <section id="view-his" class="view">
+            <div class="px-3 py-4" id="his-feed"></div>
         </section>
     </main>
 
-    <nav class="tab-bar">
-        <button class="tab-item active" onclick="nav('del', this)"><i class="fas fa-truck-loading"></i><span>Entrega</span></button>
-        <button class="tab-item" onclick="nav('ret', this)"><i class="fas fa-exchange-alt"></i><span>Retorno</span></button>
-        <button class="tab-item" onclick="nav('his', this)"><i class="fas fa-history"></i><span>Historial</span></button>
+    <nav class="tab-industrial">
+        <button class="tab-btn active" onclick="navigate('del', this)"><i class="fas fa-shipping-fast"></i>ENTREGA</button>
+        <button class="tab-btn" onclick="navigate('ret', this)"><i class="fas fa-box-open"></i>RETORNO</button>
+        <button class="tab-btn" onclick="navigate('his', this)"><i class="fas fa-database"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB = []; let MEM = {}; let QD = []; let QR = []; let SEL = null; let MODE = "VENTA";
+        let MASTER_DB = []; let MEM = {}; let Q_D = []; let Q_R = []; let SEL = null; let CUR_MODE = "VENTA";
 
         async function init() {
             const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
             const d = await r.json();
-            DB = d.p;
+            MASTER_DB = d.p;
             d.h.forEach(x => { if(x[5]) MEM[x[5].toLowerCase()] = x[6].split('| Vend: ')[1] || x[6]; });
-            renderHis(d.h);
+            renderHistory(d.h);
         }
 
         function setMode(m, b) {
-            MODE = m;
-            document.querySelectorAll('.segment-btn').forEach(x => x.classList.remove('active'));
+            CUR_MODE = m;
+            document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
             b.classList.add('active');
         }
 
-        function iaBrain(v) {
-            const m = MEM[v.toLowerCase()];
-            if(m) { document.getElementById('ven-d').value = m; document.getElementById('ven-r').value = m; }
+        function selVendor(name, b, type) {
+            document.querySelectorAll(`#v-list-${type} .vendor-chip`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById(`ven-${type}`).value = name;
         }
 
-        function confirmAction(t) {
-            Swal.fire({
-                title: '¿Confirmar cambio?',
-                text: `Deseas ${t} en este registro?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#007AFF',
-                confirmButtonText: 'Sí, confirmar'
-            });
+        function iaRecap(v) {
+            const m = MEM[v.toLowerCase()];
+            if(m) {
+                const chips = document.querySelectorAll('.vendor-chip');
+                chips.forEach(c => {
+                    if(c.innerText === m.toUpperCase()) c.click();
+                });
+            }
         }
 
         function search(v, b, t) {
             const box = document.getElementById(b);
             if(v.length < 1) { box.style.display='none'; return; }
-            const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="res-item" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
-            box.style.display = matches.length ? 'block' : 'none';
+            const matches = MASTER_DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small>${p[0]}</small></div>`).join('');
+            box.style.display = 'block';
         }
 
         function pick(s, n, t) {
             SEL = {sku:s, name:n};
             document.getElementById(`p-name-${t}`).innerText = n;
+            if(t==='d') document.getElementById(`p-sku-d`).innerText = s;
             document.getElementById(`panel-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
+            document.querySelectorAll('.search-suggest').forEach(x => x.style.display='none');
         }
 
-        function add(t) {
-            if(t === 'd') {
+        function push(t) {
+            if(t==='d') {
                 const q = document.getElementById('q-d').value;
                 if(!q) return;
-                QD.push({...SEL, q, mode: MODE});
+                Q_D.push({...SEL, q, m: CUR_MODE});
             } else {
                 const cg = document.getElementById('cg-r').value;
                 const cr = document.getElementById('cr-r').value;
                 const st = document.getElementById('st-r').value;
                 const obs = document.getElementById('obs-r').value;
                 if(!cg || !cr) return;
-                QR.push({...SEL, cg, cr, st, obs});
+                Q_R.push({...SEL, cg, cr, st, obs});
             }
+            document.getElementById(`queue-${t}`).classList.remove('d-none');
             renderList(t);
             document.getElementById(`panel-${t}`).classList.add('d-none');
-            document.getElementById(`search-${t}`).value = "";
+            document.getElementById(`src-${t}`).value = "";
         }
 
         function renderList(t) {
-            const list = t==='d' ? QD : QR;
-            document.getElementById(`list-${t}`).classList.remove('d-none');
-            document.getElementById(`items-${t}`).innerHTML = list.map(i => `
-                <div class="p-3 mb-2 rounded-4 bg-white border d-flex justify-content-between align-items-center">
-                    <div><b>${i.name}</b><br><small class="text-muted">${i.mode || i.st}</small></div>
-                    <span class="badge rounded-pill bg-dark">x${i.q || i.cr}</span>
+            const l = t==='d' ? Q_D : Q_R;
+            document.getElementById(`items-${t}`).innerHTML = l.map(i => `
+                <div class="log-item">
+                    <div><b>${i.name}</b><br><small>${i.m || i.st}</small></div>
+                    <div class="fw-bold fs-4">x${i.q || i.cr}</div>
                 </div>
             `).join('');
         }
 
-        async function save(s, t) {
-            const cli = document.getElementById(`cli-${t}`).value;
-            const ven = document.getElementById(`ven-${t}`).value;
-            if(!cli || !ven) return Swal.fire("Campos incompletos", "Llena el Cliente y Responsable", "warning");
+        async function sync(sheet, type) {
+            const cli = document.getElementById(`cli-${type}`).value;
+            const ven = document.getElementById(`ven-${type}`).value;
+            if(!cli || !ven) return Swal.fire("Datos Faltantes", "Selecciona Cliente y Vendedor", "error");
 
-            const q = t==='d' ? QD : QR;
-            const payload = q.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
+            const list = type==='d' ? Q_D : Q_R;
+            const payload = list.map(i => [new Date(), type==='d' ? i.m : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, type==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
 
-            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
-            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: s, payload})});
+            Swal.fire({title:'CONECTANDO A TITAN CLOUD...', didOpen:()=>Swal.showLoading(), background: '#2c3e50', color: '#fff'});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
             
-            if(t==='r') { generatePDF(cli, ven, q); }
-            Swal.fire("¡Listo!", "Registro completado con éxito", "success").then(()=>location.reload());
+            if(type==='r') genPDF(cli, ven, list);
+            Swal.fire("SINCRO EXITOSA", "Registro almacenado", "success").then(()=>location.reload());
         }
 
-        function renderHis(h) {
-            document.getElementById('history-list').innerHTML = h.slice(0,25).map(r => `
-                <div class="card-pro mb-2 d-flex justify-content-between align-items-center p-3">
+        function renderHistory(h) {
+            document.getElementById('his-feed').innerHTML = h.slice(0,25).map(r => `
+                <div class="log-item" style="border-left-color: ${r[1]==='DEVOLUCION'?'var(--accent)':'var(--primary)'}">
                     <div>
-                        <span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'} mb-1">${r[1]}</span>
+                        <span style="font-size:9px; font-weight:900; color:${r[1]==='DEVOLUCION'?'var(--accent)':'var(--primary)'}">${r[1]}</span>
                         <div class="fw-bold">${r[5]}</div>
                         <small class="opacity-50">${r[3]}</small>
                     </div>
                     <div class="text-end">
-                        <div class="fw-bold text-dark fs-5">x${r[4]}</div>
-                        <small style="font-size:9px" class="opacity-30">${new Date(r[0]).toLocaleDateString()}</small>
+                        <div class="fw-bold fs-3">x${r[4]}</div>
+                        <div style="font-size:9px">${new Date(r[0]).toLocaleDateString()}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function generatePDF(cli, ven, q) {
+        function genPDF(cli, ven, list) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(0, 122, 255); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("ACTA DE DEVOLUCIÓN LOGÍSTICA", 14, 25);
+            
+            // Cabecera Industrial
+            doc.setFillColor(44, 62, 80); doc.rect(0, 0, 210, 45, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN LOGÍSTICA", 14, 25);
             doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
             
             doc.autoTable({
                 head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'DIAGNÓSTICO', 'NOTAS']],
-                body: q.map(i => [i.sku, i.name, i.cg, i.cr, i.st, i.obs]),
-                startY: 45, theme: 'grid', styles: {fontSize: 8}
+                body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st, i.obs]),
+                startY: 50, theme: 'grid', headStyles: {fillColor: [44, 62, 80]}
             });
 
-            const fY = doc.lastAutoTable.finalY + 30;
-            doc.setTextColor(0); doc.line(14, fY, 100, fY);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, fY + 7);
-            doc.text("Asist. Inventario Logístico", 14, fY + 12);
-            doc.save(`QC_${cli}.pdf`);
+            // Sello de Autorización Centrado al Final
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            
+            doc.setTextColor(150, 150, 150);
+            doc.setFontSize(9);
+            const footer1 = "Revisión autorizada por J. Angelo Nuñez Durand";
+            const footer2 = "Asist. Inventario Logístico";
+            
+            // Dibujar un pequeño recuadro de sello
+            doc.setDrawColor(200, 200, 200);
+            doc.line(pageWidth/2 - 50, pageHeight - 25, pageWidth/2 + 50, pageHeight - 25);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(footer1, pageWidth / 2, pageHeight - 18, {align: 'center'});
+            doc.setFont(undefined, 'normal');
+            doc.text(footer2, pageWidth / 2, pageHeight - 13, {align: 'center'});
+            
+            doc.save(`TITAN_QC_${cli}.pdf`);
         }
 
-        function nav(v, b) {
+        function navigate(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('active-view');
+            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+            document.getElementById('view-'+v).classList.add('active-view');
             b.classList.add('active');
+            window.scrollTo(0,0);
         }
 
         window.onload = init;
