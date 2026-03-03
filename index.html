@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN AIR | Stealth Sync</title>
+    <title>TITAN ELITE | Gestión Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -14,276 +14,356 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         :root {
-            --bg: #fdfdfd;
             --primary: #0052cc;
+            --secondary: #6554c0;
+            --danger: #ff5630;
+            --success: #36b37e;
+            --bg: #f4f5f7;
             --surface: #ffffff;
-            --text: #091e42;
-            --muted: #6b778c;
-            --border: #ebecf0;
-            --radius: 20px;
+            --text: #172b4d;
+            --radius: 16px;
         }
 
         body { 
             background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); padding-bottom: 100px;
+            color: var(--text); padding-bottom: 110px; margin: 0;
         }
 
-        /* SYNC STATUS BAR (Invisible/Subtle) */
-        #stealth-sync {
-            position: fixed; top: 0; left: 0; width: 100%; height: 3px;
-            background: transparent; z-index: 9999;
+        /* BARRA DE PROGRESO INVISIBLE */
+        #sync-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+            z-index: 9999; background: transparent;
         }
-        .sync-active { background: linear-gradient(90deg, transparent, var(--primary), transparent); animation: loading 1.5s infinite; }
-        @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .syncing { background: linear-gradient(90deg, #0052cc, #6554c0); animation: slide 2s infinite linear; }
+        @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 
         .app-header {
-            padding: 20px; background: #fff; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 15px 20px; border-bottom: 1px solid #dfe1e6;
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
         }
 
         .main-card {
             background: var(--surface); border-radius: var(--radius); padding: 20px;
-            margin: 15px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            margin: 15px; border: 1px solid #dfe1e6; box-shadow: 0 4px 12px rgba(9, 30, 66, 0.05);
         }
 
-        .label-pro { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .label-air { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 8px; display: block; }
 
-        .input-pro {
-            width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border);
-            font-size: 14px; font-weight: 600; margin-bottom: 15px; transition: 0.2s;
+        .input-air {
+            width: 100%; padding: 12px 16px; border-radius: 10px; border: 2px solid #dfe1e6;
+            font-size: 15px; font-weight: 600; margin-bottom: 15px; transition: 0.2s;
         }
-        .input-pro:focus { border-color: var(--primary); outline: none; background: #fbfcfe; }
+        .input-air:focus { border-color: var(--primary); outline: none; background: #fbfcfe; }
 
-        /* SEARCH ENGINE */
-        .results-overlay {
-            position: absolute; width: 100%; background: #fff; border-radius: 12px;
-            border: 1px solid var(--border); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        /* SEARCH OVERLAY */
+        .search-results {
+            position: absolute; width: 100%; background: #fff; border-radius: 10px;
+            border: 1px solid #dfe1e6; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             max-height: 200px; overflow-y: auto; display: none;
         }
 
-        /* HISTORY CARDS */
-        .log-card {
-            background: #fff; border-radius: 16px; border: 1px solid var(--border);
-            padding: 15px; margin-bottom: 12px; border-left: 4px solid var(--primary);
+        /* HISTORIAL CARDS */
+        .history-card {
+            background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 12px;
+            border: 1px solid #dfe1e6; border-left: 6px solid var(--primary);
+            transition: transform 0.2s; cursor: pointer;
         }
-        .log-time { font-size: 11px; font-weight: 700; color: var(--primary); background: #e9f2ff; padding: 2px 8px; border-radius: 10px; }
-        .prod-row { font-size: 13px; border-bottom: 1px dashed #f0f0f0; padding: 5px 0; }
+        .history-card:active { transform: scale(0.98); }
+        .hc-ret { border-left-color: var(--danger); }
         
-        .footer-claim { font-size: 9px; color: #999; margin-top: 10px; text-align: center; border-top: 1px solid #f9f9f9; padding-top: 5px; font-weight: 600; }
+        .hc-time { font-size: 11px; font-weight: 800; color: var(--primary); }
+        .hc-title { font-size: 16px; font-weight: 700; margin: 4px 0; color: var(--text); }
 
-        .nav-bottom {
-            position: fixed; bottom: 0; width: 100%; background: #fff;
-            display: flex; justify-content: space-around; padding: 15px;
-            border-top: 1px solid var(--border); box-shadow: 0 -5px 15px rgba(0,0,0,0.02);
+        /* FOOTER REVISIÓN */
+        .footer-claim { 
+            font-size: 9px; font-weight: 800; color: #a5adba; text-align: center;
+            margin-top: 10px; padding-top: 8px; border-top: 1px solid #ebecf0;
         }
-        .nav-link { color: var(--muted); text-decoration: none; font-size: 10px; font-weight: 700; text-align: center; }
-        .nav-link.active { color: var(--primary); }
-        .nav-link i { font-size: 20px; display: block; }
+
+        /* NAVIGATION BAR 3 OPCIONES */
+        .nav-titan {
+            position: fixed; bottom: 0; width: 100%; background: #fff;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #dfe1e6; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            z-index: 2000;
+        }
+        .nav-item { border: none; background: none; color: #6b778c; font-size: 10px; font-weight: 800; text-align: center; flex: 1; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="stealth-sync"></div>
+    <div id="sync-loader"></div>
 
     <header class="app-header">
         <div>
-            <h5 class="m-0 fw-800">TITAN <span style="color:var(--primary)">2026</span></h5>
-            <small class="text-muted" id="status-text">Conexión activa</small>
+            <span class="fw-800" style="font-size: 18px; letter-spacing: -1px;">TITAN <span style="color:var(--primary)">ELITE</span></span>
         </div>
-        <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold" onclick="emergencyUser()">
-            <i class="fas fa-shield-alt text-primary"></i> Angelo Durand
+        <button class="btn btn-sm btn-light rounded-pill fw-bold" onclick="emergencyCheck()">
+            <i class="fas fa-user-circle text-primary"></i> Angelo Durand
         </button>
     </header>
 
     <main class="container p-0">
-        <section id="v-op" class="view">
+        <section id="v-ent" class="view">
             <div class="main-card">
-                <span class="label-pro">Destinatario / Cliente</span>
-                <input type="text" id="cli-name" class="input-pro" placeholder="Nombre de destino..." oninput="suggestVendor(this.value)">
-                <input type="text" id="ven-sug" class="input-pro" readonly style="opacity: 0.6; background: #f8f9fa;">
+                <span class="label-air">Destinatario Final</span>
+                <input type="text" id="cli-e" class="input-air" placeholder="Cliente / Área" oninput="sugerirVendor(this.value)">
+                
+                <span class="label-air">Canal Sugerido</span>
+                <input type="text" id="ven-e" class="input-air" readonly style="background: #f4f5f7; border-style: dashed;">
 
-                <span class="label-pro">Búsqueda de Inventario</span>
+                <span class="label-air">Buscador de Productos</span>
                 <div class="position-relative">
-                    <input type="text" id="search-input" class="input-pro" placeholder="Escribe SKU o Nombre..." oninput="searchDB(this.value)">
-                    <div id="search-results" class="results-overlay"></div>
+                    <input type="text" id="src-e" class="input-air" placeholder="Buscar SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
+                    <div id="res-e" class="search-results"></div>
                 </div>
 
-                <div id="item-form" class="d-none p-3 bg-light rounded-4 mb-3">
-                    <b id="sel-name" class="d-block mb-1"></b>
+                <div id="form-e" class="d-none p-3 rounded-4 mb-3" style="background:#f0f5ff">
+                    <b id="p-n-e" class="d-block mb-2"></b>
                     <div class="row g-2">
-                        <div class="col-8"><input type="number" id="sel-qty" class="input-pro m-0" placeholder="Cantidad"></div>
-                        <div class="col-4"><button class="btn btn-primary w-100 h-100 rounded-3" onclick="pushItem()"><i class="fas fa-plus"></i></button></div>
+                        <div class="col-8"><input type="number" id="q-e" class="input-air m-0" placeholder="Cantidad"></div>
+                        <div class="col-4"><button class="btn btn-primary w-100 h-100 rounded-3" onclick="addToCart('e')"><i class="fas fa-plus"></i></button></div>
                     </div>
                 </div>
 
-                <div id="cart-container" class="d-none mt-3">
-                    <div id="cart-items"></div>
-                    <button class="btn btn-dark w-100 py-3 rounded-4 fw-800 mt-2" onclick="processAll()">FINALIZAR Y SINCRONIZAR</button>
+                <div id="cart-e" class="d-none">
+                    <div id="items-e" class="mb-3"></div>
+                    <button class="btn btn-dark w-100 py-3 rounded-4 fw-800" onclick="finalizarOp('Pedidos', 'e')">FINALIZAR ENTREGA</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="v-dev" class="view d-none">
+            <div class="main-card">
+                <span class="label-air">Origen de Mercadería</span>
+                <input type="text" id="cli-d" class="input-air" placeholder="Proveedor / Origen">
+
+                <span class="label-air">Producto en Falla</span>
+                <div class="position-relative">
+                    <input type="text" id="src-d" class="input-air" placeholder="Buscar SKU..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
+                    <div id="res-d" class="search-results"></div>
+                </div>
+
+                <div id="form-d" class="d-none p-3 rounded-4 mb-3" style="background:#fff1f0">
+                    <b id="p-n-d" class="d-block mb-3 text-danger"></b>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6"><span class="label-air">Cant. Guía</span><input type="number" id="cg-d" class="input-air"></div>
+                        <div class="col-6"><span class="label-air">Cant. Real</span><input type="number" id="cr-d" class="input-air"></div>
+                    </div>
+                    <span class="label-air">Estado</span>
+                    <select id="st-d" class="input-air">
+                        <option value="MERMA">MERMA / FALLADO</option>
+                        <option value="REPARACION">PARA REPARACIÓN</option>
+                    </select>
+                    <button class="btn btn-danger w-100 py-3 fw-800 rounded-4" onclick="addToCart('d')">AÑADIR DEVOLUCIÓN</button>
+                </div>
+
+                <div id="cart-d" class="d-none">
+                    <div id="items-d" class="mb-3"></div>
+                    <button class="btn btn-dark w-100 py-3 rounded-4 fw-800" onclick="finalizarOp('Devoluciones', 'd')">PROCESAR RETORNO</button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view d-none">
-            <div id="history-feed" class="p-3"></div>
+            <div id="feed-his" class="p-3"></div>
         </section>
     </main>
 
-    <nav class="nav-bottom">
-        <a href="#" class="nav-link active" onclick="showV('op', this)"><i class="fas fa-box-open"></i>REGISTRO</a>
-        <a href="#" class="nav-link" onclick="showV('his', this)"><i class="fas fa-list-ul"></i>HISTORIAL</a>
+    <nav class="nav-titan">
+        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-truck-loading"></i>ENTREGA</button>
+        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-undo"></i>DEVOLUCIONES</button>
+        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
     </nav>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER_DATA = []; let CART = []; let GROUPED_HIS = {};
+        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
+        let MASTER = []; let CART_E = []; let CART_D = []; let HIS_DATA = {};
 
         async function init() {
             try {
-                const r = await fetch(API_URL, {method: "POST", body: JSON.stringify({action: "load"})});
+                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                MASTER_DATA = d.p;
-                processHistory(d.h);
-            } catch(e) { console.log("Offline mode"); }
+                MASTER = d.p;
+                processHis(d.h);
+            } catch(e) { console.warn("Offline Mode"); }
         }
 
-        // --- BÚSQUEDA ---
-        function searchDB(val) {
-            const box = document.getElementById('search-results');
-            if(val.length < 1) { box.style.display='none'; return; }
-            const matches = MASTER_DATA.filter(p => p[1].toLowerCase().includes(val.toLowerCase()) || p[0].toString().includes(val)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="selectP('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></div>`).join('');
-            box.style.display = matches.length ? 'block' : 'none';
+        function motorBusqueda(v, boxId, t) {
+            const box = document.getElementById(boxId);
+            if(v.length < 1) { box.style.display='none'; return; }
+            const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = m.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            box.style.display = m.length ? 'block' : 'none';
         }
 
-        function selectP(sku, name) {
-            window.tempItem = {sku, name};
-            document.getElementById('sel-name').innerText = name;
-            document.getElementById('item-form').classList.remove('d-none');
-            document.getElementById('search-results').style.display = 'none';
+        function pick(s, n, t) {
+            window.lastPick = {sku: s, name: n};
+            document.getElementById(`p-n-${t}`).innerText = n;
+            document.getElementById(`form-${t}`).classList.remove('d-none');
+            document.querySelectorAll('.search-results').forEach(b => b.style.display='none');
         }
 
-        function pushItem() {
-            const qty = document.getElementById('sel-qty').value;
-            if(!qty) return;
-            CART.push({...window.tempItem, qty});
-            document.getElementById('item-form').classList.add('d-none');
-            document.getElementById('search-input').value = '';
-            renderCart();
+        function addToCart(t) {
+            const cart = t === 'e' ? CART_E : CART_D;
+            const q = t === 'e' ? document.getElementById('q-e').value : document.getElementById('cr-d').value;
+            if(!q) return;
+
+            const item = { ...window.lastPick, q: q };
+            if(t === 'd') {
+                item.cg = document.getElementById('cg-d').value;
+                item.st = document.getElementById('st-d').value;
+                item.type = "DEVOLUCION";
+            } else { item.type = "ENTREGA"; }
+
+            cart.push(item);
+            document.getElementById(`form-${t}`).classList.add('d-none');
+            renderCart(t);
         }
 
-        function renderCart() {
-            const cont = document.getElementById('cart-container');
-            cont.classList.toggle('d-none', CART.length === 0);
-            document.getElementById('cart-items').innerHTML = CART.map((i, idx) => `
-                <div class="p-2 border-bottom d-flex justify-content-between">
-                    <span>${i.name} (x${i.qty})</span>
-                    <i class="fas fa-times text-danger" onclick="CART.splice(${idx},1); renderCart();"></i>
+        function renderCart(t) {
+            const cart = t === 'e' ? CART_E : CART_D;
+            const cont = document.getElementById(`cart-${t}`);
+            const items = document.getElementById(`items-${t}`);
+            cont.classList.toggle('d-none', cart.length === 0);
+            items.innerHTML = cart.map((i, idx) => `
+                <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+                    <span style="font-size:13px"><b>${i.q}</b> x ${i.name}</span>
+                    <i class="fas fa-trash text-muted" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');"></i>
                 </div>
             `).join('');
         }
 
-        // --- SINCRONIZACIÓN INVISIBLE ---
-        async function processAll() {
-            const cli = document.getElementById('cli-name').value;
+        async function finalizarOp(sheet, t) {
+            const cli = document.getElementById(`cli-${t}`).value;
             if(!cli) return Swal.fire("Error", "Falta Cliente", "error");
 
-            const bar = document.getElementById('stealth-sync');
-            const payload = CART.map(i => [new Date(), "SALIDA", i.sku, i.name, i.qty, cli, "Revisión autorizada por J. Angelo Nuñez Durand"]);
-            
-            // UI Update inmediata
-            bar.className = 'sync-active';
-            CART = []; renderCart();
-            document.getElementById('cli-name').value = '';
+            const bar = document.getElementById('sync-loader');
+            const cart = t === 'e' ? CART_E : CART_D;
+            const payload = cart.map(i => [
+                new Date(), i.type, i.sku, i.name, i.q, cli, 
+                t === 'e' ? `Vendor: ${document.getElementById('ven-e').value}` : `Guía: ${i.cg} | Estado: ${i.st}`
+            ]);
+
+            bar.className = 'syncing';
+            if(t==='e') CART_E = []; else CART_D = [];
+            renderCart(t);
+            document.getElementById(`cli-${t}`).value = '';
 
             try {
-                fetch(API_URL, {method: "POST", body: JSON.stringify({action: "save", payload})})
+                fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})})
                 .then(() => {
                     bar.className = '';
-                    init(); // Recargar historial en fondo
+                    init(); 
                 });
             } catch(e) { bar.className = ''; }
         }
 
-        // --- PROCESAMIENTO DE HISTORIAL ---
-        function processHistory(data) {
-            // Agrupar por Cliente + Fecha (minuto) para verlos como una sola lista
+        function processHis(data) {
             const groups = {};
             data.forEach(r => {
-                const timeKey = new Date(r[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const key = r[5] + "_" + timeKey;
-                if(!groups[key]) groups[key] = { cliente: r[5], hora: timeKey, fecha: new Date(r[0]).toLocaleDateString(), prods: [] };
-                groups[key].prods.push({ name: r[3], qty: r[4], sku: r[2] });
+                const dateObj = new Date(r[0]);
+                const time = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const key = r[5] + "_" + time;
+                if(!groups[key]) groups[key] = { cliente: r[5], hora: time, fecha: dateObj.toLocaleDateString(), tipo: r[1], prods: [] };
+                groups[key].prods.push({ n: r[3], q: r[4], s: r[2], obs: r[6] });
             });
-            renderHistory(groups);
+            HIS_DATA = groups;
+            renderHis();
         }
 
-        function renderHistory(groups) {
-            const feed = document.getElementById('history-feed');
-            feed.innerHTML = Object.values(groups).reverse().slice(0, 10).map(g => `
-                <div class="log-card">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="log-time"><i class="far fa-clock"></i> ${g.hora}</span>
-                        <small class="fw-bold text-muted">${g.fecha}</small>
+        function renderHis() {
+            const feed = document.getElementById('feed-his');
+            feed.innerHTML = Object.values(HIS_DATA).reverse().slice(0, 15).map(g => `
+                <div class="history-card ${g.tipo === 'DEVOLUCION' ? 'hc-ret' : ''}" onclick="verDetalle('${btoa(JSON.stringify(g))}')">
+                    <div class="d-flex justify-content-between">
+                        <span class="hc-time">${g.hora}</span>
+                        <small class="text-muted fw-bold">${g.fecha}</small>
                     </div>
-                    <h6 class="fw-800 mb-2">${g.cliente}</h6>
-                    <div class="mb-3">
-                        ${g.prods.map(p => `<div class="prod-row"><b>${p.qty}</b> x ${p.name} <small class="text-muted">(${p.sku})</small></div>`).join('')}
+                    <div class="hc-title">${g.cliente}</div>
+                    <div class="text-muted" style="font-size:12px">
+                        ${g.prods.length} productos registrados
                     </div>
-                    <button class="btn btn-sm btn-outline-primary w-100 fw-bold" onclick="genPDF('${btoa(JSON.stringify(g))}')">
-                        <i class="fas fa-file-pdf"></i> GENERAR REPORTE PDF
-                    </button>
-                    <div class="footer-claim">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
+                    <div class="footer-claim">Revisión autorizada por J. Angelo Nuñez Durand</div>
                 </div>
             `).join('');
         }
 
-        // --- GENERACIÓN DE PDF ---
-        function genPDF(dataStr) {
+        function verDetalle(dataStr) {
             const g = JSON.parse(atob(dataStr));
+            Swal.fire({
+                title: 'Resumen de Carga',
+                html: `
+                    <div class="text-start" style="font-size:14px">
+                        <div class="mb-3 p-2 bg-light rounded">
+                            <b>Cliente:</b> ${g.cliente}<br>
+                            <b>Hora:</b> ${g.hora}
+                        </div>
+                        <div class="list-group list-group-flush">
+                            ${g.prods.map(p => `
+                                <div class="list-group-item px-0">
+                                    <b>${p.q}</b> - ${p.n}<br>
+                                    <small class="text-muted">SKU: ${p.s}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-file-pdf"></i> PDF',
+                cancelButtonText: 'CERRAR',
+                confirmButtonColor: '#0052cc',
+                customClass: { popup: 'rounded-4' }
+            }).then((result) => {
+                if (result.isConfirmed) genPDF(g);
+            });
+        }
+
+        function genPDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            doc.setFontSize(18); doc.text("REPORTE DE MOVIMIENTO", 14, 20);
-            doc.setFontSize(10); doc.text(`Cliente: ${g.cliente}`, 14, 30);
-            doc.text(`Fecha: ${g.fecha} | Hora: ${g.hora}`, 14, 35);
+            doc.setFontSize(18); doc.text("ORDEN DE MOVIMIENTO", 14, 20);
+            doc.setFontSize(10); 
+            doc.text(`DESTINO/ORIGEN: ${g.cliente}`, 14, 30);
+            doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora}`, 14, 35);
+            doc.text(`TIPO: ${g.tipo}`, 14, 40);
 
             doc.autoTable({
-                startY: 45,
-                head: [['Cant', 'Producto', 'SKU']],
-                body: g.prods.map(p => [p.qty, p.name, p.sku]),
-                theme: 'striped',
+                startY: 50,
+                head: [['Cant', 'Producto', 'SKU', 'Referencia']],
+                body: g.prods.map(p => [p.q, p.n, p.s, p.obs]),
                 headStyles: { fillColor: [0, 82, 204] }
             });
 
             const finalY = doc.lastAutoTable.finalY + 20;
             doc.setFontSize(8);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align: 'center'});
-            
-            doc.save(`TITAN_${g.cliente}_${g.hora}.pdf`);
+            doc.save(`TITAN_${g.cliente}.pdf`);
         }
 
-        function emergencyUser() {
+        function sugerirVendor(v) {
+            let s = "GENERAL";
+            if(v.toUpperCase().includes("GLOBAL")) s = "GLOBAL LOGISTICS";
+            document.getElementById('ven-e').value = s;
+        }
+
+        function nav(v, btn) {
+            document.querySelectorAll('.view').forEach(x => x.classList.add('d-none'));
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.remove('d-none');
+            btn.classList.add('active');
+        }
+
+        function emergencyCheck() {
             Swal.fire({
-                title: 'Confirmación de Seguridad',
-                text: "¿Desea cambiar el responsable del inventario por emergencia?",
+                title: 'Acceso Restringido',
+                text: "¿Desea cambiar el responsable asignado?",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Sí, cambiar',
-                customClass: { popup: 'rounded-4' }
+                confirmButtonText: 'Confirmar'
             });
-        }
-
-        function showV(v, el) {
-            document.querySelectorAll('.view').forEach(x => x.classList.add('d-none'));
-            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.remove('d-none');
-            el.classList.add('active');
-        }
-
-        function suggestVendor(v) {
-            let sug = "DISTRIBUIDORA GENERAL";
-            if(v.toUpperCase().includes("GLOBAL")) sug = "GLOBAL LOGISTICS S.A.";
-            document.getElementById('ven-sug').value = sug;
         }
 
         window.onload = init;
