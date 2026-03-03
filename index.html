@@ -14,94 +14,87 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
         :root {
-            --bg: #f8fafc;
-            --glass: rgba(255, 255, 255, 0.9);
-            --accent: #2563eb;
-            --danger: #ef4444;
+            --bg: #0f172a;
+            --surface: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --danger: #f43f5e;
             --success: #10b981;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-radius: 28px;
         }
 
         body { 
-            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); margin: 0; padding-bottom: 110px;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main); margin: 0; padding-bottom: 110px; min-height: 100vh;
         }
 
-        /* HEADER MODERNO */
+        /* HEADER ESTILO GLASS */
         .modern-header {
-            background: var(--glass); backdrop-filter: blur(10px);
-            padding: 20px; border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
+            padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
             position: sticky; top: 0; z-index: 2000;
         }
 
-        .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -1px; color: var(--text); }
-        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--success); }
+        .brand-name { font-weight: 800; font-size: 24px; letter-spacing: -1.5px; }
+        .status-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 15px var(--success); }
 
-        /* CARDS & INPUTS */
+        /* CARDS MODERNIZADAS */
         .card-2026 {
-            background: #fff; border-radius: 24px; padding: 24px;
-            margin: 16px; border: 1px solid var(--border); box-shadow: var(--shadow);
+            background: rgba(255, 255, 255, 0.03); border-radius: var(--card-radius); padding: 28px;
+            margin: 16px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
-        .label-2026 { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block; }
+        .label-2026 { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: block; }
 
         .input-2026 {
-            background: #f1f5f9; border: 2px solid transparent;
-            border-radius: 14px; padding: 14px; width: 100%; font-size: 15px; font-weight: 500;
-            margin-bottom: 16px; transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px; padding: 16px; width: 100%; font-size: 15px; font-weight: 500; color: #fff;
+            margin-bottom: 20px; transition: 0.3s;
         }
-        .input-2026:focus { background: #fff; border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-
-        /* BOTONES */
-        .btn-2026 {
-            border-radius: 16px; padding: 16px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
-        }
-        .btn-primary { background: var(--accent); color: #fff; }
-        .btn-primary:active { transform: scale(0.98); }
+        .input-2026:focus { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); outline: none; box-shadow: 0 0 20px var(--accent-glow); }
 
         /* CHIPS */
-        .chip-group { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .chip-group { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding: 5px; scrollbar-width: none; }
         .chip {
-            background: #fff; border: 1px solid var(--border); padding: 10px 18px;
-            border-radius: 14px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.3s;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 22px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; transition: 0.3s; color: var(--text-muted);
         }
-        .chip.active { background: var(--text); color: #fff; border-color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); }
 
-        /* TARJETAS DE HISTORIAL */
+        /* HISTORIAL */
         .history-item {
-            background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px;
-            border: 1px solid var(--border); position: relative; overflow: hidden;
+            background: rgba(255, 255, 255, 0.03); border-radius: 22px; padding: 20px; margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
         }
-        .history-item::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-        }
-        .item-del::before { background: var(--accent); }
-        .item-ret::before { background: var(--danger); }
+        .history-item:hover { background: rgba(255, 255, 255, 0.06); }
+        .item-ret { border-left: 5px solid var(--danger) !important; }
+        .item-del { border-left: 5px solid var(--accent) !important; }
 
-        /* NAV BAR */
+        /* NAV BAR NEUMORPHIC DARK */
         .nav-2026 {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: var(--text); border-radius: 24px;
-            display: flex; justify-content: space-around; padding: 15px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); z-index: 3000;
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(15, 23, 42, 0.9); border-radius: 30px; backdrop-filter: blur(20px);
+            display: flex; justify-content: space-around; padding: 18px;
+            border: 1px solid rgba(255,255,255,0.1); z-index: 3000;
         }
-        .nav-btn { background: none; border: none; color: #94a3b8; font-weight: 700; font-size: 11px; text-align: center; }
-        .nav-btn.active { color: #fff; }
-        .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-weight: 700; font-size: 10px; transition: 0.3s; }
+        .nav-btn.active { color: var(--accent); transform: translateY(-5px); }
+        .nav-btn i { font-size: 24px; display: block; margin-bottom: 6px; }
 
         .search-results {
-            background: #fff; border-radius: 16px; border: 1px solid var(--border);
+            background: #1e293b; border-radius: 18px; border: 1px solid var(--accent);
             position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        .view { display: none; animation: fadeIn 0.4s ease-out; }
-        .active-view { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* SWEET ALERT CUSTOM */
+        .swal2-popup-modern {
+            background: #1e293b !important; color: #fff !important; border-radius: 30px !important;
+        }
     </style>
 </head>
 <body>
@@ -109,108 +102,106 @@
     <header class="modern-header d-flex justify-content-between align-items-center">
         <div>
             <div class="brand-name">TITAN<span style="color:var(--accent)">ELITE</span></div>
-            <div style="font-size: 11px; color: var(--muted); font-weight: 600;">LOGÍSTICA 2026</div>
+            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Logística Intelligence</div>
         </div>
         <div class="text-end">
-            <div style="font-size: 13px; font-weight: 800;"><span class="status-dot"></span> Angelo Durand</div>
+            <div style="font-size: 13px; font-weight: 700;"><span class="status-dot"></span> Angelo Durand</div>
         </div>
     </header>
 
-    <main>
+    <main class="container">
         <section id="v-del" class="view active-view">
             <div class="card-2026">
-                <span class="label-2026">Tipo de Movimiento</span>
+                <span class="label-2026">Canal de Distribución</span>
                 <div class="chip-group">
-                    <div class="chip active" id="m-VENTA" onclick="setM('VENTA')">VENTA</div>
-                    <div class="chip" id="m-MARKETING" onclick="setM('MARKETING')">MARKETING</div>
-                    <div class="chip" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</div>
+                    <div class="chip active" id="m-VENTA" onclick="setM('VENTA')">🛒 VENTA</div>
+                    <div class="chip" id="m-MARKETING" onclick="setM('MARKETING')">🎁 MARKETING</div>
+                    <div class="chip" id="m-OFICINA" onclick="setM('OFICINA')">🏢 OFICINA</div>
                 </div>
 
-                <span class="label-2026">Solicitante / Área</span>
-                <input type="text" id="cli-d" class="input-2026" placeholder="Nombre completo" oninput="autoSave()">
+                <span class="label-2026">Destinatario</span>
+                <input type="text" id="cli-d" class="input-2026" placeholder="Área o Cliente" oninput="autoSave()">
                 
-                <span class="label-2026">Buscador de Stock</span>
+                <span class="label-2026">Inventario Global</span>
                 <div class="position-relative">
-                    <input type="text" id="src-d" class="input-2026" placeholder="🔍 SKU o nombre..." oninput="find(this.value, 'res-d', 'd')">
+                    <input type="text" id="src-d" class="input-2026" placeholder="🔍 Buscar por SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
                     <div id="res-d" class="search-results"></div>
                 </div>
 
-                <div id="form-d" class="d-none mt-2 p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div class="mb-3">
-                        <b id="p-n-d" class="d-block text-primary"></b>
-                        <small id="p-s-d" class="text-muted"></small>
-                    </div>
-                    <span class="label-2026">Cantidad</span>
-                    <input type="number" id="q-d" class="input-2026" placeholder="00">
-                    <button class="btn-2026 btn-primary" onclick="addItem('d')">AÑADIR A LISTA <i class="fas fa-plus"></i></button>
+                <div id="form-d" class="d-none mt-2 p-4 rounded-4" style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent);">
+                    <b id="p-n-d" class="d-block text-white mb-1"></b>
+                    <small id="p-s-d" class="text-muted d-block mb-3"></small>
+                    <span class="label-2026">Cantidad a Despachar</span>
+                    <input type="number" id="q-d" class="input-2026" placeholder="0">
+                    <button class="btn-2026 btn-primary w-100 py-3" onclick="addItem('d')" style="background: var(--accent); color:#fff; border-radius: 18px; border:none; font-weight:800;">AÑADIR A LISTA <i class="fas fa-plus"></i></button>
                 </div>
 
                 <div id="list-d" class="mt-4 d-none">
                     <div id="items-d"></div>
-                    <button class="btn-2026 mt-3" style="background:var(--text); color:#fff" onclick="sync('Pedidos', 'd')">CONFIRMAR DESPACHO <i class="fas fa-bolt"></i></button>
+                    <button class="btn-2026 mt-3 w-100 py-3" style="background:#fff; color:#000; border-radius:18px; border:none; font-weight:800" onclick="sync('Pedidos', 'd')">FINALIZAR CARGA <i class="fas fa-check-double"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-ret" class="view">
+        <section id="v-ret" class="view d-none">
             <div class="card-2026">
-                <span class="label-2026">Origen de Devolución</span>
-                <input type="text" id="cli-r" class="input-2026" placeholder="Cliente" oninput="autoSave()">
+                <span class="label-2026">Origen de Mercadería</span>
+                <input type="text" id="cli-r" class="input-2026" placeholder="Cliente / Proveedor" oninput="autoSave()">
                 
-                <span class="label-2026">Vendedor Receptor</span>
+                <span class="label-2026">Responsable Recepción</span>
                 <div class="chip-group" id="vend-r">
                     <div class="chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
                     <div class="chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
                     <div class="chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
                     <div class="chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
-                    <div class="chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
                 </div>
 
-                <span class="label-2026">Producto Defectuoso</span>
+                <span class="label-2026">Ítem con Novedad</span>
                 <div class="position-relative">
-                    <input type="text" id="src-r" class="input-2026" placeholder="🔍 Buscar SKU..." oninput="find(this.value, 'res-r', 'r')">
+                    <input type="text" id="src-r" class="input-2026" placeholder="🔍 Buscar por SKU..." oninput="find(this.value, 'res-r', 'r')">
                     <div id="res-r" class="search-results"></div>
                 </div>
 
-                <div id="form-r" class="d-none mt-2 p-3 rounded-4" style="background: #fff1f2; border: 1px solid #fecdd3;">
+                <div id="form-r" class="d-none mt-2 p-4 rounded-4" style="background: rgba(244, 63, 94, 0.1); border: 1px solid var(--danger);">
                     <b id="p-n-r" class="d-block text-danger mb-3"></b>
                     <div class="row g-2">
-                        <div class="col-6"><span class="label-2026">Guía</span><input type="number" id="cg-r" class="input-2026" placeholder="Cant."></div>
-                        <div class="col-6"><span class="label-2026">Real</span><input type="number" id="cr-r" class="input-2026" placeholder="Físico"></div>
+                        <div class="col-6"><span class="label-2026">En Guía</span><input type="number" id="cg-r" class="input-2026"></div>
+                        <div class="col-6"><span class="label-2026">Físico</span><input type="number" id="cr-r" class="input-2026"></div>
                     </div>
-                    <span class="label-2026">Estado Técnico</span>
+                    <span class="label-2026">Condición</span>
                     <select id="st-r" class="input-2026">
                         <option value="MERMA">FALLADO A MERMA</option>
                         <option value="ARREGLO">PARA REPARACIÓN</option>
                         <option value="FALLA IMPORTACION">FALLA IMPORTACIÓN</option>
                     </select>
-                    <textarea id="obs-r" class="input-2026" style="height: 80px;" placeholder="Detalles observados..."></textarea>
-                    <button class="btn-2026" style="background: var(--danger); color: #fff;" onclick="addItem('r')">REGISTRAR FALLA <i class="fas fa-exclamation-triangle"></i></button>
+                    <textarea id="obs-r" class="input-2026" placeholder="Detalle técnico de la falla..."></textarea>
+                    <button class="btn-2026 w-100 py-3" style="background: var(--danger); color: #fff; border-radius:18px; border:none; font-weight:800;" onclick="addItem('r')">PROCESAR DEVOLUCIÓN <i class="fas fa-exclamation-circle"></i></button>
                 </div>
 
                 <div id="list-r" class="mt-4 d-none">
                     <div id="items-r"></div>
-                    <button class="btn-2026 mt-3" style="background: var(--text); color: #fff;" onclick="sync('Devoluciones', 'r')">SINCRONIZAR A SAP <i class="fas fa-cloud-upload"></i></button>
+                    <button class="btn-2026 mt-3 w-100 py-3" style="background: var(--accent); color: #fff; border-radius:18px; border:none; font-weight:800;" onclick="sync('Devoluciones', 'r')">SINCRONIZAR RETORNO <i class="fas fa-sync"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-his" class="view">
+        <section id="v-his" class="view d-none">
             <div class="px-3 py-3" id="his-feed">
                 </div>
         </section>
     </main>
 
     <nav class="nav-2026">
-        <button class="nav-btn active" onclick="nav('del', this)"><i class="fas fa-arrow-up"></i><span>SALIDA</span></button>
-        <button class="nav-btn" onclick="nav('ret', this)"><i class="fas fa-arrow-down"></i><span>RETORNO</span></button>
-        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-layer-group"></i><span>HISTORY</span></button>
+        <button class="nav-btn active" onclick="nav('del', this)"><i class="fas fa-shipping-fast"></i><span>SALIDA</span></button>
+        <button class="nav-btn" onclick="nav('ret', this)"><i class="fas fa-undo-alt"></i><span>RETORNO</span></button>
+        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-database"></i><span>LOGS</span></button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
         let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {r:''}; let FULL_HIS = [];
 
+        // Iniciar App
         async function init() {
             const saved = JSON.parse(localStorage.getItem('TITAN_DATA_2026'));
             if(saved) {
@@ -226,12 +217,100 @@
                 const d = await r.json();
                 DB_P = d.p; FULL_HIS = d.h;
                 renderHistory(d.h);
-            } catch(e) { console.warn("Offline"); }
+            } catch(e) { console.warn("Modo Offline Activado"); }
         }
 
-        function autoSave() {
-            const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venR: VEN.r };
-            localStorage.setItem('TITAN_DATA_2026', JSON.stringify(data));
+        // Historial Mejorado (Muestra Devoluciones)
+        function renderHistory(h) {
+            const feed = document.getElementById('his-feed');
+            if(!h || h.length === 0) {
+                feed.innerHTML = "<div class='text-center p-5 opacity-50'>No hay registros recientes</div>";
+                return;
+            }
+
+            feed.innerHTML = h.slice(0, 30).map((r, idx) => {
+                const esDev = (r[1] === 'DEVOLUCION');
+                return `
+                    <div class="history-item ${esDev ? 'item-ret' : 'item-del'} animate__animated animate__fadeInUp">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="badge ${esDev?'bg-danger':'bg-primary'} mb-2">${r[1]}</span>
+                                <div style="font-weight: 800; font-size: 16px;">${r[5]}</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">${new Date(r[0]).toLocaleString()}</div>
+                            </div>
+                            <div class="text-end">
+                                <b style="font-size: 20px; color: #fff;">x${r[4]}</b>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-3 rounded-4" style="background: rgba(255,255,255,0.05); font-size: 13px;">
+                            <b>${r[3]}</b><br><small class="text-muted">SKU: ${r[2]}</small>
+                        </div>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-dark flex-fill rounded-pill py-2" style="font-size: 11px; border:1px solid rgba(255,255,255,0.1)" onclick="ver(${idx})">DETALLES</button>
+                            <button class="btn btn-primary flex-fill rounded-pill py-2" style="font-size: 11px; font-weight:700" onclick="pdf(${idx})">PDF OFICIAL</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Cuadro de Diálogo más Bonito (SweetAlert2 Custom)
+        function ver(idx) {
+            const r = FULL_HIS[idx];
+            Swal.fire({
+                title: 'Detalle de Operación',
+                html: `
+                    <div class="text-start" style="font-size:14px; line-height:1.8">
+                        <p>👤 <b>Responsable:</b> J. Angelo Nuñez Durand</p>
+                        <p>📦 <b>Ítem:</b> ${r[3]}</p>
+                        <p>🔢 <b>SKU:</b> ${r[2]}</p>
+                        <p>📋 <b>Nota:</b> ${r[6]}</p>
+                    </div>`,
+                customClass: { popup: 'swal2-popup-modern' },
+                confirmButtonText: 'ENTENDIDO',
+                confirmButtonColor: '#3b82f6'
+            });
+        }
+
+        // PDF en Cuadro (Tabla limpia)
+        function pdf(idx) {
+            const r = FULL_HIS[idx];
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header Estilizado
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TITAN ELITE | LOGÍSTICA", 14, 25);
+            
+            doc.autoTable({
+                startY: 50,
+                head: [['ATRIBUTO', 'DETALLE DEL REGISTRO']],
+                body: [
+                    ['FECHA/HORA', new Date(r[0]).toLocaleString()],
+                    ['OPERACIÓN', r[1]],
+                    ['CLIENTE/ORIGEN', r[5]],
+                    ['PRODUCTO', r[3]],
+                    ['CANTIDAD', r[4]],
+                    ['ESTADO/INFO', r[6]]
+                ],
+                theme: 'grid',
+                styles: { fontSize: 10, cellPadding: 5 },
+                headStyles: { fillColor: [59, 130, 246] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.setTextColor(100); 
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align:'center'});
+            
+            doc.save(`TITAN_REPORT_${r[5]}.pdf`);
+        }
+
+        // Funciones de utilidad (Mantenidas del original pero con estilo)
+        function nav(v, b) {
+            document.querySelectorAll('.view').forEach(x => x.classList.add('d-none'));
+            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.remove('d-none');
+            b.classList.add('active');
         }
 
         function setM(m) {
@@ -252,13 +331,13 @@
             const box = document.getElementById(boxId);
             if(v.length < 1) { box.style.display='none'; return; }
             const matches = DB_P.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom border-secondary" style="cursor:pointer" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
             box.style.display = matches.length ? 'block' : 'none';
         }
 
         function pick(s, n, t) {
             document.getElementById(`p-n-${t}`).innerText = n;
-            if(t==='d') document.getElementById(`p-s-${t}`).innerText = s;
+            if(t==='d') document.getElementById(`p-s-${t}`).innerText = "SKU: " + s;
             document.getElementById(`form-${t}`).classList.remove('d-none');
             document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
             window.lastPick = {sku:s, name:n};
@@ -269,19 +348,14 @@
                 const q = document.getElementById('q-d').value;
                 if(!q) return;
                 QD.push({...window.lastPick, q, mode: MODE});
-                document.getElementById('q-d').value = '';
-                document.getElementById('src-d').value = '';
+                document.getElementById('q-d').value = ''; document.getElementById('src-d').value = '';
             } else {
                 const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
                 if(!cg || !cr) return;
                 QR.push({...window.lastPick, q: cr, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value, mode: 'DEVOLUCION'});
-                document.getElementById('src-r').value = '';
-                document.getElementById('cg-r').value = '';
-                document.getElementById('cr-r').value = '';
+                document.getElementById('src-r').value = ''; document.getElementById('cg-r').value = ''; document.getElementById('cr-r').value = '';
             }
-            render(t);
-            document.getElementById(`form-${t}`).classList.add('d-none');
-            autoSave();
+            render(t); document.getElementById(`form-${t}`).classList.add('d-none'); autoSave();
         }
 
         function render(t) {
@@ -289,14 +363,14 @@
             document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
             document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
                 <div class="history-item ${t==='d'?'item-del':'item-ret'}">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div style="max-width: 80%;">
-                            <b style="font-size: 14px;">${i.name}</b><br>
-                            <small class="text-muted">${i.mode || 'FALLA'}</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div style="max-width: 70%;">
+                            <b style="font-size: 14px; color:#fff">${i.name}</b><br>
+                            <small class="text-muted">${i.mode}</small>
                         </div>
                         <div class="text-end">
-                            <b style="font-size: 16px; color: ${t==='d'?'var(--accent)':'var(--danger)'}">x${i.q}</b><br>
-                            <i class="fas fa-trash-alt text-muted mt-2" onclick="removeIdx('${t}', ${idx})"></i>
+                            <b style="font-size: 18px; color: ${t==='d'?'#3b82f6':'#f43f5e'}">x${i.q}</b>
+                            <i class="fas fa-times-circle text-muted ms-3" style="cursor:pointer" onclick="removeIdx('${t}', ${idx})"></i>
                         </div>
                     </div>
                 </div>
@@ -308,93 +382,31 @@
             render(t); autoSave();
         }
 
+        function autoSave() {
+            const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venR: VEN.r };
+            localStorage.setItem('TITAN_DATA_2026', JSON.stringify(data));
+        }
+
         async function sync(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
-            if(!cli || (t==='r' && !VEN.r)) return Swal.fire("Error", "Faltan datos obligatorios", "error");
+            if(!cli || (t==='r' && !VEN.r)) return Swal.fire({ icon:'error', title:'Error', text:'Datos incompletos', customClass:{popup:'swal2-popup-modern'} });
 
             const list = t==='d' ? QD : QR;
             const payload = list.map(i => [
-                new Date(), 
-                i.mode, 
-                i.sku, 
-                i.name, 
-                i.q, 
-                cli, 
-                t==='d' ? 'Salida Almacén' : `Guía: ${i.cg} | Detalle: ${i.st} | Obs: ${i.obs} | Recibió: ${VEN.r}`
+                new Date(), i.mode, i.sku, i.name, i.q, cli, 
+                t==='d' ? 'Despacho Almacén' : `Guía: ${i.cg} | Fisico: ${i.cr} | ${i.st} | ${i.obs} | Recibió: ${VEN.r}`
             ]);
 
-            Swal.fire({title:'Sincronizando 2026...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+            Swal.fire({title:'Sincronizando...', customClass:{popup:'swal2-popup-modern'}, allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
             
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
                 localStorage.removeItem('TITAN_DATA_2026');
-                Swal.fire({icon: 'success', title: 'Completado', showConfirmButton: false, timer: 1500}).then(() => location.reload());
+                Swal.fire({icon: 'success', title: 'Sincronizado', showConfirmButton: false, timer: 1500, customClass:{popup:'swal2-popup-modern'}})
+                .then(() => location.reload());
             } catch(e) {
-                Swal.fire("Error", "Fallo de conexión", "error");
+                Swal.fire({icon:"error", title:"Fallo de Red", customClass:{popup:'swal2-popup-modern'}});
             }
-        }
-
-        function renderHistory(h) {
-            const feed = document.getElementById('his-feed');
-            feed.innerHTML = h.slice(0, 25).map((r, idx) => {
-                const esDev = r[1] === 'DEVOLUCION';
-                return `
-                    <div class="history-item ${esDev?'item-ret':'item-del'}">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <span class="badge ${esDev?'bg-danger':'bg-primary'} mb-2" style="font-size: 9px; border-radius: 6px;">${r[1]}</span>
-                                <div style="font-weight: 800; font-size: 15px;">${r[5]}</div>
-                                <div style="font-size: 11px; color: var(--muted);">${new Date(r[0]).toLocaleDateString()}</div>
-                            </div>
-                            <div class="text-end">
-                                <b style="font-size: 20px; font-weight: 800;">x${r[4]}</b>
-                            </div>
-                        </div>
-                        <div class="mt-2 p-2 rounded-3" style="background: #f1f5f9; font-size: 12px;">
-                            <b>${r[3]}</b><br><small class="text-muted">SKU: ${r[2]}</small>
-                        </div>
-                        <div class="d-flex gap-2 mt-3">
-                            <button class="btn-2026 flex-fill py-2" style="background: #e2e8f0; font-size: 11px;" onclick="ver(${idx})">LISTA</button>
-                            <button class="btn-2026 flex-fill py-2" style="background: var(--text); color:#fff; font-size: 11px;" onclick="pdf(${idx})">REPORT PDF</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function ver(idx) {
-            const r = FULL_HIS[idx];
-            Swal.fire({
-                title: 'Información del Registro',
-                html: `<div class="text-start" style="font-size:14px"><b>Cliente:</b> ${r[5]}<br><b>Producto:</b> ${r[3]}<br><b>Cantidad:</b> ${r[4]}<br><br><b>Referencia:</b><br>${r[6]}</div>`,
-                confirmButtonColor: '#0f172a'
-            });
-        }
-
-        function pdf(idx) {
-            const r = FULL_HIS[idx];
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TITAN ELITE 2026", 14, 25);
-            doc.autoTable({
-                startY: 50,
-                head: [['CAMPO', 'VALOR REGISTRADO']],
-                body: [['FECHA', new Date(r[0]).toLocaleString()],['MOVIMIENTO', r[1]],['CLIENTE', r[5]],['PRODUCTO', r[3]],['SKU', r[2]],['CANTIDAD', r[4]],['DETALLES', r[6]]],
-                theme: 'grid', headStyles: {fillColor: [15, 23, 42]}
-            });
-            const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setTextColor(0,0,0); doc.line(70, finalY, 140, finalY);
-            doc.setFontSize(11); doc.text("REVISIÓN AUTORIZADA POR J. ANGELO NUÑEZ DURAND", 105, finalY + 7, {align: 'center'});
-            doc.setFontSize(9); doc.text("Asist. Inventario Logístico", 105, finalY + 12, {align: 'center'});
-            doc.save(`TITAN_${r[5]}.pdf`);
-        }
-
-        function nav(v, b) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('active-view');
-            b.classList.add('active');
         }
 
         window.onload = init;
