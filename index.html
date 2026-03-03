@@ -3,333 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN NEURAL FLOW</title>
+    <title>TITAN OS | J. Angelo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
         :root {
-            --apple-blue: #007AFF;
-            --apple-red: #FF3B30;
-            --apple-green: #34C759;
-            --apple-bg: #F2F2F7;
-            --glass: rgba(255, 255, 255, 0.85);
-            --safe-top: env(safe-area-inset-top);
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-green: #34C759;
+            --ios-gray: #8E8E93;
+            --bg: #F8F9FB;
         }
-
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
         body { 
-            background: var(--apple-bg); 
-            font-family: 'Outfit', sans-serif;
-            color: #000; margin: 0; padding-top: var(--safe-top);
-            overflow-x: hidden; height: 100vh;
+            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1C1C1E; margin: 0; padding-bottom: 120px;
         }
 
-        /* Header de Cristal */
-        .neural-nav {
+        /* Navegación Superior */
+        .glass-header {
             position: sticky; top: 0; z-index: 1000;
-            background: var(--glass); backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 20px; border-bottom: 0.5px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
+            padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .brand { font-weight: 800; font-size: 24px; letter-spacing: -1px; }
-        .ai-status { font-size: 10px; font-weight: 700; color: var(--apple-green); text-transform: uppercase; }
+        .brand { font-weight: 800; font-size: 22px; letter-spacing: -1px; }
 
-        /* Contenedores con Animación de Entrada */
-        .view-container { padding: 10px 16px 120px; }
-        .ios-card {
-            background: #fff; border-radius: 28px; padding: 22px;
-            margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            border: 0.5px solid rgba(0,0,0,0.05);
+        /* Tarjetas Adaptables */
+        .card-pro {
+            background: #fff; border-radius: 24px; padding: 20px;
+            margin: 12px; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.04);
         }
 
-        /* Inputs Didácticos */
-        .group-label { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 0 0 8px 10px; text-transform: uppercase; }
-        .smart-field {
+        /* Segmented Control (Selector de Tipo de Salida) */
+        .segmented-control {
+            display: flex; background: #EEEFF3; padding: 4px;
+            border-radius: 14px; margin-bottom: 20px;
+        }
+        .segment-btn {
+            flex: 1; border: none; background: none; padding: 8px;
+            font-size: 11px; font-weight: 700; border-radius: 11px;
+            transition: 0.3s; color: var(--ios-gray);
+        }
+        .segment-btn.active { background: #fff; color: var(--ios-blue); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+
+        /* Inputs Modernos */
+        .field-label { font-size: 11px; font-weight: 800; color: var(--ios-gray); margin-left: 8px; margin-bottom: 6px; display: block; }
+        .input-pro {
             background: #F2F2F7; border: 2px solid transparent;
-            border-radius: 18px; padding: 16px; width: 100%;
-            font-size: 16px; margin-bottom: 15px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px; padding: 14px; width: 100%;
+            font-size: 16px; margin-bottom: 15px; transition: 0.2s;
         }
-        .smart-field:focus { background: #fff; border-color: var(--apple-blue); outline: none; box-shadow: 0 8px 20px rgba(0,122,255,0.1); }
+        .input-pro:focus { background: #fff; border-color: var(--ios-blue); outline: none; }
 
-        /* Listas de Sugerencia Inteligentes */
-        .search-engine { position: relative; }
-        .neural-results {
-            position: absolute; width: 100%; background: #fff;
-            border-radius: 20px; z-index: 1100; margin-top: 8px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: none; overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
+        /* Buscador Neural */
+        .search-wrap { position: relative; }
+        .sug-box {
+            position: absolute; width: 100%; background: #fff; border-radius: 18px;
+            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            max-height: 200px; overflow-y: auto; display: none; margin-top: 5px;
         }
-        .result-item { padding: 16px 20px; border-bottom: 0.5px solid #F2F2F7; cursor: pointer; }
-        .result-item:active { background: #F2F2F7; }
+        .sug-item { padding: 14px 20px; border-bottom: 1px solid #F2F2F7; cursor: pointer; }
 
-        /* Botones Pro */
-        .btn-neural {
-            border-radius: 20px; padding: 18px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Botones de Acción */
+        .btn-main {
+            border-radius: 18px; padding: 18px; font-weight: 700; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;
         }
-        .btn-delivery { background: var(--apple-blue); color: white; }
-        .btn-return { background: var(--apple-red); color: white; }
-        .btn-neural:active { transform: scale(0.92); }
+        .btn-blue { background: var(--ios-blue); color: #fff; }
+        .btn-red { background: var(--ios-red); color: #fff; }
+        .btn-main:active { transform: scale(0.96); opacity: 0.9; }
 
-        /* Historial - Diseño de Ticket */
-        .ticket {
-            background: #fff; border-radius: 24px; padding: 18px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 0.5px solid rgba(0,0,0,0.05); animation: fadeInUp 0.5s ease forwards;
+        /* Historial - Tickets */
+        .ticket-pro {
+            background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 10px;
+            display: flex; align-items: center; border: 1px solid rgba(0,0,0,0.02);
         }
-        .stamp-icon { 
-            width: 45px; height: 45px; border-radius: 14px; 
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        .ticket-icon { 
+            width: 48px; height: 48px; border-radius: 14px; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
         }
-        .bg-del { background: #E1EFFF; color: var(--apple-blue); }
-        .bg-ret { background: #FFE5E5; color: var(--apple-red); }
+        .icon-venta { background: #E1F0FF; color: var(--ios-blue); }
+        .icon-mkt { background: #FFF4E5; color: var(--ios-orange); }
+        .icon-dev { background: #FFE5E5; color: var(--ios-red); }
 
-        /* Tab Bar Flotante (iOS 18) */
-        .neural-tabs {
-            position: fixed; bottom: 30px; left: 20px; right: 20px;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
-            border-radius: 35px; padding: 12px 10px; display: flex;
-            justify-content: space-around; z-index: 2000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        /* Tab Bar (iOS Style) */
+        .tab-bar {
+            position: fixed; bottom: 25px; left: 15px; right: 15px;
+            background: rgba(28,28,30,0.95); backdrop-filter: blur(20px);
+            border-radius: 30px; padding: 12px; display: flex;
+            justify-content: space-around; z-index: 3000;
         }
-        .tab-trigger { border: none; background: none; color: #777; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        .tab-trigger.active { color: #fff; transform: translateY(-5px); }
-        .tab-trigger i { font-size: 22px; margin-bottom: 4px; }
-        .tab-trigger span { font-size: 10px; font-weight: 700; }
+        .tab-item { border: none; background: none; color: #777; font-size: 10px; font-weight: 700; text-align: center; }
+        .tab-item.active { color: #fff; }
+        .tab-item i { font-size: 22px; margin-bottom: 4px; display: block; }
 
         .view { display: none; }
-        .active-view { display: block; animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        .active-view { display: block; animation: fadeInUp 0.4s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <nav class="neural-nav">
-        <div class="brand">TITAN <span style="color:var(--apple-blue)">OS</span></div>
-        <div class="ai-status"><i class="fas fa-brain"></i> Neural Link Active</div>
+    <nav class="glass-header">
+        <div class="brand">TITAN <span style="color:var(--ios-blue)">FLOW</span></div>
+        <div class="small fw-bold opacity-50" id="user-info">J. Angelo <i class="fas fa-bolt text-warning"></i></div>
     </nav>
 
-    <div class="view-container">
-        <section id="view-delivery" class="view active-view">
-            <div class="ios-card">
-                <h6 class="group-label">Información de Destino</h6>
+    <main class="container-fluid p-0">
+        
+        <section id="v-del" class="view active-view">
+            <div class="card-pro">
+                <span class="field-label">TIPO DE MOVIMIENTO</span>
+                <div class="segmented-control">
+                    <button class="segment-btn active" onclick="setMode('VENTA', this)">VENTA</button>
+                    <button class="segment-btn" onclick="setMode('MARKETING', this)">MKT</button>
+                    <button class="segment-btn" onclick="setMode('OFICINA', this)">OFICINA</button>
+                    <button class="segment-btn" onclick="setMode('OTROS', this)">OTROS</button>
+                </div>
+
                 <div class="row g-2">
-                    <div class="col-6"><input type="text" id="cli-d" class="smart-field" placeholder="Cliente" oninput="iaPredict(this.value, 'ven-d')"></div>
-                    <div class="col-6"><input type="text" id="ven-d" class="smart-field" placeholder="Vendedor"></div>
-                </div>
-                <h6 class="group-label">Despacho de Productos</h6>
-                <div class="search-engine">
-                    <input type="text" id="search-d" class="smart-field" placeholder="🔍 Buscar SKU o Nombre..." oninput="smartSearch(this.value, 'box-d', 'd')">
-                    <div id="box-d" class="neural-results"></div>
-                </div>
-
-                <div id="panel-d" class="d-none animate__animated animate__fadeIn">
-                    <div class="p-3 mb-3 rounded-4 bg-light border">
-                        <b id="name-d"></b><br><small id="sku-d" class="text-primary"></small>
+                    <div class="col-6">
+                        <span class="field-label">CLIENTE / ÁREA</span>
+                        <input type="text" id="cli-d" class="input-pro" placeholder="Destino..." oninput="iaBrain(this.value)">
                     </div>
-                    <input type="number" id="q-d" class="smart-field" placeholder="Cantidad a Entregar">
-                    <button class="btn-neural btn-delivery" onclick="addToList('d')">Agregar al Lote <i class="fas fa-plus"></i></button>
+                    <div class="col-6">
+                        <span class="field-label">ENTREGADO POR</span>
+                        <input type="text" id="ven-d" class="input-pro" placeholder="Nombre..." onclick="confirmChange('vendedor')">
+                    </div>
                 </div>
 
-                <div id="queue-d" class="mt-4 d-none">
-                    <div id="list-d" class="mb-3"></div>
-                    <button class="btn-neural btn-delivery shadow-lg" onclick="saveToSheets('Pedidos', 'd')">FINALIZAR ENTREGA <i class="fas fa-paper-plane"></i></button>
+                <span class="field-label">ESCANEADO / BÚSQUEDA</span>
+                <div class="search-wrap">
+                    <input type="text" id="search-d" class="input-pro" placeholder="🔍 SKU o Nombre del producto..." oninput="neuralSearch(this.value, 'sug-d', 'd')">
+                    <div id="sug-d" class="sug-box"></div>
+                </div>
+
+                <div id="panel-d" class="d-none mt-2 p-3 rounded-4 bg-light border">
+                    <b id="p-name-d" class="d-block mb-1"></b>
+                    <div class="d-flex gap-2 align-items-center">
+                        <input type="number" id="q-d" class="input-pro m-0" placeholder="Cant.">
+                        <button class="btn-main btn-blue" style="width: 60px; height: 50px;" onclick="addToList('d')"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div id="list-d" class="mt-4 d-none">
+                    <div class="d-flex justify-content-between mb-2"><span class="field-label">LOTE A PROCESAR</span><span id="badge-mode" class="badge bg-primary">VENTA</span></div>
+                    <div id="items-d" class="mb-3"></div>
+                    <button class="btn-main btn-blue shadow-lg" onclick="saveData('Pedidos', 'd')">CONFIRMAR & GUARDAR <i class="fas fa-check-circle"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="view-return" class="view">
-            <div class="ios-card">
-                <h6 class="group-label text-danger">Módulo de Calidad & Retornos</h6>
-                <div class="row g-2">
-                    <div class="col-6"><input type="text" id="cli-r" class="smart-field" placeholder="Cliente" oninput="iaPredict(this.value, 'ven-r')"></div>
-                    <div class="col-6"><input type="text" id="ven-r" class="smart-field" placeholder="Vendedor"></div>
-                </div>
-                <div class="search-engine">
-                    <input type="text" id="search-r" class="smart-field" placeholder="🔍 Buscar Producto con Falla..." oninput="smartSearch(this.value, 'box-r', 'r')">
-                    <div id="box-r" class="neural-results"></div>
+        <section id="v-ret" class="view">
+            <div class="card-pro">
+                <span class="field-label text-danger">MODULO QC (CALIDAD)</span>
+                <input type="text" id="cli-r" class="input-pro" placeholder="Nombre del Cliente..." oninput="iaBrain(this.value)">
+                <input type="text" id="ven-r" class="input-pro" placeholder="Vendedor Responsable...">
+                
+                <div class="search-wrap">
+                    <input type="text" id="search-r" class="input-pro" placeholder="🔍 Buscar producto fallado..." oninput="neuralSearch(this.value, 'sug-r', 'r')">
+                    <div id="sug-r" class="sug-box"></div>
                 </div>
 
-                <div id="panel-r" class="d-none animate__animated animate__fadeIn">
-                    <div class="p-3 mb-3 bg-light rounded-4 border"><b id="name-r"></b></div>
+                <div id="panel-r" class="d-none mt-2">
+                    <div class="p-3 bg-light rounded-4 border mb-3"><b id="p-name-r"></b></div>
                     <div class="row g-2 mb-3">
-                        <div class="col-6"><label class="group-label">Guía</label><input type="number" id="cg-r" class="smart-field"></div>
-                        <div class="col-6"><label class="group-label">Real</label><input type="number" id="cr-r" class="smart-field"></div>
+                        <div class="col-6"><label class="field-label">Guía</label><input type="number" id="cg-r" class="input-pro"></div>
+                        <div class="col-6"><label class="field-label">Real</label><input type="number" id="cr-r" class="input-pro"></div>
                     </div>
-                    <select id="st-r" class="smart-field mb-3">
+                    <select id="st-r" class="input-pro">
                         <option>FALLADO A MERMA</option>
                         <option>SE ARREGLO EL PRODUCTO</option>
                         <option>PRODUCTO FALLA DE IMPORTACION</option>
                     </select>
-                    <button class="btn-neural btn-return" onclick="addToList('r')">Validar Falla <i class="fas fa-microscope"></i></button>
+                    <button class="btn-main btn-red" onclick="addToList('r')">Añadir a Devolución</button>
                 </div>
 
-                <div id="queue-r" class="mt-4 d-none">
-                    <div id="list-r" class="mb-3"></div>
-                    <button class="btn-neural btn-return shadow-lg" onclick="saveToSheets('Devoluciones', 'r')">CONFIRMAR QC & PDF <i class="fas fa-file-signature"></i></button>
+                <div id="list-r" class="mt-4 d-none">
+                    <div id="items-r" class="mb-3"></div>
+                    <button class="btn-main btn-red" onclick="saveData('Devoluciones', 'r')">PROCESAR QC & PDF <i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="view-history" class="view">
-            <div class="px-2">
-                <h6 class="group-label">Actividad del Sistema</h6>
-                <div id="logs"></div>
+        <section id="v-his" class="view">
+            <div class="px-3 py-2">
+                <h6 class="field-label">ÚLTIMOS MOVIMIENTOS</h6>
+                <div id="history-feed"></div>
             </div>
         </section>
-    </div>
+    </main>
 
-    <nav class="neural-tabs">
-        <button class="tab-trigger active" onclick="changeTab('delivery', this)"><i class="fas fa-truck-loading"></i><span>Entrega</span></button>
-        <button class="tab-trigger" onclick="changeTab('return', this)"><i class="fas fa-sync-alt"></i><span>Retorno</span></button>
-        <button class="tab-trigger" onclick="changeTab('history', this)"><i class="fas fa-database"></i><span>Historial</span></button>
+    <nav class="tab-bar">
+        <button class="tab-item active" onclick="nav('del', this)"><i class="fas fa-box-open"></i><span>Entrega</span></button>
+        <button class="tab-item" onclick="nav('ret', this)"><i class="fas fa-undo-alt"></i><span>Retorno</span></button>
+        <button class="tab-item" onclick="nav('his', this)"><i class="fas fa-list-ul"></i><span>Historial</span></button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER_DB = []; let MEMORY = {}; let Q_D = []; let Q_R = []; let TEMP = null;
+        let DB = []; let MEMORY = {}; let Q_D = []; let Q_R = []; let SEL = null;
+        let CURRENT_MODE = "VENTA";
 
         async function init() {
             try {
-                const res = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const data = await res.json();
-                MASTER_DB = data.p;
-                data.h.forEach(r => { if(r[5]) MEMORY[r[5].toLowerCase()] = r[6].split('| Vend: ')[1] || r[6]; });
-                renderLogs(data.h);
-            } catch(e) { Swal.fire("Modo Offline", "Los datos locales están activos", "info"); }
+                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+                const d = await r.json();
+                DB = d.p;
+                d.h.forEach(row => { if(row[5]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
+                renderHistory(d.h);
+            } catch(e) { console.warn("Modo offline o error de red."); }
         }
 
-        function iaPredict(v, targetId) {
+        function setMode(mode, btn) {
+            CURRENT_MODE = mode;
+            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('badge-mode').innerText = mode;
+            document.getElementById('badge-mode').className = `badge bg-${mode === 'VENTA' ? 'primary' : 'warning text-dark'}`;
+        }
+
+        function iaBrain(v) {
             const match = MEMORY[v.toLowerCase()];
-            if(match) document.getElementById(targetId).value = match;
+            if(match) {
+                document.getElementById('ven-d').value = match;
+                document.getElementById('ven-r').value = match;
+            }
         }
 
-        function smartSearch(v, boxId, type) {
+        function confirmChange(tipo) {
+            Swal.fire({
+                title: '¿Cambiar responsable?',
+                text: "Estás a punto de modificar el nombre del despachador/vendedor.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#007AFF',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Sí, cambiar'
+            });
+        }
+
+        function neuralSearch(v, boxId, type) {
             const box = document.getElementById(boxId);
             if(v.length < 1) { box.style.display='none'; return; }
-            const matches = MASTER_DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="result-item" onclick="pickItem('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = matches.map(p => `<div class="sug-item" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
             box.style.display = matches.length ? 'block' : 'none';
         }
 
-        function pickItem(sku, name, type) {
-            TEMP = {sku, name};
-            document.getElementById(`name-${type}`).innerText = name;
-            if(type==='d') document.getElementById(`sku-d`).innerText = sku;
+        function pick(sku, name, type) {
+            SEL = {sku, name};
+            document.getElementById(`p-name-${type}`).innerText = name;
             document.getElementById(`panel-${type}`).classList.remove('d-none');
-            document.querySelectorAll('.neural-results').forEach(b => b.style.display='none');
+            document.querySelectorAll('.sug-box').forEach(b => b.style.display='none');
         }
 
         function addToList(type) {
-            const qArea = document.getElementById(`queue-${type}`);
-            const lArea = document.getElementById(`list-${type}`);
-            
             if(type==='d') {
                 const val = document.getElementById('q-d').value;
                 if(!val) return;
-                Q_D.push({...TEMP, c: val});
+                Q_D.push({...SEL, q: val, mode: CURRENT_MODE});
             } else {
                 const cg = document.getElementById('cg-r').value;
                 const cr = document.getElementById('cr-r').value;
                 if(!cg || !cr) return;
-                Q_R.push({...TEMP, cg, cr, st: document.getElementById('st-r').value});
+                Q_R.push({...SEL, cg, cr, st: document.getElementById('st-r').value});
             }
-
-            qArea.classList.remove('d-none');
-            const list = type==='d' ? Q_D : Q_R;
-            lArea.innerHTML = list.map(i => `
-                <div class="p-3 mb-2 rounded-4 border bg-white d-flex justify-content-between align-items-center">
-                    <div><b>${i.name}</b><br><small class="opacity-50">${i.st || 'Entrega'}</small></div>
-                    <span class="badge rounded-pill bg-primary">x${i.c || i.cr}</span>
-                </div>
-            `).join('');
+            renderList(type);
             document.getElementById(`panel-${type}`).classList.add('d-none');
             document.getElementById(`search-${type}`).value = "";
         }
 
-        async function saveToSheets(sheet, type) {
-            const cli = document.getElementById(`cli-${type}`).value;
-            const ven = document.getElementById(`ven-${type}`).value;
-            if(!cli || !ven) return Swal.fire("Campo vacío", "Completa Cliente y Vendedor", "warning");
-
+        function renderList(type) {
             const list = type==='d' ? Q_D : Q_R;
-            const payload = list.map(i => [new Date(), type==='d'?'ENTREGA':'DEVOLUCION', i.sku, i.name, i.c || i.cr, cli, type==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`]);
-
-            Swal.fire({title:'Sincronizando Cerebro...', didOpen:()=>Swal.showLoading()});
-            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-            
-            if(type==='r') {
-                createPDF(cli, ven, list);
-                sendWhatsApp(cli, ven, list);
-            }
-
-            Swal.fire("Sincronizado", "Los datos están en la nube", "success").then(()=>location.reload());
+            document.getElementById(`list-${type}`).classList.remove('d-none');
+            document.getElementById(`items-${type}`).innerHTML = list.map(i => `
+                <div class="p-3 mb-2 rounded-4 bg-white border d-flex justify-content-between align-items-center">
+                    <div><b>${i.name}</b><br><small class="text-muted">${i.mode || i.st}</small></div>
+                    <span class="badge rounded-pill bg-dark">x${i.q || i.cr}</span>
+                </div>
+            `).join('');
         }
 
-        function renderLogs(h) {
-            document.getElementById('logs').innerHTML = h.slice(0,25).map(r => `
-                <div class="ticket">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stamp-icon ${r[1]==='ENTREGA'?'bg-del':'bg-ret'}">
-                            <i class="fas ${r[1]==='ENTREGA'?'fa-arrow-up':'fa-arrow-down'}"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold">${r[5]}</div>
-                            <small class="opacity-50">${r[3]}</small>
-                        </div>
+        async function saveData(sheet, type) {
+            const cli = document.getElementById(`cli-${type}`).value;
+            const ven = document.getElementById(`ven-${type}`).value;
+            if(!cli || !ven) return Swal.fire("Atención", "Escribe Cliente y Vendedor", "warning");
+
+            const list = type==='d' ? Q_D : Q_R;
+            const payload = list.map(i => [
+                new Date(), 
+                type==='d' ? i.mode : 'DEVOLUCION', 
+                i.sku, i.name, i.q || i.cr, 
+                cli, 
+                type==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`
+            ]);
+
+            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+            
+            if(type==='r') { generatePDF(cli, ven, list); }
+            Swal.fire("Éxito", "Los datos están seguros", "success").then(()=>location.reload());
+        }
+
+        function renderHistory(h) {
+            document.getElementById('history-feed').innerHTML = h.slice(0,30).map(r => `
+                <div class="ticket-pro">
+                    <div class="ticket-icon ${r[1]==='DEVOLUCION'?'icon-dev':(r[1]==='VENTA'?'icon-venta':'icon-mkt')}">
+                        <i class="fas ${r[1]==='DEVOLUCION'?'fa-redo':(r[1]==='VENTA'?'fa-shopping-cart':'fa-gift')}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${r[5]}</div>
+                        <small class="opacity-50">${r[3]}</small>
                     </div>
                     <div class="text-end">
                         <div class="fw-bold text-primary">x${r[4]}</div>
-                        <div style="font-size:9px" class="opacity-30">${new Date(r[0]).toLocaleDateString()}</div>
+                        <small style="font-size:9px" class="opacity-30">${r[1]}</small>
                     </div>
                 </div>
             `).join('');
         }
 
-        function createPDF(cli, ven, list) {
+        function generatePDF(cli, ven, list) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(0, 122, 255); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE OFICIAL DE INSPECCIÓN", 14, 25);
-            doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
+            doc.setFillColor(0, 122, 255); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN", 14, 25);
+            doc.setFontSize(10); doc.text(`CLIENTE: ${cli} | VENDEDOR: ${ven}`, 14, 35);
             
             doc.autoTable({
-                head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'DIAGNÓSTICO']],
-                body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
-                startY: 50, theme: 'grid', headStyles: {fillColor: [30, 30, 30]}
+                head: [['SKU', 'ARTÍCULO', 'REAL', 'DIAGNÓSTICO']],
+                body: list.map(i => [i.sku, i.name, i.cr, i.st]),
+                startY: 45, theme: 'grid'
             });
 
             const fY = doc.lastAutoTable.finalY + 30;
             doc.setTextColor(0); doc.line(14, fY, 100, fY);
-            doc.setFontSize(10); doc.setFont(undefined, 'bold');
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, fY + 7);
-            doc.setFont(undefined, 'normal');
             doc.text("Asist. Inventario Logístico", 14, fY + 12);
             doc.save(`QC_${cli}.pdf`);
         }
 
-        function sendWhatsApp(cli, ven, list) {
-            let msg = `*REPORTE QC - TITAN OS*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
-            list.forEach(i => { msg += `• ${i.name} (Real: ${i.cr}/Guia: ${i.cg})%0A  _Estado: ${i.st}_%0A`; });
-            msg += `%0A*Autorizado por:* J. Angelo Nuñez Durand`;
-            window.open(`https://wa.me/?text=${msg}`, '_blank');
-        }
-
-        function changeTab(viewId, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
-            document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
-            document.getElementById('view-'+viewId).classList.add('active-view');
+        function nav(v, btn) {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active-view'));
+            document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active-view');
             btn.classList.add('active');
             window.scrollTo(0,0);
         }
