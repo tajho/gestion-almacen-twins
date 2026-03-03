@@ -19,273 +19,258 @@
             --ios-orange: #FF9500;
             --ios-green: #34C759;
             --ios-gray: #8E8E93;
-            --bg: #F8F9FB;
+            --bg: #F2F2F7;
         }
 
         body { 
             background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #1C1C1E; margin: 0; padding-bottom: 120px;
+            color: #1C1C1E; margin: 0; padding-bottom: 110px;
         }
 
-        /* Navegación Superior */
         .glass-header {
             position: sticky; top: 0; z-index: 1000;
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(20px);
             padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .brand { font-weight: 800; font-size: 22px; letter-spacing: -1px; }
 
-        /* Tarjetas Adaptables */
         .card-pro {
-            background: #fff; border-radius: 24px; padding: 20px;
-            margin: 12px; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            background: #fff; border-radius: 28px; padding: 22px;
+            margin: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            animation: fadeIn 0.5s ease;
         }
 
-        /* Segmented Control (Selector de Tipo de Salida) */
+        .field-label { font-size: 11px; font-weight: 800; color: var(--ios-gray); margin: 0 0 6px 10px; text-transform: uppercase; }
+        
+        .input-pro {
+            background: #F2F2F7; border: 2px solid transparent;
+            border-radius: 18px; padding: 14px 18px; width: 100%;
+            font-size: 16px; margin-bottom: 12px; transition: 0.3s;
+        }
+        .input-pro:focus { background: #fff; border-color: var(--ios-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+
+        /* Estilo para el área de notas con lápiz */
+        .notes-wrapper { position: relative; }
+        .notes-wrapper i { position: absolute; right: 15px; top: 15px; color: var(--ios-blue); opacity: 0.5; }
+        .input-notes { padding-right: 40px !important; min-height: 80px; resize: none; }
+
+        /* Segmented Control */
         .segmented-control {
-            display: flex; background: #EEEFF3; padding: 4px;
-            border-radius: 14px; margin-bottom: 20px;
+            display: flex; background: #E3E3E8; padding: 3px;
+            border-radius: 14px; margin-bottom: 15px;
         }
         .segment-btn {
             flex: 1; border: none; background: none; padding: 8px;
-            font-size: 11px; font-weight: 700; border-radius: 11px;
-            transition: 0.3s; color: var(--ios-gray);
+            font-size: 11px; font-weight: 700; border-radius: 11px; color: var(--ios-gray);
         }
-        .segment-btn.active { background: #fff; color: var(--ios-blue); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .segment-btn.active { background: #fff; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
 
-        /* Inputs Modernos */
-        .field-label { font-size: 11px; font-weight: 800; color: var(--ios-gray); margin-left: 8px; margin-bottom: 6px; display: block; }
-        .input-pro {
-            background: #F2F2F7; border: 2px solid transparent;
-            border-radius: 16px; padding: 14px; width: 100%;
-            font-size: 16px; margin-bottom: 15px; transition: 0.2s;
-        }
-        .input-pro:focus { background: #fff; border-color: var(--ios-blue); outline: none; }
-
-        /* Buscador Neural */
-        .search-wrap { position: relative; }
-        .sug-box {
-            position: absolute; width: 100%; background: #fff; border-radius: 18px;
-            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            max-height: 200px; overflow-y: auto; display: none; margin-top: 5px;
-        }
-        .sug-item { padding: 14px 20px; border-bottom: 1px solid #F2F2F7; cursor: pointer; }
-
-        /* Botones de Acción */
+        /* Botones Animados */
         .btn-main {
-            border-radius: 18px; padding: 18px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;
+            border-radius: 20px; padding: 18px; font-weight: 700; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
         .btn-blue { background: var(--ios-blue); color: #fff; }
         .btn-red { background: var(--ios-red); color: #fff; }
-        .btn-main:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-main:active { transform: scale(0.94); }
 
-        /* Historial - Tickets */
-        .ticket-pro {
-            background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 10px;
-            display: flex; align-items: center; border: 1px solid rgba(0,0,0,0.02);
-        }
-        .ticket-icon { 
-            width: 48px; height: 48px; border-radius: 14px; margin-right: 15px;
-            display: flex; align-items: center; justify-content: center; font-size: 18px;
-        }
-        .icon-venta { background: #E1F0FF; color: var(--ios-blue); }
-        .icon-mkt { background: #FFF4E5; color: var(--ios-orange); }
-        .icon-dev { background: #FFE5E5; color: var(--ios-red); }
-
-        /* Tab Bar (iOS Style) */
+        /* Tab Bar */
         .tab-bar {
-            position: fixed; bottom: 25px; left: 15px; right: 15px;
-            background: rgba(28,28,30,0.95); backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 12px; display: flex;
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
+            border-radius: 35px; padding: 12px; display: flex;
             justify-content: space-around; z-index: 3000;
         }
-        .tab-item { border: none; background: none; color: #777; font-size: 10px; font-weight: 700; text-align: center; }
+        .tab-item { border: none; background: none; color: #666; font-size: 10px; font-weight: 700; text-align: center; }
         .tab-item.active { color: #fff; }
         .tab-item i { font-size: 22px; margin-bottom: 4px; display: block; }
 
+        .search-results {
+            position: absolute; width: 100%; background: #fff; border-radius: 20px;
+            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.15); display: none; margin-top: 5px;
+        }
+        .res-item { padding: 15px 20px; border-bottom: 1px solid #f2f2f7; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .view { display: none; }
-        .active-view { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .active-view { display: block; }
     </style>
 </head>
 <body>
 
     <nav class="glass-header">
-        <div class="brand">TITAN <span style="color:var(--ios-blue)">FLOW</span></div>
-        <div class="small fw-bold opacity-50" id="user-info">J. Angelo <i class="fas fa-bolt text-warning"></i></div>
+        <div class="fw-800 fs-4">TITAN <span class="text-primary">OS</span></div>
+        <div class="badge rounded-pill bg-light text-dark border px-3">J. Angelo <i class="fas fa-check-circle text-primary ms-1"></i></div>
     </nav>
 
-    <main class="container-fluid p-0">
-        
+    <main>
         <section id="v-del" class="view active-view">
             <div class="card-pro">
-                <span class="field-label">TIPO DE MOVIMIENTO</span>
+                <span class="field-label">Tipo de Salida</span>
                 <div class="segmented-control">
                     <button class="segment-btn active" onclick="setMode('VENTA', this)">VENTA</button>
                     <button class="segment-btn" onclick="setMode('MARKETING', this)">MKT</button>
                     <button class="segment-btn" onclick="setMode('OFICINA', this)">OFICINA</button>
-                    <button class="segment-btn" onclick="setMode('OTROS', this)">OTROS</button>
                 </div>
 
                 <div class="row g-2">
-                    <div class="col-6">
-                        <span class="field-label">CLIENTE / ÁREA</span>
-                        <input type="text" id="cli-d" class="input-pro" placeholder="Destino..." oninput="iaBrain(this.value)">
-                    </div>
-                    <div class="col-6">
-                        <span class="field-label">ENTREGADO POR</span>
-                        <input type="text" id="ven-d" class="input-pro" placeholder="Nombre..." onclick="confirmChange('vendedor')">
-                    </div>
+                    <div class="col-6"><span class="field-label">Cliente / Área</span><input type="text" id="cli-d" class="input-pro" placeholder="..." oninput="iaBrain(this.value)"></div>
+                    <div class="col-6"><span class="field-label">Asistente</span><input type="text" id="ven-d" class="input-pro" placeholder="..." onclick="confirmAction('cambiar el responsable')"></div>
                 </div>
 
-                <span class="field-label">ESCANEADO / BÚSQUEDA</span>
-                <div class="search-wrap">
-                    <input type="text" id="search-d" class="input-pro" placeholder="🔍 SKU o Nombre del producto..." oninput="neuralSearch(this.value, 'sug-d', 'd')">
-                    <div id="sug-d" class="sug-box"></div>
+                <div class="position-relative">
+                    <span class="field-label">Buscar Producto</span>
+                    <input type="text" id="search-d" class="input-pro" placeholder="SKU o Nombre..." oninput="search(this.value, 'res-d', 'd')">
+                    <div id="res-d" class="search-results"></div>
                 </div>
 
-                <div id="panel-d" class="d-none mt-2 p-3 rounded-4 bg-light border">
-                    <b id="p-name-d" class="d-block mb-1"></b>
-                    <div class="d-flex gap-2 align-items-center">
-                        <input type="number" id="q-d" class="input-pro m-0" placeholder="Cant.">
-                        <button class="btn-main btn-blue" style="width: 60px; height: 50px;" onclick="addToList('d')"><i class="fas fa-plus"></i></button>
-                    </div>
+                <div id="panel-d" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 bg-light rounded-4 mb-3 border"><b id="p-name-d"></b></div>
+                    <input type="number" id="q-d" class="input-pro" placeholder="Cantidad a Entregar">
+                    <button class="btn-main btn-blue" onclick="add('d')">Añadir a la lista <i class="fas fa-plus-circle"></i></button>
                 </div>
 
                 <div id="list-d" class="mt-4 d-none">
-                    <div class="d-flex justify-content-between mb-2"><span class="field-label">LOTE A PROCESAR</span><span id="badge-mode" class="badge bg-primary">VENTA</span></div>
                     <div id="items-d" class="mb-3"></div>
-                    <button class="btn-main btn-blue shadow-lg" onclick="saveData('Pedidos', 'd')">CONFIRMAR & GUARDAR <i class="fas fa-check-circle"></i></button>
+                    <button class="btn-main btn-blue shadow-lg" onclick="save('Pedidos', 'd')">GUARDAR ENTREGA <i class="fas fa-cloud-upload-alt"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-ret" class="view">
             <div class="card-pro">
-                <span class="field-label text-danger">MODULO QC (CALIDAD)</span>
-                <input type="text" id="cli-r" class="input-pro" placeholder="Nombre del Cliente..." oninput="iaBrain(this.value)">
-                <input type="text" id="ven-r" class="input-pro" placeholder="Vendedor Responsable...">
-                
-                <div class="search-wrap">
-                    <input type="text" id="search-r" class="input-pro" placeholder="🔍 Buscar producto fallado..." oninput="neuralSearch(this.value, 'sug-r', 'r')">
-                    <div id="sug-r" class="sug-box"></div>
+                <span class="field-label text-danger">Módulo de Retornos & Fallas</span>
+                <div class="row g-2">
+                    <div class="col-6"><span class="field-label">Cliente</span><input type="text" id="cli-r" class="input-pro" placeholder="..." oninput="iaBrain(this.value)"></div>
+                    <div class="col-6"><span class="field-label">Vendedor</span><input type="text" id="ven-r" class="input-pro" placeholder="..."></div>
                 </div>
 
-                <div id="panel-r" class="d-none mt-2">
-                    <div class="p-3 bg-light rounded-4 border mb-3"><b id="p-name-r"></b></div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6"><label class="field-label">Guía</label><input type="number" id="cg-r" class="input-pro"></div>
-                        <div class="col-6"><label class="field-label">Real</label><input type="number" id="cr-r" class="input-pro"></div>
+                <div class="position-relative">
+                    <span class="field-label">Producto Recibido</span>
+                    <input type="text" id="search-r" class="input-pro" placeholder="Buscar..." oninput="search(this.value, 'res-r', 'r')">
+                    <div id="res-r" class="search-results"></div>
+                </div>
+
+                <div id="panel-r" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 bg-light rounded-4 mb-3 border"><b id="p-name-r"></b></div>
+                    
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <span class="field-label">Cant. Guía</span>
+                            <input type="number" id="cg-r" class="input-pro" placeholder="En papel">
+                        </div>
+                        <div class="col-6">
+                            <span class="field-label">Cant. Real</span>
+                            <input type="number" id="cr-r" class="input-pro" placeholder="Físico">
+                        </div>
                     </div>
+
+                    <span class="field-label">Detalle del Estado</span>
                     <select id="st-r" class="input-pro">
                         <option>FALLADO A MERMA</option>
                         <option>SE ARREGLO EL PRODUCTO</option>
                         <option>PRODUCTO FALLA DE IMPORTACION</option>
+                        <option>CAMBIO POR ERROR</option>
                     </select>
-                    <button class="btn-main btn-red" onclick="addToList('r')">Añadir a Devolución</button>
+
+                    <span class="field-label">Observaciones Adicionales</span>
+                    <div class="notes-wrapper">
+                        <i class="fas fa-pen"></i>
+                        <textarea id="obs-r" class="input-pro input-notes" placeholder="Escribe aquí detalles específicos..."></textarea>
+                    </div>
+
+                    <button class="btn-main btn-red" onclick="add('r')">Validar Devolución <i class="fas fa-check"></i></button>
                 </div>
 
                 <div id="list-r" class="mt-4 d-none">
                     <div id="items-r" class="mb-3"></div>
-                    <button class="btn-main btn-red" onclick="saveData('Devoluciones', 'r')">PROCESAR QC & PDF <i class="fas fa-file-pdf"></i></button>
+                    <button class="btn-main btn-red shadow-lg" onclick="save('Devoluciones', 'r')">GENERAR REPORTE QC <i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view">
-            <div class="px-3 py-2">
-                <h6 class="field-label">ÚLTIMOS MOVIMIENTOS</h6>
-                <div id="history-feed"></div>
-            </div>
+            <div class="px-3" id="history-list"></div>
         </section>
     </main>
 
     <nav class="tab-bar">
-        <button class="tab-item active" onclick="nav('del', this)"><i class="fas fa-box-open"></i><span>Entrega</span></button>
-        <button class="tab-item" onclick="nav('ret', this)"><i class="fas fa-undo-alt"></i><span>Retorno</span></button>
-        <button class="tab-item" onclick="nav('his', this)"><i class="fas fa-list-ul"></i><span>Historial</span></button>
+        <button class="tab-item active" onclick="nav('del', this)"><i class="fas fa-truck-loading"></i><span>Entrega</span></button>
+        <button class="tab-item" onclick="nav('ret', this)"><i class="fas fa-exchange-alt"></i><span>Retorno</span></button>
+        <button class="tab-item" onclick="nav('his', this)"><i class="fas fa-history"></i><span>Historial</span></button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB = []; let MEMORY = {}; let Q_D = []; let Q_R = []; let SEL = null;
-        let CURRENT_MODE = "VENTA";
+        let DB = []; let MEM = {}; let QD = []; let QR = []; let SEL = null; let MODE = "VENTA";
 
         async function init() {
-            try {
-                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const d = await r.json();
-                DB = d.p;
-                d.h.forEach(row => { if(row[5]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
-                renderHistory(d.h);
-            } catch(e) { console.warn("Modo offline o error de red."); }
+            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+            const d = await r.json();
+            DB = d.p;
+            d.h.forEach(x => { if(x[5]) MEM[x[5].toLowerCase()] = x[6].split('| Vend: ')[1] || x[6]; });
+            renderHis(d.h);
         }
 
-        function setMode(mode, btn) {
-            CURRENT_MODE = mode;
-            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('badge-mode').innerText = mode;
-            document.getElementById('badge-mode').className = `badge bg-${mode === 'VENTA' ? 'primary' : 'warning text-dark'}`;
+        function setMode(m, b) {
+            MODE = m;
+            document.querySelectorAll('.segment-btn').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
         }
 
         function iaBrain(v) {
-            const match = MEMORY[v.toLowerCase()];
-            if(match) {
-                document.getElementById('ven-d').value = match;
-                document.getElementById('ven-r').value = match;
-            }
+            const m = MEM[v.toLowerCase()];
+            if(m) { document.getElementById('ven-d').value = m; document.getElementById('ven-r').value = m; }
         }
 
-        function confirmChange(tipo) {
+        function confirmAction(t) {
             Swal.fire({
-                title: '¿Cambiar responsable?',
-                text: "Estás a punto de modificar el nombre del despachador/vendedor.",
-                icon: 'warning',
+                title: '¿Confirmar cambio?',
+                text: `Deseas ${t} en este registro?`,
+                icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#007AFF',
-                cancelButtonText: 'Cancelar',
-                confirmButtonText: 'Sí, cambiar'
+                confirmButtonText: 'Sí, confirmar'
             });
         }
 
-        function neuralSearch(v, boxId, type) {
-            const box = document.getElementById(boxId);
+        function search(v, b, t) {
+            const box = document.getElementById(b);
             if(v.length < 1) { box.style.display='none'; return; }
             const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="sug-item" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            box.innerHTML = matches.map(p => `<div class="res-item" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
             box.style.display = matches.length ? 'block' : 'none';
         }
 
-        function pick(sku, name, type) {
-            SEL = {sku, name};
-            document.getElementById(`p-name-${type}`).innerText = name;
-            document.getElementById(`panel-${type}`).classList.remove('d-none');
-            document.querySelectorAll('.sug-box').forEach(b => b.style.display='none');
+        function pick(s, n, t) {
+            SEL = {sku:s, name:n};
+            document.getElementById(`p-name-${t}`).innerText = n;
+            document.getElementById(`panel-${t}`).classList.remove('d-none');
+            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
         }
 
-        function addToList(type) {
-            if(type==='d') {
-                const val = document.getElementById('q-d').value;
-                if(!val) return;
-                Q_D.push({...SEL, q: val, mode: CURRENT_MODE});
+        function add(t) {
+            if(t === 'd') {
+                const q = document.getElementById('q-d').value;
+                if(!q) return;
+                QD.push({...SEL, q, mode: MODE});
             } else {
                 const cg = document.getElementById('cg-r').value;
                 const cr = document.getElementById('cr-r').value;
+                const st = document.getElementById('st-r').value;
+                const obs = document.getElementById('obs-r').value;
                 if(!cg || !cr) return;
-                Q_R.push({...SEL, cg, cr, st: document.getElementById('st-r').value});
+                QR.push({...SEL, cg, cr, st, obs});
             }
-            renderList(type);
-            document.getElementById(`panel-${type}`).classList.add('d-none');
-            document.getElementById(`search-${type}`).value = "";
+            renderList(t);
+            document.getElementById(`panel-${t}`).classList.add('d-none');
+            document.getElementById(`search-${t}`).value = "";
         }
 
-        function renderList(type) {
-            const list = type==='d' ? Q_D : Q_R;
-            document.getElementById(`list-${type}`).classList.remove('d-none');
-            document.getElementById(`items-${type}`).innerHTML = list.map(i => `
+        function renderList(t) {
+            const list = t==='d' ? QD : QR;
+            document.getElementById(`list-${t}`).classList.remove('d-none');
+            document.getElementById(`items-${t}`).innerHTML = list.map(i => `
                 <div class="p-3 mb-2 rounded-4 bg-white border d-flex justify-content-between align-items-center">
                     <div><b>${i.name}</b><br><small class="text-muted">${i.mode || i.st}</small></div>
                     <span class="badge rounded-pill bg-dark">x${i.q || i.cr}</span>
@@ -293,56 +278,48 @@
             `).join('');
         }
 
-        async function saveData(sheet, type) {
-            const cli = document.getElementById(`cli-${type}`).value;
-            const ven = document.getElementById(`ven-${type}`).value;
-            if(!cli || !ven) return Swal.fire("Atención", "Escribe Cliente y Vendedor", "warning");
+        async function save(s, t) {
+            const cli = document.getElementById(`cli-${t}`).value;
+            const ven = document.getElementById(`ven-${t}`).value;
+            if(!cli || !ven) return Swal.fire("Campos incompletos", "Llena el Cliente y Responsable", "warning");
 
-            const list = type==='d' ? Q_D : Q_R;
-            const payload = list.map(i => [
-                new Date(), 
-                type==='d' ? i.mode : 'DEVOLUCION', 
-                i.sku, i.name, i.q || i.cr, 
-                cli, 
-                type==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`
-            ]);
+            const q = t==='d' ? QD : QR;
+            const payload = q.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
 
             Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
-            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: s, payload})});
             
-            if(type==='r') { generatePDF(cli, ven, list); }
-            Swal.fire("Éxito", "Los datos están seguros", "success").then(()=>location.reload());
+            if(t==='r') { generatePDF(cli, ven, q); }
+            Swal.fire("¡Listo!", "Registro completado con éxito", "success").then(()=>location.reload());
         }
 
-        function renderHistory(h) {
-            document.getElementById('history-feed').innerHTML = h.slice(0,30).map(r => `
-                <div class="ticket-pro">
-                    <div class="ticket-icon ${r[1]==='DEVOLUCION'?'icon-dev':(r[1]==='VENTA'?'icon-venta':'icon-mkt')}">
-                        <i class="fas ${r[1]==='DEVOLUCION'?'fa-redo':(r[1]==='VENTA'?'fa-shopping-cart':'fa-gift')}"></i>
-                    </div>
-                    <div class="flex-grow-1">
+        function renderHis(h) {
+            document.getElementById('history-list').innerHTML = h.slice(0,25).map(r => `
+                <div class="card-pro mb-2 d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'} mb-1">${r[1]}</span>
                         <div class="fw-bold">${r[5]}</div>
                         <small class="opacity-50">${r[3]}</small>
                     </div>
                     <div class="text-end">
-                        <div class="fw-bold text-primary">x${r[4]}</div>
-                        <small style="font-size:9px" class="opacity-30">${r[1]}</small>
+                        <div class="fw-bold text-dark fs-5">x${r[4]}</div>
+                        <small style="font-size:9px" class="opacity-30">${new Date(r[0]).toLocaleDateString()}</small>
                     </div>
                 </div>
             `).join('');
         }
 
-        function generatePDF(cli, ven, list) {
+        function generatePDF(cli, ven, q) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFillColor(0, 122, 255); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN", 14, 25);
-            doc.setFontSize(10); doc.text(`CLIENTE: ${cli} | VENDEDOR: ${ven}`, 14, 35);
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("ACTA DE DEVOLUCIÓN LOGÍSTICA", 14, 25);
+            doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
             
             doc.autoTable({
-                head: [['SKU', 'ARTÍCULO', 'REAL', 'DIAGNÓSTICO']],
-                body: list.map(i => [i.sku, i.name, i.cr, i.st]),
-                startY: 45, theme: 'grid'
+                head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'DIAGNÓSTICO', 'NOTAS']],
+                body: q.map(i => [i.sku, i.name, i.cg, i.cr, i.st, i.obs]),
+                startY: 45, theme: 'grid', styles: {fontSize: 8}
             });
 
             const fY = doc.lastAutoTable.finalY + 30;
@@ -352,12 +329,11 @@
             doc.save(`QC_${cli}.pdf`);
         }
 
-        function nav(v, btn) {
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active-view'));
-            document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+        function nav(v, b) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('active-view');
-            btn.classList.add('active');
-            window.scrollTo(0,0);
+            b.classList.add('active');
         }
 
         window.onload = init;
