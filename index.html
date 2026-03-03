@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN OS | Robust Interface</title>
+    <title>TITAN OS | Modern Robust</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,370 +11,368 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
         :root {
-            --primary: #0051FF;
-            --accent: #FF3B30;
-            --bg-heavy: #EBEDF0;
-            --card-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff;
-            --inner-shadow: inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff;
+            --dark-base: #0F172A;
+            --card-bg: #FFFFFF;
+            --accent-blue: #2563EB;
+            --accent-purple: #7C3AED;
+            --danger: #EF4444;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
         }
 
         body { 
-            background: var(--bg-heavy); font-family: 'Inter', sans-serif;
-            color: #2c3e50; margin: 0; padding-bottom: 120px;
+            background-color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main); margin: 0; padding-bottom: 110px;
         }
 
-        /* Header Robusto */
-        .robust-header {
-            background: #2c3e50; color: white; padding: 20px;
-            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        /* Header Estilo Moderno */
+        .header-modern {
+            background: var(--dark-base);
+            padding: 25px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        }
+        .header-modern .brand { font-weight: 800; font-size: 24px; color: #fff; letter-spacing: -1px; }
+        .header-modern .status { font-size: 11px; color: #10B981; font-weight: 600; text-transform: uppercase; }
+
+        /* Tarjetas con profundidad */
+        .card-titan {
+            background: var(--card-bg); border-radius: 24px; padding: 22px;
+            margin: -20px 15px 20px 15px; border: 1px solid rgba(255,255,255,1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06); position: relative;
         }
 
-        /* Tarjetas con Peso Visual */
-        .card-robust {
-            background: var(--bg-heavy); border-radius: 30px; padding: 25px;
-            margin: 20px 15px; border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: var(--card-shadow);
-        }
+        .section-label { font-size: 11px; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; margin: 15px 0 8px 5px; display: block; }
 
-        .section-title { font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; color: #5f6769; margin-bottom: 15px; display: block; }
-
-        /* Inputs Estilo "Slot" */
-        .input-robust {
-            background: var(--bg-heavy); border: none; border-radius: 15px;
-            padding: 16px; width: 100%; font-size: 16px; font-weight: 600;
-            box-shadow: var(--inner-shadow); margin-bottom: 15px; transition: 0.3s;
+        /* Inputs de Alto Contraste */
+        .input-titan {
+            background: #F1F5F9; border: 2px solid transparent;
+            border-radius: 16px; padding: 16px; width: 100%; font-size: 16px; font-weight: 600;
+            margin-bottom: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .input-robust:focus { outline: none; box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff; color: var(--primary); }
+        .input-titan:focus { background: #fff; border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        /* Selector de Vendedores Robusto */
-        .vendor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .vendor-chip { 
-            background: white; border-radius: 12px; padding: 10px; text-align: center;
-            font-size: 11px; font-weight: 700; border: 2px solid transparent; cursor: pointer;
-            box-shadow: 4px 4px 8px #bebebe; transition: 0.2s;
+        /* Chips de Vendedores */
+        .vendor-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .chip {
+            background: #F1F5F9; border-radius: 12px; padding: 12px 15px;
+            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+            transition: 0.2s; border: 2px solid transparent;
         }
-        .vendor-chip.active { border-color: var(--primary); background: #eef4ff; color: var(--primary); }
+        .chip.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); box-shadow: 0 5px 15px rgba(37,99,235,0.3); }
 
-        /* Segmented Control de Alto Relieve */
-        .mode-selector {
-            display: flex; background: #d1d9e6; padding: 5px; border-radius: 18px;
-            margin-bottom: 20px; box-shadow: inset 4px 4px 8px #b8b9be, inset -4px -4px 8px #ffffff;
-        }
-        .mode-btn {
-            flex: 1; border: none; background: none; padding: 10px; border-radius: 14px;
-            font-size: 11px; font-weight: 800; color: #666; transition: 0.3s;
-        }
-        .mode-btn.active { background: white; color: var(--primary); box-shadow: 3px 3px 6px #b8b9be; }
-
-        /* Botones Titan */
+        /* Botones de Acción */
         .btn-titan {
-            border-radius: 20px; padding: 20px; font-weight: 900; border: none; width: 100%;
+            border-radius: 18px; padding: 18px; font-weight: 800; border: none; width: 100%;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s;
         }
-        .btn-blue { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(0,81,255,0.3); }
-        .btn-red { background: var(--accent); color: white; box-shadow: 0 10px 20px rgba(255,59,48,0.3); }
-        .btn-titan:active { transform: translateY(4px); box-shadow: none; }
+        .btn-blue { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
+        .btn-red { background: linear-gradient(135deg, var(--danger), #B91C1C); color: white; }
+        .btn-titan:active { transform: scale(0.96); }
 
-        /* Historial Robusto */
-        .log-item {
-            background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-left: 8px solid var(--primary); box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+        /* Listas de Trabajo */
+        .item-row {
+            background: #F8FAFC; border-radius: 16px; padding: 15px; margin-bottom: 10px;
+            border-left: 6px solid var(--accent-blue); display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* Tab Bar Industrial */
-        .tab-industrial {
-            position: fixed; bottom: 0; width: 100%; background: #2c3e50;
+        /* Tab Bar Navegación */
+        .nav-modern {
+            position: fixed; bottom: 0; width: 100%; background: #fff;
             display: flex; justify-content: space-around; padding: 15px 0 30px 0;
-            border-top-left-radius: 30px; border-top-right-radius: 30px; z-index: 3000;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 2000;
         }
-        .tab-btn { border: none; background: none; color: #95a5a6; font-weight: 700; font-size: 10px; text-align: center; }
-        .tab-btn.active { color: white; }
-        .tab-btn i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .nav-link { border: none; background: none; color: #94A3B8; font-weight: 700; font-size: 10px; text-align: center; }
+        .nav-link.active { color: var(--accent-blue); }
+        .nav-link i { font-size: 24px; display: block; margin-bottom: 5px; }
 
         .view { display: none; }
-        .active-view { display: block; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .active-view { display: block; animation: fadeInUp 0.4s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .search-suggest {
-            background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
+        .search-pop {
+            position: absolute; width: 90%; background: white; border-radius: 18px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2); z-index: 3000; display: none; margin-top: -10px;
         }
     </style>
 </head>
 <body>
 
-    <header class="robust-header d-flex justify-content-between align-items-center">
-        <div>
-            <div style="font-size: 10px; opacity: 0.7; font-weight: 800;">BY TAJHO</div>
-            <div style="font-size: 20px; font-weight: 900;">TAJHO <span class="text-info">v22</span></div>
-        </div>
-        <div class="text-end">
-            <div style="font-size: 12px; font-weight: 700;">J. Angelo N. D.</div>
-            <div class="badge bg-success" style="font-size: 8px;">EN LÍNEA</div>
+    <header class="header-modern">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="status"><i class="fas fa-circle me-1"></i> Sistema Activo</div>
+                <div class="brand">TITAN <span style="color:var(--accent-blue)">FLOW</span></div>
+            </div>
+            <div class="text-end text-white">
+                <div style="font-size:12px; font-weight:600; opacity:0.8">J. Angelo N.D.</div>
+                <div style="font-size:9px; opacity:0.6">Asist. Logística</div>
+            </div>
         </div>
     </header>
 
     <main>
-        <section id="view-del" class="view active-view">
-            <div class="card-robust">
-                <span class="section-title">Parámetros de Salida</span>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="setMode('VENTA', this)">VENTA</button>
-                    <button class="mode-btn" onclick="setMode('MARKETING', this)">MKT</button>
-                    <button class="mode-btn" onclick="setMode('OFICINA', this)">OFICINA</button>
+        <section id="v-del" class="view active-view">
+            <div class="card-titan">
+                <span class="section-label">Parámetros</span>
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-VENTA" onclick="setM('VENTA')" style="background:#F1F5F9">VENTA</button>
+                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-MARKETING" onclick="setM('MARKETING')" style="background:#F1F5F9">MKT</button>
+                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-OFICINA" onclick="setM('OFICINA')" style="background:#F1F5F9">OFICINA</button>
                 </div>
 
-                <div class="row g-2">
-                    <div class="col-12"><input type="text" id="cli-d" class="input-robust" placeholder="CLIENTE / DESTINO" oninput="iaRecap(this.value)"></div>
+                <input type="text" id="cli-d" class="input-titan" placeholder="CLIENTE / DESTINO" oninput="saveSt()">
+                
+                <span class="section-label">Vendedor Asignado</span>
+                <div class="vendor-container" id="vend-d">
+                    <div class="chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
+                    <div class="chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
+                    <div class="chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
+                    <div class="chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
+                    <div class="chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
                 </div>
 
-                <span class="section-title">Asignar Vendedor</span>
-                <div class="vendor-grid" id="v-list-d">
-                    <div class="vendor-chip" onclick="selVendor('ELIAS AVILA', this, 'd')">ELIAS AVILA</div>
-                    <div class="vendor-chip" onclick="selVendor('EVELYN MURO', this, 'd')">EVELYN MURO</div>
-                    <div class="vendor-chip" onclick="selVendor('JHAYRO MAURICIO', this, 'd')">JHAYRO MAURICIO</div>
-                    <div class="vendor-chip" onclick="selVendor('PAULA GARCIA', this, 'd')">PAULA GARCIA</div>
-                    <div class="vendor-chip" onclick="selVendor('REGULO ANTEZA', this, 'd')">REGULO ANTEZA</div>
-                </div>
-                <input type="hidden" id="ven-d">
-
-                <span class="section-title">Control de Inventario</span>
                 <div class="position-relative">
-                    <input type="text" id="src-d" class="input-robust" placeholder="🔍 ESCANEAR O BUSCAR SKU" oninput="search(this.value, 'sug-d', 'd')">
-                    <div id="sug-d" class="search-suggest"></div>
+                    <input type="text" id="src-d" class="input-titan" placeholder="🔍 BUSCAR PRODUCTO..." oninput="find(this.value, 'pop-d', 'd')">
+                    <div id="pop-d" class="search-pop"></div>
                 </div>
 
-                <div id="panel-d" class="d-none">
-                    <div class="p-3 bg-white rounded-4 border-start border-primary border-5 mb-3">
-                        <small class="text-muted" id="p-sku-d"></small><br><b id="p-name-d"></b>
+                <div id="p-form-d" class="d-none mt-3">
+                    <div class="p-3 mb-3 rounded-4" style="background:#EFF6FF; border-left: 5px solid var(--accent-blue)">
+                        <b id="p-n-d"></b><br><small class="text-muted" id="p-s-d"></small>
                     </div>
-                    <input type="number" id="q-d" class="input-robust" placeholder="CANTIDAD A ENTREGAR">
-                    <button class="btn-titan btn-blue" onclick="push('d')">Añadir al Lote <i class="fas fa-plus"></i></button>
+                    <input type="number" id="q-d" class="input-titan" placeholder="CANTIDAD">
+                    <button class="btn-titan btn-blue" onclick="addItem('d')">Añadir ítem <i class="fas fa-plus"></i></button>
                 </div>
 
-                <div id="queue-d" class="mt-4 d-none">
-                    <hr>
-                    <div id="items-d" class="mb-3"></div>
-                    <button class="btn-titan btn-blue" onclick="sync('Pedidos', 'd')">Sincronizar Entrega <i class="fas fa-save"></i></button>
+                <div id="q-list-d" class="mt-4 d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="section-label">Lista de Carga</span>
+                        <button class="btn btn-sm text-danger fw-bold" onclick="clearList('d')">Borrar todo</button>
+                    </div>
+                    <div id="items-d"></div>
+                    <button class="btn-titan btn-blue mt-3" onclick="syncAll('Pedidos', 'd')">Sincronizar <i class="fas fa-cloud-upload-alt"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="view-ret" class="view">
-            <div class="card-robust">
-                <span class="section-title text-danger">Inspección de Devolución</span>
-                <input type="text" id="cli-r" class="input-robust" placeholder="CLIENTE ORIGEN" oninput="iaRecap(this.value)">
+        <section id="v-ret" class="view">
+            <div class="card-titan">
+                <span class="section-label text-danger">Módulo de Retorno</span>
+                <input type="text" id="cli-r" class="input-titan" placeholder="CLIENTE ORIGEN" oninput="saveSt()">
                 
-                <span class="section-title">Vendedor Responsable</span>
-                <div class="vendor-grid" id="v-list-r">
-                    <div class="vendor-chip" onclick="selVendor('ELIAS AVILA', this, 'r')">ELIAS AVILA</div>
-                    <div class="vendor-chip" onclick="selVendor('EVELYN MURO', this, 'r')">EVELYN MURO</div>
-                    <div class="vendor-chip" onclick="selVendor('JHAYRO MAURICIO', this, 'r')">JHAYRO MAURICIO</div>
-                    <div class="vendor-chip" onclick="selVendor('PAULA GARCIA', this, 'r')">PAULA GARCIA</div>
-                    <div class="vendor-chip" onclick="selVendor('REGULO ANTEZA', this, 'r')">REGULO ANTEZA</div>
+                <span class="section-label">Responsable</span>
+                <div class="vendor-container" id="vend-r">
+                    <div class="chip" onclick="setV('ELIAS AVILA','r')">ELIAS AVILA</div>
+                    <div class="chip" onclick="setV('EVELYN MURO','r')">EVELYN MURO</div>
+                    <div class="chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO MAURICIO</div>
+                    <div class="chip" onclick="setV('PAULA GARCIA','r')">PAULA GARCIA</div>
+                    <div class="chip" onclick="setV('REGULO ANTEZA','r')">REGULO ANTEZA</div>
                 </div>
-                <input type="hidden" id="ven-r">
 
                 <div class="position-relative">
-                    <input type="text" id="src-r" class="input-robust" placeholder="🔍 PRODUCTO RECIBIDO" oninput="search(this.value, 'sug-r', 'r')">
-                    <div id="sug-r" class="search-suggest"></div>
+                    <input type="text" id="src-r" class="input-titan" placeholder="🔍 BUSCAR SKU FALLADO..." oninput="find(this.value, 'pop-r', 'r')">
+                    <div id="pop-r" class="search-pop"></div>
                 </div>
 
-                <div id="panel-r" class="d-none">
-                    <div class="p-3 bg-white rounded-4 border-start border-danger border-5 mb-3"><b id="p-name-r"></b></div>
+                <div id="p-form-r" class="d-none mt-3">
+                    <div class="p-3 mb-3 rounded-4" style="background:#FEF2F2; border-left: 5px solid var(--danger)"><b id="p-n-r"></b></div>
                     <div class="row g-2">
-                        <div class="col-6"><span class="section-title">Cant. Guía</span><input type="number" id="cg-r" class="input-robust"></div>
-                        <div class="col-6"><span class="section-title">Cant. Real</span><input type="number" id="cr-r" class="input-robust"></div>
+                        <div class="col-6"><input type="number" id="cg-r" class="input-titan" placeholder="CANT. GUÍA"></div>
+                        <div class="col-6"><input type="number" id="cr-r" class="input-titan" placeholder="CANT. REAL"></div>
                     </div>
-                    <span class="section-title">Diagnóstico</span>
-                    <select id="st-r" class="input-robust">
+                    <select id="st-r" class="input-titan">
                         <option>FALLADO A MERMA</option>
                         <option>SE ARREGLO EL PRODUCTO</option>
                         <option>PRODUCTO FALLA DE IMPORTACION</option>
                     </select>
-                    <span class="section-title">Observaciones (Lápiz)</span>
-                    <div class="position-relative">
-                        <textarea id="obs-r" class="input-robust" style="height: 100px;" placeholder="Detalles de la falla..."></textarea>
-                        <i class="fas fa-pen" style="position: absolute; right: 15px; top: 15px; color: #ccc;"></i>
-                    </div>
-                    <button class="btn-titan btn-red" onclick="push('r')">Validar Inspección <i class="fas fa-check-double"></i></button>
+                    <textarea id="obs-r" class="input-titan" style="height:80px" placeholder="Observaciones con lápiz..."></textarea>
+                    <button class="btn-titan btn-red" onclick="addItem('r')">Añadir a QC <i class="fas fa-check"></i></button>
                 </div>
 
-                <div id="queue-r" class="mt-4 d-none">
-                    <div id="items-r" class="mb-3"></div>
-                    <button class="btn-titan btn-red" onclick="sync('Devoluciones', 'r')">Generar Acta & Sincronizar <i class="fas fa-file-pdf"></i></button>
+                <div id="q-list-r" class="mt-4 d-none">
+                    <div id="items-r"></div>
+                    <button class="btn-titan btn-red mt-3" onclick="syncAll('Devoluciones', 'r')">Procesar & PDF <i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="view-his" class="view">
-            <div class="px-3 py-4" id="his-feed"></div>
+        <section id="v-his" class="view">
+            <div class="px-3" id="his-feed"></div>
         </section>
     </main>
 
-    <nav class="tab-industrial">
-        <button class="tab-btn active" onclick="navigate('del', this)"><i class="fas fa-shipping-fast"></i>ENTREGA</button>
-        <button class="tab-btn" onclick="navigate('ret', this)"><i class="fas fa-box-open"></i>RETORNO</button>
-        <button class="tab-btn" onclick="navigate('his', this)"><i class="fas fa-database"></i>HISTORIAL</button>
+    <nav class="nav-modern">
+        <button class="nav-link active" onclick="nav('del', this)"><i class="fas fa-dolly"></i>ENTREGA</button>
+        <button class="nav-link" onclick="nav('ret', this)"><i class="fas fa-undo"></i>RETORNO</button>
+        <button class="nav-link" onclick="nav('his', this)"><i class="fas fa-clock-rotate-left"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER_DB = []; let MEM = {}; let Q_D = []; let Q_R = []; let SEL = null; let CUR_MODE = "VENTA";
+        let DB = []; let QD = []; let QR = []; let SEL = null; let MODE = "VENTA"; let VEN = {d: '', r: ''};
 
         async function init() {
+            // Cargar de LocalStorage si existe
+            const local = JSON.parse(localStorage.getItem('TITAN_BACKUP'));
+            if(local) {
+                QD = local.QD || []; QR = local.QR || [];
+                document.getElementById('cli-d').value = local.cliD || '';
+                document.getElementById('cli-r').value = local.cliR || '';
+                if(local.venD) setV(local.venD, 'd');
+                if(local.venR) setV(local.venR, 'r');
+                setM(local.MODE || 'VENTA');
+                render('d'); render('r');
+            }
+
             const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
             const d = await r.json();
-            MASTER_DB = d.p;
-            d.h.forEach(x => { if(x[5]) MEM[x[5].toLowerCase()] = x[6].split('| Vend: ')[1] || x[6]; });
+            DB = d.p;
             renderHistory(d.h);
         }
 
-        function setMode(m, b) {
-            CUR_MODE = m;
-            document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
+        // Persistencia
+        function saveSt() {
+            const data = {
+                QD, QR, MODE,
+                cliD: document.getElementById('cli-d').value,
+                cliR: document.getElementById('cli-r').value,
+                venD: VEN.d, venR: VEN.r
+            };
+            localStorage.setItem('TITAN_BACKUP', JSON.stringify(data));
         }
 
-        function selVendor(name, b, type) {
-            document.querySelectorAll(`#v-list-${type} .vendor-chip`).forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            document.getElementById(`ven-${type}`).value = name;
+        function setM(m) {
+            MODE = m;
+            document.querySelectorAll('[id^="m-"]').forEach(b => b.style.background = '#F1F5F9');
+            document.getElementById('m-'+m).style.background = 'var(--accent-blue)';
+            document.getElementById('m-'+m).style.color = 'white';
+            saveSt();
         }
 
-        function iaRecap(v) {
-            const m = MEM[v.toLowerCase()];
-            if(m) {
-                const chips = document.querySelectorAll('.vendor-chip');
-                chips.forEach(c => {
-                    if(c.innerText === m.toUpperCase()) c.click();
-                });
-            }
+        function setV(n, t) {
+            document.querySelectorAll(`#vend-${t} .chip`).forEach(c => c.classList.remove('active'));
+            event?.target?.classList?.add('active') || Array.from(document.querySelectorAll(`#vend-${t} .chip`)).find(c => c.innerText === n)?.classList.add('active');
+            VEN[t] = n;
+            saveSt();
         }
 
-        function search(v, b, t) {
+        function find(v, b, t) {
             const box = document.getElementById(b);
             if(v.length < 1) { box.style.display='none'; return; }
-            const matches = MASTER_DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
             box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small>${p[0]}</small></div>`).join('');
             box.style.display = 'block';
         }
 
         function pick(s, n, t) {
             SEL = {sku:s, name:n};
-            document.getElementById(`p-name-${t}`).innerText = n;
-            if(t==='d') document.getElementById(`p-sku-d`).innerText = s;
-            document.getElementById(`panel-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-suggest').forEach(x => x.style.display='none');
+            document.getElementById(`p-n-${t}`).innerText = n;
+            if(t==='d') document.getElementById(`p-s-${t}`).innerText = s;
+            document.getElementById(`p-form-${t}`).classList.remove('d-none');
+            document.querySelectorAll('.search-pop').forEach(p => p.style.display='none');
         }
 
-        function push(t) {
+        function addItem(t) {
             if(t==='d') {
                 const q = document.getElementById('q-d').value;
                 if(!q) return;
-                Q_D.push({...SEL, q, m: CUR_MODE});
+                QD.push({...SEL, q, m: MODE});
+                // Limpiar campos de ítem
+                document.getElementById('q-d').value = '';
+                document.getElementById('src-d').value = '';
+                document.getElementById('p-form-d').classList.add('d-none');
             } else {
-                const cg = document.getElementById('cg-r').value;
-                const cr = document.getElementById('cr-r').value;
-                const st = document.getElementById('st-r').value;
-                const obs = document.getElementById('obs-r').value;
+                const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
                 if(!cg || !cr) return;
-                Q_R.push({...SEL, cg, cr, st, obs});
+                QR.push({...SEL, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
+                // Limpiar campos de ítem
+                document.getElementById('cg-r').value = '';
+                document.getElementById('cr-r').value = '';
+                document.getElementById('obs-r').value = '';
+                document.getElementById('src-r').value = '';
+                document.getElementById('p-form-r').classList.add('d-none');
             }
-            document.getElementById(`queue-${t}`).classList.remove('d-none');
-            renderList(t);
-            document.getElementById(`panel-${t}`).classList.add('d-none');
-            document.getElementById(`src-${t}`).value = "";
+            render(t);
+            saveSt();
         }
 
-        function renderList(t) {
-            const l = t==='d' ? Q_D : Q_R;
-            document.getElementById(`items-${t}`).innerHTML = l.map(i => `
-                <div class="log-item">
+        function render(t) {
+            const list = t==='d' ? QD : QR;
+            const container = document.getElementById(`q-list-${t}`);
+            if(list.length > 0) container.classList.remove('d-none');
+            document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
+                <div class="item-row" style="border-left-color: ${t==='d'?'var(--accent-blue)':'var(--danger)'}">
                     <div><b>${i.name}</b><br><small>${i.m || i.st}</small></div>
-                    <div class="fw-bold fs-4">x${i.q || i.cr}</div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold fs-5">x${i.q || i.cr}</span>
+                        <i class="fas fa-times-circle text-danger" onclick="removeItem('${t}', ${idx})"></i>
+                    </div>
                 </div>
             `).join('');
         }
 
-        async function sync(sheet, type) {
-            const cli = document.getElementById(`cli-${type}`).value;
-            const ven = document.getElementById(`ven-${type}`).value;
-            if(!cli || !ven) return Swal.fire("Datos Faltantes", "Selecciona Cliente y Vendedor", "error");
+        function removeItem(t, idx) {
+            if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1);
+            render(t); saveSt();
+        }
 
-            const list = type==='d' ? Q_D : Q_R;
-            const payload = list.map(i => [new Date(), type==='d' ? i.m : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, type==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
+        function clearList(t) {
+            if(t==='d') QD = []; else QR = [];
+            render(t); saveSt();
+        }
 
-            Swal.fire({title:'CONECTANDO A TITAN CLOUD...', didOpen:()=>Swal.showLoading(), background: '#2c3e50', color: '#fff'});
+        async function syncAll(sheet, t) {
+            const cli = document.getElementById(`cli-${t}`).value;
+            const ven = VEN[t];
+            if(!cli || !ven) return Swal.fire("Atención", "Cliente y Vendedor son obligatorios", "warning");
+
+            const list = t==='d' ? QD : QR;
+            const payload = list.map(i => [new Date(), t==='d' ? i.m : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
+
+            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading(), background: '#0F172A', color: '#fff'});
             await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
             
-            if(type==='r') genPDF(cli, ven, list);
-            Swal.fire("SINCRO EXITOSA", "Registro almacenado", "success").then(()=>location.reload());
-        }
-
-        function renderHistory(h) {
-            document.getElementById('his-feed').innerHTML = h.slice(0,25).map(r => `
-                <div class="log-item" style="border-left-color: ${r[1]==='DEVOLUCION'?'var(--accent)':'var(--primary)'}">
-                    <div>
-                        <span style="font-size:9px; font-weight:900; color:${r[1]==='DEVOLUCION'?'var(--accent)':'var(--primary)'}">${r[1]}</span>
-                        <div class="fw-bold">${r[5]}</div>
-                        <small class="opacity-50">${r[3]}</small>
-                    </div>
-                    <div class="text-end">
-                        <div class="fw-bold fs-3">x${r[4]}</div>
-                        <div style="font-size:9px">${new Date(r[0]).toLocaleDateString()}</div>
-                    </div>
-                </div>
-            `).join('');
+            if(t==='r') genPDF(cli, ven, list);
+            localStorage.removeItem('TITAN_BACKUP');
+            Swal.fire("Éxito", "Datos guardados en nube", "success").then(()=>location.reload());
         }
 
         function genPDF(cli, ven, list) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Cabecera Industrial
-            doc.setFillColor(44, 62, 80); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN LOGÍSTICA", 14, 25);
-            doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
-            
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("REPORTE QC LOGÍSTICA", 14, 25);
             doc.autoTable({
-                head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'DIAGNÓSTICO', 'NOTAS']],
+                head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBS']],
                 body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st, i.obs]),
-                startY: 50, theme: 'grid', headStyles: {fillColor: [44, 62, 80]}
+                startY: 45, theme: 'grid'
             });
-
-            // Sello de Autorización Centrado al Final
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const pageWidth = doc.internal.pageSize.getWidth();
-            
-            doc.setTextColor(150, 150, 150);
-            doc.setFontSize(9);
-            const footer1 = "Revisión autorizada por J. Angelo Nuñez Durand";
-            const footer2 = "Asist. Inventario Logístico";
-            
-            // Dibujar un pequeño recuadro de sello
-            doc.setDrawColor(200, 200, 200);
-            doc.line(pageWidth/2 - 50, pageHeight - 25, pageWidth/2 + 50, pageHeight - 25);
-            
-            doc.setTextColor(0, 0, 0);
-            doc.setFont(undefined, 'bold');
-            doc.text(footer1, pageWidth / 2, pageHeight - 18, {align: 'center'});
-            doc.setFont(undefined, 'normal');
-            doc.text(footer2, pageWidth / 2, pageHeight - 13, {align: 'center'});
-            
-            doc.save(`TITAN_QC_${cli}.pdf`);
+            const pY = doc.internal.pageSize.getHeight();
+            const pW = doc.internal.pageSize.getWidth();
+            doc.setTextColor(100); doc.setFontSize(10);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", pW/2, pY - 20, {align: 'center'});
+            doc.text("Asist. Inventario Logístico", pW/2, pY - 15, {align: 'center'});
+            doc.save(`QC_${cli}.pdf`);
         }
 
-        function navigate(v, b) {
+        function renderHistory(h) {
+            document.getElementById('his-feed').innerHTML = h.slice(0,25).map(r => `
+                <div class="item-row bg-white shadow-sm" style="border-left-color: ${r[1]==='DEVOLUCION'?'var(--danger)':'var(--accent-blue)'}">
+                    <div><span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'} mb-1">${r[1]}</span><br><b>${r[5]}</b><br><small>${r[3]}</small></div>
+                    <div class="text-end"><b>x${r[4]}</b><br><small style="font-size:9px">${new Date(r[0]).toLocaleDateString()}</small></div>
+                </div>
+            `).join('');
+        }
+
+        function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
-            document.getElementById('view-'+v).classList.add('active-view');
+            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active-view');
             b.classList.add('active');
             window.scrollTo(0,0);
         }
