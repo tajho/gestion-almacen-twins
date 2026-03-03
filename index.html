@@ -12,233 +12,144 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-
-        :root {
-            --bg: #05070A; --card: #11141D; --accent: #3B82F6; --success: #10B981;
-            --danger: #F43F5E; --text: #F0F6FC; --muted: #8B949E; --glass: rgba(17, 20, 29, 0.9);
-        }
-
-        body { 
-            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); margin: 0; overflow-x: hidden; padding-bottom: 120px;
-        }
-
-        /* Header Cyber-Style */
-        .premium-header {
-            background: var(--glass); backdrop-filter: blur(20px);
-            padding: 15px 20px; border-bottom: 2px solid var(--accent);
-            position: sticky; top: 0; z-index: 2000;
-        }
-
-        .brand-logo { font-weight: 800; font-size: 20px; letter-spacing: -1px; color: var(--accent); }
-
-        /* Tarjetas de Acción */
-        .card-elite {
-            background: var(--card); border-radius: 20px; padding: 18px;
-            margin: 12px; border: 1px solid rgba(255,255,255,0.03);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-
+        :root { --bg: #05070A; --card: #11141D; --accent: #3B82F6; --success: #10B981; --danger: #F43F5E; --text: #F0F6FC; --muted: #8B949E; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); margin: 0; padding-bottom: 120px; }
+        .premium-header { background: rgba(17, 20, 29, 0.9); backdrop-filter: blur(20px); padding: 15px 20px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 2000; }
+        .card-elite { background: var(--card); border-radius: 20px; padding: 18px; margin: 12px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .label-tech { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 12px 0 6px 4px; display: block; }
-
-        /* Inputs de Alta Velocidad */
-        .input-elite {
-            background: #080A0F; border: 1.5px solid #222933;
-            border-radius: 14px; padding: 14px; width: 100%; font-size: 15px; color: #fff;
-            margin-bottom: 10px; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .input-elite:focus { border-color: var(--accent); outline: none; background: #0D1117; }
-
-        /* Chips y Botones */
-        .vendor-scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; scrollbar-width: none; }
-        .v-chip {
-            background: #1C212B; border: 1.5px solid #222933; padding: 10px 16px;
-            border-radius: 12px; font-size: 11px; font-weight: 700; white-space: nowrap; transition: 0.2s;
-        }
-        .v-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-2px); }
-
-        .btn-elite {
-            border-radius: 14px; padding: 16px; font-weight: 800; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.2s; text-transform: uppercase; font-size: 13px;
-        }
-        .btn-blue { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-        .btn-green { background: var(--success); color: #fff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
-        .btn-elite:active { transform: scale(0.96); }
-
-        /* Buscador Predictivo */
-        .search-results {
-            background: #161B22; border-radius: 14px; box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -5px; 
-            border: 1px solid var(--accent); max-height: 240px; overflow-y: auto;
-        }
-        .search-item { padding: 14px; border-bottom: 1px solid #21262D; cursor: pointer; }
-        .search-item:active { background: var(--accent); }
-
-        /* Historial y Navbar */
-        .history-card {
-            background: #11141D; border-radius: 16px; padding: 14px; margin-bottom: 10px;
-            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
-        }
-        .nav-elite {
-            position: fixed; bottom: 0; width: 100%; background: var(--glass);
-            backdrop-filter: blur(15px); display: flex; justify-content: space-around;
-            padding: 10px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000;
-        }
+        .input-elite { background: #080A0F; border: 1.5px solid #222933; border-radius: 14px; padding: 14px; width: 100%; font-size: 15px; color: #fff; margin-bottom: 10px; }
+        .v-chip { background: #1C212B; border: 1.5px solid #222933; padding: 10px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .v-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn-elite { border-radius: 14px; padding: 16px; font-weight: 800; border: none; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 13px; transition: 0.2s; }
+        .btn-blue { background: var(--accent); color: #fff; }
+        .btn-green { background: var(--success); color: #fff; }
+        .search-results { background: #161B22; border-radius: 14px; position: absolute; width: 100%; z-index: 100; display: none; border: 1px solid var(--accent); max-height: 240px; overflow-y: auto; }
+        .search-item { padding: 14px; border-bottom: 1px solid #21262D; }
+        .history-card { background: #11141D; border-radius: 16px; padding: 14px; margin-bottom: 10px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .nav-elite { position: fixed; bottom: 0; width: 100%; background: rgba(17, 20, 29, 0.9); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .nav-tab { background: none; border: none; color: var(--muted); text-align: center; }
         .nav-tab.active { color: var(--accent); }
-        .nav-tab i { font-size: 20px; display: block; margin-bottom: 3px; }
-        .nav-tab span { font-size: 9px; font-weight: 700; }
-
         .view { display: none; }
         .active-view { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <header class="premium-header d-flex justify-content-between align-items-center">
-        <div>
-            <div class="brand-logo">TITAN <span style="color:#fff">ELITE</span></div>
-        </div>
+        <div><div style="font-weight: 800; color: var(--accent);">TITAN <span style="color:#fff">ELITE</span></div></div>
         <div class="text-end">
-            <div style="font-size: 11px; font-weight: 800; color:var(--accent)">J. ANGELO</div>
-            <div id="sync-status" style="font-size: 8px; font-weight: 700; color: var(--success);">ONLINE <i class="fas fa-circle"></i></div>
+            <div style="font-size: 11px; font-weight: 800;">J. ANGELO</div>
+            <div id="sync-status" style="font-size: 8px; color: var(--success);">MODO RÁPIDO <i class="fas fa-bolt"></i></div>
         </div>
     </header>
 
     <main>
         <section id="v-del" class="view active-view">
             <div class="card-elite">
-                <span class="label-tech">Tipo de Movimiento</span>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
-                    <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
-                    <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
+                <span class="label-tech">Destino de Mercadería</span>
+                <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
+                    <button class="v-chip active" id="m-VENTA" onclick="setM('VENTA','Cliente/Vendedor')">VENTA</button>
+                    <button class="v-chip" id="m-MARKETING" onclick="setM('MARKETING','Personal MKT')">MKT</button>
+                    <button class="v-chip" id="m-FOTOGRAFIA" onclick="setM('FOTOGRAFIA','Fotografía')">FOTO</button>
+                    <button class="v-chip" id="m-OFICINA" onclick="setM('OFICINA','Área Oficina')">OFICINA</button>
                 </div>
 
-                <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
+                <span class="label-tech" id="label-solicitante">Responsable / Solicitante</span>
+                <input type="text" id="cli-d" class="input-elite" placeholder="Ej: Regulo Anteza, MKT, etc." oninput="autoSave()">
                 
-                <span class="label-tech">Vendedor Responsable</span>
-                <div class="vendor-scroller" id="vend-d">
-                    <div class="v-chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
-                    <div class="v-chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
-                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
-                    <div class="v-chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
-                    <div class="v-chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
-                </div>
-
-                <div class="position-relative mt-2">
-                    <span class="label-tech">Buscador Inteligente</span>
+                <div class="position-relative">
+                    <span class="label-tech">Buscador de Producto</span>
                     <input type="text" id="src-d" class="input-elite" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
                     <div id="res-d" class="search-results"></div>
                 </div>
 
                 <div id="form-d" class="d-none">
                     <div class="p-3 mb-2 rounded-4" style="background: rgba(59,130,246,0.1); border-left: 4px solid var(--accent)">
-                        <b id="p-n-d" style="font-size: 13px;"></b><br>
-                        <small id="p-s-d" class="text-muted"></small>
+                        <b id="p-n-d" style="font-size: 13px;"></b><br><small id="p-s-d" class="text-muted"></small>
                     </div>
-                    <input type="number" id="q-d" class="input-elite" placeholder="Cantidad">
-                    <button class="btn-elite btn-blue" onclick="addItem('d')">Añadir <i class="fas fa-plus"></i></button>
+                    <input type="number" id="q-d" class="input-elite" placeholder="Cantidad a entregar">
+                    <button class="btn-elite btn-blue" onclick="addItem('d')">Añadir a la lista <i class="fas fa-plus"></i></button>
                 </div>
 
                 <div id="list-d" class="mt-3 d-none">
                     <div id="items-d"></div>
-                    <button class="btn-elite btn-blue mt-3" onclick="sync('Pedidos', 'd')">Confirmar Registro <i class="fas fa-save"></i></button>
+                    <button class="btn-elite btn-blue mt-3" onclick="sync('Pedidos', 'd')">Registrar Salida <i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-ret" class="view">
             <div class="card-elite">
-                <span class="label-tech text-danger">Auditoría de Retorno</span>
-                <input type="text" id="cli-r" class="input-elite" placeholder="Cliente Origen" oninput="autoSave()">
+                <span class="label-tech text-danger">Control de Retorno</span>
+                <input type="text" id="cli-r" class="input-elite" placeholder="Nombre del Cliente que devuelve" oninput="autoSave()">
                 
-                <span class="label-tech">Vendedor</span>
-                <div class="vendor-scroller" id="vend-r">
-                    <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS AVILA</div>
-                    <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN MURO</div>
-                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO MAURICIO</div>
-                    <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA GARCIA</div>
-                    <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO ANTEZA</div>
+                <span class="label-tech">Recibido por Vendedor</span>
+                <div class="vendor-scroller d-flex gap-2 mb-3 overflow-auto pb-2" id="vend-r">
+                    <div class="v-chip" onclick="setV('ELIAS','r')">ELIAS</div>
+                    <div class="v-chip" onclick="setV('EVELYN','r')">EVELYN</div>
+                    <div class="v-chip" onclick="setV('JHAYRO','r')">JHAYRO</div>
+                    <div class="v-chip" onclick="setV('PAULA','r')">PAULA</div>
+                    <div class="v-chip" onclick="setV('REGULO','r')">REGULO</div>
                 </div>
 
-                <div class="position-relative mt-2">
-                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
+                <div class="position-relative">
+                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU devuelto..." oninput="find(this.value, 'res-r', 'r')">
                     <div id="res-r" class="search-results"></div>
                 </div>
 
                 <div id="form-r" class="d-none">
                     <div class="p-3 mb-2 rounded-4" style="background: rgba(244,63,94,0.1); border-left: 4px solid var(--danger)"><b id="p-n-r" style="font-size: 13px;"></b></div>
                     <div class="row g-2">
-                        <div class="col-6"><input type="number" id="cg-r" class="input-elite" placeholder="Cant. Guía"></div>
-                        <div class="col-6"><input type="number" id="cr-r" class="input-elite" placeholder="Cant. Real"></div>
+                        <div class="col-6"><span class="label-tech">Cant. Real</span><input type="number" id="cr-r" class="input-elite"></div>
+                        <div class="col-6">
+                            <span class="label-tech">Destino Final</span>
+                            <select id="st-r" class="input-elite">
+                                <option value="STOCK">A STOCK (OK)</option>
+                                <option value="MERMA">A MERMA (FALLA)</option>
+                                <option value="ARREGLO">PARA ARREGLAR</option>
+                            </select>
+                        </div>
                     </div>
-                    <select id="st-r" class="input-elite">
-                        <option>FALLADO A MERMA</option>
-                        <option>SE ARREGLO EL PRODUCTO</option>
-                        <option>PRODUCTO FALLA DE IMPORTACION</option>
-                    </select>
-                    <textarea id="obs-r" class="input-elite" style="height: 80px;" placeholder="Detalles de la falla..."></textarea>
-                    <button class="btn-elite btn-green" onclick="addItem('r')">Validar QC <i class="fas fa-check-circle"></i></button>
+                    <textarea id="obs-r" class="input-elite" style="height: 70px;" placeholder="Nota rápida del estado..."></textarea>
+                    <button class="btn-elite btn-green" onclick="addItem('r')">Validar Ingreso <i class="fas fa-check-circle"></i></button>
                 </div>
 
                 <div id="list-r" class="mt-3 d-none">
                     <div id="items-r"></div>
-                    <button class="btn-elite btn-green mt-3" onclick="sync('Devoluciones', 'r')">Procesar Retorno <i class="fas fa-cloud-upload"></i></button>
+                    <button class="btn-elite btn-green mt-3" onclick="sync('Devoluciones', 'r')">Sincronizar Retorno <i class="fas fa-cloud-upload"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="v-his" class="view">
-            <div class="px-3 pt-2">
-                <span class="label-tech">Log de Sincronización</span>
-                <div id="his-feed"></div>
-            </div>
-        </section>
+        <section id="v-his" class="view"><div class="px-3 pt-2" id="his-feed"></div></section>
     </main>
 
     <nav class="nav-elite">
-        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-truck-loading"></i><span>ENTREGA</span></button>
+        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-sign-out-alt"></i><span>SALIDA</span></button>
         <button class="nav-tab" onclick="nav('ret', this)"><i class="fas fa-undo"></i><span>RETORNO</span></button>
-        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-list-alt"></i><span>HISTORIAL</span></button>
+        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-history"></i><span>LOG</span></button>
     </nav>
 
     <script>
-        // Mantenemos tu API y lógica intacta
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {d:'', r:''}; let FULL_HIS = [];
+        let DB_P = [], QD = [], QR = [], MODE = "VENTA", VEN = {r:''}, FULL_HIS = [];
 
         async function init() {
             const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_DATA'));
-            if(saved) {
-                QD = saved.QD || []; QR = saved.QR || [];
-                document.getElementById('cli-d').value = saved.cliD || '';
-                document.getElementById('cli-r').value = saved.cliR || '';
-                if(saved.venD) setV(saved.venD, 'd');
-                if(saved.venR) setV(saved.venR, 'r');
-                setM(saved.MODE || 'VENTA');
-                render('d'); render('r');
-            }
-
+            if(saved) { QD = saved.QD || []; QR = saved.QR || []; document.getElementById('cli-d').value = saved.cliD || ''; document.getElementById('cli-r').value = saved.cliR || ''; render('d'); render('r'); }
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                DB_P = d.p; FULL_HIS = d.h;
-                renderHistory(d.h);
-            } catch(e) { document.getElementById('sync-status').innerHTML = 'OFFLINE <i class="fas fa-circle text-danger"></i>'; }
+                DB_P = d.p; FULL_HIS = d.h; renderHistory(d.h);
+            } catch(e) { document.getElementById('sync-status').innerHTML = 'OFFLINE <i class="fas fa-wifi-slash"></i>'; }
         }
 
-        function autoSave() {
-            const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venD: VEN.d, venR: VEN.r };
-            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
-        }
-
-        function setM(m) {
+        function setM(m, label) {
             MODE = m;
             document.querySelectorAll('#v-del .v-chip').forEach(c => c.classList.remove('active'));
             document.getElementById('m-'+m).classList.add('active');
+            document.getElementById('label-solicitante').innerText = label;
             autoSave();
         }
 
@@ -272,10 +183,10 @@
                 QD.push({...window.lastPick, q, mode: MODE});
                 document.getElementById('q-d').value = ''; document.getElementById('src-d').value = '';
             } else {
-                const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
-                if(!cg || !cr) return;
-                QR.push({...window.lastPick, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
-                document.getElementById('src-r').value = ''; document.getElementById('cg-r').value = ''; document.getElementById('cr-r').value = '';
+                const cr = document.getElementById('cr-r').value;
+                if(!cr) return;
+                QR.push({...window.lastPick, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
+                document.getElementById('src-r').value = ''; document.getElementById('cr-r').value = '';
             }
             render(t); document.getElementById(`form-${t}`).classList.add('d-none'); autoSave();
         }
@@ -286,55 +197,53 @@
             document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
                 <div class="history-card" style="border-left-color: ${t==='d'?'var(--accent)':'var(--danger)'}">
                     <div><b style="font-size:12px">${i.name}</b><br><small class="text-muted">${i.mode || i.st}</small></div>
-                    <div class="d-flex align-items-center gap-3"><span class="fw-bold fs-5">x${i.q || i.cr}</span><i class="fas fa-trash-alt text-danger" onclick="removeIdx('${t}', ${idx})"></i></div>
-                </div>
-            `).join('');
+                    <div class="d-flex align-items-center gap-3"><span class="fw-bold fs-5">x${i.q || i.cr}</span><i class="fas fa-times-circle text-danger" onclick="removeIdx('${t}', ${idx})"></i></div>
+                </div>`).join('');
         }
 
         function removeIdx(t, idx) { if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1); render(t); autoSave(); }
 
         async function sync(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
-            const ven = VEN[t];
-            if(!cli || !ven) return Swal.fire({title:"Error", text:"Ingresa Cliente y Vendedor", icon:"warning", background:'#11141D', color:'#fff'});
-            
+            if(!cli) return Swal.fire("Atención", "Escribe quién solicita/devuelve", "warning");
             const list = t==='d' ? QD : QR;
-            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
-
-            Swal.fire({title:'Enviando a la Nube...', didOpen:()=>Swal.showLoading(), background: '#11141D', color: '#fff'});
+            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Destino: ${i.mode}` : `Estado: ${i.st} | Obs: ${i.obs} | Recibió: ${VEN.r}`]);
+            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading(), background: '#11141D', color: '#fff'});
             await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
             localStorage.removeItem('TITAN_ELITE_DATA');
-            Swal.fire({title:"Éxito", icon:"success", background:'#11141D', color:'#fff'}).then(()=>location.reload());
+            Swal.fire({title:"Listo", icon:"success", background:'#11141D', color:'#fff'}).then(()=>location.reload());
         }
 
         function renderHistory(h) {
-            document.getElementById('his-feed').innerHTML = h.slice(0,25).map((r, idx) => `
+            document.getElementById('his-feed').innerHTML = h.slice(0,20).map((r, idx) => `
                 <div class="history-card" onclick="showOptions(${idx})">
                     <div><div class="fw-bold" style="font-size:13px">${r[5]}</div><small class="text-muted">${r[3]}</small></div>
-                    <div class="text-end"><div class="fw-bold text-accent fs-5">x${r[4]}</div></div>
+                    <div class="text-end"><div class="fw-bold text-accent">x${r[4]}</div><small style="font-size:8px">${r[1]}</small></div>
                 </div>`).join('');
         }
 
         function showOptions(idx) {
             const r = FULL_HIS[idx];
-            Swal.fire({
-                title: 'Opciones de Registro',
-                text: `${r[5]} - ${r[3]}`,
-                showCancelButton: true,
-                confirmButtonText: 'WhatsApp + PDF',
-                confirmButtonColor: '#25D366',
-                background: '#11141D',
-                color: '#fff'
-            }).then((res) => { if(res.isConfirmed) sendWhatsApp(r); });
+            Swal.fire({ title: 'Reporte Rápido', text: `${r[5]} - ${r[3]}`, showCancelButton: true, confirmButtonText: 'WhatsApp', background: '#11141D', color: '#fff' })
+            .then((res) => { if(res.isConfirmed) {
+                const msg = `TITAN LOGISTICA: *${r[1]}* para *${r[5]}*.\nProducto: ${r[3]} - Cant: ${r[4]}\n_Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico_`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            }});
         }
 
-        function sendWhatsApp(r) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.text("COMPROBANTE TITAN ELITE", 14, 25);
-            doc.autoTable({ head: [['ITEM', 'DATOS']], body: [['TIPO', r[1]], ['CLIENTE', r[5]], ['PRODUCTO', r[3]], ['CANTIDAD', r[4]], ['DETALLES', r[6]]], startY: 50 });
-            
-            const pY = doc.internal.pageSize.getHeight();
-            doc.setTextColor(100); doc.setFontSize(10);
-            doc.text("Revisión autorizada por J.
+        function nav(v, b) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active-view');
+            b.classList.add('active');
+        }
+
+        function autoSave() {
+            const data = { QD, QR, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value };
+            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
