@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | J. Angelo</title>
+    <title>TITAN ELITE 2026 | Logística Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,206 +11,208 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
         :root {
-            --bg: #f4f7fa;
-            --card: #ffffff;
-            --accent: #1e40af; /* Azul para Entregas */
-            --success: #15803d;
-            --danger: #b91c1c; /* Rojo para Retornos */
-            --text: #1e293b;
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.9);
+            --accent: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --text: #0f172a;
             --muted: #64748b;
             --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         body { 
             background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); margin: 0; padding-bottom: 100px;
+            color: var(--text); margin: 0; padding-bottom: 110px;
         }
 
-        .premium-header {
-            background: var(--card); padding: 15px 20px;
-            border-bottom: 1px solid var(--border);
+        /* HEADER MODERNO */
+        .modern-header {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 20px; border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 2000;
         }
 
-        .brand-logo { font-weight: 800; font-size: 20px; color: var(--accent); letter-spacing: -0.5px; }
+        .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -1px; color: var(--text); }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--success); }
 
-        .card-elite {
-            background: var(--card); border-radius: 16px; padding: 20px;
-            margin: 15px; border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        /* CARDS & INPUTS */
+        .card-2026 {
+            background: #fff; border-radius: 24px; padding: 24px;
+            margin: 16px; border: 1px solid var(--border); box-shadow: var(--shadow);
         }
 
-        .label-tech { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .label-2026 { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block; }
 
-        .input-elite {
-            background: #fff; border: 1.5px solid var(--border);
-            border-radius: 10px; padding: 12px; width: 100%; font-size: 15px;
-            margin-bottom: 15px; transition: 0.3s;
+        .input-2026 {
+            background: #f1f5f9; border: 2px solid transparent;
+            border-radius: 14px; padding: 14px; width: 100%; font-size: 15px; font-weight: 500;
+            margin-bottom: 16px; transition: all 0.3s ease;
         }
-        .input-elite:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1); }
+        .input-2026:focus { background: #fff; border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        .v-chip {
-            background: #f1f5f9; border: 1px solid var(--border); padding: 8px 12px;
-            border-radius: 8px; font-size: 12px; font-weight: 700; transition: 0.2s; color: var(--text);
-            cursor: pointer;
+        /* BOTONES */
+        .btn-2026 {
+            border-radius: 16px; padding: 16px; font-weight: 700; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
-        .v-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:active { transform: scale(0.98); }
 
-        .vendor-scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; }
-
-        .btn-elite {
-            border-radius: 10px; padding: 14px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+        /* CHIPS */
+        .chip-group { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .chip {
+            background: #fff; border: 1px solid var(--border); padding: 10px 18px;
+            border-radius: 14px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.3s;
         }
-        .btn-blue { background: var(--accent); color: #fff; }
-        .btn-green { background: var(--success); color: #fff; }
+        .chip.active { background: var(--text); color: #fff; border-color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* TARJETAS DE HISTORIAL */
+        .history-item {
+            background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px;
+            border: 1px solid var(--border); position: relative; overflow: hidden;
+        }
+        .history-item::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+        }
+        .item-del::before { background: var(--accent); }
+        .item-ret::before { background: var(--danger); }
+
+        /* NAV BAR */
+        .nav-2026 {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: var(--text); border-radius: 24px;
+            display: flex; justify-content: space-around; padding: 15px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); z-index: 3000;
+        }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-weight: 700; font-size: 11px; text-align: center; }
+        .nav-btn.active { color: #fff; }
+        .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
 
         .search-results {
-            background: #fff; border-radius: 10px; border: 1px solid var(--border);
+            background: #fff; border-radius: 16px; border: 1px solid var(--border);
             position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilo Tarjetas Historial Diferenciadas */
-        .history-card {
-            background: #fff; border-radius: 14px; padding: 15px; margin-bottom: 15px;
-            border: 1px solid var(--border); transition: 0.2s;
-        }
-
-        .nav-elite {
-            position: fixed; bottom: 0; width: 100%; background: #fff;
-            display: flex; justify-content: space-around; padding: 12px 0 25px 0;
-            border-top: 1px solid var(--border); z-index: 2000;
-        }
-        .nav-tab { background: none; border: none; color: var(--muted); text-align: center; }
-        .nav-tab.active { color: var(--accent); }
-        .nav-tab i { font-size: 20px; display: block; }
-        .nav-tab span { font-size: 10px; font-weight: 700; }
-
-        .view { display: none; }
+        .view { display: none; animation: fadeIn 0.4s ease-out; }
         .active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="premium-header d-flex justify-content-between align-items-center">
+    <header class="modern-header d-flex justify-content-between align-items-center">
         <div>
-            <div class="brand-logo">TITAN ELITE</div>
-            <div style="font-size: 10px; color: var(--muted);">Gestión de Almacén</div>
+            <div class="brand-name">TITAN<span style="color:var(--accent)">ELITE</span></div>
+            <div style="font-size: 11px; color: var(--muted); font-weight: 600;">LOGÍSTICA 2026</div>
         </div>
         <div class="text-end">
-            <div style="font-size: 11px; font-weight: 700;">J. Angelo</div>
-            <div style="font-size: 9px; color: var(--success); font-weight: 800;">SISTEMA ACTIVO</div>
+            <div style="font-size: 13px; font-weight: 800;"><span class="status-dot"></span> Angelo Durand</div>
         </div>
     </header>
 
     <main>
         <section id="v-del" class="view active-view">
-            <div class="card-elite">
-                <span class="label-tech">Tipo de Movimiento</span>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
-                    <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
-                    <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
+            <div class="card-2026">
+                <span class="label-2026">Tipo de Movimiento</span>
+                <div class="chip-group">
+                    <div class="chip active" id="m-VENTA" onclick="setM('VENTA')">VENTA</div>
+                    <div class="chip" id="m-MARKETING" onclick="setM('MARKETING')">MARKETING</div>
+                    <div class="chip" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</div>
                 </div>
 
-                <span class="label-tech">Cliente / Destino</span>
-                <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del solicitante" oninput="autoSave()">
+                <span class="label-2026">Solicitante / Área</span>
+                <input type="text" id="cli-d" class="input-2026" placeholder="Nombre completo" oninput="autoSave()">
                 
-                <div class="position-relative mt-2">
-                    <span class="label-tech">1. Busca el Producto</span>
-                    <input type="text" id="src-d" class="input-elite" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
+                <span class="label-2026">Buscador de Stock</span>
+                <div class="position-relative">
+                    <input type="text" id="src-d" class="input-2026" placeholder="🔍 SKU o nombre..." oninput="find(this.value, 'res-d', 'd')">
                     <div id="res-d" class="search-results"></div>
                 </div>
 
-                <div id="form-d" class="d-none mt-3" style="border-top: 2px dashed var(--border); padding-top: 15px;">
-                    <div class="p-3 mb-3 rounded-3" style="background: var(--bg); border-left: 4px solid var(--accent)">
-                        <b id="p-n-d" class="d-block" style="color: var(--accent);"></b>
+                <div id="form-d" class="d-none mt-2 p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div class="mb-3">
+                        <b id="p-n-d" class="d-block text-primary"></b>
                         <small id="p-s-d" class="text-muted"></small>
                     </div>
-                    <span class="label-tech">2. Cantidad de Salida</span>
-                    <input type="number" id="q-d" class="input-elite" placeholder="0">
-                    <button class="btn-elite btn-blue" onclick="addItem('d')">AÑADIR A LA LISTA <i class="fas fa-plus"></i></button>
+                    <span class="label-2026">Cantidad</span>
+                    <input type="number" id="q-d" class="input-2026" placeholder="00">
+                    <button class="btn-2026 btn-primary" onclick="addItem('d')">AÑADIR A LISTA <i class="fas fa-plus"></i></button>
                 </div>
 
                 <div id="list-d" class="mt-4 d-none">
-                    <span class="label-tech">Resumen de Carga</span>
                     <div id="items-d"></div>
-                    <button class="btn-elite btn-blue mt-3 shadow" onclick="sync('Pedidos', 'd')">PROCESAR SALIDA <i class="fas fa-check-double"></i></button>
+                    <button class="btn-2026 mt-3" style="background:var(--text); color:#fff" onclick="sync('Pedidos', 'd')">CONFIRMAR DESPACHO <i class="fas fa-bolt"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-ret" class="view">
-            <div class="card-elite">
-                <span class="label-tech">Cliente que devuelve</span>
-                <input type="text" id="cli-r" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
+            <div class="card-2026">
+                <span class="label-2026">Origen de Devolución</span>
+                <input type="text" id="cli-r" class="input-2026" placeholder="Cliente" oninput="autoSave()">
                 
-                <span class="label-tech">Vendedor responsable</span>
-                <div class="vendor-scroller mb-3" id="vend-r">
-                    <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
-                    <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
-                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
-                    <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
-                    <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
+                <span class="label-2026">Vendedor Receptor</span>
+                <div class="chip-group" id="vend-r">
+                    <div class="chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
+                    <div class="chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
+                    <div class="chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
+                    <div class="chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
+                    <div class="chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
                 </div>
 
+                <span class="label-2026">Producto Defectuoso</span>
                 <div class="position-relative">
-                    <span class="label-tech">1. Producto con falla</span>
-                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU a retornar..." oninput="find(this.value, 'res-r', 'r')">
+                    <input type="text" id="src-r" class="input-2026" placeholder="🔍 Buscar SKU..." oninput="find(this.value, 'res-r', 'r')">
                     <div id="res-r" class="search-results"></div>
                 </div>
 
-                <div id="form-r" class="d-none mt-3" style="border-top: 2px dashed var(--danger); padding-top: 15px;">
-                    <div class="p-3 mb-3 rounded-3" style="background: #fff5f5; border-left: 4px solid var(--danger)">
-                        <b id="p-n-r" class="d-block" style="color: var(--danger);"></b>
-                    </div>
+                <div id="form-r" class="d-none mt-2 p-3 rounded-4" style="background: #fff1f2; border: 1px solid #fecdd3;">
+                    <b id="p-n-r" class="d-block text-danger mb-3"></b>
                     <div class="row g-2">
-                        <div class="col-6"><span class="label-tech">Cant. Guía</span><input type="number" id="cg-r" class="input-elite"></div>
-                        <div class="col-6"><span class="label-tech">Cant. Real</span><input type="number" id="cr-r" class="input-elite"></div>
+                        <div class="col-6"><span class="label-2026">Guía</span><input type="number" id="cg-r" class="input-2026" placeholder="Cant."></div>
+                        <div class="col-6"><span class="label-2026">Real</span><input type="number" id="cr-r" class="input-2026" placeholder="Físico"></div>
                     </div>
-                    <span class="label-tech">Estado de Mercadería</span>
-                    <select id="st-r" class="input-elite">
+                    <span class="label-2026">Estado Técnico</span>
+                    <select id="st-r" class="input-2026">
                         <option value="MERMA">FALLADO A MERMA</option>
-                        <option value="ARREGLO">SE ARREGLO EL PRODUCTO</option>
-                        <option value="FALLA IMPORTACION">FALLA DE IMPORTACION</option>
+                        <option value="ARREGLO">PARA REPARACIÓN</option>
+                        <option value="FALLA IMPORTACION">FALLA IMPORTACIÓN</option>
                     </select>
-                    <textarea id="obs-r" class="input-elite" style="height: 80px;" placeholder="Detalles observados..."></textarea>
-                    <button class="btn-elite btn-green" onclick="addItem('r')">CARGAR RETORNO <i class="fas fa-check"></i></button>
+                    <textarea id="obs-r" class="input-2026" style="height: 80px;" placeholder="Detalles observados..."></textarea>
+                    <button class="btn-2026" style="background: var(--danger); color: #fff;" onclick="addItem('r')">REGISTRAR FALLA <i class="fas fa-exclamation-triangle"></i></button>
                 </div>
 
                 <div id="list-r" class="mt-4 d-none">
                     <div id="items-r"></div>
-                    <button class="btn-elite btn-green mt-3 shadow" onclick="sync('Devoluciones', 'r')">ENVIAR DEVOLUCIÓN <i class="fas fa-cloud-upload-alt"></i></button>
+                    <button class="btn-2026 mt-3" style="background: var(--text); color: #fff;" onclick="sync('Devoluciones', 'r')">SINCRONIZAR A SAP <i class="fas fa-cloud-upload"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view">
-            <div class="px-3 py-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="label-tech" style="margin:0">Últimos Movimientos</span>
+            <div class="px-3 py-3" id="his-feed">
                 </div>
-                <div id="his-feed"></div>
-            </div>
         </section>
     </main>
 
-    <nav class="nav-elite">
-        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-shipping-fast"></i><span>ENTREGA</span></button>
-        <button class="nav-tab" onclick="nav('ret', this)"><i class="fas fa-exchange-alt"></i><span>RETORNO</span></button>
-        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
+    <nav class="nav-2026">
+        <button class="nav-btn active" onclick="nav('del', this)"><i class="fas fa-arrow-up"></i><span>SALIDA</span></button>
+        <button class="nav-btn" onclick="nav('ret', this)"><i class="fas fa-arrow-down"></i><span>RETORNO</span></button>
+        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-layer-group"></i><span>HISTORY</span></button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {d:'', r:''}; let FULL_HIS = [];
+        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {r:''}; let FULL_HIS = [];
 
         async function init() {
-            const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_DATA'));
+            const saved = JSON.parse(localStorage.getItem('TITAN_DATA_2026'));
             if(saved) {
                 QD = saved.QD || []; QR = saved.QR || [];
                 document.getElementById('cli-d').value = saved.cliD || '';
@@ -224,25 +226,25 @@
                 const d = await r.json();
                 DB_P = d.p; FULL_HIS = d.h;
                 renderHistory(d.h);
-            } catch(e) { console.warn("Modo Offline"); }
+            } catch(e) { console.warn("Offline"); }
         }
 
         function autoSave() {
             const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venR: VEN.r };
-            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
+            localStorage.setItem('TITAN_DATA_2026', JSON.stringify(data));
         }
 
         function setM(m) {
             MODE = m;
-            document.querySelectorAll('#v-del .v-chip').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('#v-del .chip').forEach(c => c.classList.remove('active'));
             document.getElementById('m-'+m).classList.add('active');
             autoSave();
         }
 
         function setV(n, t) {
-            document.querySelectorAll(`#vend-${t} .v-chip`).forEach(c => c.classList.remove('active'));
+            document.querySelectorAll(`#vend-${t} .chip`).forEach(c => c.classList.remove('active'));
             VEN[t] = n;
-            Array.from(document.querySelectorAll(`#vend-${t} .v-chip`)).find(c => c.innerText.includes(n.split(' ')[0]))?.classList.add('active');
+            Array.from(document.querySelectorAll(`#vend-${t} .chip`)).find(c => c.innerText.includes(n.split(' ')[0]))?.classList.add('active');
             autoSave();
         }
 
@@ -272,7 +274,7 @@
             } else {
                 const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
                 if(!cg || !cr) return;
-                QR.push({...window.lastPick, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
+                QR.push({...window.lastPick, q: cr, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value, mode: 'DEVOLUCION'});
                 document.getElementById('src-r').value = '';
                 document.getElementById('cg-r').value = '';
                 document.getElementById('cr-r').value = '';
@@ -286,12 +288,15 @@
             const list = t==='d' ? QD : QR;
             document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
             document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
-                <div class="history-card" style="border-left: 4px solid ${t==='d'?'var(--accent)':'var(--danger)'}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div><b>${i.name}</b><br><small>${i.mode || i.st}</small></div>
+                <div class="history-item ${t==='d'?'item-del':'item-ret'}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div style="max-width: 80%;">
+                            <b style="font-size: 14px;">${i.name}</b><br>
+                            <small class="text-muted">${i.mode || 'FALLA'}</small>
+                        </div>
                         <div class="text-end">
-                            <span class="fw-bold fs-5">x${i.q || i.cr}</span><br>
-                            <i class="fas fa-trash-alt text-danger" onclick="removeIdx('${t}', ${idx})"></i>
+                            <b style="font-size: 16px; color: ${t==='d'?'var(--accent)':'var(--danger)'}">x${i.q}</b><br>
+                            <i class="fas fa-trash-alt text-muted mt-2" onclick="removeIdx('${t}', ${idx})"></i>
                         </div>
                     </div>
                 </div>
@@ -305,95 +310,89 @@
 
         async function sync(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
-            if(!cli || (t==='r' && !VEN.r)) return Swal.fire("Atención", "Nombre de cliente y vendedor son obligatorios", "warning");
+            if(!cli || (t==='r' && !VEN.r)) return Swal.fire("Error", "Faltan datos obligatorios", "error");
 
             const list = t==='d' ? QD : QR;
-            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? 'Salida Almacén' : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${VEN.r}`]);
+            const payload = list.map(i => [
+                new Date(), 
+                i.mode, 
+                i.sku, 
+                i.name, 
+                i.q, 
+                cli, 
+                t==='d' ? 'Salida Almacén' : `Guía: ${i.cg} | Detalle: ${i.st} | Obs: ${i.obs} | Recibió: ${VEN.r}`
+            ]);
 
-            Swal.fire({title:'Enviando a la nube...', didOpen:()=>Swal.showLoading()});
-            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-            localStorage.removeItem('TITAN_ELITE_DATA');
-            location.reload();
+            Swal.fire({title:'Sincronizando 2026...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+            
+            try {
+                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+                localStorage.removeItem('TITAN_DATA_2026');
+                Swal.fire({icon: 'success', title: 'Completado', showConfirmButton: false, timer: 1500}).then(() => location.reload());
+            } catch(e) {
+                Swal.fire("Error", "Fallo de conexión", "error");
+            }
         }
 
         function renderHistory(h) {
             const feed = document.getElementById('his-feed');
-            feed.innerHTML = h.slice(0, 20).map((r, idx) => {
-                const esDevolucion = r[1] === 'DEVOLUCION';
-                const color = esDevolucion ? 'danger' : 'accent';
+            feed.innerHTML = h.slice(0, 25).map((r, idx) => {
+                const esDev = r[1] === 'DEVOLUCION';
                 return `
-                    <div class="history-card" style="border-left: 5px solid var(--${color});">
+                    <div class="history-item ${esDev?'item-ret':'item-del'}">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <span class="badge bg-${color} mb-1" style="font-size: 9px;">${r[1]}</span>
-                                <div style="font-weight: 800; font-size: 14px;">${r[5]}</div>
+                                <span class="badge ${esDev?'bg-danger':'bg-primary'} mb-2" style="font-size: 9px; border-radius: 6px;">${r[1]}</span>
+                                <div style="font-weight: 800; font-size: 15px;">${r[5]}</div>
                                 <div style="font-size: 11px; color: var(--muted);">${new Date(r[0]).toLocaleDateString()}</div>
                             </div>
                             <div class="text-end">
-                                <div style="font-size: 18px; font-weight: 800; color: var(--${color});">x${r[4]}</div>
+                                <b style="font-size: 20px; font-weight: 800;">x${r[4]}</b>
                             </div>
                         </div>
-                        <div class="mt-2 p-2 rounded-2" style="background: #f8fafc; font-size: 12px; border: 1px solid #e2e8f0;">
-                            <b>${r[3]}</b><br><small>SKU: ${r[2]}</small>
+                        <div class="mt-2 p-2 rounded-3" style="background: #f1f5f9; font-size: 12px;">
+                            <b>${r[3]}</b><br><small class="text-muted">SKU: ${r[2]}</small>
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            <button class="btn-elite py-2 flex-fill" style="background: #f1f5f9; color: #475569; font-size: 11px;" onclick="verDetalle(${idx})">LISTA</button>
-                            <button class="btn-elite py-2 flex-fill" style="background: #1e293b; color: white; font-size: 11px;" onclick="genPDF(${idx})">PDF</button>
+                            <button class="btn-2026 flex-fill py-2" style="background: #e2e8f0; font-size: 11px;" onclick="ver(${idx})">LISTA</button>
+                            <button class="btn-2026 flex-fill py-2" style="background: var(--text); color:#fff; font-size: 11px;" onclick="pdf(${idx})">REPORT PDF</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function verDetalle(idx) {
+        function ver(idx) {
             const r = FULL_HIS[idx];
             Swal.fire({
-                title: 'Detalle de Registro',
-                html: `<div class="text-start" style="font-size:14px"><b>Cliente:</b> ${r[5]}<br><b>Producto:</b> ${r[3]}<br><b>SKU:</b> ${r[2]}<br><b>Cant:</b> ${r[4]}<br><b>Info:</b> ${r[6]}</div>`,
-                confirmButtonColor: '#1e40af'
+                title: 'Información del Registro',
+                html: `<div class="text-start" style="font-size:14px"><b>Cliente:</b> ${r[5]}<br><b>Producto:</b> ${r[3]}<br><b>Cantidad:</b> ${r[4]}<br><br><b>Referencia:</b><br>${r[6]}</div>`,
+                confirmButtonColor: '#0f172a'
             });
         }
 
-        function genPDF(idx) {
+        function pdf(idx) {
             const r = FULL_HIS[idx];
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Encabezado Cuadrado
-            doc.setFillColor(30, 64, 175); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("REPORTE DE MOVIMIENTO TITAN ELITE", 14, 22);
-            
-            // Tabla de datos
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TITAN ELITE 2026", 14, 25);
             doc.autoTable({
-                startY: 45,
-                head: [['CONCEPTO', 'DETALLE SOLICITADO']],
-                body: [
-                    ['FECHA', new Date(r[0]).toLocaleString()],
-                    ['MOVIMIENTO', r[1]],
-                    ['CLIENTE', r[5]],
-                    ['PRODUCTO', r[3]],
-                    ['SKU', r[2]],
-                    ['CANTIDAD', r[4]],
-                    ['DETALLE EXTRA', r[6]]
-                ],
-                theme: 'grid',
-                headStyles: { fillColor: [30, 64, 175] }
+                startY: 50,
+                head: [['CAMPO', 'VALOR REGISTRADO']],
+                body: [['FECHA', new Date(r[0]).toLocaleString()],['MOVIMIENTO', r[1]],['CLIENTE', r[5]],['PRODUCTO', r[3]],['SKU', r[2]],['CANTIDAD', r[4]],['DETALLES', r[6]]],
+                theme: 'grid', headStyles: {fillColor: [15, 23, 42]}
             });
-
-            // Pie de página oficial
             const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setTextColor(0,0,0);
-            doc.line(70, finalY, 140, finalY);
-            doc.setFontSize(10);
-            doc.text("J. ANGELO NUÑEZ DURAND", 105, finalY + 7, { align: 'center' });
-            doc.text("Asistente Inventario Logístico", 105, finalY + 12, { align: 'center' });
-            
+            doc.setTextColor(0,0,0); doc.line(70, finalY, 140, finalY);
+            doc.setFontSize(11); doc.text("REVISIÓN AUTORIZADA POR J. ANGELO NUÑEZ DURAND", 105, finalY + 7, {align: 'center'});
+            doc.setFontSize(9); doc.text("Asist. Inventario Logístico", 105, finalY + 12, {align: 'center'});
             doc.save(`TITAN_${r[5]}.pdf`);
         }
 
         function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('active-view');
             b.classList.add('active');
         }
