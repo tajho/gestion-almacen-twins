@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | Central de Inteligencia</title>
+    <title>TITAN ELITE | Central de Historial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,68 +15,120 @@
 
         :root {
             --apple-blue: #007AFF;
+            --apple-red: #FF3B30;
+            --apple-green: #34C759;
             --apple-gray: #F2F2F7;
-            --apple-text: #1D1D1F;
-            --apple-subtext: #86868B;
-            --radius-apple: 16px;
+            --radius-apple: 14px;
         }
 
         body { 
             background: #F5F5F7; 
             font-family: -apple-system, "SF Pro Display", sans-serif;
-            color: var(--apple-text);
-            padding-bottom: 120px;
+            color: #1D1D1F;
+            padding-bottom: 110px;
         }
 
+        /* HEADER */
         .app-header {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 20px; position: sticky; top: 0; z-index: 1000;
+            padding: 15px 20px; position: sticky; top: 0; z-index: 1000;
             border-bottom: 0.5px solid rgba(0,0,0,0.1);
         }
 
-        .main-card {
-            background: #FFF; border-radius: var(--radius-apple);
-            padding: 20px; margin: 15px; border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        /* FILTROS MEJORADOS */
+        .filter-container {
+            background: #FFF;
+            padding: 15px 20px;
+            margin-bottom: 5px;
+            position: sticky;
+            top: 72px;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
-        .input-apple {
-            width: 100%; padding: 12px 16px; border-radius: 12px;
-            border: 1px solid #D2D2D7; background: #FFF; font-size: 16px;
-            margin-bottom: 15px; transition: 0.2s;
+        .search-box {
+            background: var(--apple-gray);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
-        /* FILTROS DE HISTORIAL - ESTILO APPLE */
-        .filter-bar {
-            background: #FFF; padding: 15px; margin-bottom: 10px;
-            position: sticky; top: 80px; z-index: 999;
-            border-bottom: 0.5px solid #D2D2D7;
-        }
-        .search-pill {
-            background: var(--apple-gray); border: none; border-radius: 10px;
-            padding: 10px 15px; font-size: 14px; width: 100%;
+        .date-input {
+            background: var(--apple-gray);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--apple-blue);
         }
 
         /* TARJETAS DE HISTORIAL */
-        .history-card {
-            background: #FFF; border-radius: 18px; padding: 18px;
-            margin: 12px 15px; border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+        .h-card {
+            background: #FFF;
+            border-radius: var(--radius-apple);
+            margin: 12px 16px;
+            padding: 18px;
+            border: 0.5px solid rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        .type-badge {
-            font-size: 10px; font-weight: 800; padding: 4px 10px; 
-            border-radius: 20px; text-transform: uppercase;
+        .h-type {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: inline-block;
         }
-        .bg-ent { background: #E3F2FD; color: #007AFF; }
-        .bg-dev { background: #FBE9E7; color: #FF3B30; }
+        .type-salida { background: #E3F2FD; color: var(--apple-blue); }
+        .type-retorno { background: #FBE9E7; color: var(--apple-red); }
 
-        .history-footer {
-            font-size: 9px; color: #AEAEB2; text-align: center;
-            margin-top: 12px; border-top: 0.5px solid #F2F2F7; padding-top: 8px;
+        .h-client { font-size: 17px; font-weight: 700; color: #1D1D1F; margin-bottom: 2px; }
+        .h-vendor { font-size: 13px; color: #86868B; margin-bottom: 12px; }
+
+        .h-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #F9F9FB;
+            border-radius: 10px;
+        }
+        .stat-item { font-size: 11px; font-weight: 600; color: #424245; }
+        .stat-item i { color: var(--apple-blue); margin-right: 4px; }
+
+        .btn-group-apple {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .btn-h {
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-view { background: var(--apple-gray); color: #1D1D1F; }
+        .btn-pdf { background: #000; color: #FFF; }
+
+        .footer-auth {
+            font-size: 9px;
+            color: #AEAEB2;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 0.5px solid #F2F2F7;
         }
 
+        /* NAVIGATION BAR */
         .nav-apple {
             position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -85,6 +137,13 @@
         .nav-item { flex: 1; border: none; background: none; color: #8E8E93; font-size: 10px; font-weight: 600; text-align: center; }
         .nav-item.active { color: var(--apple-blue); }
         .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+
+        /* INPUTS FORM */
+        .form-label { font-size: 11px; font-weight: 700; color: #86868B; text-transform: uppercase; margin-left: 5px; }
+        .apple-input {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #D2D2D7;
+            margin-bottom: 15px; font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -93,115 +152,123 @@
         <div class="d-flex justify-content-between align-items-center">
             <span class="fw-bold fs-4">TITAN <span style="color:var(--apple-blue)">ELITE</span></span>
             <div class="text-end">
-                <small class="d-block text-muted" style="font-size:10px">SISTEMA DE INVENTARIO</small>
-                <span class="fw-bold" style="font-size:14px">Angelo Durand</span>
+                <span class="badge bg-dark" style="font-size: 10px;">WAREHOUSE MODE</span>
             </div>
         </div>
     </header>
 
     <main>
         <section id="v-ent" class="view">
-            <div class="main-card">
-                <label class="fw-bold mb-1 small text-muted">CLIENTE / ÁREA</label>
-                <input type="text" id="cli-e" class="input-apple" placeholder="Destino" oninput="sugerirVendor(this.value, 'ven-e')">
-                
-                <label class="fw-bold mb-1 small text-muted">VENDOR RESPONSABLE</label>
-                <input type="text" id="ven-e" class="input-apple" placeholder="Nombre Vendedor">
+            <div class="p-3">
+                <div class="main-card m-0">
+                    <label class="form-label">Cliente Destino</label>
+                    <input type="text" id="cli-e" class="apple-input" placeholder="Nombre del Cliente" oninput="sugerirVendor(this.value, 'ven-e')">
+                    
+                    <label class="form-label">Vendedor Asignado</label>
+                    <input type="text" id="ven-e" class="apple-input" placeholder="Quien gestiona la venta">
 
-                <label class="fw-bold mb-1 small text-muted">BUSCAR PRODUCTO</label>
-                <input type="text" id="src-e" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
-                <div id="res-e" class="search-results" style="display:none; position:absolute; background:white; z-index:100; width:80%; border:1px solid #ddd; border-radius:10px;"></div>
+                    <label class="form-label">Producto</label>
+                    <input type="text" id="src-e" class="apple-input" placeholder="Buscar por SKU..." oninput="motorBusqueda(this.value, 'res-e', 'e')">
+                    <div id="res-e" style="display:none; margin-top:-10px;" class="mb-3"></div>
 
-                <div id="form-e" class="d-none p-3 rounded-4 mb-3 bg-light">
-                    <b id="p-n-e" class="d-block mb-2"></b>
-                    <input type="number" id="q-e" class="input-apple" placeholder="Cantidad">
-                    <button class="btn btn-primary w-100 rounded-3" onclick="addToCart('e')">Agregar Item</button>
-                </div>
+                    <div id="form-e" class="d-none bg-light p-3 rounded-4 mb-3">
+                        <small id="p-n-e" class="fw-bold d-block mb-2"></small>
+                        <div class="d-flex gap-2">
+                            <input type="number" id="q-e" class="apple-input m-0" placeholder="Cant.">
+                            <button class="btn btn-primary rounded-3 px-4" onclick="addToCart('e')"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
 
-                <div id="cart-e" class="d-none">
-                    <div id="items-e" class="mb-3"></div>
-                    <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold" onclick="finalizarOp('Pedidos', 'e')">FINALIZAR ENTREGA</button>
+                    <div id="cart-e" class="d-none">
+                        <div id="items-e" class="mb-3 border-top pt-2"></div>
+                        <button class="btn btn-primary w-100 p-3 fw-bold rounded-4" onclick="finalizarOp('Pedidos', 'e')">Sincronizar Entrega</button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="v-dev" class="view d-none">
-            <div class="main-card">
-                <label class="fw-bold mb-1 small text-muted">ORIGEN / CLIENTE</label>
-                <input type="text" id="cli-d" class="input-apple" placeholder="Quién devuelve" oninput="sugerirVendor(this.value, 'ven-d')">
-                
-                <label class="fw-bold mb-1 small text-muted">VENDEDOR / VENDOR</label>
-                <input type="text" id="ven-d" class="input-apple" placeholder="Vendedor">
+            <div class="p-3">
+                <div class="main-card m-0">
+                    <label class="form-label">Cliente Origen</label>
+                    <input type="text" id="cli-d" class="apple-input" placeholder="Cliente que devuelve" oninput="sugerirVendor(this.value, 'ven-d')">
+                    
+                    <label class="form-label">Vendedor / Vendor</label>
+                    <input type="text" id="ven-d" class="apple-input" placeholder="Responsable">
 
-                <label class="fw-bold mb-1 small text-muted">PRODUCTO</label>
-                <input type="text" id="src-d" class="input-apple" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
-                <div id="res-d" class="search-results" style="display:none; position:absolute; background:white; z-index:100; width:80%; border:1px solid #ddd; border-radius:10px;"></div>
+                    <label class="form-label">Producto</label>
+                    <input type="text" id="src-d" class="apple-input" placeholder="SKU o Nombre..." oninput="motorBusqueda(this.value, 'res-d', 'd')">
+                    <div id="res-d" style="display:none; margin-top:-10px;" class="mb-3"></div>
 
-                <div id="form-d" class="d-none border p-3 rounded-4">
-                    <b id="p-n-d" class="d-block mb-3 text-primary"></b>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6"><small class="text-muted">Cant. Guía</small><input type="number" id="cg-d" class="input-apple"></div>
-                        <div class="col-6"><small class="text-muted">Cant. Recibida</small><input type="number" id="cr-d" class="input-apple"></div>
+                    <div id="form-d" class="d-none border p-3 rounded-4">
+                        <small id="p-n-d" class="fw-bold d-block mb-3 text-primary"></small>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><label class="form-label">Cant. Guía</label><input type="number" id="cg-d" class="apple-input"></div>
+                            <div class="col-6"><label class="form-label">Cant. Real</label><input type="number" id="cr-d" class="apple-input"></div>
+                        </div>
+                        <label class="form-label">Motivo de Devolución</label>
+                        <select id="st-d" class="apple-input">
+                            <option value="MERMA">MERMA / FALLA</option>
+                            <option value="FALLA IMPORTACION">FALLA DE IMPORTACIÓN</option>
+                            <option value="SE ARREGLO">SE ARREGLÓ / REPARADO</option>
+                            <option value="REINGRESO">REINGRESO A STOCK</option>
+                        </select>
+                        <label class="form-label">Observación Técnica</label>
+                        <textarea id="obs-d" class="apple-input" rows="2" placeholder="Describa el estado del producto..."></textarea>
+                        <button class="btn btn-dark w-100 p-3 fw-bold rounded-4" onclick="addToCart('d')">Agregar a Revisión</button>
                     </div>
-                    <label class="fw-bold mb-1 small text-muted">MOTIVO</label>
-                    <select id="st-d" class="input-apple">
-                        <option value="MERMA">MERMA / FALLADO</option>
-                        <option value="FALLA IMPORTACION">FALLA DE IMPORTACIÓN</option>
-                        <option value="SE ARREGLO">SE ARREGLÓ</option>
-                        <option value="REINGRESO">REINGRESO STOCK</option>
-                    </select>
-                    <textarea id="obs-d" class="input-apple" placeholder="Observaciones adicionales..."></textarea>
-                    <button class="btn btn-dark w-100 p-3 rounded-4 fw-bold" onclick="addToCart('d')">AÑADIR A LISTA</button>
-                </div>
 
-                <div id="cart-d" class="d-none mt-3">
-                    <div id="items-d" class="mb-3 border-top pt-2"></div>
-                    <button class="btn btn-primary w-100 p-3 rounded-4 fw-bold" onclick="finalizarOp('Devoluciones', 'd')">PROCESAR RETORNO</button>
+                    <div id="cart-d" class="d-none mt-3">
+                        <div id="items-d" class="mb-3 border-top pt-2"></div>
+                        <button class="btn btn-primary w-100 p-3 fw-bold rounded-4" onclick="finalizarOp('Devoluciones', 'd')">Procesar Retorno</button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view d-none">
-            <div class="filter-bar">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <input type="date" id="filter-date" class="search-pill" onchange="renderHis()">
-                    </div>
-                    <div class="col-6">
-                        <input type="text" id="filter-text" class="search-pill" placeholder="Buscar cliente..." oninput="renderHis()">
-                    </div>
+            <div class="filter-container">
+                <input type="text" id="h-search" class="search-box" placeholder="Buscar cliente, vendedor o producto..." oninput="renderHis()">
+                <div class="d-flex justify-content-between align-items-center">
+                    <input type="date" id="h-date" class="date-input" onchange="renderHis()">
+                    <span id="h-count" class="text-muted fw-bold" style="font-size:11px"></span>
                 </div>
-                <div id="his-count" class="mt-2 text-muted" style="font-size:11px"></div>
             </div>
-            <div id="feed-his"></div>
+            <div id="feed-his">
+                </div>
         </section>
     </main>
 
     <nav class="nav-apple">
-        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-truck-loading"></i>SALIDA</button>
-        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-undo"></i>RETORNO</button>
-        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
+        <button class="nav-item active" onclick="nav('ent', this)"><i class="fas fa-shipping-fast"></i>SALIDA</button>
+        <button class="nav-item" onclick="nav('dev', this)"><i class="fas fa-box-open"></i>RETORNO</button>
+        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-list-check"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = []; let CART_E = []; let CART_D = []; let HIS_RAW = [];
+        let MASTER = []; let CART_E = []; let CART_D = []; let RAW_HIS = [];
 
         async function init() {
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p;
-                HIS_RAW = d.h;
+                RAW_HIS = d.h;
                 renderHis();
-            } catch(e) { console.error("Error cargando datos"); }
+            } catch(e) { console.error("Error cargando base de datos"); }
         }
 
+        // BUSCADOR DE PRODUCTOS
         function motorBusqueda(v, boxId, t) {
             const box = document.getElementById(boxId);
             if(v.length < 1) { box.style.display='none'; return; }
             const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = m.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small class="text-muted">SKU: ${p[0]}</small></div>`).join('');
+            box.innerHTML = m.map(p => `
+                <div class="p-3 bg-white border rounded-3 mb-1" onclick="pick('${p[0]}','${p[1]}','${t}')">
+                    <b>${p[1]}</b><br><small class="text-muted">SKU: ${p[0]}</small>
+                </div>
+            `).join('');
             box.style.display = m.length ? 'block' : 'none';
         }
 
@@ -209,20 +276,23 @@
             window.lastPick = {sku: s, name: n};
             document.getElementById(`p-n-${t}`).innerText = n;
             document.getElementById(`form-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-results').forEach(b => b.style.display='none');
+            document.querySelectorAll('[id^="res-"]').forEach(b => b.style.display='none');
         }
 
+        // GESTIÓN DE CARRITO
         function addToCart(t) {
             const cart = t === 'e' ? CART_E : CART_D;
             const q = t === 'e' ? document.getElementById('q-e').value : document.getElementById('cr-d').value;
             if(!q) return;
+
             const item = { ...window.lastPick, q: q };
             if(t === 'd') {
                 item.cg = document.getElementById('cg-d').value;
                 item.st = document.getElementById('st-d').value;
-                item.obs = document.getElementById('obs-d').value || "S/O";
-                item.type = "DEVOLUCION";
-            } else { item.type = "ENTREGA"; }
+                item.obs = document.getElementById('obs-d').value || "Sin obs.";
+                item.type = "RETORNO";
+            } else { item.type = "SALIDA"; }
+
             cart.push(item);
             document.getElementById(`form-${t}`).classList.add('d-none');
             renderCart(t);
@@ -230,12 +300,13 @@
 
         function renderCart(t) {
             const cart = t === 'e' ? CART_E : CART_D;
+            const cont = document.getElementById(`cart-${t}`);
             const items = document.getElementById(`items-${t}`);
-            document.getElementById(`cart-${t}`).classList.toggle('d-none', cart.length === 0);
+            cont.classList.toggle('d-none', cart.length === 0);
             items.innerHTML = cart.map((i, idx) => `
-                <div class="p-2 border-bottom d-flex justify-content-between align-items-center" style="font-size:13px">
-                    <span><b>${i.q}</b> x ${i.name}</span>
-                    <i class="fas fa-times-circle text-muted" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');"></i>
+                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded-3">
+                    <span style="font-size:13px"><b>${i.q}</b> x ${i.name}</span>
+                    <i class="fas fa-minus-circle text-danger" onclick="((${t==='e'?'CART_E':'CART_D'}).splice(${idx},1)); renderCart('${t}');"></i>
                 </div>
             `).join('');
         }
@@ -243,15 +314,15 @@
         async function finalizarOp(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
             const ven = document.getElementById(`ven-${t}`).value;
-            if(!cli || !ven) return Swal.fire("Error", "Faltan datos", "error");
+            if(!cli || !ven) return Swal.fire("Campos Incompletos", "Por favor indique Cliente y Vendedor", "warning");
 
             const cart = t === 'e' ? CART_E : CART_D;
             const payload = cart.map(i => [
                 new Date(), i.type, i.sku, i.name, i.q, cli, 
-                t === 'e' ? `Vendedor: ${ven}` : `Guía: ${i.cg} | Motivo: ${i.st} | Obs: ${i.obs} | Vendedor: ${ven}`
+                t === 'e' ? `Responsable: ${ven}` : `Guía: ${i.cg} | Motivo: ${i.st} | Obs: ${i.obs} | Resp: ${ven}`
             ]);
 
-            Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Sincronizando con Servidor...', didOpen: () => Swal.showLoading() });
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
                 if(t==='e') CART_E = []; else CART_D = [];
@@ -259,48 +330,66 @@
                 document.getElementById(`cli-${t}`).value = '';
                 document.getElementById(`ven-${t}`).value = '';
                 await init();
-                Swal.fire("Éxito", "Movimiento guardado", "success");
-            } catch(e) { Swal.fire("Error", "No se pudo guardar", "error"); }
+                Swal.fire("¡Éxito!", "El inventario ha sido actualizado", "success");
+            } catch(e) { Swal.fire("Error", "No se pudo guardar la información", "error"); }
         }
 
-        // --- RENDERIZADO DE HISTORIAL CON FILTROS ---
+        // --- RENDERIZADO DEL HISTORIAL PROFESIONAL ---
         function renderHis() {
             const feed = document.getElementById('feed-his');
-            const dateVal = document.getElementById('filter-date').value;
-            const textVal = document.getElementById('filter-text').value.toLowerCase();
+            const searchVal = document.getElementById('h-search').value.toLowerCase();
+            const dateVal = document.getElementById('h-date').value;
             
             const groups = {};
-            HIS_RAW.forEach(r => {
-                const fechaObj = new Date(r[0]);
-                const isoDate = fechaObj.toISOString().split('T')[0];
-                const hora = fechaObj.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            RAW_HIS.forEach(r => {
+                const f = new Date(r[0]);
+                const isoDate = f.toISOString().split('T')[0];
+                const hora = f.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const cliente = r[5];
-                
-                // Aplicar Filtros
+                const vendedor = r[6].includes("Vendedor:") || r[6].includes("Resp:") ? r[6].split('|').pop().trim() : "No especificado";
+
+                // Aplicación de Filtros
                 if(dateVal && isoDate !== dateVal) return;
-                if(textVal && !cliente.toLowerCase().includes(textVal)) return;
+                const matchSearch = cliente.toLowerCase().includes(searchVal) || 
+                                    r[3].toLowerCase().includes(searchVal) || 
+                                    vendedor.toLowerCase().includes(searchVal);
+                if(searchVal && !matchSearch) return;
 
                 const key = cliente + "_" + hora + "_" + isoDate;
-                if(!groups[key]) groups[key] = { cli: cliente, hora, fecha: isoDate, tipo: r[1], items: [] };
-                groups[key].items.push({ sku: r[2], nom: r[3], cant: r[4], obs: r[6] });
+                if(!groups[key]) {
+                    groups[key] = { cli: cliente, ven: vendedor, hora, fecha: isoDate, tipo: r[1], prods: [], totalQ: 0 };
+                }
+                groups[key].prods.push({ n: r[3], q: r[4], s: r[2], detail: r[6] });
+                groups[key].totalQ += parseInt(r[4]);
             });
 
             const data = Object.values(groups).reverse();
-            document.getElementById('his-count').innerText = `Mostrando ${data.length} movimientos`;
+            document.getElementById('h-count').innerText = `${data.length} MOVIMIENTOS`;
+
+            if(data.length === 0) {
+                feed.innerHTML = `<div class="text-center p-5 text-muted">No se encontraron registros</div>`;
+                return;
+            }
 
             feed.innerHTML = data.map(g => `
-                <div class="history-card">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="type-badge ${g.tipo === 'ENTREGA' ? 'bg-ent' : 'bg-dev'}">${g.tipo}</span>
-                        <small class="text-muted fw-bold">${g.fecha} • ${g.hora}</small>
+                <div class="h-card">
+                    <span class="h-type ${g.tipo === 'SALIDA' || g.tipo === 'ENTREGA' ? 'type-salida' : 'type-retorno'}">${g.tipo}</span>
+                    <div class="d-flex justify-content-between">
+                        <div class="h-client">${g.cli}</div>
+                        <div class="text-end text-muted" style="font-size:11px"><b>${g.fecha}</b><br>${g.hora}</div>
                     </div>
-                    <div class="fw-bold fs-5 mb-1">${g.cli}</div>
-                    <div class="text-muted small mb-3"><i class="fas fa-layer-group"></i> ${g.items.length} productos</div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light btn-sm w-100 fw-bold py-2" style="border-radius:10px" onclick="verDetalle('${btoa(JSON.stringify(g))}')">LISTA</button>
-                        <button class="btn btn-outline-primary btn-sm w-100 fw-bold py-2" style="border-radius:10px" onclick="genPDF(${JSON.stringify(g).replace(/"/g, '&quot;')})">PDF</button>
+                    <div class="h-vendor"><i class="far fa-user me-1"></i> ${g.ven}</div>
+                    
+                    <div class="h-stats">
+                        <div class="stat-item"><i class="fas fa-layer-group"></i> ${g.prods.length} SKUs</div>
+                        <div class="stat-item"><i class="fas fa-boxes"></i> ${g.totalQ} Unds.</div>
                     </div>
-                    <div class="history-footer">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
+
+                    <div class="btn-group-apple">
+                        <button class="btn-h btn-view" onclick="verDetalle('${btoa(JSON.stringify(g))}')">LISTA</button>
+                        <button class="btn-h btn-pdf" onclick="genPDF(JSON.parse(atob('${btoa(JSON.stringify(g))}')))">PDF</button>
+                    </div>
+                    <div class="footer-auth">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
                 </div>
             `).join('');
         }
@@ -308,10 +397,17 @@
         function verDetalle(dataStr) {
             const g = JSON.parse(atob(dataStr));
             Swal.fire({
-                title: 'Detalles del Movimiento',
-                html: `<div class="text-start small">
-                    ${g.items.map(p => `<div class="mb-2 border-bottom pb-1"><b>${p.cant}</b> x ${p.nom}<br><i class="text-muted">${p.obs}</i></div>`).join('')}
-                </div>`,
+                title: 'Detalle de Productos',
+                html: `
+                    <div class="text-start" style="font-size:13px">
+                        ${g.prods.map(p => `
+                            <div class="mb-2 border-bottom pb-2">
+                                <span class="badge bg-primary me-2">${p.q}</span> <b>${p.n}</b><br>
+                                <small class="text-muted">${p.detail}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `,
                 confirmButtonColor: '#007AFF'
             });
         }
@@ -319,23 +415,28 @@
         function genPDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(16); doc.text("TITAN ELITE - REPORTE LOGÍSTICO", 14, 20);
+            doc.setFontSize(18); doc.text("REPORTE DE INVENTARIO - TITAN ELITE", 14, 20);
             doc.setFontSize(10);
             doc.text(`TIPO: ${g.tipo} | CLIENTE: ${g.cli}`, 14, 30);
-            doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora}`, 14, 35);
+            doc.text(`FECHA: ${g.fecha} | HORA: ${g.hora} | RESPONSABLE: ${g.ven}`, 14, 35);
+
             doc.autoTable({
                 startY: 45,
-                head: [['Cant', 'Producto', 'SKU', 'Referencia']],
-                body: g.items.map(p => [p.cant, p.nom, p.sku, p.obs]),
+                head: [['Cant', 'Producto', 'SKU', 'Referencia / Observación']],
+                body: g.prods.map(p => [p.q, p.n, p.s, p.detail]),
                 headStyles: { fillColor: [0, 122, 255] }
             });
+
             doc.setFontSize(8);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align: 'center'});
-            doc.save(`Reporte_${g.cli}_${g.fecha}.pdf`);
+            doc.save(`TITAN_${g.cli}_${g.fecha}.pdf`);
         }
 
         function sugerirVendor(v, targetId) {
-            if(v.toUpperCase().includes("GLOBAL")) document.getElementById(targetId).value = "GLOBAL LOGISTICS";
+            let s = "";
+            if(v.toUpperCase().includes("GLOBAL")) s = "GLOBAL LOGISTICS CORP";
+            else if(v.toUpperCase().includes("CENTRAL")) s = "SOPORTE INTERNO";
+            if(s) document.getElementById(targetId).value = s;
         }
 
         function nav(v, btn) {
