@@ -1,199 +1,114 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Inventario Logístico 2026</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --primary-accent: #2563eb;
-            --return-accent: #f59e0b;
-        }
+<div id="sistema-inventario">
+    <section id="registro-seccion">
+        <label>Cliente:</label>
+        <select id="cliente" onchange="sugerirVendor()">
+            <option value="">Seleccione...</option>
+            <option value="Cliente_A">Cliente A</option>
+            <option value="Cliente_B">Cliente B</option>
+        </select>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        <label>Proveedor Sugerido:</label>
+        <input type="text" id="vendor" readonly>
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
+        <label>Tipo:</label>
+        <select id="tipo_movimiento">
+            <option value="ENTRADA">Entrada</option>
+            <option value="DEVOLUCION">Devolución</option>
+        </select>
 
-        .btn-modern {
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .return-card { border-left: 6px solid var(--return-accent); }
-        .entry-card { border-left: 6px solid var(--primary-accent); }
-
-        .footer-official {
-            font-size: 0.85rem;
-            color: #4b5563;
-            border-top: 1px solid #e5e7eb;
-            margin-top: 15px;
-            padding-top: 10px;
-            font-weight: 600;
-        }
-
-        .badge-dev { background-color: var(--return-accent); color: white; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2 class="mb-4 text-dark fw-bold">Gestión de Inventario <span class="text-primary">2026</span></h2>
-
-    <div class="glass-card p-4">
-        <h5 class="mb-3">Registro de Operación</h5>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">Cliente</label>
-                <select id="clienteSelect" class="form-select" onchange="sugerirProveedor()">
-                    <option value="">Seleccione Cliente...</option>
-                    <option value="Logistica Global">Logística Global</option>
-                    <option value="Importaciones S.A.">Importaciones S.A.</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Proveedor Sugerido</label>
-                <input type="text" id="vendorSugerido" class="form-control" readonly placeholder="Sugerencia automática...">
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Tipo de Movimiento</label>
-                <select id="tipoMovimiento" class="form-select">
-                    <option value="ENTRADA">Entrada de Almacén</option>
-                    <option value="DEVOLUCION">Devolución de Cliente</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Chofer / Asistente Actual</label>
-                <div class="input-group">
-                    <input type="text" id="operadorNombre" class="form-control" value="Carlos Ruiz" readonly>
-                    <button class="btn btn-outline-danger" type="button" onclick="confirmarCambioPersonal()">Cambiar</button>
-                </div>
-            </div>
-            <div class="col-12 text-end">
-                <button class="btn btn-primary btn-modern" onclick="registrarMovimiento()">Procesar Registro</button>
-            </div>
+        <div class="control-personal">
+            <label>Operador:</label>
+            <input type="text" id="operador" value="Operador Actual" readonly>
+            <button onclick="confirmarCambioEmergencia()">⚠️ Cambiar Personal</button>
         </div>
-    </div>
 
-    <h4 class="mb-3">Historial de Movimientos</h4>
-    <div id="contenedorHistorial" class="row">
+        <button onclick="guardarRegistro()">Guardar en Historial</button>
+    </section>
+
+    <hr>
+
+    <div id="historial-contenedor">
         </div>
 </div>
-
-<div class="modal fade" id="modalEmergencia" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Confirmación de Seguridad</h5>
-            </div>
-            <div class="modal-body">
-                ¿Está seguro de que desea cambiar el conductor o asistente asignado? Esta acción quedará registrada en el sistema de inventario.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" onclick="habilitarEdicionOperador()">Sí, confirmar cambio</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Base de Datos en Memoria (Simulada)
-    const dbSugerencias = {
-        "Logistica Global": "Transports Express S.A.",
-        "Importaciones S.A.": "Almacenes Centrales"
+// --- LOGICA DE NEGOCIO PERSONALIZADA ---
+
+const sugerencias = {
+    "Cliente_A": "Vendor Logística Norte",
+    "Cliente_B": "Vendor Distribución Sur"
+};
+
+function sugerirVendor() {
+    const c = document.getElementById('cliente').value;
+    document.getElementById('vendor').value = sugerencias[c] || "";
+}
+
+function confirmarCambioEmergencia() {
+    if(confirm("¿Desea realizar un cambio de conductor/asistente por emergencia?")) {
+        document.getElementById('operador').readOnly = false;
+        document.getElementById('operador').style.backgroundColor = "#fff3cd";
+    }
+}
+
+// --- REPARACIÓN DEL HISTORIAL PARA DEVOLUCIONES ---
+let historialData = []; 
+
+function guardarRegistro() {
+    const data = {
+        cliente: document.getElementById('cliente').value,
+        vendor: document.getElementById('vendor').value,
+        tipo: document.getElementById('tipo_movimiento').value,
+        operador: document.getElementById('operador').value,
+        fecha: new Date().toLocaleString()
     };
 
-    let historial = [];
+    historialData.push(data);
+    actualizarVistaHistorial();
+}
 
-    // 1. Sugerencia de Vendor basada en Cliente
-    function sugerirProveedor() {
-        const cliente = document.getElementById('clienteSelect').value;
-        const vendorInput = document.getElementById('vendorSugerido');
-        vendorInput.value = dbSugerencias[cliente] || "Proveedor General";
-    }
+function actualizarVistaHistorial() {
+    const lista = document.getElementById('historial-contenedor');
+    lista.innerHTML = ""; // Limpiamos pero mantenemos los datos
 
-    // 2. Confirmación de Emergencia para cambio de Personal
-    const modalConfirm = new bootstrap.Modal(document.getElementById('modalEmergencia'));
-    function confirmarCambioPersonal() {
-        modalConfirm.show();
-    }
-
-    function habilitarEdicionOperador() {
-        const op = document.getElementById('operadorNombre');
-        op.readOnly = false;
-        op.focus();
-        modalConfirm.hide();
-    }
-
-    // 3. Registro y Actualización de Historial (Fix de Devoluciones)
-    function registrarMovimiento() {
-        const cliente = document.getElementById('clienteSelect').value;
-        const tipo = document.getElementById('tipoMovimiento').value;
-        const vendor = document.getElementById('vendorSugerido').value;
-        const operador = document.getElementById('operadorNombre').value;
-
-        if (!cliente) return alert("Por favor seleccione un cliente.");
-
-        const nuevoRegistro = {
-            id: (tipo === 'DEVOLUCION' ? 'RTN-' : 'MOV-') + Math.floor(Math.random() * 10000),
-            fecha: new Date().toLocaleString(),
-            cliente,
-            tipo,
-            vendor,
-            operador
-        };
-
-        historial.unshift(nuevoRegistro); // Agregamos al inicio
-        renderizarHistorial();
-    }
-
-    // 4. Renderización con el Diseño Moderno y el Footer Oficial
-    function renderizarHistorial() {
-        const contenedor = document.getElementById('contenedorHistorial');
-        contenedor.innerHTML = '';
-
-        historial.forEach(reg => {
-            const isDev = reg.tipo === 'DEVOLUCION';
-            const cardHtml = `
-                <div class="col-md-6 mb-3">
-                    <div class="glass-card p-3 ${isDev ? 'return-card' : 'entry-card'}">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-bold text-muted">${reg.id}</span>
-                            <span class="badge ${isDev ? 'badge-dev' : 'bg-primary'}">${reg.tipo}</span>
-                        </div>
-                        <p class="mb-1"><strong>Cliente:</strong> ${reg.cliente}</p>
-                        <p class="mb-1"><strong>Proveedor:</strong> ${reg.vendor}</p>
-                        <p class="mb-1 text-secondary small"><strong>Operador:</strong> ${reg.operador} | ${reg.fecha}</p>
-                        
-                        <div class="footer-official">
-                            Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.
-                        </div>
-                    </div>
+    historialData.forEach(item => {
+        // Creamos la tarjeta manteniendo tu estilo preferido
+        const card = document.createElement('div');
+        card.className = `tarjeta-historial ${item.tipo === 'DEVOLUCION' ? 'border-devolucion' : ''}`;
+        
+        card.innerHTML = `
+            <div class="card-body">
+                <h4>${item.tipo} - ${item.cliente}</h4>
+                <p>Proveedor: ${item.vendor}</p>
+                <p>Registrado por: ${item.operador}</p>
+                <small>${item.fecha}</small>
+                
+                <div class="footer-reporte" style="margin-top:10px; font-weight:bold; border-top:1px solid #ccc;">
+                    Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.
                 </div>
-            `;
-            contenedor.innerHTML += cardHtml;
-        });
-    }
+            </div>
+        `;
+        lista.appendChild(card);
+    });
+}
 </script>
 
-</body>
-</html>
+<style>
+/* Solo agregamos lo necesario para que las devoluciones resalten */
+.tarjeta-historial {
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+.border-devolucion {
+    border-left: 8px solid #ffc107 !important; /* Color ámbar para devoluciones */
+    background: #fffdf5;
+}
+.footer-reporte {
+    font-size: 0.8rem;
+    color: #555;
+    padding-top: 5px;
+}
+</style>
