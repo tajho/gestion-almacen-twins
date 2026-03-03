@@ -3,165 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN ELITE | Gestión de Inventario</title>
+    <title>TITAN X | Logística Profesional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        :root { --bg: #0A0C10; --card: #12151E; --accent: #00D1FF; --border: #1E2430; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #fff; margin: 0; padding-bottom: 90px; }
-        
-        .header-app { background: var(--card); padding: 15px 20px; border-bottom: 1px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
-        .status-dot { font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        
-        .titan-card { background: var(--card); border-radius: 12px; padding: 20px; margin: 15px; border: 1px solid var(--border); }
-        .label-audit { font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 8px; display: block; }
-        
-        .titan-input { background: #080A0F; border: 1px solid var(--border); border-radius: 8px; padding: 12px; width: 100%; color: #fff; margin-bottom: 12px; }
-        .titan-input:focus { border-color: var(--accent); outline: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
-        /* Buscador Flotante Corregido */
-        .search-wrapper { position: relative; }
-        .search-results { 
-            position: absolute; width: 100%; background: #1A1F2B; border: 1px solid var(--accent); 
-            border-radius: 0 0 8px 8px; z-index: 2000; max-height: 200px; overflow-y: auto; display: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        :root {
+            --bg: #0A0C10;
+            --surface: #161B22;
+            --accent: #3B82F6;
+            --success: #10B981;
+            --danger: #F43F5E;
+            --text: #F0F6FC;
+            --muted: #8B949E;
         }
-        .search-item { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; }
-        .search-item:hover { background: var(--accent); color: #000; }
 
-        .btn-action { border-radius: 8px; padding: 14px; font-weight: 800; border: none; width: 100%; background: var(--accent); color: #000; text-transform: uppercase; }
-        
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); }
-        .nav-item { background: none; border: none; color: #5F6B7A; font-size: 10px; font-weight: 700; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-        .view { display: none; } .view-active { display: block; }
+        body { 
+            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden;
+        }
+
+        /* Header Estilo Dashboard */
+        .premium-nav {
+            background: rgba(10, 12, 16, 0.8); backdrop-filter: blur(12px);
+            padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky; top: 0; z-index: 2000;
+        }
+        .brand { font-weight: 800; font-size: 20px; letter-spacing: -1px; color: var(--accent); }
+
+        /* Tarjetas con Efecto Cristal */
+        .neon-card {
+            background: var(--surface); border-radius: 20px; padding: 22px;
+            margin: 15px; border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .label-micro { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; }
+
+        /* Inputs de Alto Contraste */
+        .input-x {
+            background: #0D1117; border: 1px solid #30363D;
+            border-radius: 14px; padding: 15px; width: 100%; font-size: 16px; color: #fff;
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .input-x:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); }
+
+        /* Chips de Selección */
+        .scroller-x { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; }
+        .chip-x {
+            background: #21262D; border: 1px solid #30363D; padding: 10px 20px;
+            border-radius: 12px; font-size: 13px; font-weight: 600; white-space: nowrap; transition: 0.3s;
+        }
+        .chip-x.active { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 5px 15px rgba(59,130,246,0.3); }
+
+        /* Botones Titan */
+        .btn-x {
+            border-radius: 16px; padding: 16px; font-weight: 700; border: none; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s; text-transform: uppercase; font-size: 14px;
+        }
+        .btn-blue { background: var(--accent); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-x:active { transform: scale(0.96); }
+
+        /* Historial Limpio */
+        .his-item {
+            background: #161B22; border-radius: 16px; padding: 16px; margin-bottom: 10px;
+            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
+        }
+        .his-info b { font-size: 15px; display: block; color: var(--text); }
+        .his-info small { color: var(--muted); font-size: 11px; }
+
+        /* Nav Inferior */
+        .tab-bar {
+            position: fixed; bottom: 0; width: 100%; background: rgba(13, 17, 23, 0.95);
+            display: flex; justify-content: space-around; padding: 12px 0 25px 0;
+            border-top: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+        }
+        .tab-item { background: none; border: none; color: var(--muted); font-size: 10px; font-weight: 700; }
+        .tab-item.active { color: var(--accent); }
+        .tab-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        .view { display: none; }
+        .active-view { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="header-app d-flex justify-content-between align-items-center">
-        <div><h1 style="font-size: 16px; font-weight: 900; margin:0; color:var(--accent)">TAJHO | TITAN</h1></div>
-        <div id="conn-status" class="status-dot text-danger">● SIN CONEXIÓN</div>
-    </header>
+    <nav class="premium-nav d-flex justify-content-between align-items-center">
+        <div class="brand">TITAN<span style="color:white">X</span></div>
+        <div class="text-end">
+            <div style="font-size: 11px; font-weight: 800;">J. ANGELO</div>
+            <div style="font-size: 9px; color: var(--success);"><i class="fas fa-check-circle"></i> SISTEMA LISTO</div>
+        </div>
+    </nav>
 
     <main>
-        <section id="v-ret" class="view view-active">
-            <div class="titan-card">
-                <span class="label-audit">AUDITORÍA DE RETORNO</span>
-                <input type="text" id="cli-r" class="titan-input" placeholder="Cliente Origen">
+        <section id="view-del" class="view active-view">
+            <div class="neon-card">
+                <span class="label-micro">Destino del Pedido</span>
+                <input type="text" id="cli-d" class="input-x" placeholder="Nombre del Cliente" oninput="saveSt()">
                 
-                <div class="search-wrapper">
-                    <span class="label-audit">PRODUCTO DEVUELTO</span>
-                    <input type="text" id="prod-r" class="titan-input" placeholder="SKU o Nombre..." oninput="findProduct(this.value, 'r')">
-                    <div id="res-r" class="search-results"></div>
+                <span class="label-micro">Vendedor Responsable</span>
+                <div class="scroller-x" id="vend-d">
+                    <div class="chip-x" onclick="setV('ELIAS AVILA')">ELIAS AVILA</div>
+                    <div class="chip-x" onclick="setV('EVELYN MURO')">EVELYN MURO</div>
+                    <div class="chip-x" onclick="setV('JHAYRO MAURICIO')">JHAYRO MAURICIO</div>
+                    <div class="chip-x" onclick="setV('PAULA GARCIA')">PAULA GARCIA</div>
+                    <div class="chip-x" onclick="setV('REGULO ANTEZA')">REGULO ANTEZA</div>
                 </div>
 
-                <div class="row g-2">
-                    <div class="col-6"><span class="label-audit">CANT. GUÍA</span><input type="number" id="qg-r" class="titan-input"></div>
-                    <div class="col-6"><span class="label-audit">CANT. REAL</span><input type="number" id="qr-r" class="titan-input"></div>
+                <div class="mt-4">
+                    <span class="label-micro">Detalle de Mercadería</span>
+                    <input type="text" id="sku-in" class="input-x" placeholder="🔍 SKU o Producto">
+                    <input type="number" id="qty-in" class="input-x" placeholder="Cantidad">
+                    <button class="btn-x btn-blue" onclick="addI()">Añadir Item <i class="fas fa-plus"></i></button>
                 </div>
 
-                <span class="label-audit">ESTADO QC</span>
-                <select id="st-r" class="titan-input">
-                    <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO</option>
-                    <option value="FALLA DE FÁBRICA">FALLA DE FÁBRICA</option>
-                    <option value="DAÑO POR TRANSPORTE">DAÑO POR TRANSPORTE</option>
-                </select>
-
-                <span class="label-audit"><i class="fas fa-pencil-alt"></i> OBSERVACIONES</span>
-                <textarea id="obs-r" class="titan-input" style="height: 80px;"></textarea>
-                
-                <button class="btn-action" onclick="saveItem('r')">REGISTRAR AUDITORÍA</button>
+                <div id="temp-list" class="mt-4"></div>
+                <button id="sync-btn" class="btn-x btn-success mt-3 d-none" onclick="syncAll()">Sincronizar Carga <i class="fas fa-cloud-upload-alt"></i></button>
             </div>
         </section>
 
-        <section id="v-del" class="view">
-            <div class="titan-card">
-                <span class="label-audit">GESTIÓN DE ENTREGA</span>
-                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente">
-                <div class="search-wrapper">
-                    <span class="label-audit">BUSCAR PRODUCTO</span>
-                    <input type="text" id="prod-d" class="titan-input" placeholder="SKU o Nombre..." oninput="findProduct(this.value, 'd')">
-                    <div id="res-d" class="search-results"></div>
-                </div>
-                <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad">
-                <button class="btn-action" onclick="saveItem('d')">AÑADIR A CARGA</button>
+        <section id="view-ret" class="view">
+            <div class="neon-card">
+                <span class="label-micro" style="color:var(--danger)">Control de Devoluciones</span>
+                <input type="text" id="cli-r" class="input-x" placeholder="Cliente de Origen">
+                <textarea id="obs-r" class="input-x" style="height: 100px;" placeholder="Observaciones de estado..."></textarea>
+                <button class="btn-x btn-blue" style="background:var(--danger)">Registrar Falla <i class="fas fa-exclamation-triangle"></i></button>
             </div>
         </section>
 
-        <section id="v-his" class="view">
-            <div id="history-container"></div>
+        <section id="view-his" class="view">
+            <div class="px-3 py-2" id="his-feed">
+                </div>
         </section>
     </main>
 
-    <nav class="nav-bar">
-        <button class="nav-item" onclick="showView('del', this)"><i class="fas fa-box"></i>ENTREGA</button>
-        <button class="nav-item active" onclick="showView('ret', this)"><i class="fas fa-undo"></i>RETORNO</button>
-        <button class="nav-item" onclick="showView('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
+    <nav class="tab-bar">
+        <button class="tab-item active" onclick="nav('del', this)"><i class="fas fa-box"></i><span>ENTREGA</span></button>
+        <button class="tab-item" onclick="nav('ret', this)"><i class="fas fa-undo"></i><span>RETORNO</span></button>
+        <button class="tab-item" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
     </nav>
 
     <script>
-        // PEGA TU ENLACE CSV AQUÍ
-        const EXCEL_CSV_URL = 'TU_URL_DE_GOOGLE_SHEETS_AQUÍ';
-        let INVENTARIO = [];
+        let items = []; let vendor = "";
 
-        function connectExcel() {
-            Papa.parse(EXCEL_CSV_URL, {
-                download: true, header: true,
-                complete: (results) => {
-                    INVENTARIO = results.data;
-                    const status = document.getElementById('conn-status');
-                    status.innerHTML = "● SINCRONIZADO";
-                    status.className = "status-dot text-success";
-                },
-                error: () => {
-                    console.log("Error al conectar Excel");
-                }
-            });
-        }
-        window.onload = connectExcel;
-
-        function findProduct(val, type) {
-            const resultsBox = document.getElementById(`res-${type}`);
-            if (val.length < 2) { resultsBox.style.display = 'none'; return; }
-
-            // Filtrado inteligente por SKU o Nombre
-            const matches = INVENTARIO.filter(p => 
-                (p.SKU && p.SKU.toLowerCase().includes(val.toLowerCase())) || 
-                (p.NOMBRE && p.NOMBRE.toLowerCase().includes(val.toLowerCase()))
-            );
-
-            if (matches.length > 0) {
-                resultsBox.style.display = 'block';
-                resultsBox.innerHTML = matches.slice(0, 8).map(p => `
-                    <div class="search-item" onclick="selectProduct('${p.SKU}', '${p.NOMBRE}', '${type}')">
-                        <b>${p.SKU}</b> - ${p.NOMBRE}
-                    </div>
-                `).join('');
-            } else {
-                resultsBox.style.display = 'none';
+        // Recuperar sesión anterior
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('TITAN_X_SESSION'));
+            if(saved) {
+                items = saved.items || [];
+                vendor = saved.vendor || "";
+                document.getElementById('cli-d').value = saved.client || "";
+                if(vendor) setV(vendor);
+                renderItems();
             }
+        };
+
+        function setV(v) {
+            vendor = v;
+            document.querySelectorAll('.chip-x').forEach(c => c.classList.toggle('active', c.innerText === v));
+            saveSt();
         }
 
-        function selectProduct(sku, name, type) {
-            document.getElementById(`prod-${type}`).value = `${sku} | ${name}`;
-            document.getElementById(`res-${type}`).style.display = 'none';
+        function saveSt() {
+            const data = { client: document.getElementById('cli-d').value, vendor, items };
+            localStorage.setItem('TITAN_X_SESSION', JSON.stringify(data));
         }
 
-        function saveItem(type) {
-            Swal.fire('Guardado', 'El registro se añadió al historial', 'success');
-            // Aquí iría tu lógica de guardado en LocalStorage
+        function addI() {
+            const sku = document.getElementById('sku-in').value;
+            const qty = document.getElementById('qty-in').value;
+            if(!sku || !qty) return;
+
+            items.push({ sku, qty, time: new Date().toLocaleString() });
+            
+            // Limpieza inteligente: solo campos de producto
+            document.getElementById('sku-in').value = "";
+            document.getElementById('qty-in').value = "";
+            
+            renderItems();
+            saveSt();
         }
 
-        function showView(viewId, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            document.getElementById('v-' + viewId).classList.add('view-active');
-            btn.classList.add('active');
+        function renderItems() {
+            const box = document.getElementById('temp-list');
+            const btn = document.getElementById('sync-btn');
+            btn.classList.toggle('d-none', items.length === 0);
+            box.innerHTML = items.map((i, idx) => `
+                <div class="his-item">
+                    <div class="his-info"><b>${i.sku}</b><small>Pendiente</small></div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold">x${i.qty}</span>
+                        <i class="fas fa-times text-danger" onclick="rem(${idx})"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function rem(idx) { items.splice(idx, 1); renderItems(); saveSt(); }
+
+        function syncAll() {
+            Swal.fire({title: 'Sincronizando...', didOpen: () => Swal.showLoading(), background: '#161B22', color: '#fff'});
+            setTimeout(() => {
+                const history = JSON.parse(localStorage.getItem('TITAN_HISTORY') || '[]');
+                const client = document.getElementById('cli-d').value;
+                items.forEach(i => history.unshift({...i, client, vendor}));
+                localStorage.setItem('TITAN_HISTORY', JSON.stringify(history));
+                
+                localStorage.removeItem('TITAN_X_SESSION');
+                items = []; vendor = "";
+                document.getElementById('cli-d').value = "";
+                Swal.fire('Éxito', 'Base de datos actualizada', 'success').then(() => location.reload());
+            }, 1200);
+        }
+
+        function nav(v, el) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
+            document.getElementById('view-'+v).classList.add('active-view');
+            el.classList.add('active');
+            if(v === 'his') loadHis();
+        }
+
+        function loadHis() {
+            const h = JSON.parse(localStorage.getItem('TITAN_HISTORY') || '[]');
+            document.getElementById('his-feed').innerHTML = h.map((r, idx) => `
+                <div class="his-item" onclick="options(${idx})">
+                    <div class="his-info"><b>${r.client}</b><small>${r.sku} • ${r.vendor}</small></div>
+                    <div class="text-end"><b class="text-accent">x${r.qty}</b><br><small style="font-size:9px">${r.time.split(',')[0]}</small></div>
+                </div>
+            `).join('');
+        }
+
+        function options(idx) {
+            const r = JSON.parse(localStorage.getItem('TITAN_HISTORY'))[idx];
+            Swal.fire({
+                title: 'Acción de Reporte',
+                text: `¿Enviar ${r.sku} de ${r.client} por WhatsApp?`,
+                showCancelButton: true,
+                confirmButtonText: 'PDF + WhatsApp',
+                confirmButtonColor: '#25D366',
+                background: '#161B22', color: '#fff'
+            }).then(res => { if(res.isConfirmed) genPDF(r); });
+        }
+
+        function genPDF(r) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TITAN X", 105, 20, {align:'center'});
+            
+            doc.autoTable({
+                startY: 30,
+                head: [['Campo', 'Valor']],
+                body: [['CLIENTE', r.client], ['PRODUCTO', r.sku], ['CANTIDAD', r.qty], ['VENDEDOR', r.vendor], ['FECHA', r.time]],
+                theme: 'grid'
+            });
+
+            // Pie de página autorizado por J. Angelo
+            const pH = doc.internal.pageSize.height;
+            const pW = doc.internal.pageSize.width;
+            doc.setFontSize(9); doc.setTextColor(100);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", pW/2, pH - 15, {align:'center'});
+            
+            doc.save(`TITAN_${r.client}.pdf`);
+            window.open(`https://wa.me/?text=${encodeURIComponent(`*Reporte TITAN X*\nCliente: ${r.client}\nItem: ${r.sku}\nCant: ${r.qty}\n_Revisado por J. Angelo._`)}`);
         }
     </script>
 </body>
