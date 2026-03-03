@@ -3,361 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS TITAN OS</title>
+    <title>TWINS TITAN | QC System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-
         :root {
-            --bg-deep: #08090a;
-            --panel: #121417;
-            --accent: #007AFF;
-            --accent-glow: rgba(0, 122, 255, 0.3);
-            --danger: #FF3B30;
-            --success: #34C759;
-            --text-main: #FFFFFF;
-            --text-dim: #8E8E93;
+            --bg: #050505; --panel: #121417; --accent: #007AFF; --danger: #FF3B30; --success: #34C759; --warning: #FF9F0A;
         }
-
-        body { 
-            background: var(--bg-deep); 
-            color: var(--text-main); 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0; padding-bottom: 100px;
-            overflow-x: hidden;
-        }
-
-        /* Dashboard Header */
-        .status-bar {
-            padding: 50px 25px 20px;
-            background: linear-gradient(180deg, var(--panel) 0%, transparent 100%);
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
-        .brand h1 { font-weight: 800; font-size: 24px; margin: 0; letter-spacing: -1px; }
-        .brand span { color: var(--accent); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Tarjetas de Diseño Industrial */
-        .main-card {
-            background: var(--panel);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 32px;
-            margin: 0 16px 20px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
+        body { background: var(--bg); color: white; font-family: 'Inter', system-ui; padding-bottom: 100px; }
+        .app-header { padding: 40px 20px 20px; background: linear-gradient(180deg, rgba(0,122,255,0.1), transparent); }
+        .glass-card { background: var(--panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 20px; margin: 0 15px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        
+        /* Inputs Estilo Logística Pro */
+        .field-group { background: #1c1f24; border-radius: 15px; padding: 12px; margin-bottom: 12px; border: 1px solid transparent; }
+        .field-group:focus-within { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,122,255,0.2); }
+        .field-group label { display: block; font-size: 10px; color: #8E8E93; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
+        .field-group input, .field-group select { background: transparent; border: none; color: white; width: 100%; font-weight: 600; font-size: 15px; outline: none; }
+        
+        /* Botones y Badges */
+        .btn-titan { border-radius: 15px; padding: 16px; font-weight: 800; border: none; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-blue { background: var(--accent); color: white; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn-green { background: var(--success); color: black; }
+        .btn-titan:active { transform: scale(0.96); }
 
         /* Buscador Inteligente */
-        .search-container { position: relative; margin-bottom: 20px; }
-        .search-input {
-            background: #1c1f24;
-            border: 2px solid transparent;
-            border-radius: 20px;
-            padding: 18px 20px 18px 55px;
-            color: white; width: 100%; font-size: 16px;
-            transition: 0.3s;
-        }
-        .search-input:focus { border-color: var(--accent); outline: none; background: #252930; box-shadow: 0 0 20px var(--accent-glow); }
-        .search-icon { position: absolute; left: 20px; top: 20px; color: var(--accent); font-size: 20px; }
+        .search-pro { position: relative; }
+        .search-input { background: #1c1f24; border-radius: 15px; padding: 15px 15px 15px 45px; color: white; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+        .sug-box { position: absolute; width: 100%; background: #1c1f24; border-radius: 15px; z-index: 100; border: 1px solid #333; display: none; margin-top: 5px; }
+        .sug-item { padding: 12px; border-bottom: 1px solid #333; cursor: pointer; }
 
-        .sug-list {
-            position: absolute; width: 100%; background: #1c1f24;
-            border-radius: 20px; z-index: 100; margin-top: 10px;
-            border: 1px solid rgba(255,255,255,0.1); overflow: hidden; display: none;
-        }
-        .sug-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .sug-item:active { background: var(--accent); }
+        /* Lista de Items */
+        .item-row { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--danger); }
+        .diff-alert { color: var(--danger); font-size: 11px; font-weight: 800; }
 
-        /* Inputs y Botones Premium */
-        .input-group-custom { background: #1c1f24; border-radius: 18px; padding: 10px; margin-bottom: 15px; }
-        .input-group-custom label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; margin-left: 10px; font-weight: 800; }
-        .input-group-custom input, .input-group-custom select { 
-            background: transparent; border: none; color: white; width: 100%; padding: 5px 10px; font-weight: 600;
-        }
-        .input-group-custom input:focus { outline: none; }
-
-        .btn-titan {
-            border-radius: 20px; padding: 18px; font-weight: 800; font-size: 15px;
-            border: none; width: 100%; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-blue { background: var(--accent); color: white; box-shadow: 0 10px 20px var(--accent-glow); }
-        .btn-green { background: var(--success); color: #050505; }
-        .btn-red { background: var(--danger); color: white; }
-        .btn-titan:active { transform: scale(0.95); }
-
-        /* Lista Dinámica */
-        .inventory-list { margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-        .item-pill {
-            background: rgba(255,255,255,0.03);
-            border-radius: 20px; padding: 15px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-left: 4px solid var(--accent);
-        }
-        .item-pill.dev { border-left-color: var(--danger); }
-        .item-pill .remove-btn { color: var(--danger); background: none; border: none; font-size: 18px; }
-
-        /* Navegación Táctica */
-        .nav-dock {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(18, 20, 23, 0.85);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 10px;
-            display: flex; justify-content: space-around;
-            border: 1px solid rgba(255,255,255,0.08); z-index: 1000;
-        }
-        .nav-link { border: none; background: none; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        .nav-link.active { color: var(--accent); }
-        .nav-link i { font-size: 22px; margin-bottom: 4px; }
-        .nav-link span { font-size: 10px; font-weight: 800; }
-
-        .view { display: none; }
-        .view.active { display: block; animation: zoomIn 0.3s ease-out; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(18,20,23,0.9); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .nav-btn { background: none; border: none; color: #636366; flex-direction: column; display: flex; align-items: center; font-size: 10px; font-weight: 700; }
+        .nav-btn.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <header class="status-bar">
-        <div class="brand">
-            <span>Core Logistics v8.0</span>
-            <h1>TWINS TITAN</h1>
+<header class="app-header">
+    <h1 class="h4 fw-bold mb-0">TWINS TITAN OS</h1>
+    <small class="text-info fw-bold">QC & LOGISTICS SYSTEM</small>
+</header>
+
+<main>
+    <section id="v-dev" class="view">
+        <div class="glass-card">
+            <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-microscope me-2"></i>REVISIÓN TÉCNICA DE RETORNO</h6>
+            
+            <div class="row g-2">
+                <div class="col-6"><div class="field-group"><label>Cliente</label><input type="text" id="cli-name" placeholder="..."></div></div>
+                <div class="col-6"><div class="field-group"><label>Vendedor</label><input type="text" id="ven-name" placeholder="..."></div></div>
+            </div>
+
+            <div class="search-pro mb-3">
+                <i class="fas fa-search position-absolute" style="left:15px; top:18px; color:var(--accent)"></i>
+                <input type="text" id="dev-search" class="search-input" placeholder="Buscar Producto..." oninput="searchProd(this.value)">
+                <div id="dev-sug" class="sug-box"></div>
+            </div>
+
+            <div id="inspeccion-panel" class="d-none">
+                <div class="p-3 mb-3" style="background: rgba(255,255,255,0.05); border-radius: 15px;">
+                    <b id="prod-sel-name"></b><br><small id="prod-sel-sku" class="text-accent"></small>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><div class="field-group"><label>Cant. Guía</label><input type="number" id="cant-guia" oninput="checkDiff()"></div></div>
+                    <div class="col-6"><div class="field-group"><label>Cant. Real</label><input type="number" id="cant-real" oninput="checkDiff()"></div></div>
+                </div>
+                <div id="diff-msg" class="mb-3 px-2"></div>
+
+                <div class="field-group">
+                    <label>Estado / Detalle de Revisión</label>
+                    <select id="det-revision">
+                        <option value="FALLADO A MERMA">FALLADO A MERMA (Descarte)</option>
+                        <option value="SE ARREGLO EL PRODUCTO">SE ARREGLO EL PRODUCTO (Re-venta)</option>
+                        <option value="PRODUCTO FALLA DE IMPORTACION">FALLA DE IMPORTACIÓN (Garantía)</option>
+                    </select>
+                </div>
+                <button class="btn-titan btn-red" onclick="addToList()">AÑADIR A INSPECCIÓN <i class="fas fa-plus"></i></button>
+            </div>
+
+            <div id="dev-list-area" class="d-none mt-4 border-top pt-3">
+                <div id="dev-items"></div>
+                <button class="btn-titan btn-green mt-3" onclick="saveDevolucion()">FINALIZAR Y GENERAR REPORTE QC</button>
+            </div>
         </div>
-        <div id="sync-icon" class="text-success"><i class="fas fa-circle-check"></i></div>
-    </header>
+    </section>
+</main>
 
-    <main>
-        <section id="view-salida" class="view active">
-            <div class="main-card">
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="inSal" class="search-input" placeholder="Buscar por Nombre o SKU..." oninput="searchData(this.value, 'sugSal', 'sal')">
-                    <div id="sugSal" class="sug-list"></div>
-                </div>
+<nav class="nav-bar">
+    <button class="nav-btn" onclick="location.reload()"><i class="fas fa-truck-loading"></i><span>Salida</span></button>
+    <button class="nav-btn active"><i class="fas fa-file-signature"></i><span>Retorno QC</span></button>
+    <button class="nav-btn"><i class="fas fa-history"></i><span>Historial</span></button>
+</nav>
 
-                <div id="selection-sal" class="d-none animate__animated animate__fadeIn">
-                    <div class="input-group-custom">
-                        <label>Producto Seleccionado</label>
-                        <div id="disp-sal" class="p-2 fw-bold text-accent"></div>
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-5">
-                            <div class="input-group-custom">
-                                <label>Cantidad</label>
-                                <input type="number" id="cant-sal" placeholder="0">
-                            </div>
-                        </div>
-                        <div class="col-7">
-                            <button class="btn-titan btn-blue" onclick="addItem('sal')">AÑADIR <i class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
+<script>
+    const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
+    let DB = []; let LISTA_QC = []; let SEL = null;
 
-                <div id="list-sal-container" class="inventory-list d-none">
-                    <div id="list-sal-items"></div>
-                    <div class="input-group-custom mt-3">
-                        <label>Responsable de Carga</label>
-                        <input type="text" id="resp-sal" placeholder="Nombre completo">
-                    </div>
-                    <div class="input-group-custom">
-                        <label>Destino / Area</label>
-                        <select id="type-sal">
-                            <option value="MARKETING">MARKETING</option>
-                            <option value="OFICINA">OFICINA</option>
-                            <option value="VENTAS">VENTAS</option>
-                        </select>
-                    </div>
-                    <button class="btn-titan btn-green mt-3 shadow-lg" onclick="finalSubmit('Pedidos', 'sal')">CONFIRMAR DESPACHO <i class="fas fa-shipping-fast"></i></button>
-                </div>
+    async function init() {
+        const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+        const d = await r.json(); DB = d.p;
+    }
+
+    function searchProd(v) {
+        const b = document.getElementById('dev-sug');
+        if(v.length < 2) { b.style.display='none'; return; }
+        const m = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+        b.innerHTML = m.map(p => `<div class="sug-item" onclick="selectProd('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></div>`).join('');
+        b.style.display='block';
+    }
+
+    function selectProd(sku, name) {
+        SEL = {sku, name};
+        document.getElementById('prod-sel-name').innerText = name;
+        document.getElementById('prod-sel-sku').innerText = "SKU: " + sku;
+        document.getElementById('inspeccion-panel').classList.remove('d-none');
+        document.getElementById('dev-sug').style.display='none';
+    }
+
+    function checkDiff() {
+        const g = parseInt(document.getElementById('cant-guia').value) || 0;
+        const r = parseInt(document.getElementById('cant-real').value) || 0;
+        const msg = document.getElementById('diff-msg');
+        if (r < g) msg.innerHTML = `<span class="diff-alert"><i class="fas fa-exclamation-triangle"></i> FALTANTE: ${g-r} unidades detectadas</span>`;
+        else if (r > g) msg.innerHTML = `<span class="text-info small fw-bold">SOBRANTE: ${r-g} unidades</span>`;
+        else msg.innerHTML = "";
+    }
+
+    function addToList() {
+        const g = document.getElementById('cant-guia').value;
+        const r = document.getElementById('cant-real').value;
+        if(!g || !r) return;
+        
+        LISTA_QC.push({
+            ...SEL, 
+            guia: g, 
+            real: r, 
+            det: document.getElementById('det-revision').value,
+            diff: r - g
+        });
+        
+        renderUI();
+        document.getElementById('inspeccion-panel').classList.add('d-none');
+        document.getElementById('dev-search').value = "";
+    }
+
+    function renderUI() {
+        const area = document.getElementById('dev-list-area');
+        area.classList.remove('d-none');
+        document.getElementById('dev-items').innerHTML = LISTA_QC.map(i => `
+            <div class="item-row">
+                <div class="d-flex justify-content-between"><b>${i.name}</b> <span class="badge bg-danger">${i.real} Uds</span></div>
+                <div class="small opacity-75 mt-1">Guía: ${i.guia} | Estado: ${i.det}</div>
+                ${i.diff < 0 ? `<div class="diff-alert">Faltan ${Math.abs(i.diff)} unidades</div>` : ''}
             </div>
-        </section>
+        `).join('');
+    }
 
-        <section id="view-dev" class="view">
-            <div class="main-card">
-                <div class="search-container">
-                    <i class="fas fa-undo search-icon text-danger"></i>
-                    <input type="text" id="inDev" class="search-input" placeholder="Producto a retornar..." oninput="searchData(this.value, 'sugDev', 'dev')">
-                    <div id="sugDev" class="sug-list"></div>
-                </div>
+    async function saveDevolucion() {
+        const cli = document.getElementById('cli-name').value;
+        const ven = document.getElementById('ven-name').value;
+        if(!cli || !ven) return Swal.fire("Datos Faltantes","Ingresa Cliente y Vendedor","warning");
 
-                <div id="selection-dev" class="d-none">
-                    <div class="input-group-custom">
-                        <label>Retorno de Producto</label>
-                        <div id="disp-dev" class="p-2 fw-bold text-danger"></div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-4">
-                            <div class="input-group-custom"><label>Cant.</label><input type="number" id="cant-dev"></div>
-                        </div>
-                        <div class="col-8">
-                            <div class="input-group-custom"><label>Motivo</label>
-                                <select id="mot-dev">
-                                    <option>Dañado/Mal estado</option>
-                                    <option>Rotación de Stock</option>
-                                    <option>Error de Envío</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn-titan btn-red mb-4" onclick="addItem('dev')">AÑADIR A LISTA DE RETORNO</button>
-                </div>
+        const payload = LISTA_QC.map(i => [new Date(), "QC-DEV", i.sku, i.name, i.real, cli, `Vendedor: ${ven} | Guia: ${i.guia} | Rev: ${i.det}`]);
+        
+        Swal.fire({title: 'Procesando QC...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+        await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
+        
+        genPDF(cli, ven);
+        Swal.fire("Éxito","Reporte de Inspección Guardado","success").then(()=>location.reload());
+    }
 
-                <div id="list-dev-container" class="inventory-list d-none">
-                    <div id="list-dev-items"></div>
-                    <div class="input-group-custom mt-3">
-                        <label>Cliente / Origen</label>
-                        <input type="text" id="cli-dev" placeholder="Nombre del cliente">
-                    </div>
-                    <button class="btn-titan btn-green mt-3" onclick="finalSubmit('Devoluciones', 'dev')">GENERAR REPORTE PDF <i class="fas fa-file-invoice"></i></button>
-                </div>
-            </div>
-        </section>
+    function genPDF(cli, ven) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18); doc.text("REPORTE TÉCNICO DE INSPECCIÓN (QC)", 14, 20);
+        doc.setFontSize(10);
+        doc.text(`CLIENTE: ${cli.toUpperCase()}`, 14, 30);
+        doc.text(`VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
+        doc.text(`FECHA: ${new Date().toLocaleString()}`, 14, 40);
 
-        <section id="view-hist" class="view">
-            <div id="histLog" class="px-3"></div>
-        </section>
-    </main>
+        const rows = LISTA_QC.map(i => [i.sku, i.name, i.guia, i.real, i.det]);
+        doc.autoTable({
+            head: [['SKU', 'ARTÍCULO', 'CANT. GUÍA', 'CANT. REAL', 'ESTADO REVISIÓN']],
+            body: rows,
+            startY: 50,
+            theme: 'striped',
+            headStyles: { fillColor: [220, 53, 69] }
+        });
+        
+        doc.save(`QC_${cli}.pdf`);
+    }
 
-    <nav class="nav-dock">
-        <button class="nav-link active" onclick="nav('salida', this)"><i class="fas fa-box-open"></i><span>SALIDA</span></button>
-        <button class="nav-link" onclick="nav('dev', this)"><i class="fas fa-exchange-alt"></i><span>RETORNO</span></button>
-        <button class="nav-link" onclick="nav('hist', this)"><i class="fas fa-layer-group"></i><span>LOG</span></button>
-    </nav>
-
-    <script>
-        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB = []; let L_SAL = []; let L_DEV = []; let SEL = null;
-
-        async function init() {
-            try {
-                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const d = await r.json();
-                DB = d.p;
-                renderHist(d.h);
-                document.getElementById('sync-icon').innerHTML = '<i class="fas fa-circle-check"></i>';
-            } catch(e) { 
-                document.getElementById('sync-icon').innerHTML = '<i class="fas fa-circle-exclamation text-danger"></i>';
-            }
-        }
-
-        function searchData(v, bId, t) {
-            const b = document.getElementById(bId);
-            if(v.length < 2) { b.style.display='none'; return; }
-            const m = DB.filter(p => p[0].toString().toLowerCase().includes(v.toLowerCase()) || p[1].toString().toLowerCase().includes(v.toLowerCase())).slice(0,5);
-            b.innerHTML = m.map(p => `<div class="sug-item" onclick="selectItem('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><small class="text-accent">${p[0]}</small></div>`).join('');
-            b.style.display='block';
-        }
-
-        function selectItem(sku, name, t) {
-            SEL = {sku, name};
-            const pref = t==='sal'?'sal':'dev';
-            document.getElementById('disp-'+pref).innerText = name + " (" + sku + ")";
-            document.getElementById('selection-'+pref).classList.remove('d-none');
-            document.getElementById('sug'+(t==='sal'?'Sal':'Dev')).style.display='none';
-        }
-
-        function addItem(t) {
-            const cant = document.getElementById('cant-'+t).value;
-            if(!cant || cant <= 0) return;
-            if(t === 'sal') { L_SAL.push({...SEL, cant}); renderList('sal'); }
-            else { L_DEV.push({...SEL, cant, mot: document.getElementById('mot-dev').value}); renderList('dev'); }
-            document.getElementById('selection-'+t).classList.add('d-none');
-            document.getElementById('in'+(t==='sal'?'Sal':'Dev')).value = "";
-        }
-
-        function renderList(t) {
-            const cont = document.getElementById('list-'+t+'-items');
-            const area = document.getElementById('list-'+t+'-container');
-            const list = t === 'sal' ? L_SAL : L_DEV;
-            area.classList.toggle('d-none', list.length === 0);
-            cont.innerHTML = list.map((i, idx) => `
-                <div class="item-pill ${t==='dev'?'dev':''}">
-                    <div><b>${i.name}</b><br><small class="text-dim">${i.sku} ${i.mot ? '| '+i.mot : ''}</small></div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-primary">x${i.cant}</span>
-                        <button class="remove-btn" onclick="removeItem('${t}', ${idx})"><i class="fas fa-times-circle"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function removeItem(t, idx) {
-            if(t === 'sal') L_SAL.splice(idx, 1); else L_DEV.splice(idx, 1);
-            renderList(t);
-        }
-
-        async function finalSubmit(sheet, t) {
-            const q = document.getElementById(t==='sal'?'resp-sal':'cli-dev').value;
-            if(!q) return Swal.fire("Faltan datos", "Escribe el nombre del responsable", "warning");
-            
-            const list = t === 'sal' ? L_SAL : L_DEV;
-            const payload = list.map(i => [new Date(), t==='sal'?document.getElementById('type-sal').value:'DEVOLUCION', i.sku, i.name, i.cant, q, i.mot || 'SALIDA']);
-            
-            Swal.fire({title:'Guardando en la Nube...', allowOutsideClick:false, didOpen:()=>Swal.showLoading()});
-            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-            
-            if(t === 'dev') generateTablePDF(q, list);
-            
-            Swal.fire("¡Éxito!", "Inventario actualizado correctamente", "success").then(()=>location.reload());
-        }
-
-        function generateTablePDF(q, list) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Cabecera PDF
-            doc.setFillColor(0, 122, 255);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22); doc.text("REPORTE DE RETORNO", 20, 25);
-            
-            doc.setTextColor(0,0,0);
-            doc.setFontSize(10);
-            doc.text(`RESPONSABLE: ${q.toUpperCase()}`, 20, 50);
-            doc.text(`FECHA: ${new Date().toLocaleString()}`, 20, 55);
-            
-            // Tabla de Productos
-            const rows = list.map(i => [i.sku, i.name, i.cant, i.mot]);
-            doc.autoTable({
-                head: [['SKU', 'PRODUCTO', 'CANT', 'MOTIVO']],
-                body: rows,
-                startY: 65,
-                theme: 'grid',
-                headStyles: { fillColor: [0, 122, 255] },
-                styles: { fontSize: 9 }
-            });
-            
-            doc.save(`Retorno_${q}.pdf`);
-        }
-
-        function renderHist(l) {
-            document.getElementById('histLog').innerHTML = l.map(r => `
-                <div class="main-card py-3 mb-2">
-                    <div class="d-flex justify-content-between small text-dim mb-1">
-                        <span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'}">${r[1]}</span>
-                        <span>${new Date(r[0]).toLocaleDateString()}</span>
-                    </div>
-                    <div class="fw-bold my-1">${r[3]}</div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-dim">Por: ${r[5]}</small>
-                        <b class="text-accent">x${r[4]}</b>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function nav(v, b) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
-            document.getElementById('view-'+v).classList.add('active');
-            b.classList.add('active');
-        }
-
-        window.onload = init;
-    </script>
+    window.onload = init;
+</script>
 </body>
 </html>
