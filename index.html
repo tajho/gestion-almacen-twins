@@ -2,402 +2,198 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE 2026 | Logística Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario Logístico 2026</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
         :root {
-            --bg: #f8fafc;
-            --glass: rgba(255, 255, 255, 0.9);
-            --accent: #2563eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --primary-accent: #2563eb;
+            --return-accent: #f59e0b;
         }
 
-        body { 
-            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); margin: 0; padding-bottom: 110px;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* HEADER MODERNO */
-        .modern-header {
-            background: var(--glass); backdrop-filter: blur(10px);
-            padding: 20px; border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 2000;
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
         }
 
-        .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -1px; color: var(--text); }
-        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--success); }
-
-        /* CARDS & INPUTS */
-        .card-2026 {
-            background: #fff; border-radius: 24px; padding: 24px;
-            margin: 16px; border: 1px solid var(--border); box-shadow: var(--shadow);
+        .btn-modern {
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        .label-2026 { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block; }
+        .return-card { border-left: 6px solid var(--return-accent); }
+        .entry-card { border-left: 6px solid var(--primary-accent); }
 
-        .input-2026 {
-            background: #f1f5f9; border: 2px solid transparent;
-            border-radius: 14px; padding: 14px; width: 100%; font-size: 15px; font-weight: 500;
-            margin-bottom: 16px; transition: all 0.3s ease;
-        }
-        .input-2026:focus { background: #fff; border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-
-        /* BOTONES */
-        .btn-2026 {
-            border-radius: 16px; padding: 16px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
-        }
-        .btn-primary { background: var(--accent); color: #fff; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        /* CHIPS */
-        .chip-group { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .chip {
-            background: #fff; border: 1px solid var(--border); padding: 10px 18px;
-            border-radius: 14px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.3s;
-        }
-        .chip.active { background: var(--text); color: #fff; border-color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-        /* TARJETAS DE HISTORIAL */
-        .history-item {
-            background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px;
-            border: 1px solid var(--border); position: relative; overflow: hidden;
-        }
-        .history-item::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-        }
-        .item-del::before { background: var(--accent); }
-        .item-ret::before { background: var(--danger); }
-
-        /* NAV BAR */
-        .nav-2026 {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: var(--text); border-radius: 24px;
-            display: flex; justify-content: space-around; padding: 15px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); z-index: 3000;
-        }
-        .nav-btn { background: none; border: none; color: #94a3b8; font-weight: 700; font-size: 11px; text-align: center; }
-        .nav-btn.active { color: #fff; }
-        .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
-
-        .search-results {
-            background: #fff; border-radius: 16px; border: 1px solid var(--border);
-            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        .footer-official {
+            font-size: 0.85rem;
+            color: #4b5563;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 15px;
+            padding-top: 10px;
+            font-weight: 600;
         }
 
-        .view { display: none; animation: fadeIn 0.4s ease-out; }
-        .active-view { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .badge-dev { background-color: var(--return-accent); color: white; }
     </style>
 </head>
 <body>
 
-    <header class="modern-header d-flex justify-content-between align-items-center">
-        <div>
-            <div class="brand-name">TITAN<span style="color:var(--accent)">ELITE</span></div>
-            <div style="font-size: 11px; color: var(--muted); font-weight: 600;">LOGÍSTICA 2026</div>
-        </div>
-        <div class="text-end">
-            <div style="font-size: 13px; font-weight: 800;"><span class="status-dot"></span> Angelo Durand</div>
-        </div>
-    </header>
+<div class="container">
+    <h2 class="mb-4 text-dark fw-bold">Gestión de Inventario <span class="text-primary">2026</span></h2>
 
-    <main>
-        <section id="v-del" class="view active-view">
-            <div class="card-2026">
-                <span class="label-2026">Tipo de Movimiento</span>
-                <div class="chip-group">
-                    <div class="chip active" id="m-VENTA" onclick="setM('VENTA')">VENTA</div>
-                    <div class="chip" id="m-MARKETING" onclick="setM('MARKETING')">MARKETING</div>
-                    <div class="chip" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</div>
-                </div>
-
-                <span class="label-2026">Solicitante / Área</span>
-                <input type="text" id="cli-d" class="input-2026" placeholder="Nombre completo" oninput="autoSave()">
-                
-                <span class="label-2026">Buscador de Stock</span>
-                <div class="position-relative">
-                    <input type="text" id="src-d" class="input-2026" placeholder="🔍 SKU o nombre..." oninput="find(this.value, 'res-d', 'd')">
-                    <div id="res-d" class="search-results"></div>
-                </div>
-
-                <div id="form-d" class="d-none mt-2 p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div class="mb-3">
-                        <b id="p-n-d" class="d-block text-primary"></b>
-                        <small id="p-s-d" class="text-muted"></small>
-                    </div>
-                    <span class="label-2026">Cantidad</span>
-                    <input type="number" id="q-d" class="input-2026" placeholder="00">
-                    <button class="btn-2026 btn-primary" onclick="addItem('d')">AÑADIR A LISTA <i class="fas fa-plus"></i></button>
-                </div>
-
-                <div id="list-d" class="mt-4 d-none">
-                    <div id="items-d"></div>
-                    <button class="btn-2026 mt-3" style="background:var(--text); color:#fff" onclick="sync('Pedidos', 'd')">CONFIRMAR DESPACHO <i class="fas fa-bolt"></i></button>
+    <div class="glass-card p-4">
+        <h5 class="mb-3">Registro de Operación</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Cliente</label>
+                <select id="clienteSelect" class="form-select" onchange="sugerirProveedor()">
+                    <option value="">Seleccione Cliente...</option>
+                    <option value="Logistica Global">Logística Global</option>
+                    <option value="Importaciones S.A.">Importaciones S.A.</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Proveedor Sugerido</label>
+                <input type="text" id="vendorSugerido" class="form-control" readonly placeholder="Sugerencia automática...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo de Movimiento</label>
+                <select id="tipoMovimiento" class="form-select">
+                    <option value="ENTRADA">Entrada de Almacén</option>
+                    <option value="DEVOLUCION">Devolución de Cliente</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Chofer / Asistente Actual</label>
+                <div class="input-group">
+                    <input type="text" id="operadorNombre" class="form-control" value="Carlos Ruiz" readonly>
+                    <button class="btn btn-outline-danger" type="button" onclick="confirmarCambioPersonal()">Cambiar</button>
                 </div>
             </div>
-        </section>
-
-        <section id="v-ret" class="view">
-            <div class="card-2026">
-                <span class="label-2026">Origen de Devolución</span>
-                <input type="text" id="cli-r" class="input-2026" placeholder="Cliente" oninput="autoSave()">
-                
-                <span class="label-2026">Vendedor Receptor</span>
-                <div class="chip-group" id="vend-r">
-                    <div class="chip" onclick="setV('ELIAS AVILA','r')">ELIAS</div>
-                    <div class="chip" onclick="setV('EVELYN MURO','r')">EVELYN</div>
-                    <div class="chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO</div>
-                    <div class="chip" onclick="setV('PAULA GARCIA','r')">PAULA</div>
-                    <div class="chip" onclick="setV('REGULO ANTEZA','r')">REGULO</div>
-                </div>
-
-                <span class="label-2026">Producto Defectuoso</span>
-                <div class="position-relative">
-                    <input type="text" id="src-r" class="input-2026" placeholder="🔍 Buscar SKU..." oninput="find(this.value, 'res-r', 'r')">
-                    <div id="res-r" class="search-results"></div>
-                </div>
-
-                <div id="form-r" class="d-none mt-2 p-3 rounded-4" style="background: #fff1f2; border: 1px solid #fecdd3;">
-                    <b id="p-n-r" class="d-block text-danger mb-3"></b>
-                    <div class="row g-2">
-                        <div class="col-6"><span class="label-2026">Guía</span><input type="number" id="cg-r" class="input-2026" placeholder="Cant."></div>
-                        <div class="col-6"><span class="label-2026">Real</span><input type="number" id="cr-r" class="input-2026" placeholder="Físico"></div>
-                    </div>
-                    <span class="label-2026">Estado Técnico</span>
-                    <select id="st-r" class="input-2026">
-                        <option value="MERMA">FALLADO A MERMA</option>
-                        <option value="ARREGLO">PARA REPARACIÓN</option>
-                        <option value="FALLA IMPORTACION">FALLA IMPORTACIÓN</option>
-                    </select>
-                    <textarea id="obs-r" class="input-2026" style="height: 80px;" placeholder="Detalles observados..."></textarea>
-                    <button class="btn-2026" style="background: var(--danger); color: #fff;" onclick="addItem('r')">REGISTRAR FALLA <i class="fas fa-exclamation-triangle"></i></button>
-                </div>
-
-                <div id="list-r" class="mt-4 d-none">
-                    <div id="items-r"></div>
-                    <button class="btn-2026 mt-3" style="background: var(--text); color: #fff;" onclick="sync('Devoluciones', 'r')">SINCRONIZAR A SAP <i class="fas fa-cloud-upload"></i></button>
-                </div>
+            <div class="col-12 text-end">
+                <button class="btn btn-primary btn-modern" onclick="registrarMovimiento()">Procesar Registro</button>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <section id="v-his" class="view">
-            <div class="px-3 py-3" id="his-feed">
-                </div>
-        </section>
-    </main>
+    <h4 class="mb-3">Historial de Movimientos</h4>
+    <div id="contenedorHistorial" class="row">
+        </div>
+</div>
 
-    <nav class="nav-2026">
-        <button class="nav-btn active" onclick="nav('del', this)"><i class="fas fa-arrow-up"></i><span>SALIDA</span></button>
-        <button class="nav-btn" onclick="nav('ret', this)"><i class="fas fa-arrow-down"></i><span>RETORNO</span></button>
-        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-layer-group"></i><span>HISTORY</span></button>
-    </nav>
+<div class="modal fade" id="modalEmergencia" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmación de Seguridad</h5>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea cambiar el conductor o asistente asignado? Esta acción quedará registrada en el sistema de inventario.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="habilitarEdicionOperador()">Sí, confirmar cambio</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {r:''}; let FULL_HIS = [];
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        async function init() {
-            const saved = JSON.parse(localStorage.getItem('TITAN_DATA_2026'));
-            if(saved) {
-                QD = saved.QD || []; QR = saved.QR || [];
-                document.getElementById('cli-d').value = saved.cliD || '';
-                document.getElementById('cli-r').value = saved.cliR || '';
-                if(saved.venR) setV(saved.venR, 'r');
-                setM(saved.MODE || 'VENTA');
-                render('d'); render('r');
-            }
-            try {
-                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const d = await r.json();
-                DB_P = d.p; FULL_HIS = d.h;
-                renderHistory(d.h);
-            } catch(e) { console.warn("Offline"); }
-        }
+<script>
+    // Base de Datos en Memoria (Simulada)
+    const dbSugerencias = {
+        "Logistica Global": "Transports Express S.A.",
+        "Importaciones S.A.": "Almacenes Centrales"
+    };
 
-        function autoSave() {
-            const data = { QD, QR, MODE, cliD: document.getElementById('cli-d').value, cliR: document.getElementById('cli-r').value, venR: VEN.r };
-            localStorage.setItem('TITAN_DATA_2026', JSON.stringify(data));
-        }
+    let historial = [];
 
-        function setM(m) {
-            MODE = m;
-            document.querySelectorAll('#v-del .chip').forEach(c => c.classList.remove('active'));
-            document.getElementById('m-'+m).classList.add('active');
-            autoSave();
-        }
+    // 1. Sugerencia de Vendor basada en Cliente
+    function sugerirProveedor() {
+        const cliente = document.getElementById('clienteSelect').value;
+        const vendorInput = document.getElementById('vendorSugerido');
+        vendorInput.value = dbSugerencias[cliente] || "Proveedor General";
+    }
 
-        function setV(n, t) {
-            document.querySelectorAll(`#vend-${t} .chip`).forEach(c => c.classList.remove('active'));
-            VEN[t] = n;
-            Array.from(document.querySelectorAll(`#vend-${t} .chip`)).find(c => c.innerText.includes(n.split(' ')[0]))?.classList.add('active');
-            autoSave();
-        }
+    // 2. Confirmación de Emergencia para cambio de Personal
+    const modalConfirm = new bootstrap.Modal(document.getElementById('modalEmergencia'));
+    function confirmarCambioPersonal() {
+        modalConfirm.show();
+    }
 
-        function find(v, boxId, type) {
-            const box = document.getElementById(boxId);
-            if(v.length < 1) { box.style.display='none'; return; }
-            const matches = DB_P.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
-            box.style.display = matches.length ? 'block' : 'none';
-        }
+    function habilitarEdicionOperador() {
+        const op = document.getElementById('operadorNombre');
+        op.readOnly = false;
+        op.focus();
+        modalConfirm.hide();
+    }
 
-        function pick(s, n, t) {
-            document.getElementById(`p-n-${t}`).innerText = n;
-            if(t==='d') document.getElementById(`p-s-${t}`).innerText = s;
-            document.getElementById(`form-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
-            window.lastPick = {sku:s, name:n};
-        }
+    // 3. Registro y Actualización de Historial (Fix de Devoluciones)
+    function registrarMovimiento() {
+        const cliente = document.getElementById('clienteSelect').value;
+        const tipo = document.getElementById('tipoMovimiento').value;
+        const vendor = document.getElementById('vendorSugerido').value;
+        const operador = document.getElementById('operadorNombre').value;
 
-        function addItem(t) {
-            if(t==='d') {
-                const q = document.getElementById('q-d').value;
-                if(!q) return;
-                QD.push({...window.lastPick, q, mode: MODE});
-                document.getElementById('q-d').value = '';
-                document.getElementById('src-d').value = '';
-            } else {
-                const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
-                if(!cg || !cr) return;
-                QR.push({...window.lastPick, q: cr, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value, mode: 'DEVOLUCION'});
-                document.getElementById('src-r').value = '';
-                document.getElementById('cg-r').value = '';
-                document.getElementById('cr-r').value = '';
-            }
-            render(t);
-            document.getElementById(`form-${t}`).classList.add('d-none');
-            autoSave();
-        }
+        if (!cliente) return alert("Por favor seleccione un cliente.");
 
-        function render(t) {
-            const list = t==='d' ? QD : QR;
-            document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
-            document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
-                <div class="history-item ${t==='d'?'item-del':'item-ret'}">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div style="max-width: 80%;">
-                            <b style="font-size: 14px;">${i.name}</b><br>
-                            <small class="text-muted">${i.mode || 'FALLA'}</small>
+        const nuevoRegistro = {
+            id: (tipo === 'DEVOLUCION' ? 'RTN-' : 'MOV-') + Math.floor(Math.random() * 10000),
+            fecha: new Date().toLocaleString(),
+            cliente,
+            tipo,
+            vendor,
+            operador
+        };
+
+        historial.unshift(nuevoRegistro); // Agregamos al inicio
+        renderizarHistorial();
+    }
+
+    // 4. Renderización con el Diseño Moderno y el Footer Oficial
+    function renderizarHistorial() {
+        const contenedor = document.getElementById('contenedorHistorial');
+        contenedor.innerHTML = '';
+
+        historial.forEach(reg => {
+            const isDev = reg.tipo === 'DEVOLUCION';
+            const cardHtml = `
+                <div class="col-md-6 mb-3">
+                    <div class="glass-card p-3 ${isDev ? 'return-card' : 'entry-card'}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-muted">${reg.id}</span>
+                            <span class="badge ${isDev ? 'badge-dev' : 'bg-primary'}">${reg.tipo}</span>
                         </div>
-                        <div class="text-end">
-                            <b style="font-size: 16px; color: ${t==='d'?'var(--accent)':'var(--danger)'}">x${i.q}</b><br>
-                            <i class="fas fa-trash-alt text-muted mt-2" onclick="removeIdx('${t}', ${idx})"></i>
+                        <p class="mb-1"><strong>Cliente:</strong> ${reg.cliente}</p>
+                        <p class="mb-1"><strong>Proveedor:</strong> ${reg.vendor}</p>
+                        <p class="mb-1 text-secondary small"><strong>Operador:</strong> ${reg.operador} | ${reg.fecha}</p>
+                        
+                        <div class="footer-official">
+                            Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.
                         </div>
                     </div>
                 </div>
-            `).join('');
-        }
+            `;
+            contenedor.innerHTML += cardHtml;
+        });
+    }
+</script>
 
-        function removeIdx(t, idx) {
-            if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1);
-            render(t); autoSave();
-        }
-
-        async function sync(sheet, t) {
-            const cli = document.getElementById(`cli-${t}`).value;
-            if(!cli || (t==='r' && !VEN.r)) return Swal.fire("Error", "Faltan datos obligatorios", "error");
-
-            const list = t==='d' ? QD : QR;
-            const payload = list.map(i => [
-                new Date(), 
-                i.mode, 
-                i.sku, 
-                i.name, 
-                i.q, 
-                cli, 
-                t==='d' ? 'Salida Almacén' : `Guía: ${i.cg} | Detalle: ${i.st} | Obs: ${i.obs} | Recibió: ${VEN.r}`
-            ]);
-
-            Swal.fire({title:'Sincronizando 2026...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
-            
-            try {
-                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-                localStorage.removeItem('TITAN_DATA_2026');
-                Swal.fire({icon: 'success', title: 'Completado', showConfirmButton: false, timer: 1500}).then(() => location.reload());
-            } catch(e) {
-                Swal.fire("Error", "Fallo de conexión", "error");
-            }
-        }
-
-        function renderHistory(h) {
-            const feed = document.getElementById('his-feed');
-            feed.innerHTML = h.slice(0, 25).map((r, idx) => {
-                const esDev = r[1] === 'DEVOLUCION';
-                return `
-                    <div class="history-item ${esDev?'item-ret':'item-del'}">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <span class="badge ${esDev?'bg-danger':'bg-primary'} mb-2" style="font-size: 9px; border-radius: 6px;">${r[1]}</span>
-                                <div style="font-weight: 800; font-size: 15px;">${r[5]}</div>
-                                <div style="font-size: 11px; color: var(--muted);">${new Date(r[0]).toLocaleDateString()}</div>
-                            </div>
-                            <div class="text-end">
-                                <b style="font-size: 20px; font-weight: 800;">x${r[4]}</b>
-                            </div>
-                        </div>
-                        <div class="mt-2 p-2 rounded-3" style="background: #f1f5f9; font-size: 12px;">
-                            <b>${r[3]}</b><br><small class="text-muted">SKU: ${r[2]}</small>
-                        </div>
-                        <div class="d-flex gap-2 mt-3">
-                            <button class="btn-2026 flex-fill py-2" style="background: #e2e8f0; font-size: 11px;" onclick="ver(${idx})">LISTA</button>
-                            <button class="btn-2026 flex-fill py-2" style="background: var(--text); color:#fff; font-size: 11px;" onclick="pdf(${idx})">REPORT PDF</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function ver(idx) {
-            const r = FULL_HIS[idx];
-            Swal.fire({
-                title: 'Información del Registro',
-                html: `<div class="text-start" style="font-size:14px"><b>Cliente:</b> ${r[5]}<br><b>Producto:</b> ${r[3]}<br><b>Cantidad:</b> ${r[4]}<br><br><b>Referencia:</b><br>${r[6]}</div>`,
-                confirmButtonColor: '#0f172a'
-            });
-        }
-
-        function pdf(idx) {
-            const r = FULL_HIS[idx];
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TITAN ELITE 2026", 14, 25);
-            doc.autoTable({
-                startY: 50,
-                head: [['CAMPO', 'VALOR REGISTRADO']],
-                body: [['FECHA', new Date(r[0]).toLocaleString()],['MOVIMIENTO', r[1]],['CLIENTE', r[5]],['PRODUCTO', r[3]],['SKU', r[2]],['CANTIDAD', r[4]],['DETALLES', r[6]]],
-                theme: 'grid', headStyles: {fillColor: [15, 23, 42]}
-            });
-            const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setTextColor(0,0,0); doc.line(70, finalY, 140, finalY);
-            doc.setFontSize(11); doc.text("REVISIÓN AUTORIZADA POR J. ANGELO NUÑEZ DURAND", 105, finalY + 7, {align: 'center'});
-            doc.setFontSize(9); doc.text("Asist. Inventario Logístico", 105, finalY + 12, {align: 'center'});
-            doc.save(`TITAN_${r[5]}.pdf`);
-        }
-
-        function nav(v, b) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('active-view');
-            b.classList.add('active');
-        }
-
-        window.onload = init;
-    </script>
 </body>
 </html>
