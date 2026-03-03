@@ -8,11 +8,12 @@
                 <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
             </div>
 
+            <span class="label-tech">Solicitante / Cliente</span>
             <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Solicitante / Cliente" oninput="autoSave()">
             
             <div class="position-relative mt-2">
                 <span class="label-tech">1. Busca el Producto</span>
-                <input type="text" id="src-d" class="input-elite" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
+                <input type="text" id="src-d" class="input-elite" style="border-left: 4px solid var(--accent)" placeholder="🔍 SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
                 <div id="res-d" class="search-results"></div>
             </div>
 
@@ -26,12 +27,15 @@
                 <input type="number" id="q-d" class="input-elite" placeholder="¿Cuántos salen?">
                 
                 <button class="btn-elite btn-blue w-100" onclick="addItem('d')">
-                    ANADIR ITEM <i class="fas fa-plus-circle ms-2"></i>
+                    AÑADIR ITEM <i class="fas fa-plus-circle ms-2"></i>
                 </button>
             </div>
 
             <div id="list-d" class="mt-4 d-none">
-                <span class="label-tech">Items por Procesar</span>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="label-tech">Items por Procesar</span>
+                    <span class="text-danger" style="font-size: 10px; font-weight: 800; cursor: pointer;" onclick="clearAll('d')">BORRAR TODO</span>
+                </div>
                 <div id="items-d"></div>
                 <button class="btn-elite btn-blue mt-3 w-100 shadow" onclick="sync('Pedidos', 'd')">
                     CONFIRMAR SALIDA <i class="fas fa-check-double ms-2"></i>
@@ -56,7 +60,7 @@
 
             <div class="position-relative">
                 <span class="label-tech">1. Busca el Producto Devuelto</span>
-                <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
+                <input type="text" id="src-r" class="input-elite" style="border-left: 4px solid var(--danger)" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
                 <div id="res-r" class="search-results"></div>
             </div>
 
