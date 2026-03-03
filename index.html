@@ -3,245 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS TITAN | Official System</title>
+    <title>TWINS TITAN | Premium Logistics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
-        :root { --bg: #08090a; --panel: #121418; --accent: #007AFF; --danger: #FF3B30; --success: #32D74B; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; padding-bottom: 120px; }
-        
-        /* Buscador Mejorado */
-        .search-container { position: relative; margin-bottom: 15px; }
-        .search-iq { background: #1c1f26; border: 2px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 16px 16px 16px 50px; color: white; width: 100%; outline: none; transition: 0.3s; }
-        .search-iq:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,122,255,0.2); }
-        .search-icon { position: absolute; left: 18px; top: 18px; color: var(--accent); font-size: 20px; }
-        
-        .predict-box { position: absolute; width: 100%; background: #1c1f26; border-radius: 15px; z-index: 2000; border: 1px solid #333; display: none; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .predict-item { padding: 12px 18px; border-bottom: 1px solid #333; cursor: pointer; transition: 0.2s; }
-        .predict-item:hover { background: var(--accent); }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
-        .glass-card { background: var(--panel); border-radius: 28px; padding: 22px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .input-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; color: white; width: 100%; margin-bottom: 12px; outline: none; }
-        
-        .nav-dock { position: fixed; bottom: 20px; left: 15px; right: 15px; background: rgba(18,20,24,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 3000; }
-        .nav-btn { background: none; border: none; color: #636366; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; }
-        .nav-btn.active { color: var(--accent); }
-        
-        .item-pill { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 12px; margin-bottom: 8px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .view { display: none; animation: fadeIn 0.3s ease; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root {
+            --bg: #000000;
+            --card: #121214;
+            --accent: #007AFF;
+            --accent-gradient: linear-gradient(135deg, #007AFF 0%, #00C6FF 100%);
+            --danger: #FF3B30;
+            --success: #34C759;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body { 
+            background: var(--bg); 
+            color: #E5E5EA; 
+            font-family: 'Outfit', sans-serif;
+            margin: 0; padding-bottom: 120px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header con Efecto Blur */
+        .glass-header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .brand-text { font-weight: 800; font-size: 22px; letter-spacing: -1px; margin: 0; }
+        .brand-dot { color: var(--accent); }
+
+        /* Contenedores de Diseño Moderno */
+        .premium-card {
+            background: var(--card);
+            border-radius: 35px; padding: 25px;
+            margin: 20px 15px; border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        /* Inputs Estilo iOS */
+        .ios-field { margin-bottom: 20px; }
+        .ios-label { font-size: 11px; font-weight: 700; color: #8E8E93; text-transform: uppercase; margin-left: 15px; margin-bottom: 8px; display: block; }
+        .ios-input {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 18px; color: white; width: 100%;
+            font-size: 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ios-input:focus { border-color: var(--accent); background: rgba(0,122,255,0.05); outline: none; box-shadow: 0 0 20px rgba(0,122,255,0.15); }
+
+        /* Buscador Inteligente */
+        .search-wrapper { position: relative; }
+        .search-icon { position: absolute; left: 20px; top: 18px; color: var(--accent); font-size: 20px; opacity: 0.8; }
+        .search-premium { padding-left: 55px !important; }
+
+        .suggestion-box {
+            position: absolute; width: 100%; background: #1c1c1e;
+            border-radius: 24px; z-index: 2000; margin-top: 10px;
+            border: 1px solid rgba(255,255,255,0.1); overflow: hidden; display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .suggestion-item { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .suggestion-item:active { background: var(--accent); }
+
+        /* Botones Titan Premium */
+        .btn-titan {
+            border-radius: 22px; padding: 18px; font-weight: 700; border: none; width: 100%;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            text-transform: uppercase; font-size: 13px; letter-spacing: 1px;
+        }
+        .btn-primary-gradient { background: var(--accent-gradient); color: white; }
+        .btn-success-solid { background: var(--success); color: #000; }
+        .btn-titan:active { transform: scale(0.92); }
+
+        /* Lista Dinámica de Items */
+        .pill-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px; padding: 20px; margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05); display: flex;
+            justify-content: space-between; align-items: center;
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Bottom Tab Nav */
+        .tab-dock {
+            position: fixed; bottom: 30px; left: 20px; right: 20px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px; padding: 12px; display: flex;
+            justify-content: space-around; border: 1px solid rgba(255,255,255,0.1); z-index: 2000;
+        }
+        .tab-trigger { border: none; background: none; color: #8E8E93; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
+        .tab-trigger.active { color: var(--accent); transform: translateY(-3px); }
+        .tab-trigger i { font-size: 24px; margin-bottom: 5px; }
+        .tab-trigger span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        .view { display: none; }
+        .view.active { display: block; }
     </style>
 </head>
 <body>
 
-<header class="p-4 d-flex justify-content-between align-items-center">
-    <div>
-        <h2 class="fw-black mb-0">TWINS <span class="text-accent">TITAN</span></h2>
-        <small id="status" class="text-warning">Cargando base de datos...</small>
-    </div>
-    <i class="fas fa-warehouse fs-3 opacity-20"></i>
-</header>
+    <header class="glass-header d-flex justify-content-between align-items-center">
+        <h1 class="brand-text">TWINS TITAN<span class="brand-dot">.</span></h1>
+        <div id="online-indicator" class="badge rounded-pill bg-success" style="font-size: 9px; padding: 5px 12px;">ONLINE</div>
+    </header>
 
-<main>
-    <section id="v-sal" class="view active">
-        <div class="glass-card">
-            <h6 class="fw-bold mb-3 text-accent"><i class="fas fa-truck-loading me-2"></i>DESPACHO DE PRODUCTOS</h6>
-            <input type="text" id="cli-sal" class="input-box" placeholder="Nombre del Cliente..." oninput="suggestVendedor(this.value, 'ven-sal')">
-            <input type="text" id="ven-sal" class="input-box" placeholder="Vendedor Responsable...">
+    <main>
+        <section id="v-sal" class="view">
+            <div class="premium-card">
+                <div class="ios-field">
+                    <label class="ios-label">Cliente / Destino</label>
+                    <input type="text" id="cli-sal" class="ios-input" placeholder="Nombre..." oninput="autoVendedor(this.value, 'ven-sal')">
+                </div>
+                <div class="ios-field">
+                    <label class="ios-label">Vendedor Responsable</label>
+                    <input type="text" id="ven-sal" class="ios-input" placeholder="Nombre...">
+                </div>
+
+                <div class="search-wrapper mb-4">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="in-sal" class="ios-input search-premium" placeholder="Buscar SKU o Artículo..." oninput="findIQ(this.value, 'sug-sal', 'sal')">
+                    <div id="sug-sal" class="suggestion-box"></div>
+                </div>
+
+                <div id="ui-sal" class="d-none">
+                    <div class="p-4 mb-4" style="background: rgba(0,122,255,0.1); border-radius: 25px; border: 1px dashed var(--accent);">
+                        <h6 id="name-sal" class="fw-bold mb-1"></h6>
+                        <small id="sku-sal" class="text-accent fw-bold"></small>
+                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-4"><input type="number" id="cant-sal" class="ios-input" placeholder="0"></div>
+                        <div class="col-8"><button class="btn-titan btn-primary-gradient" onclick="addToQueue('sal')">AÑADIR A LISTA</button></div>
+                    </div>
+                </div>
+
+                <div id="area-sal" class="d-none mt-5 pt-4 border-top border-secondary">
+                    <div id="list-sal"></div>
+                    <button class="btn-titan btn-success-solid mt-4 shadow-lg" onclick="finalProcess('Pedidos', 'sal')">CONFIRMAR DESPACHO</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="v-dev" class="view active">
+            <div class="premium-card">
+                <h5 class="fw-bold text-danger mb-4"><i class="fas fa-shield-virus me-2"></i>REVISIÓN TÉCNICA QC</h5>
+                
+                <div class="row g-2">
+                    <div class="col-6"><div class="ios-field"><label class="ios-label">Cliente</label><input type="text" id="cli-dev" class="ios-input" oninput="autoVendedor(this.value, 'ven-dev')"></div></div>
+                    <div class="col-6"><div class="ios-field"><label class="ios-label">Vendedor</label><input type="text" id="ven-dev" class="ios-input"></div></div>
+                </div>
+
+                <div class="search-wrapper mb-4">
+                    <i class="fas fa-microscope search-icon text-danger"></i>
+                    <input type="text" id="in-dev" class="ios-input search-premium" placeholder="Buscar Producto a revisar..." oninput="findIQ(this.value, 'sug-dev', 'dev')">
+                    <div id="sug-dev" class="suggestion-box"></div>
+                </div>
+
+                <div id="ui-dev" class="d-none">
+                    <div class="p-3 mb-3" style="background: rgba(255,59,48,0.05); border-radius: 20px; border: 1px solid rgba(255,59,48,0.2);">
+                        <b id="name-dev"></b>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6"><label class="ios-label">Guía</label><input type="number" id="cg-dev" class="ios-input"></div>
+                        <div class="col-6"><label class="ios-label">Real</label><input type="number" id="cr-dev" class="ios-input"></div>
+                    </div>
+                    <div class="ios-field">
+                        <label class="ios-label">Estado Técnico</label>
+                        <select id="st-dev" class="ios-input">
+                            <option>FALLADO A MERMA</option>
+                            <option>SE ARREGLO EL PRODUCTO</option>
+                            <option>PRODUCTO FALLA DE IMPORTACION</option>
+                        </select>
+                    </div>
+                    <button class="btn-titan btn-primary-gradient mb-4" onclick="addToQueue('dev')">AÑADIR A REVISIÓN</button>
+                </div>
+
+                <div id="area-dev" class="d-none mt-4">
+                    <div id="list-dev"></div>
+                    <button class="btn-titan btn-success-solid mt-4 shadow-lg" onclick="finalProcess('Devoluciones', 'dev')">GUARDAR Y ENVIAR REPORTE</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="tab-dock">
+        <button class="tab-trigger" onclick="nav('sal', this)"><i class="fas fa-truck-loading"></i><span>Despacho</span></button>
+        <button class="tab-trigger active" onclick="nav('dev', this)"><i class="fas fa-clipboard-check"></i><span>Retorno QC</span></button>
+        <button class="tab-trigger" onclick="location.reload()"><i class="fas fa-history"></i><span>Sync</span></button>
+    </nav>
+
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
+        let DB = []; let QUEUE_SAL = []; let QUEUE_DEV = []; let MEMORY = {}; let SEL = null;
+
+        async function init() {
+            try {
+                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+                const d = await r.json();
+                DB = d.p;
+                // IA de memoria: Aprende relaciones Cliente-Vendedor del historial
+                d.h.forEach(row => { 
+                    const v = row[6].includes('| Vend: ') ? row[6].split('| Vend: ')[1] : row[6];
+                    MEMORY[row[5].toLowerCase()] = v; 
+                });
+            } catch(e) { console.error("Error al cargar base de datos."); }
+        }
+
+        function findIQ(v, boxId, type) {
+            const box = document.getElementById(boxId);
+            if(v.length < 1) { box.style.display='none'; return; }
+            const matches = DB.filter(p => p[1].toString().toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,6);
+            box.innerHTML = matches.map(p => `<div class="suggestion-item" onclick="pickIQ('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="opacity-50 text-accent">${p[0]}</small></div>`).join('');
+            box.style.display = matches.length ? 'block' : 'none';
+        }
+
+        function pickIQ(sku, name, type) {
+            SEL = {sku, name};
+            document.getElementById(`name-${type}`).innerText = name;
+            if(type==='sal') document.getElementById(`sku-sal`).innerText = sku;
+            document.getElementById(`ui-${type}`).classList.remove('d-none');
+            document.getElementById(`sug-${type}`).style.display='none';
+        }
+
+        function autoVendedor(val, id) {
+            const m = MEMORY[val.toLowerCase()];
+            if(m) document.getElementById(id).value = m;
+        }
+
+        function addToQueue(type) {
+            if(type==='sal') {
+                const c = document.getElementById('cant-sal').value;
+                if(!c) return;
+                QUEUE_SAL.push({...SEL, c});
+            } else {
+                const cg = document.getElementById('cg-dev').value;
+                const cr = document.getElementById('cr-dev').value;
+                if(!cg || !cr) return;
+                QUEUE_DEV.push({...SEL, cg, cr, st: document.getElementById('st-dev').value});
+            }
+            render(type);
+            document.getElementById(`ui-${type}`).classList.add('d-none');
+            document.getElementById(`in-${type}`).value = "";
+        }
+
+        function render(type) {
+            const list = type==='sal' ? QUEUE_SAL : QUEUE_DEV;
+            document.getElementById(`area-${type}`).classList.remove('d-none');
+            document.getElementById(`list-${type}`).innerHTML = list.map(i => `
+                <div class="pill-item">
+                    <div><b>${i.name}</b><br><small class="opacity-40 text-uppercase">${i.st || i.sku}</small></div>
+                    <span class="badge rounded-pill bg-primary px-3 py-2">x${i.c || i.cr}</span>
+                </div>
+            `).join('');
+        }
+
+        async function finalProcess(sheet, type) {
+            const cli = document.getElementById(`cli-${type}`).value;
+            const ven = document.getElementById(`ven-${type}`).value;
+            if(!cli || !ven) return Swal.fire("Datos Faltantes", "Completa Cliente y Vendedor", "warning");
+
+            const list = type==='sal' ? QUEUE_SAL : QUEUE_DEV;
+            const payload = list.map(i => [new Date(), type==='sal'?'SALIDA':'QC-DEV', i.sku, i.name, i.c || i.cr, cli, type==='sal'?`Vend: ${ven}`:`Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`]);
+
+            Swal.fire({title: 'Sincronizando...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
+
+            if(type==='dev') {
+                createOfficialPDF(cli, ven, list);
+                sendWhatsApp(cli, ven, list);
+            }
+
+            Swal.fire("Sincronizado", "Los datos están en la nube.", "success").then(()=>location.reload());
+        }
+
+        function createOfficialPDF(cli, ven, list) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFillColor(18, 18, 20); doc.rect(0, 0, 210, 45, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE TÉCNICO QC", 14, 25);
+            doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
             
-            <div class="search-container">
-                <i class="fas fa-barcode search-icon"></i>
-                <input type="text" id="in-sal" class="search-iq" placeholder="Buscar Producto..." oninput="searchIQ(this.value, 'sug-sal', 'sal')">
-                <div id="sug-sal" class="predict-box"></div>
-            </div>
+            doc.autoTable({
+                head: [['SKU', 'ARTÍCULO', 'GUÍA', 'REAL', 'DIAGNÓSTICO']],
+                body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
+                startY: 50, theme: 'grid', headStyles: {fillColor: [0, 122, 255]}
+            });
 
-            <div id="ui-sal" class="d-none p-3 mb-3 border border-primary rounded-4">
-                <b id="name-sal"></b><br><small id="sku-sal" class="text-accent"></small>
-                <div class="row g-2 mt-2">
-                    <div class="col-4"><input type="number" id="cant-sal" class="input-box mb-0" placeholder="Cant."></div>
-                    <div class="col-8"><button class="btn btn-primary w-100 h-100 rounded-3 fw-bold" onclick="addItem('sal')">AÑADIR</button></div>
-                </div>
-            </div>
-
-            <div id="area-sal" class="d-none mt-4">
-                <div id="list-sal"></div>
-                <button class="btn btn-success w-100 py-3 mt-3 rounded-pill fw-bold" onclick="process('Pedidos', 'sal')">CONFIRMAR SALIDA</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="v-dev" class="view">
-        <div class="glass-card">
-            <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-microscope me-2"></i>RETORNO & CONTROL CALIDAD</h6>
-            <input type="text" id="cli-dev" class="input-box" placeholder="Nombre del Cliente..." oninput="suggestVendedor(this.value, 'ven-dev')">
-            <input type="text" id="ven-dev" class="input-box" placeholder="Vendedor...">
-
-            <div class="search-container">
-                <i class="fas fa-undo search-icon text-danger"></i>
-                <input type="text" id="in-dev" class="search-iq" placeholder="Buscar Producto..." oninput="searchIQ(this.value, 'sug-dev', 'dev')">
-                <div id="sug-dev" class="predict-box"></div>
-            </div>
-
-            <div id="ui-dev" class="d-none p-3 mb-3 border border-danger rounded-4">
-                <b id="name-dev"></b><br>
-                <div class="row g-2 mt-2">
-                    <div class="col-6"><label class="small opacity-50">CANT. GUÍA</label><input type="number" id="cg-dev" class="input-box mb-0"></div>
-                    <div class="col-6"><label class="small opacity-50">CANT. REAL</label><input type="number" id="cr-dev" class="input-box mb-0"></div>
-                </div>
-                <select id="st-dev" class="input-box mt-2">
-                    <option>FALLADO A MERMA</option>
-                    <option>SE ARREGLO EL PRODUCTO</option>
-                    <option>PRODUCTO FALLA DE IMPORTACION</option>
-                </select>
-                <button class="btn btn-danger w-100 mt-2 py-2 fw-bold" onclick="addItem('dev')">AÑADIR A INSPECCIÓN</button>
-            </div>
-
-            <div id="area-dev" class="d-none mt-4">
-                <div id="list-dev"></div>
-                <button class="btn btn-success w-100 py-3 mt-3 rounded-pill fw-bold" onclick="process('Devoluciones', 'dev')">FINALIZAR QC & PDF</button>
-            </div>
-        </div>
-    </section>
-</main>
-
-<nav class="nav-dock">
-    <button id="n-sal" class="nav-btn active" onclick="nav('sal')"><i class="fas fa-box fs-4"></i><span>DESPACHO</span></button>
-    <button id="n-dev" class="nav-btn" onclick="nav('dev')"><i class="fas fa-sync-alt fs-4"></i><span>RETORNO</span></button>
-</nav>
-
-<script>
-    const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-    let DB = []; let QUEUE_SAL = []; let QUEUE_DEV = []; let MEMORY = {}; let SELECTED = null;
-
-    async function init() {
-        try {
-            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-            const d = await r.json();
-            DB = d.p;
-            // Aprender relaciones Cliente-Vendedor del historial
-            d.h.forEach(row => { if(row[5] && row[6]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
-            document.getElementById('status').innerText = "Sistema en línea";
-            document.getElementById('status').classList.replace('text-warning', 'text-success');
-        } catch(e) { document.getElementById('status').innerText = "Error de conexión"; }
-    }
-
-    function searchIQ(v, boxId, type) {
-        const box = document.getElementById(boxId);
-        if(v.length < 1) { box.style.display='none'; return; }
-        // Buscador robusto: filtra por SKU (0) o Nombre (1)
-        const m = DB.filter(p => p[1].toString().toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,8);
-        box.innerHTML = m.map(p => `<div class="predict-item" onclick="selectIQ('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="opacity-50">${p[0]}</small></div>`).join('');
-        box.style.display = m.length ? 'block' : 'none';
-    }
-
-    function selectIQ(sku, name, type) {
-        SELECTED = {sku, name};
-        document.getElementById(`name-${type}`).innerText = name;
-        if(type==='sal') document.getElementById(`sku-sal`).innerText = sku;
-        document.getElementById(`ui-${type}`).classList.remove('d-none');
-        document.getElementById(`sug-${type}`).style.display='none';
-    }
-
-    function suggestVendedor(val, inputId) {
-        const match = MEMORY[val.toLowerCase()];
-        if(match) document.getElementById(inputId).value = match;
-    }
-
-    function addItem(type) {
-        if(type === 'sal') {
-            const c = document.getElementById('cant-sal').value;
-            if(!c) return;
-            QUEUE_SAL.push({...SELECTED, c});
-            renderList('sal');
-        } else {
-            const cg = document.getElementById('cg-dev').value;
-            const cr = document.getElementById('cr-dev').value;
-            if(!cg || !cr) return;
-            QUEUE_DEV.push({...SELECTED, cg, cr, st: document.getElementById('st-dev').value});
-            renderList('dev');
-        }
-        document.getElementById(`ui-${type}`).classList.add('d-none');
-        document.getElementById(`in-${type}`).value = "";
-    }
-
-    function renderList(type) {
-        const area = document.getElementById(`area-${type}`);
-        const cont = document.getElementById(`list-${type}`);
-        const list = type === 'sal' ? QUEUE_SAL : QUEUE_DEV;
-        area.classList.remove('d-none');
-        cont.innerHTML = list.map(i => `
-            <div class="item-pill" style="border-left-color: ${type==='sal'?'#007AFF':'#FF3B30'}">
-                <div><b>${i.name}</b><br><small class="opacity-50">${i.st || i.sku}</small></div>
-                <span class="badge bg-dark">x${i.c || i.cr}</span>
-            </div>
-        `).join('');
-    }
-
-    async function process(sheet, type) {
-        const cli = document.getElementById(`cli-${type}`).value;
-        const ven = document.getElementById(`ven-${type}`).value;
-        if(!cli || !ven) return Swal.fire("Datos incompletos", "Cliente y Vendedor son requeridos", "warning");
-
-        const list = type === 'sal' ? QUEUE_SAL : QUEUE_DEV;
-        const payload = list.map(i => [
-            new Date(), 
-            type==='sal'?'DESPACHO':'QC-RETORNO', 
-            i.sku, i.name, 
-            i.c || i.cr, 
-            cli, 
-            type==='sal' ? `Vend: ${ven}` : `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`
-        ]);
-
-        Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
-        await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-        
-        if(type==='dev') {
-            generatePDF(cli, ven, list);
-            sendWhatsApp(cli, ven, list);
+            const fY = doc.lastAutoTable.finalY + 25;
+            doc.line(14, fY, 100, fY);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, fY + 6);
+            doc.text("Asist. Inventario Logístico", 14, fY + 11);
+            doc.save(`QC_${cli}.pdf`);
         }
 
-        Swal.fire("¡Éxito!", "Registrado correctamente", "success").then(()=>location.reload());
-    }
+        function sendWhatsApp(cli, ven, list) {
+            let msg = `*REPORTE QC - TITAN OS*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
+            list.forEach(i => {
+                msg += `• *${i.name}*%0A  Cant: ${i.cr}/${i.cg} | Rev: ${i.st}%0A`;
+            });
+            msg += `%0A*Autorizado:* J. Angelo Nuñez Durand%0A_El PDF ha sido descargado en el dispositivo._`;
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
 
-    function generatePDF(cli, ven, list) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFontSize(18); doc.text("REPORTE DE REVISIÓN LOGÍSTICA", 14, 20);
-        doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 30);
-        
-        doc.autoTable({
-            head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO']],
-            body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
-            startY: 40, theme: 'grid', headStyles: {fillColor: [0, 122, 255]}
-        });
+        function nav(v, b) {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-trigger').forEach(e => e.classList.remove('active'));
+            document.getElementById('v-'+v).classList.add('active');
+            b.classList.add('active');
+        }
 
-        const finalY = doc.lastAutoTable.finalY + 20;
-        doc.line(14, finalY, 100, finalY);
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 5);
-        doc.text("Asist. Inventario Logístico", 14, finalY + 10);
-        doc.save(`QC_${cli}.pdf`);
-    }
-
-    function sendWhatsApp(cli, ven, list) {
-        let msg = `*REPORTE QC - TWINS TITAN*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
-        list.forEach(i => { msg += `• ${i.name} (Real: ${i.cr}/Guia: ${i.cg})%0A  _Estado: ${i.st}_%0A`; });
-        msg += `%0A*Autorizado por:* J. Angelo Nuñez Durand`;
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-    }
-
-    function nav(v) {
-        document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('v-'+v).classList.add('active');
-        document.getElementById('n-'+v).classList.add('active');
-    }
-
-    window.onload = init;
-</script>
+        window.onload = init;
+    </script>
 </body>
 </html>
