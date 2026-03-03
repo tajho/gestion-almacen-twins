@@ -1,441 +1,108 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | J. Angelo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
-        :root {
-            --bg: #0A0C10; --card: #161B22; --accent: #3B82F6; --success: #10B981;
-            --danger: #F43F5E; --text: #F0F6FC; --muted: #8B949E; --glass: rgba(22, 27, 34, 0.8);
-        }
+:root {
+    --bg: #05070A;
+    --card: #0D1117;
+    --accent: #3B82F6; /* Azul Inteligente */
+    --success: #10B981;
+    --danger: #F43F5E;
+    --text: #F0F6FC;
+    --muted: #8B949E;
+    /* Efecto Glass */
+    --glass: rgba(13, 17, 23, 0.7);
+    --border: rgba(255,255,255,0.08);
+}
 
-        body { 
-            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); margin: 0; overflow-x: hidden; padding-bottom: 120px;
-        }
+body { 
+    background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text); margin: 0; padding-bottom: 110px;
+    -webkit-tap-highlight-color: transparent;
+}
 
-        /* Header Cyberpunk */
-        .premium-header {
-            background: var(--glass); backdrop-filter: blur(15px);
-            padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            position: sticky; top: 0; z-index: 2000;
-        }
+/* Header Flotante con profundidad */
+.premium-header {
+    background: var(--glass); backdrop-filter: blur(20px);
+    padding: 20px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 2000;
+}
 
-        .brand-logo { font-weight: 800; font-size: 22px; letter-spacing: -1px; background: linear-gradient(90deg, #3B82F6, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.brand-logo { 
+    font-weight: 800; font-size: 20px; letter-spacing: -0.5px;
+    color: #fff; display: flex; align-items: center; gap: 8px;
+}
+.brand-logo::before { content: '■'; color: var(--accent); }
 
-        /* Tarjetas Estilo Mobile-First */
-        .card-elite {
-            background: var(--card); border-radius: 24px; padding: 20px;
-            margin: 15px; border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+/* Tarjetas con profundidad "Floating" */
+.card-elite {
+    background: var(--card); border-radius: 20px; padding: 20px;
+    margin: 15px; border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
 
-        .label-tech { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 15px 0 8px 5px; display: block; opacity: 0.8; }
+.label-tech { 
+    font-size: 11px; font-weight: 800; color: var(--accent); 
+    text-transform: uppercase; margin: 10px 0 10px 0; display: block;
+    letter-spacing: 1px;
+}
 
-        /* Inputs Premium */
-        .input-elite {
-            background: #0D1117; border: 1px solid #30363D;
-            border-radius: 16px; padding: 16px; width: 100%; font-size: 16px; color: #fff;
-            margin-bottom: 12px; transition: 0.3s;
-        }
-        .input-elite:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+/* Inputs mejorados para dedos */
+.input-elite {
+    background: #010409; border: 2px solid var(--border);
+    border-radius: 14px; padding: 18px; width: 100%; font-size: 16px; color: #fff;
+    margin-bottom: 15px; transition: all 0.2s ease;
+}
+.input-elite:focus { 
+    border-color: var(--accent); outline: none; 
+    background: #0D1117; transform: scale(1.01);
+}
 
-        /* Chips Vendedores */
-        .vendor-scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; scrollbar-width: none; }
-        .vendor-scroller::-webkit-scrollbar { display: none; }
-        .v-chip {
-            background: #21262D; border: 1px solid #30363D; padding: 12px 18px;
-            border-radius: 14px; font-size: 12px; font-weight: 700; white-space: nowrap; transition: 0.3s; cursor: pointer;
-        }
-        .v-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+/* Chips de Vendedor (Estilo Selector Inteligente) */
+.vendor-scroller { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; }
+.vendor-scroller::-webkit-scrollbar { display: none; }
+.v-chip {
+    background: #161B22; border: 2px solid var(--border); padding: 14px 20px;
+    border-radius: 14px; font-size: 13px; font-weight: 700; white-space: nowrap; 
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.v-chip.active { 
+    background: var(--accent); border-color: #60a5fa; 
+    color: #fff; transform: scale(1.05); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
 
-        /* Botones Titan */
-        .btn-elite {
-            border-radius: 18px; padding: 18px; font-weight: 800; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; text-transform: uppercase;
-        }
-        .btn-blue { background: var(--accent); color: #fff; }
-        .btn-green { background: var(--success); color: #fff; }
-        .btn-elite:active { transform: scale(0.95); opacity: 0.8; }
+/* Botones "Titan" de alta respuesta */
+.btn-elite {
+    border-radius: 16px; padding: 18px; font-weight: 800; border: none; width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+    cursor: pointer; font-size: 14px;
+}
+.btn-blue { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+.btn-green { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+.btn-elite:active { transform: translateY(4px); filter: brightness(0.9); }
 
-        /* Buscador Sugerencias */
-        .search-results {
-            background: #1C2128; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px; 
-            border: 1px solid var(--accent); max-height: 250px; overflow-y: auto;
-        }
-        .search-item { padding: 15px; border-bottom: 1px solid #30363D; cursor: pointer; transition: 0.2s; }
-        .search-item:active { background: #2D333B; }
+/* Resultados de búsqueda flotantes */
+.search-results {
+    background: #161B22; border-radius: 16px; border: 1px solid var(--border);
+    position: absolute; width: 100%; z-index: 100; margin-top: -10px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden;
+}
 
-        /* Historial */
-        .history-card {
-            background: #161B22; border-radius: 20px; padding: 16px; margin-bottom: 12px;
-            border-left: 5px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
-        }
-        .type-badge { font-size: 9px; padding: 4px 8px; border-radius: 6px; font-weight: 800; margin-bottom: 5px; display: inline-block; }
-        .bg-mkt { background: #D97706; color: white; }
-        .bg-vnt { background: #2563EB; color: white; }
-        .bg-ret { background: #DC2626; color: white; }
+/* Navegación "Soft-touch" */
+.nav-elite {
+    position: fixed; bottom: 0; width: 100%; background: rgba(5, 7, 10, 0.95);
+    backdrop-filter: blur(20px); display: flex; justify-content: space-around;
+    padding: 15px 0 25px 0; border-top: 1px solid var(--border); z-index: 2000;
+}
+.nav-tab { background: none; border: none; color: var(--muted); padding: 5px; }
+.nav-tab.active { color: var(--accent); }
+.nav-tab i { font-size: 24px; display: block; margin-bottom: 2px; }
+.nav-tab span { font-size: 10px; font-weight: 800; }
 
-        /* Navbar */
-        .nav-elite {
-            position: fixed; bottom: 0; width: 100%; background: rgba(13, 17, 23, 0.95);
-            backdrop-filter: blur(15px); display: flex; justify-content: space-around;
-            padding: 15px 0 30px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000;
-        }
-        .nav-tab { background: none; border: none; color: var(--muted); text-align: center; }
-        .nav-tab.active { color: var(--accent); }
-        .nav-tab i { font-size: 22px; display: block; margin-bottom: 5px; }
-        .nav-tab span { font-size: 10px; font-weight: 700; }
+.view { display: none; }
+.active-view { display: block; }
 
-        .view { display: none; }
-        .active-view { display: block; animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-
-    <header class="premium-header d-flex justify-content-between align-items-center">
-        <div>
-            <div class="brand-logo">TITAN ELITE</div>
-            <div style="font-size: 9px; color: var(--muted); font-weight: 700;">LOGISTICS INTELLIGENCE</div>
-        </div>
-        <div class="text-end">
-            <div style="font-size: 12px; font-weight: 800;">J. Angelo</div>
-            <div id="sync-status" style="font-size: 9px; color: var(--success);"><i class="fas fa-bolt"></i> Sincronizado</div>
-        </div>
-    </header>
-
-    <main>
-        <section id="v-del" class="view active-view">
-            <div class="card-elite">
-                <span class="label-tech">Tipo de Movimiento</span>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
-                    <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
-                    <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
-                </div>
-
-                <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
-                
-                <span class="label-tech">Vendedor Responsable</span>
-                <div class="vendor-scroller" id="vend-d">
-                    <div class="v-chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
-                    <div class="v-chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
-                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
-                    <div class="v-chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
-                    <div class="v-chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
-                </div>
-
-                <div class="position-relative mt-3">
-                    <span class="label-tech">Buscador Inteligente</span>
-                    <input type="text" id="src-d" class="input-elite" placeholder="🔍 Escriba SKU o Nombre..." oninput="find(this.value, 'res-d', 'd')">
-                    <div id="res-d" class="search-results"></div>
-                </div>
-
-                <div id="form-d" class="d-none mt-2">
-                    <div class="p-3 mb-3 rounded-4" style="background: rgba(59,130,246,0.1); border: 1px solid var(--accent)">
-                        <small class="text-accent fw-800">SELECCIONADO:</small><br>
-                        <b id="p-n-d" style="font-size: 14px;"></b><br>
-                        <small class="text-muted" id="p-s-d"></small>
-                    </div>
-                    <input type="number" id="q-d" class="input-elite" placeholder="Cantidad Unidades">
-                    <button class="btn-elite btn-blue" onclick="addItem('d')">Añadir ítem <i class="fas fa-plus"></i></button>
-                </div>
-
-                <div id="list-d" class="mt-4 d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="label-tech">Carga Preparada</span>
-                        <span class="badge bg-danger rounded-pill" style="cursor:pointer" onclick="clearAll('d')">Limpiar</span>
-                    </div>
-                    <div id="items-d"></div>
-                    <button class="btn-elite btn-blue shadow-lg mt-3" onclick="sync('Pedidos', 'd')">Confirmar y Guardar <i class="fas fa-save"></i></button>
-                </div>
-            </div>
-        </section>
-
-        <section id="v-ret" class="view">
-            <div class="card-elite">
-                <span class="label-tech text-danger">Módulo de Devoluciones</span>
-                <input type="text" id="cli-r" class="input-elite" placeholder="Cliente Origen" oninput="autoSave()">
-                
-                <span class="label-tech">Vendedor</span>
-                <div class="vendor-scroller" id="vend-r">
-                    <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS AVILA</div>
-                    <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN MURO</div>
-                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO MAURICIO</div>
-                    <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA GARCIA</div>
-                    <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO ANTEZA</div>
-                </div>
-
-                <div class="position-relative mt-3">
-                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU a devolver..." oninput="find(this.value, 'res-r', 'r')">
-                    <div id="res-r" class="search-results"></div>
-                </div>
-
-                <div id="form-r" class="d-none mt-2">
-                    <div class="p-3 mb-3 rounded-4" style="background: rgba(244,63,94,0.1); border: 1px solid var(--danger)">
-                        <b id="p-n-r" style="font-size: 14px;"></b>
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-6"><span class="label-tech">Cant. Guía</span><input type="number" id="cg-r" class="input-elite"></div>
-                        <div class="col-6"><span class="label-tech">Cant. Real</span><input type="number" id="cr-r" class="input-elite"></div>
-                    </div>
-                    <span class="label-tech">Estado Técnico</span>
-                    <select id="st-r" class="input-elite">
-                        <option>FALLADO A MERMA</option>
-                        <option>SE ARREGLO EL PRODUCTO</option>
-                        <option>PRODUCTO FALLA DE IMPORTACION</option>
-                    </select>
-                    <textarea id="obs-r" class="input-elite" style="height: 100px;" placeholder="Detalles adicionales (Lápiz)..."></textarea>
-                    <button class="btn-elite btn-green" onclick="addItem('r')">Validar Ingreso <i class="fas fa-check-circle"></i></button>
-                </div>
-
-                <div id="list-r" class="mt-4 d-none">
-                    <div id="items-r"></div>
-                    <button class="btn-elite btn-green mt-3" onclick="sync('Devoluciones', 'r')">Sincronizar Retorno <i class="fas fa-cloud-upload-alt"></i></button>
-                </div>
-            </div>
-        </section>
-
-        <section id="v-his" class="view">
-            <div class="px-3 py-2">
-                <span class="label-tech">Registro en la Nube (Últimos 30)</span>
-                <div id="his-feed"></div>
-            </div>
-        </section>
-    </main>
-
-    <nav class="nav-elite">
-        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-box-open"></i><span>ENTREGA</span></button>
-        <button class="nav-tab" onclick="nav('ret', this)"><i class="fas fa-undo"></i><span>RETORNO</span></button>
-        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
-    </nav>
-
-    <script>
-        // Mantenemos tu API y lógica exacta
-        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {d:'', r:''}; let FULL_HIS = [];
-
-        async function init() {
-            const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_DATA'));
-            if(saved) {
-                QD = saved.QD || []; QR = saved.QR || [];
-                document.getElementById('cli-d').value = saved.cliD || '';
-                document.getElementById('cli-r').value = saved.cliR || '';
-                if(saved.venD) setV(saved.venD, 'd');
-                if(saved.venR) setV(saved.venR, 'r');
-                setM(saved.MODE || 'VENTA');
-                render('d'); render('r');
-            }
-
-            try {
-                document.getElementById('sync-status').innerHTML = '<i class="fas fa-sync fa-spin"></i> Cargando...';
-                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const d = await r.json();
-                DB_P = d.p;
-                FULL_HIS = d.h;
-                renderHistory(d.h);
-                document.getElementById('sync-status').innerHTML = '<i class="fas fa-bolt"></i> Sincronizado';
-            } catch(e) { 
-                document.getElementById('sync-status').innerHTML = '<i class="fas fa-wifi-slash text-danger"></i> Offline';
-            }
-        }
-
-        function autoSave() {
-            const data = {
-                QD, QR, MODE,
-                cliD: document.getElementById('cli-d').value,
-                cliR: document.getElementById('cli-r').value,
-                venD: VEN.d, venR: VEN.r
-            };
-            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
-        }
-
-        function setM(m) {
-            MODE = m;
-            document.querySelectorAll('#v-del .v-chip').forEach(c => c.classList.remove('active'));
-            document.getElementById('m-'+m).classList.add('active');
-            autoSave();
-        }
-
-        function setV(n, t) {
-            document.querySelectorAll(`#vend-${t} .v-chip`).forEach(c => c.classList.remove('active'));
-            VEN[t] = n;
-            Array.from(document.querySelectorAll(`#vend-${t} .v-chip`)).find(c => c.innerText === n)?.classList.add('active');
-            autoSave();
-        }
-
-        function find(v, boxId, type) {
-            const box = document.getElementById(boxId);
-            if(v.length < 1) { box.style.display='none'; return; }
-            
-            // Buscador ultra-rápido por SKU o Nombre
-            const matches = DB_P.filter(p => 
-                p[1].toLowerCase().includes(v.toLowerCase()) || 
-                p[0].toString().includes(v)
-            ).slice(0,8);
-
-            box.innerHTML = matches.map(p => `
-                <div class="search-item" onclick="pick('${p[0]}','${p[1]}','${type}')">
-                    <div class="fw-bold" style="font-size:13px">${p[1]}</div>
-                    <small class="text-accent">${p[0]}</small>
-                </div>
-            `).join('');
-            box.style.display = matches.length ? 'block' : 'none';
-        }
-
-        function pick(s, n, t) {
-            document.getElementById(`p-n-${t}`).innerText = n;
-            if(t==='d') document.getElementById(`p-s-${t}`).innerText = "SKU: " + s;
-            document.getElementById(`form-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
-            window.lastPick = {sku:s, name:n};
-        }
-
-        function addItem(t) {
-            if(t==='d') {
-                const q = document.getElementById('q-d').value;
-                if(!q) return;
-                QD.push({...window.lastPick, q, mode: MODE});
-                document.getElementById('q-d').value = '';
-                document.getElementById('src-d').value = '';
-            } else {
-                const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
-                if(!cg || !cr) return;
-                QR.push({...window.lastPick, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
-                document.getElementById('src-r').value = '';
-                document.getElementById('cg-r').value = '';
-                document.getElementById('cr-r').value = '';
-                document.getElementById('obs-r').value = '';
-            }
-            render(t);
-            document.getElementById(`form-${t}`).classList.add('d-none');
-            autoSave();
-        }
-
-        function render(t) {
-            const list = t==='d' ? QD : QR;
-            document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
-            document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
-                <div class="history-card" style="border-left-color: ${t==='d'?'var(--accent)':'var(--danger)'}">
-                    <div style="max-width: 70%">
-                        <b style="font-size:13px">${i.name}</b><br>
-                        <small class="text-muted">${i.mode || i.st}</small>
-                    </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="fw-800 fs-5">x${i.q || i.cr}</span>
-                        <i class="fas fa-times-circle text-danger fs-4" onclick="removeIdx('${t}', ${idx})"></i>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function removeIdx(t, idx) {
-            if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1);
-            render(t); autoSave();
-        }
-
-        async function sync(sheet, t) {
-            const cli = document.getElementById(`cli-${t}`).value;
-            const ven = VEN[t];
-            if(!cli || !ven) return Swal.fire({title:"Faltan Datos", text:"Cliente y Vendedor son obligatorios", icon:"warning", background:'#161B22', color:'#fff'});
-
-            const list = t==='d' ? QD : QR;
-            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
-
-            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading(), background: '#161B22', color: '#fff', allowOutsideClick: false});
-            
-            try {
-                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
-                localStorage.removeItem('TITAN_ELITE_DATA');
-                Swal.fire({title:"Sincronizado", icon:"success", background:'#161B22', color:'#fff'}).then(()=>location.reload());
-            } catch(e) {
-                Swal.fire({title:"Error", text:"Revisa tu conexión", icon:"error", background:'#161B22', color:'#fff'});
-            }
-        }
-
-        function renderHistory(h) {
-            document.getElementById('his-feed').innerHTML = h.slice(0,30).map((r, idx) => {
-                const type = r[1];
-                const badgeClass = type === 'DEVOLUCION' ? 'bg-ret' : (type === 'VENTA' ? 'bg-vnt' : 'bg-mkt');
-                return `
-                <div class="history-card" onclick="showOptions(${idx})">
-                    <div>
-                        <span class="type-badge ${badgeClass}">${type}</span>
-                        <div class="fw-bold">${r[5]}</div>
-                        <small class="text-muted">${r[3]}</small>
-                    </div>
-                    <div class="text-end">
-                        <div class="fw-bold text-accent fs-4">x${r[4]}</div>
-                        <small style="font-size:9px" class="opacity-50">${new Date(r[0]).toLocaleDateString()}</small>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        function showOptions(idx) {
-            const r = FULL_HIS[idx];
-            Swal.fire({
-                title: 'Acciones de Registro',
-                text: `¿Qué deseas hacer con el registro de ${r[5]}?`,
-                showCancelButton: true,
-                confirmButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp + PDF',
-                confirmButtonColor: '#25D366',
-                background: '#161B22',
-                color: '#fff'
-            }).then((res) => { if(res.isConfirmed) sendWhatsApp(r); });
-        }
-
-        function sendWhatsApp(r) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("REPORTE LOGÍSTICO TITAN", 14, 25);
-            doc.setFontSize(10); doc.text(`CLIENTE: ${r[5].toUpperCase()} | FECHA: ${new Date(r[0]).toLocaleDateString()}`, 14, 35);
-            
-            doc.autoTable({
-                head: [['CAMPO', 'DETALLE']],
-                body: [
-                    ['MOVIMIENTO', r[1]],
-                    ['PRODUCTO', r[3]],
-                    ['CANTIDAD', r[4]],
-                    ['DETALLES', r[6]]
-                ],
-                startY: 50, theme: 'grid'
-            });
-
-            const pY = doc.internal.pageSize.getHeight();
-            const pW = doc.internal.pageSize.getWidth();
-            doc.setTextColor(100);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", pW/2, pY - 20, {align: 'center'});
-            
-            doc.save(`TITAN_${r[5]}.pdf`);
-
-            const venName = r[6].split('Vend: ')[1] || 'Vendedor';
-            const msg = `Hola ${venName}, reporte de *${r[1]}* cliente *${r[5]}*.\nProd: ${r[3]}\nCant: ${r[4]}\n_Autorizado por J. Angelo_`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function nav(v, b) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('active-view');
-            b.classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        window.onload = init;
-    </script>
-</body>
-</html>
+/* Historial estilizado */
+.history-card {
+    background: #0D1117; border-radius: 16px; padding: 16px; margin-bottom: 10px;
+    border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
+}
