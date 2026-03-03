@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN ELITE | Gestión de Inventario</title>
+    <title>TITAN ELITE v4.5 | Auditoría Exacta</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,103 +11,97 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #040508;
-            --surface: #12141C;
-            --accent: #00F0FF;
-            --success: #00E676;
-            --danger: #FF3D71;
-            --text: #FFFFFF;
-            --border: #2A2E3D;
+            --bg: #05070A;
+            --surface: #11141D;
+            --accent: #00D1FF;
+            --success: #10B981;
+            --danger: #FF4D4D;
+            --border: #222933;
         }
 
         body { 
-            background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text);
-            margin: 0; padding-bottom: 110px; overflow-x: hidden;
+            background: var(--bg); font-family: 'Inter', sans-serif; color: #fff;
+            margin: 0; padding-bottom: 100px;
         }
 
-        .header-elite {
-            background: var(--surface); padding: 20px; border-bottom: 2px solid var(--accent);
-            position: sticky; top: 0; z-index: 2000;
-        }
-        .header-elite h1 { font-weight: 900; font-size: 20px; margin: 0; letter-spacing: 2px; }
-
-        .card-elite {
-            background: var(--surface); border-radius: 12px; padding: 22px;
-            margin: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .titan-header {
+            background: var(--surface); padding: 15px 20px; border-bottom: 2px solid var(--accent);
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .label-tech { font-family: 'Roboto Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 8px; display: block; }
-
-        /* Inputs Profesionales */
-        .input-elite {
-            background: #1A1D29; border: 1px solid var(--border);
-            border-radius: 8px; padding: 14px; width: 100%; color: #fff;
-            font-size: 15px; margin-bottom: 12px; transition: 0.2s;
-        }
-        .input-elite:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
-
-        /* Buscador Inteligente Dropdown */
-        .search-container { position: relative; }
-        .results-box {
-            position: absolute; width: 100%; background: #1A1D29; border: 1px solid var(--accent);
-            border-radius: 0 0 12px 12px; z-index: 1500; max-height: 250px; overflow-y: auto; display: none;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-        }
-        .result-item { padding: 12px 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .result-item:hover { background: var(--accent); color: #000; }
-        .result-item b { font-family: 'Roboto Mono', monospace; }
-
-        /* Botones de Acción */
-        .btn-elite {
-            border-radius: 10px; padding: 18px; font-weight: 800; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-transform: uppercase; font-size: 13px; transition: 0.2s; cursor: pointer;
-        }
-        .btn-cyan { background: var(--accent); color: #000; }
-        .btn-green { background: var(--success); color: #000; }
-        .btn-elite:active { transform: scale(0.97); }
-
-        .item-list-row {
-            background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;
-            margin-bottom: 8px; border-left: 4px solid var(--accent);
-            display: flex; justify-content: space-between; align-items: center;
+        .ultra-card {
+            background: var(--surface); border-radius: 16px; padding: 20px;
+            margin: 15px; border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
 
-        /* Nav Inferior */
-        .nav-elite {
+        .label-audit { font-family: 'Space Grotesk', sans-serif; font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; }
+
+        .titan-input {
+            background: #080A0F; border: 1.5px solid var(--border);
+            border-radius: 10px; padding: 14px; width: 100%; color: #fff;
+            font-size: 15px; margin-bottom: 15px; transition: 0.2s;
+        }
+        .titan-input:focus { border-color: var(--accent); outline: none; }
+
+        .btn-titan {
+            border-radius: 12px; padding: 16px; font-weight: 800; border: none; width: 100%;
+            text-transform: uppercase; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-blue { background: var(--accent); color: #000; }
+        .btn-green { background: var(--success); color: #fff; }
+
+        .row-item {
+            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px; margin-bottom: 8px;
+            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .nav-titan {
             position: fixed; bottom: 0; width: 100%; background: var(--surface);
-            display: flex; justify-content: space-around; padding: 12px 0 25px 0;
-            border-top: 1px solid var(--border); z-index: 2000;
+            display: flex; justify-content: space-around; padding: 15px 0 30px 0;
+            border-top: 1px solid var(--border); z-index: 1000;
         }
         .nav-btn { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; text-align: center; }
         .nav-btn.active { color: var(--accent); }
         .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
 
         .view { display: none; }
-        .view-active { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view-active { display: block; }
     </style>
 </head>
 <body>
 
-    <header class="header-elite d-flex justify-content-between align-items-center">
-        <h1>TITAN <span style="color:white">ELITE</span></h1>
+    <header class="titan-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 style="font-size: 18px; font-weight: 800; margin:0; color:var(--accent)">TAJHO | TITAN ELITE</h1>
+            <small style="font-size: 9px; color: #64748B;">SISTEMA DE AUDITORÍA EXACTA</small>
+        </div>
         <div class="text-end">
             <div style="font-size: 11px; font-weight: 800;">J. ANGELO</div>
-            <div style="font-size: 8px; color: var(--success); letter-spacing: 1px;">SISTEMA DE AUDITORÍA</div>
+            <div style="font-size: 8px; color: var(--success);">ESTADO: CONECTADO</div>
         </div>
     </header>
 
+    <datalist id="db-productos">
+        <option value="1001 - LAPICERO AZUL FABER CASTELL">
+        <option value="1002 - LAPICERO ROJO FABER CASTELL">
+        <option value="2045 - CUADERNO A4 ESPIRAL LORO">
+        <option value="2046 - CUADERNO A4 ESPIRAL STANFORD">
+        <option value="5001 - PAPEL BOND REPORTE 80GR A4">
+        <option value="8088 - FOLDER MANILA PAQUETE X100">
+    </datalist>
+
     <main>
         <section id="v-del" class="view view-active">
-            <div class="card-elite">
-                <span class="label-tech">CONFIGURACIÓN DE SALIDA</span>
-                <input type="text" id="cli-d" class="input-elite" placeholder="Cliente / Empresa" oninput="saveState()">
-                <select id="ven-d" class="input-elite" onchange="saveState()">
-                    <option value="">SELECCIONAR VENDEDOR...</option>
+            <div class="ultra-card">
+                <span class="label-audit">Datos del Despacho</span>
+                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente" oninput="saveSt()">
+                
+                <select id="ven-d" class="titan-input" onchange="saveSt()">
+                    <option value="">Seleccionar Vendedor...</option>
                     <option value="ELIAS AVILA">ELIAS AVILA</option>
                     <option value="EVELYN MURO">EVELYN MURO</option>
                     <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
@@ -115,233 +109,179 @@
                     <option value="REGULO ANTEZA">REGULO ANTEZA</option>
                 </select>
 
-                <div class="search-container mt-3">
-                    <span class="label-tech">BÚSQUEDA INTELIGENTE (SKU O NOMBRE)</span>
-                    <input type="text" id="find-d" class="input-elite" placeholder="🔍 Buscar producto..." oninput="smartSearch(this.value, 'd')">
-                    <div id="res-d" class="results-box"></div>
+                <div class="mt-2">
+                    <span class="label-audit">Buscador Inteligente de Producto</span>
+                    <input type="text" id="prod-d" class="titan-input" placeholder="Escriba SKU o Nombre..." list="db-productos">
+                    <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad de Unidades">
+                    <button class="btn-titan btn-blue" onclick="add('d')">Añadir Item <i class="fas fa-plus"></i></button>
                 </div>
-                
-                <input type="number" id="qty-d" class="input-elite" placeholder="CANTIDAD DE UNIDADES">
-                <button class="btn-elite btn-cyan" onclick="addItem('d')">AÑADIR A CARGA <i class="fas fa-plus-square"></i></button>
 
                 <div id="list-d" class="mt-4"></div>
-                <button id="sync-d" class="btn-elite btn-green mt-3 d-none" onclick="sync('d')">CONFIRMAR DESPACHO <i class="fas fa-check-double"></i></button>
+                <button id="sync-d" class="btn-titan btn-green mt-3 d-none" onclick="sync('d')">Confirmar Registro <i class="fas fa-cloud-upload"></i></button>
             </div>
         </section>
 
         <section id="v-ret" class="view">
-            <div class="card-elite">
-                <span class="label-tech">AUDITORÍA DE RETORNOS</span>
-                <input type="text" id="cli-r" class="input-elite" placeholder="CLIENTE QUE DEVUELVE">
+            <div class="ultra-card">
+                <span class="label-audit">Control de Retornos</span>
+                <input type="text" id="cli-r" class="titan-input" placeholder="Cliente / Origen">
+                <input type="text" id="prod-r" class="titan-input" placeholder="SKU o Nombre del producto" list="db-productos">
                 
-                <div class="search-container">
-                    <span class="label-tech">PRODUCTO EN REVISIÓN</span>
-                    <input type="text" id="find-r" class="input-elite" placeholder="🔍 SKU o Nombre del devuelto..." oninput="smartSearch(this.value, 'r')">
-                    <div id="res-r" class="results-box"></div>
-                </div>
-
                 <div class="row g-2">
                     <div class="col-6">
-                        <span class="label-tech">CANT. GUÍA</span>
-                        <input type="number" id="qg-r" class="input-elite" placeholder="0">
+                        <span class="label-audit">Cantidad Guía</span>
+                        <input type="number" id="qg-r" class="titan-input" placeholder="0">
                     </div>
                     <div class="col-6">
-                        <span class="label-tech">CANT. LLEGÓ</span>
-                        <input type="number" id="qr-r" class="input-elite" placeholder="0">
+                        <span class="label-audit">Cantidad Real</span>
+                        <input type="number" id="qr-r" class="titan-input" placeholder="0">
                     </div>
                 </div>
 
-                <span class="label-tech">DETALLE DE REVISIÓN</span>
-                <select id="st-r" class="input-elite">
-                    <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO (OK)</option>
+                <span class="label-audit">Detalle de Revisión</span>
+                <select id="st-r" class="titan-input">
+                    <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO</option>
                     <option value="FALLA DE FÁBRICA">FALLA DE FÁBRICA</option>
-                    <option value="DAÑO POR TRANSPORTE">DAÑO POR TRANSPORTE</option>
-                    <option value="EMPAQUE DETERIORADO">EMPAQUE DETERIORADO</option>
+                    <option value="EMPAQUE DAÑADO">EMPAQUE DAÑADO</option>
                 </select>
 
-                <span class="label-tech"><i class="fas fa-pen-nib"></i> OBSERVACIONES (LÁPIZ)</span>
-                <textarea id="obs-r" class="input-elite" style="height: 100px;" placeholder="Detalles específicos encontrados en el producto..."></textarea>
+                <span class="label-audit"><i class="fas fa-pencil-alt"></i> Observaciones Especiales</span>
+                <textarea id="obs-r" class="titan-input" style="height: 100px;" placeholder="Detalla aquí cualquier observación física..."></textarea>
                 
-                <button class="btn-elite btn-cyan" onclick="addItem('r')">REGISTRAR DEVOLUCIÓN <i class="fas fa-save"></i></button>
-
+                <button class="btn-titan btn-blue" onclick="add('r')">Validar Ingreso <i class="fas fa-save"></i></button>
                 <div id="list-r" class="mt-4"></div>
-                <button id="sync-r" class="btn-elite btn-green mt-3 d-none" onclick="sync('r')">CERRAR AUDITORÍA <i class="fas fa-file-signature"></i></button>
+                <button id="sync-r" class="btn-titan btn-green mt-3 d-none" onclick="sync('r')">Sincronizar Devolución <i class="fas fa-check-double"></i></button>
             </div>
         </section>
 
         <section id="v-his" class="view">
             <div class="p-3">
-                <input type="text" id="main-search" class="input-elite" placeholder="🔍 Buscar en historial..." onkeyup="filterHis()">
+                <input type="text" id="search-his" class="titan-input" placeholder="🔍 Filtrar por Cliente o SKU..." onkeyup="filterH()">
                 <div id="his-feed"></div>
             </div>
         </section>
     </main>
 
-    <nav class="nav-elite">
-        <button class="nav-btn active" onclick="nav('del', this)"><i class="fas fa-truck-loading"></i><span>ENTREGA</span></button>
-        <button class="nav-btn" onclick="nav('ret', this)"><i class="fas fa-sync-alt"></i><span>RETORNOS</span></button>
-        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-list-ul"></i><span>HISTORIAL</span></button>
+    <nav class="nav-titan">
+        <button class="nav-btn active" onclick="tab('del', this)"><i class="fas fa-pallet"></i><span>SALIDA</span></button>
+        <button class="nav-btn" onclick="tab('ret', this)"><i class="fas fa-box-open"></i><span>RETORNO</span></button>
+        <button class="nav-btn" onclick="tab('his', this)"><i class="fas fa-history"></i><span>REGISTRO</span></button>
     </nav>
 
     <script>
-        // Catálogo de Productos (Base de datos inteligente)
-        const CATALOGO = [
-            {sku: "1001", name: "LAPICERO AZUL FABER CASTELL"},
-            {sku: "1002", name: "LAPICERO ROJO FABER CASTELL"},
-            {sku: "2045", name: "CUADERNO A4 ESPIRAL LORO"},
-            {sku: "2046", name: "CUADERNO A4 ESPIRAL STANFORD"},
-            {sku: "5001", name: "PAPEL BOND REPORTE 80GR A4"},
-            {sku: "8088", name: "FOLDER MANILA PAQUETE X100"},
-            {sku: "9012", name: "GRAPAS 26/6 CAJA X5000"}
-        ];
-
-        let state = { d: [], r: [], clientD: '', vendorD: '', lastSku: {} };
+        let app = { d: [], r: [], cliD: '', venD: '' };
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_STORE'));
+            const saved = JSON.parse(localStorage.getItem('TITAN_DATA_PRO'));
             if(saved) {
-                state = saved;
-                document.getElementById('cli-d').value = state.clientD || '';
-                document.getElementById('ven-d').value = state.vendorD || '';
+                app = saved;
+                document.getElementById('cli-d').value = app.cliD || '';
+                document.getElementById('ven-d').value = app.venD || '';
                 render('d'); render('r');
             }
         };
 
-        function saveState() {
-            state.clientD = document.getElementById('cli-d').value;
-            state.vendorD = document.getElementById('ven-d').value;
-            localStorage.setItem('TITAN_ELITE_STORE', JSON.stringify(state));
+        function saveSt() {
+            app.cliD = document.getElementById('cli-d').value;
+            app.venD = document.getElementById('ven-d').value;
+            localStorage.setItem('TITAN_DATA_PRO', JSON.stringify(app));
         }
 
-        // Motor de Búsqueda Inteligente
-        function smartSearch(val, type) {
-            const box = document.getElementById(`res-${type}`);
-            if(!val) { box.style.display = 'none'; return; }
-            
-            const results = CATALOGO.filter(p => 
-                p.sku.toLowerCase().includes(val.toLowerCase()) || 
-                p.name.toLowerCase().includes(val.toLowerCase())
-            );
-
-            if(results.length > 0) {
-                box.style.display = 'block';
-                box.innerHTML = results.map(p => `
-                    <div class="result-item" onclick="selectItem('${p.sku}', '${p.name}', '${type}')">
-                        <b>${p.sku}</b> - ${p.name}
-                    </div>
-                `).join('');
-            } else {
-                box.style.display = 'none';
-            }
-        }
-
-        function selectItem(sku, name, type) {
-            document.getElementById(`find-${type}`).value = `${sku} | ${name}`;
-            state.lastSku[type] = { sku, name };
-            document.getElementById(`res-${type}`).style.display = 'none';
-        }
-
-        function addItem(t) {
-            const prod = state.lastSku[t];
-            if(!prod) return Swal.fire('Aviso', 'Seleccione un producto del buscador', 'warning');
+        function add(t) {
+            const prodVal = document.getElementById(`prod-${t}`).value;
+            if(!prodVal) return Swal.fire('Error', 'Debe seleccionar o escribir un producto', 'error');
 
             if(t === 'd') {
                 const qty = document.getElementById('qty-d').value;
                 if(!qty) return;
-                state.d.push({ sku: prod.sku, name: prod.name, qty, time: new Date().toLocaleString() });
-                document.getElementById('find-d').value = ''; 
+                app.d.push({ sku: prodVal, qty, time: new Date().toLocaleString() });
+                document.getElementById('prod-d').value = ''; 
                 document.getElementById('qty-d').value = '';
             } else {
-                const qg = document.getElementById('qg-r').value;
                 const qr = document.getElementById('qr-r').value;
-                if(!qg || !qr) return;
-                state.r.push({
-                    sku: prod.sku, name: prod.name, qg, qr,
-                    st: document.getElementById('st-r').value,
-                    obs: document.getElementById('obs-r').value,
+                if(!qr) return;
+                app.r.push({
+                    sku: prodVal, qg: document.getElementById('qg-r').value, qr: qr,
+                    st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value,
                     time: new Date().toLocaleString()
                 });
-                ['find-r','qg-r','qr-r','obs-r'].forEach(id => document.getElementById(id).value = '');
+                ['prod-r','qg-r','qr-r','obs-r'].forEach(id => document.getElementById(id).value = '');
             }
-            state.lastSku[t] = null;
-            render(t); saveState();
+            render(t); saveSt();
         }
 
         function render(t) {
             const cont = document.getElementById(`list-${t}`);
             const btn = document.getElementById(`sync-${t}`);
-            btn.classList.toggle('d-none', state[t].length === 0);
-            cont.innerHTML = state[t].map((i, idx) => `
-                <div class="item-list-row">
-                    <div><b>${i.sku}</b><br><small>${i.name}</small></div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="fw-bold fs-5">${i.qty || i.qr}</span>
-                        <i class="fas fa-trash-alt text-danger" onclick="rem('${t}', ${idx})"></i>
-                    </div>
+            btn.classList.toggle('d-none', app[t].length === 0);
+            cont.innerHTML = app[t].map((i, idx) => `
+                <div class="row-item">
+                    <div style="max-width:70%"><b>${i.sku}</b><br><small class="text-muted">${t==='d' ? 'Cantidad' : 'Real'}: ${i.qty || i.qr}</small></div>
+                    <i class="fas fa-times-circle text-danger fs-5" onclick="rem('${t}', ${idx})"></i>
                 </div>
             `).join('');
         }
 
-        function rem(t, idx) { state[t].splice(idx, 1); render(t); saveState(); }
+        function rem(t, idx) { app[t].splice(idx, 1); render(t); saveSt(); }
 
         function sync(t) {
-            Swal.fire({title: 'Sincronizando...', didOpen: () => Swal.showLoading(), background: '#12141C', color: '#fff'});
+            Swal.fire({title: 'Guardando...', didOpen: () => Swal.showLoading(), background: '#11141D', color: '#fff'});
             setTimeout(() => {
-                const history = JSON.parse(localStorage.getItem('TITAN_AUDIT_HIST') || '[]');
+                const history = JSON.parse(localStorage.getItem('TITAN_FINAL_HIST') || '[]');
                 const client = document.getElementById(`cli-${t}`).value;
-                const vendor = t==='d' ? document.getElementById('ven-d').value : 'ALMACÉN-QC';
+                const vendor = t==='d' ? document.getElementById('ven-d').value : 'AUDITORÍA QC';
                 
-                state[t].forEach(i => history.unshift({...i, client, vendor, type: t==='d'?'ENTREGA':'RETORNO'}));
-                localStorage.setItem('TITAN_AUDIT_HIST', JSON.stringify(history));
+                app[t].forEach(i => history.unshift({...i, client, vendor, type: t==='d'?'ENTREGA':'RETORNO'}));
+                localStorage.setItem('TITAN_FINAL_HIST', JSON.stringify(history));
                 
-                state[t] = [];
+                app[t] = [];
                 if(t==='d') document.getElementById('cli-d').value = '';
-                saveState();
-                Swal.fire('Éxito', 'Registro completado en servidor local', 'success').then(() => location.reload());
-            }, 1000);
+                saveSt();
+                Swal.fire('Completado', 'Registro guardado con éxito', 'success').then(() => location.reload());
+            }, 800);
         }
 
-        function nav(v, el) {
+        function tab(v, el) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('view-active'));
             document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('view-active');
             el.classList.add('active');
-            if(v === 'his') loadHis();
+            if(v === 'his') loadH();
         }
 
-        function loadHis() {
-            const h = JSON.parse(localStorage.getItem('TITAN_AUDIT_HIST') || '[]');
+        function loadH() {
+            const h = JSON.parse(localStorage.getItem('TITAN_FINAL_HIST') || '[]');
             window.fullH = h;
-            displayHis(h);
+            displayH(h);
         }
 
-        function displayHis(data) {
+        function displayH(data) {
             const feed = document.getElementById('his-feed');
             feed.innerHTML = data.map((r, idx) => `
-                <div class="item-list-row" onclick="pdfOp(${idx})">
+                <div class="row-item" onclick="pdf('${idx}')">
                     <div>
                         <span class="badge ${r.type==='ENTREGA'?'bg-info':'bg-danger'}" style="font-size:8px">${r.type}</span>
                         <div class="fw-bold">${r.client}</div>
-                        <small class="opacity-50">${r.sku} | ${r.name}</small>
+                        <small class="opacity-50">${r.sku.substring(0,25)}...</small>
                     </div>
                     <div class="text-end"><b>x${r.qty || r.qr}</b><br><small style="font-size:9px">${r.time.split(',')[0]}</small></div>
                 </div>
             `).join('');
         }
 
-        function filterHis() {
-            const q = document.getElementById('main-search').value.toLowerCase();
-            const filt = window.fullH.filter(r => r.client.toLowerCase().includes(q) || r.sku.toLowerCase().includes(q) || r.name.toLowerCase().includes(q));
-            displayHis(filt);
+        function filterH() {
+            const q = document.getElementById('search-his').value.toLowerCase();
+            const filtered = window.fullH.filter(r => r.client.toLowerCase().includes(q) || r.sku.toLowerCase().includes(q));
+            displayH(filtered);
         }
 
-        function pdfOp(idx) {
+        function pdf(idx) {
             const r = window.fullH[idx];
             Swal.fire({
-                title: 'Reporte de Auditoría',
-                text: `Generar PDF para ${r.client}`,
-                showCancelButton: true, confirmButtonText: 'PDF + WhatsApp',
-                background: '#12141C', color: '#fff'
+                title: 'Exportar Reporte',
+                text: `¿Generar PDF para ${r.client}?`,
+                showCancelButton: true, confirmButtonText: 'Generar PDF',
+                background: '#11141D', color: '#fff'
             }).then(res => { if(res.isConfirmed) genPDF(r); });
         }
 
@@ -349,29 +289,28 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Encabezado Profesional
-            doc.setFillColor(18, 20, 28); doc.rect(0, 0, 210, 40, 'F');
+            doc.setFillColor(5, 7, 10); doc.rect(0, 0, 210, 35, 'F');
             doc.setTextColor(255); doc.setFontSize(22); doc.text("TITAN ELITE LOGISTICS", 105, 18, {align:'center'});
-            doc.setFontSize(10); doc.text(`REPORTE DE AUDITORÍA: ${r.type}`, 105, 30, {align:'center'});
+            doc.setFontSize(10); doc.text(`REPORTE OFICIAL - ${r.type}`, 105, 28, {align:'center'});
 
-            const content = r.type === 'ENTREGA' ? 
-                [['CLIENTE', r.client], ['VENDEDOR', r.vendor], ['SKU', r.sku], ['PRODUCTO', r.name], ['CANTIDAD', r.qty], ['FECHA', r.time]] :
-                [['CLIENTE', r.client], ['SKU', r.sku], ['PRODUCTO', r.name], ['CANT. GUÍA', r.qg], ['CANT. REAL', r.qr], ['ESTADO QC', r.st], ['OBSERVACIONES', r.obs], ['FECHA', r.time]];
+            const body = r.type === 'ENTREGA' ? 
+                [['CLIENTE', r.client], ['VENDEDOR', r.vendor], ['PRODUCTO/SKU', r.sku], ['CANTIDAD', r.qty], ['FECHA', r.time]] :
+                [['CLIENTE', r.client], ['PRODUCTO/SKU', r.sku], ['CANT. GUÍA', r.qg], ['CANT. REAL', r.qr], ['ESTADO QC', r.st], ['NOTAS', r.obs], ['FECHA', r.time]];
 
             doc.autoTable({
-                startY: 50,
+                startY: 45,
                 head: [['CAMPO', 'VALOR']],
-                body: content,
+                body: body,
                 theme: 'striped',
-                headStyles: { fillColor: [0, 240, 255], textColor: [0,0,0] }
+                headStyles: { fillColor: [0, 209, 255] }
             });
 
             const pY = doc.internal.pageSize.height;
-            doc.setTextColor(120); doc.setFontSize(9);
+            doc.setTextColor(150); doc.setFontSize(9);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, pY - 15, {align:'center'});
             
-            doc.save(`TITAN_${r.client}.pdf`);
-            window.open(`https://wa.me/?text=${encodeURIComponent(`*TITAN ELITE*\nReporte: ${r.type}\nCliente: ${r.client}\nItem: ${r.name}\n_Revisión autorizada por J. Angelo._`)}`);
+            doc.save(`REPORTE_${r.client}.pdf`);
+            window.open(`https://wa.me/?text=${encodeURIComponent(`*TITAN ELITE*\nReporte de ${r.type}\nCliente: ${r.client}\nProducto: ${r.sku}\n_Revisión autorizada por J. Angelo._`)}`);
         }
     </script>
 </body>
