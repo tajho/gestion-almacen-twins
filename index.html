@@ -3,264 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN NEURAL AI | Logistics</title>
+    <title>TITAN LIGHT | Gestión Inteligente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #050505;
-            --card: #111111;
+            --bg: #F8F9FC;
+            --card: #FFFFFF;
             --accent: #007AFF;
-            --danger: #FF3B30;
+            --text-main: #1C1C1E;
+            --text-sec: #636366;
+            --border: #E5E5EA;
             --success: #34C759;
-            --border: rgba(255,255,255,0.08);
+            --danger: #FF3B30;
         }
 
         body { 
             background: var(--bg); 
-            color: #fff; 
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden; padding-bottom: 100px;
+            color: var(--text-main); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding-bottom: 100px;
         }
 
-        /* Glassmorphism UI */
-        .neural-card {
+        /* Header Didáctico */
+        .top-nav {
             background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 28px; padding: 25px;
-            margin: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand { font-weight: 800; font-size: 20px; color: var(--accent); letter-spacing: -0.5px; }
+
+        /* Tarjetas con Sombras Suaves */
+        .step-card {
+            background: var(--card);
+            border-radius: 24px; padding: 20px;
+            margin: 15px; border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        /* IA Inputs */
-        .ia-group { margin-bottom: 20px; position: relative; }
-        .ia-label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
-        .ia-input {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 16px; padding: 15px; color: #fff; width: 100%;
-            transition: 0.3s; font-size: 15px;
+        /* Inputs Amigables */
+        .step-label { font-size: 12px; font-weight: 800; color: var(--text-sec); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .smart-input {
+            background: #F2F2F7;
+            border: 2px solid transparent;
+            border-radius: 14px; padding: 14px; width: 100%;
+            font-size: 16px; transition: 0.2s; color: var(--text-main);
         }
-        .ia-input:focus { border-color: var(--accent); background: rgba(0,122,255,0.05); outline: none; box-shadow: 0 0 15px rgba(0,122,255,0.1); }
+        .smart-input:focus { border-color: var(--accent); background: #fff; outline: none; }
 
-        /* Buscador Inteligente */
-        .search-results {
-            position: absolute; width: 100%; background: #1a1a1a;
-            border-radius: 18px; z-index: 1000; margin-top: 5px;
-            border: 1px solid var(--border); display: none; overflow: hidden;
+        /* Buscador Visual */
+        .search-box { position: relative; }
+        .sug-list {
+            position: absolute; width: 100%; background: #fff;
+            border-radius: 14px; z-index: 1000; margin-top: 5px;
+            border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none;
         }
-        .search-item { padding: 12px 18px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .search-item:hover { background: var(--accent); }
+        .sug-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .sug-item:last-child { border-bottom: none; }
 
-        /* Botones Titan */
-        .btn-neural {
-            border-radius: 18px; padding: 16px; font-weight: 700; border: none; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Botones Grandes (Fáciles de tocar) */
+        .btn-action {
+            background: var(--accent); color: white;
+            border: none; border-radius: 16px; padding: 18px;
+            font-weight: 700; width: 100%; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+            transition: 0.2s;
         }
-        .btn-accent { background: var(--accent); color: white; }
-        .btn-success { background: var(--success); color: #000; }
-        .btn-neural:active { transform: scale(0.95); }
+        .btn-action:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-finish { background: var(--success); }
 
-        /* Lista de items Dinámica */
-        .pill-item {
-            background: rgba(255,255,255,0.02);
-            border-radius: 20px; padding: 15px; margin-bottom: 10px;
-            border: 1px solid var(--border); animation: slideIn 0.4s ease forwards;
+        /* Items de la lista */
+        .qc-pill {
+            background: #fff; border-radius: 18px; padding: 15px;
+            margin-bottom: 10px; border: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Tab Bar Navegación */
-        .nav-tab {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; background: rgba(20,20,20,0.8); backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 10px; display: flex; justify-content: space-around;
-            border: 1px solid var(--border); z-index: 2000;
-        }
-        .tab-btn { background: none; border: none; color: #555; font-size: 12px; font-weight: 700; display: flex; flex-direction: column; align-items: center; }
-        .tab-btn.active { color: var(--accent); }
-        .tab-btn i { font-size: 20px; margin-bottom: 4px; }
+        /* Alertas de Inteligencia */
+        .diff-tag { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-top: 5px; display: inline-block; }
+        .tag-red { background: #FFD6D6; color: var(--danger); }
+        .tag-green { background: #D6F5DE; color: var(--success); }
+
+        .view { display: none; }
+        .active { display: block; }
     </style>
 </head>
 <body>
 
-<header class="p-4 text-center">
-    <h2 class="fw-bold m-0" style="letter-spacing: -1px;">TITAN <span style="color:var(--accent)">NEURAL AI</span></h2>
-    <div id="sync-status" class="small opacity-50"><i class="fas fa-circle-notch fa-spin me-1"></i> Sincronizando Cerebro...</div>
-</header>
+<nav class="top-nav">
+    <div class="brand"><i class="fas fa-cube me-2"></i>TITAN LIGHT</div>
+    <div id="status" class="badge rounded-pill bg-light text-dark border">Cargando Datos...</div>
+</nav>
 
 <main>
-    <div class="neural-card">
+    <div class="step-card">
+        <h6 class="step-label">Paso 1: Información de Ruta</h6>
         <div class="row g-2">
-            <div class="col-6">
-                <div class="ia-group">
-                    <label class="ia-label">Cliente</label>
-                    <input type="text" id="cli" class="ia-input" placeholder="Nombre..." oninput="iaMemory(this.value)">
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="ia-group">
-                    <label class="ia-label">Vendedor</label>
-                    <input type="text" id="ven" class="ia-input" placeholder="Auto-completado">
-                </div>
-            </div>
+            <div class="col-6"><input type="text" id="cli" class="smart-input" placeholder="Nombre Cliente" oninput="iaRecall(this.value)"></div>
+            <div class="col-6"><input type="text" id="ven" class="smart-input" placeholder="Vendedor"></div>
+        </div>
+    </div>
+
+    <div class="step-card">
+        <h6 class="step-label">Paso 2: Buscar Producto</h6>
+        <div class="search-box">
+            <input type="text" id="search" class="smart-input" placeholder="🔍 Escribe nombre o SKU..." oninput="findItems(this.value)">
+            <div id="results" class="sug-list"></div>
         </div>
 
-        <div class="ia-group">
-            <label class="ia-label">Escaneo / Búsqueda de Artículo</label>
-            <input type="text" id="search" class="ia-input" placeholder="Escribe SKU o Nombre..." oninput="neuralSearch(this.value)">
-            <div id="results" class="search-results"></div>
-        </div>
-
-        <div id="panel-inspeccion" class="d-none animate__animated animate__fadeIn">
-            <div class="p-3 mb-3" style="background:rgba(0,122,255,0.1); border-radius:18px; border: 1px solid var(--accent);">
-                <span class="small opacity-50">PRODUCTO SELECCIONADO:</span>
-                <div id="prod-name" class="fw-bold"></div>
-            </div>
-
-            <div class="row g-2 mb-3">
-                <div class="col-6"><div class="ia-group"><label class="ia-label">Cant. Guía</label><input type="number" id="cg" class="ia-input" oninput="checkDiff()"></div></div>
-                <div class="col-6"><div class="ia-group"><label class="ia-label">Cant. Real</label><input type="number" id="cr" class="ia-input" oninput="checkDiff()"></div></div>
+        <div id="inspect-ui" class="mt-4 d-none animate__animated animate__fadeIn">
+            <div class="p-3 mb-3 bg-light rounded-3 border">
+                <b id="sel-name"></b><br><small class="text-primary" id="sel-sku"></small>
             </div>
             
-            <div id="diff-alert" class="text-center mb-3 fw-bold"></div>
-
-            <div class="ia-group">
-                <label class="ia-label">Estado de Revisión</label>
-                <select id="st" class="ia-input">
-                    <option>FALLADO A MERMA</option>
-                    <option>SE ARREGLO EL PRODUCTO</option>
-                    <option>PRODUCTO FALLA DE IMPORTACION</option>
-                </select>
+            <div class="row g-2 mb-3">
+                <div class="col-6"><label class="step-label">En Guía</label><input type="number" id="cg" class="smart-input" oninput="liveCalc()"></div>
+                <div class="col-6"><label class="step-label">Llegó Físico</label><input type="number" id="cr" class="smart-input" oninput="liveCalc()"></div>
             </div>
-            <button class="btn-neural btn-accent" onclick="addToQueue()">AÑADIR A LISTA <i class="fas fa-plus-circle"></i></button>
-        </div>
 
-        <div id="queue-area" class="d-none mt-4 border-top border-secondary pt-4">
-            <h6 class="ia-label mb-3">Items en Revisión</h6>
-            <div id="queue-list"></div>
-            <button class="btn-neural btn-success mt-4 shadow-lg" onclick="finalProcess()">PROCESAR Y FIRMAR REPORTE <i class="fas fa-file-signature"></i></button>
+            <div id="diff-msg"></div>
+
+            <label class="step-label mt-3">Estado del Producto</label>
+            <select id="st" class="smart-input mb-3">
+                <option>FALLADO A MERMA</option>
+                <option>SE ARREGLO EL PRODUCTO</option>
+                <option>PRODUCTO FALLA DE IMPORTACION</option>
+            </select>
+
+            <button class="btn-action" onclick="pushQueue()">Añadir a la lista <i class="fas fa-plus"></i></button>
         </div>
+    </div>
+
+    <div id="summary-area" class="step-card d-none">
+        <h6 class="step-label">Resumen de Inspección</h6>
+        <div id="items-list"></div>
+        <button class="btn-action btn-finish mt-4" onclick="finishAll()">Finalizar y Enviar PDF <i class="fas fa-check-double"></i></button>
     </div>
 </main>
 
-<nav class="nav-tab">
-    <button class="tab-btn active"><i class="fas fa-clipboard-list"></i><span>Revision</span></button>
-    <button class="tab-btn" onclick="location.reload()"><i class="fas fa-sync"></i><span>Sync</span></button>
-</nav>
-
 <script>
     const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-    let DB = []; let QUEUE = []; let MEMORY = {}; let ACTIVE_PROD = null;
+    let DB = []; let QUEUE = []; let MEMORY = {}; let ACTIVE = null;
 
     async function init() {
-        const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-        const d = await r.json();
-        DB = d.p;
-        // La IA aprende: busca en el historial quién vendió a quién
-        d.h.forEach(row => { if(row[5]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
-        document.getElementById('sync-status').innerHTML = '<i class="fas fa-check-circle text-success"></i> IA Operativa';
+        try {
+            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+            const d = await r.json();
+            DB = d.p;
+            d.h.forEach(row => { if(row[5]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
+            document.getElementById('status').innerText = "Sistema Listo";
+        } catch(e) { document.getElementById('status').innerText = "Error Offline"; }
     }
 
-    function iaMemory(val) {
-        const match = MEMORY[val.toLowerCase()];
+    function iaRecall(v) {
+        const match = MEMORY[v.toLowerCase()];
         if(match) document.getElementById('ven').value = match;
     }
 
-    function neuralSearch(v) {
+    function findItems(v) {
         const res = document.getElementById('results');
         if(v.length < 1) { res.style.display='none'; return; }
         const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-        res.innerHTML = matches.map(p => `<div class="search-item" onclick="selectProd('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small class="opacity-50">${p[0]}</small></div>`).join('');
+        res.innerHTML = matches.map(p => `<div class="sug-item" onclick="pick('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
         res.style.display = matches.length ? 'block' : 'none';
     }
 
-    function selectProd(sku, name) {
-        ACTIVE_PROD = {sku, name};
-        document.getElementById('prod-name').innerText = name;
-        document.getElementById('panel-inspeccion').classList.remove('d-none');
-        document.getElementById('results').style.display = 'none';
+    function pick(sku, name) {
+        ACTIVE = {sku, name};
+        document.getElementById('sel-name').innerText = name;
+        document.getElementById('sel-sku').innerText = "SKU: " + sku;
+        document.getElementById('inspect-ui').classList.remove('d-none');
+        document.getElementById('results').style.display='none';
         document.getElementById('search').value = "";
     }
 
-    function checkDiff() {
+    function liveCalc() {
         const g = parseInt(document.getElementById('cg').value) || 0;
         const r = parseInt(document.getElementById('cr').value) || 0;
-        const alert = document.getElementById('diff-alert');
-        if(r < g) alert.innerHTML = `<span class="text-danger">⚠️ FALTANTE DETECTADO: -${g-r} UNIDADES</span>`;
-        else if(r > g) alert.innerHTML = `<span class="text-info">SOBRANTE DETECTADO: +${r-g} UNIDADES</span>`;
-        else alert.innerHTML = `<span class="text-success">CONTEO PERFECTO</span>`;
+        const msg = document.getElementById('diff-msg');
+        if(r < g) msg.innerHTML = `<span class="diff-tag tag-red">⚠️ Faltan ${g-r} unidades</span>`;
+        else if(r > g) msg.innerHTML = `<span class="diff-tag tag-green">✅ Sobran ${r-g} unidades</span>`;
+        else msg.innerHTML = `<span class="diff-tag tag-green">✅ Cantidad Correcta</span>`;
     }
 
-    function addToQueue() {
+    function pushQueue() {
         const cg = document.getElementById('cg').value;
         const cr = document.getElementById('cr').value;
         if(!cg || !cr) return;
-        QUEUE.push({...ACTIVE_PROD, cg, cr, st: document.getElementById('st').value});
-        renderQueue();
-        document.getElementById('panel-inspeccion').classList.add('d-none');
+        QUEUE.push({...ACTIVE, cg, cr, st: document.getElementById('st').value});
+        renderList();
+        document.getElementById('inspect-ui').classList.add('d-none');
     }
 
-    function renderQueue() {
-        document.getElementById('queue-area').classList.remove('d-none');
-        document.getElementById('queue-list').innerHTML = QUEUE.map(i => `
-            <div class="pill-item">
-                <div class="d-flex justify-content-between"><b>${i.name}</b> <span class="badge bg-primary">REAL: ${i.cr}</span></div>
-                <div class="small opacity-50 mt-1">${i.st}</div>
+    function renderList() {
+        document.getElementById('summary-area').classList.remove('d-none');
+        document.getElementById('items-list').innerHTML = QUEUE.map(i => `
+            <div class="qc-pill">
+                <div><b>${i.name}</b><br><small class="text-muted">${i.st}</small></div>
+                <span class="badge bg-light text-dark border">x${i.cr}</span>
             </div>
         `).join('');
     }
 
-    async function finalProcess() {
+    async function finishAll() {
         const cli = document.getElementById('cli').value;
         const ven = document.getElementById('ven').value;
-        if(!cli || !ven) return Swal.fire("Error IA", "Cliente y Vendedor son obligatorios", "warning");
+        if(!cli || !ven) return Swal.fire("Atención", "Escribe el Cliente y Vendedor", "warning");
 
-        const payload = QUEUE.map(i => [new Date(), "QC-SYSTEM", i.sku, i.name, i.cr, cli, `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`]);
-        Swal.fire({title:'Firmando con IA...', didOpen:()=>Swal.showLoading()});
+        const payload = QUEUE.map(i => [new Date(), "QC-LIGHT", i.sku, i.name, i.cr, cli, `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`]);
+        Swal.fire({title:'Guardando Reporte...', didOpen:()=>Swal.showLoading()});
         
         await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
         
         generatePDF(cli, ven);
         sendWhatsApp(cli, ven);
         
-        Swal.fire("Finalizado", "Reporte autorizado y sincronizado", "success").then(()=>location.reload());
+        Swal.fire("¡Listo!", "Reporte enviado correctamente", "success").then(()=>location.reload());
     }
 
     function generatePDF(cli, ven) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Estilo de Reporte Premium
-        doc.setFillColor(30, 30, 30); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN QC", 14, 25);
-        doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
+        // Cabecera Corporativa
+        doc.setFillColor(248, 249, 252); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(0, 122, 255); doc.setFontSize(22); doc.text("REPORTE DE INSPECCIÓN QC", 14, 25);
+        doc.setTextColor(100); doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 35);
         
         doc.autoTable({
-            head: [['SKU', 'ARTÍCULO', 'CANT. GUÍA', 'CANT. REAL', 'ESTADO REVISIÓN']],
+            head: [['SKU', 'ARTÍCULO', 'GUÍA', 'REAL', 'ESTADO']],
             body: QUEUE.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
-            startY: 50, theme: 'grid', headStyles: {fillColor: [0, 122, 255]}
+            startY: 45, theme: 'grid', headStyles: {fillColor: [0, 122, 255]}
         });
 
         // PIE DE PÁGINA AUTORIZADO
-        const finalY = doc.lastAutoTable.finalY + 30;
-        doc.setTextColor(0,0,0);
-        doc.setLineWidth(0.5); doc.line(14, finalY, 100, finalY);
-        doc.setFontSize(10); doc.setFont(undefined, 'bold');
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-        doc.setFont(undefined, 'normal'); doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+        const fY = doc.lastAutoTable.finalY + 30;
+        doc.setDrawColor(200); doc.line(14, fY, 100, fY);
+        doc.setTextColor(0); doc.setFontSize(10); 
+        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, fY + 7);
+        doc.text("Asist. Inventario Logístico", 14, fY + 12);
         
-        doc.save(`QC_${cli}.pdf`);
+        doc.save(`REPORTE_${cli}.pdf`);
     }
 
     function sendWhatsApp(cli, ven) {
-        let msg = `*REPORTE QC - TITAN NEURAL AI*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
-        QUEUE.forEach(i => { msg += `• ${i.name} (${i.cr}/${i.cg})%0A  _Diagnóstico: ${i.st}_%0A`; });
-        msg += `%0A*Autorizado por:* J. Angelo Nuñez Durand%0A_El reporte PDF ha sido generado oficialmente._`;
+        let msg = `*REPORTE DE RETORNO QC*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
+        QUEUE.forEach(i => { msg += `• ${i.name}%0A  Cant: ${i.cr}/${i.cg} | ${i.st}%0A`; });
+        msg += `%0A*Autorizado por:* J. Angelo Nuñez Durand`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
