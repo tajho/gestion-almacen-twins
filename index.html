@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS TITAN | Official QC</title>
+    <title>TWINS TITAN | Official System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,196 +11,234 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
-        :root { --bg: #0a0b0d; --card: #16181c; --accent: #007AFF; --danger: #FF3B30; --success: #32D74B; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; padding-bottom: 100px; }
+        :root { --bg: #08090a; --panel: #121418; --accent: #007AFF; --danger: #FF3B30; --success: #32D74B; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; padding-bottom: 120px; }
         
-        .smart-input { background: #1c1f26; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; color: white; width: 100%; outline: none; transition: 0.3s; }
-        .smart-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,122,255,0.2); }
+        /* Buscador Mejorado */
+        .search-container { position: relative; margin-bottom: 15px; }
+        .search-iq { background: #1c1f26; border: 2px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 16px 16px 16px 50px; color: white; width: 100%; outline: none; transition: 0.3s; }
+        .search-iq:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,122,255,0.2); }
+        .search-icon { position: absolute; left: 18px; top: 18px; color: var(--accent); font-size: 20px; }
         
-        .panel-qc { background: var(--card); border-radius: 30px; padding: 25px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .item-list { background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--danger); }
+        .predict-box { position: absolute; width: 100%; background: #1c1f26; border-radius: 15px; z-index: 2000; border: 1px solid #333; display: none; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .predict-item { padding: 12px 18px; border-bottom: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .predict-item:hover { background: var(--accent); }
+
+        .glass-card { background: var(--panel); border-radius: 28px; padding: 22px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .input-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; color: white; width: 100%; margin-bottom: 12px; outline: none; }
         
-        .nav-dock { position: fixed; bottom: 20px; left: 15px; right: 15px; background: rgba(22,24,28,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; padding: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-dock { position: fixed; bottom: 20px; left: 15px; right: 15px; background: rgba(18,20,24,0.95); backdrop-filter: blur(20px); border-radius: 25px; display: flex; justify-content: space-around; padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 3000; }
         .nav-btn { background: none; border: none; color: #636366; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; }
         .nav-btn.active { color: var(--accent); }
+        
+        .item-pill { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 12px; margin-bottom: 8px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .view { display: none; animation: fadeIn 0.3s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header class="p-4 text-center">
-    <h2 class="fw-black mb-0">TITAN <span class="text-accent">LOGISTICS</span></h2>
-    <small class="opacity-50 fw-bold">SISTEMA AUTORIZADO - QC V10</small>
+<header class="p-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h2 class="fw-black mb-0">TWINS <span class="text-accent">TITAN</span></h2>
+        <small id="status" class="text-warning">Cargando base de datos...</small>
+    </div>
+    <i class="fas fa-warehouse fs-3 opacity-20"></i>
 </header>
 
 <main>
-    <section id="v-qc" class="view active">
-        <div class="panel-qc">
-            <div class="row g-2 mb-3">
-                <div class="col-6">
-                    <label class="small fw-bold opacity-50 ms-2">CLIENTE</label>
-                    <input type="text" id="cli" class="smart-input" placeholder="Nombre..." oninput="suggestVendedor(this.value)">
-                </div>
-                <div class="col-6">
-                    <label class="small fw-bold opacity-50 ms-2">VENDEDOR</label>
-                    <input type="text" id="ven" class="smart-input" placeholder="Nombre...">
+    <section id="v-sal" class="view active">
+        <div class="glass-card">
+            <h6 class="fw-bold mb-3 text-accent"><i class="fas fa-truck-loading me-2"></i>DESPACHO DE PRODUCTOS</h6>
+            <input type="text" id="cli-sal" class="input-box" placeholder="Nombre del Cliente..." oninput="suggestVendedor(this.value, 'ven-sal')">
+            <input type="text" id="ven-sal" class="input-box" placeholder="Vendedor Responsable...">
+            
+            <div class="search-container">
+                <i class="fas fa-barcode search-icon"></i>
+                <input type="text" id="in-sal" class="search-iq" placeholder="Buscar Producto..." oninput="searchIQ(this.value, 'sug-sal', 'sal')">
+                <div id="sug-sal" class="predict-box"></div>
+            </div>
+
+            <div id="ui-sal" class="d-none p-3 mb-3 border border-primary rounded-4">
+                <b id="name-sal"></b><br><small id="sku-sal" class="text-accent"></small>
+                <div class="row g-2 mt-2">
+                    <div class="col-4"><input type="number" id="cant-sal" class="input-box mb-0" placeholder="Cant."></div>
+                    <div class="col-8"><button class="btn btn-primary w-100 h-100 rounded-3 fw-bold" onclick="addItem('sal')">AÑADIR</button></div>
                 </div>
             </div>
 
-            <div class="mb-3 position-relative">
-                <input type="text" id="search" class="smart-input" placeholder="🔍 Buscar SKU o Producto..." oninput="findProd(this.value)">
-                <div id="results" class="list-group position-absolute w-100 shadow-lg" style="z-index: 1000; display:none;"></div>
-            </div>
-
-            <div id="form-add" class="d-none animate__animated animate__fadeIn">
-                <div class="p-3 mb-3" style="background:rgba(0,122,255,0.1); border-radius:15px;">
-                    <b id="sel-name"></b><br><small id="sel-sku" class="text-accent"></small>
-                </div>
-                <div class="row g-2 mb-3">
-                    <div class="col-6"><label class="small fw-bold ms-2">CANT. GUÍA</label><input type="number" id="c-g" class="smart-input"></div>
-                    <div class="col-6"><label class="small fw-bold ms-2">CANT. REAL</label><input type="number" id="c-r" class="smart-input"></div>
-                </div>
-                <select id="state" class="smart-input mb-3">
-                    <option>FALLADO A MERMA</option>
-                    <option>SE ARREGLO EL PRODUCTO</option>
-                    <option>PRODUCTO FALLA DE IMPORTACION</option>
-                </select>
-                <button class="btn w-100 py-3 fw-bold btn-primary rounded-pill" onclick="addToList()">AÑADIR A LISTA</button>
-            </div>
-
-            <div id="list-area" class="mt-4 d-none">
-                <div id="list-items"></div>
-                <button class="btn btn-success w-100 py-3 fw-bold rounded-pill mt-3 shadow-lg" onclick="finalProcess()">FINALIZAR REPORTE OFICIAL</button>
+            <div id="area-sal" class="d-none mt-4">
+                <div id="list-sal"></div>
+                <button class="btn btn-success w-100 py-3 mt-3 rounded-pill fw-bold" onclick="process('Pedidos', 'sal')">CONFIRMAR SALIDA</button>
             </div>
         </div>
     </section>
 
-    <section id="v-log" class="view d-none">
-        <div id="log-content" class="px-3"></div>
+    <section id="v-dev" class="view">
+        <div class="glass-card">
+            <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-microscope me-2"></i>RETORNO & CONTROL CALIDAD</h6>
+            <input type="text" id="cli-dev" class="input-box" placeholder="Nombre del Cliente..." oninput="suggestVendedor(this.value, 'ven-dev')">
+            <input type="text" id="ven-dev" class="input-box" placeholder="Vendedor...">
+
+            <div class="search-container">
+                <i class="fas fa-undo search-icon text-danger"></i>
+                <input type="text" id="in-dev" class="search-iq" placeholder="Buscar Producto..." oninput="searchIQ(this.value, 'sug-dev', 'dev')">
+                <div id="sug-dev" class="predict-box"></div>
+            </div>
+
+            <div id="ui-dev" class="d-none p-3 mb-3 border border-danger rounded-4">
+                <b id="name-dev"></b><br>
+                <div class="row g-2 mt-2">
+                    <div class="col-6"><label class="small opacity-50">CANT. GUÍA</label><input type="number" id="cg-dev" class="input-box mb-0"></div>
+                    <div class="col-6"><label class="small opacity-50">CANT. REAL</label><input type="number" id="cr-dev" class="input-box mb-0"></div>
+                </div>
+                <select id="st-dev" class="input-box mt-2">
+                    <option>FALLADO A MERMA</option>
+                    <option>SE ARREGLO EL PRODUCTO</option>
+                    <option>PRODUCTO FALLA DE IMPORTACION</option>
+                </select>
+                <button class="btn btn-danger w-100 mt-2 py-2 fw-bold" onclick="addItem('dev')">AÑADIR A INSPECCIÓN</button>
+            </div>
+
+            <div id="area-dev" class="d-none mt-4">
+                <div id="list-dev"></div>
+                <button class="btn btn-success w-100 py-3 mt-3 rounded-pill fw-bold" onclick="process('Devoluciones', 'dev')">FINALIZAR QC & PDF</button>
+            </div>
+        </div>
     </section>
 </main>
 
 <nav class="nav-dock">
-    <button class="nav-btn active" onclick="nav('qc')"><i class="fas fa-clipboard-check fs-4"></i><span>NUEVO QC</span></button>
-    <button class="nav-btn" onclick="nav('log')"><i class="fas fa-database fs-4"></i><span>HISTORIAL</span></button>
+    <button id="n-sal" class="nav-btn active" onclick="nav('sal')"><i class="fas fa-box fs-4"></i><span>DESPACHO</span></button>
+    <button id="n-dev" class="nav-btn" onclick="nav('dev')"><i class="fas fa-sync-alt fs-4"></i><span>RETORNO</span></button>
 </nav>
 
 <script>
-    const API = "TU_URL_DE_APPSCRIPT"; // Asegúrate de poner tu URL real aquí
-    let DB = []; let QUEUE = []; let RELATIONS = {}; let ACTIVE = null;
+    const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
+    let DB = []; let QUEUE_SAL = []; let QUEUE_DEV = []; let MEMORY = {}; let SELECTED = null;
 
     async function init() {
-        const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-        const d = await r.json(); 
-        DB = d.p; 
-        // Generar memoria de Cliente-Vendedor basada en el historial
-        d.h.forEach(row => { RELATIONS[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || ''; });
-        renderLog(d.h);
+        try {
+            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+            const d = await r.json();
+            DB = d.p;
+            // Aprender relaciones Cliente-Vendedor del historial
+            d.h.forEach(row => { if(row[5] && row[6]) MEMORY[row[5].toLowerCase()] = row[6].split('| Vend: ')[1] || row[6]; });
+            document.getElementById('status').innerText = "Sistema en línea";
+            document.getElementById('status').classList.replace('text-warning', 'text-success');
+        } catch(e) { document.getElementById('status').innerText = "Error de conexión"; }
     }
 
-    function suggestVendedor(val) {
-        const v = RELATIONS[val.toLowerCase()];
-        if(v) document.getElementById('ven').value = v;
+    function searchIQ(v, boxId, type) {
+        const box = document.getElementById(boxId);
+        if(v.length < 1) { box.style.display='none'; return; }
+        // Buscador robusto: filtra por SKU (0) o Nombre (1)
+        const m = DB.filter(p => p[1].toString().toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,8);
+        box.innerHTML = m.map(p => `<div class="predict-item" onclick="selectIQ('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="opacity-50">${p[0]}</small></div>`).join('');
+        box.style.display = m.length ? 'block' : 'none';
     }
 
-    function findProd(v) {
-        const res = document.getElementById('results');
-        if(v.length < 2) { res.style.display='none'; return; }
-        const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase())).slice(0,5);
-        res.innerHTML = matches.map(p => `<button class="list-group-item list-group-item-action bg-dark text-white border-secondary" onclick="selectProd('${p[0]}','${p[1]}')">${p[1]}</button>`).join('');
-        res.style.display='block';
+    function selectIQ(sku, name, type) {
+        SELECTED = {sku, name};
+        document.getElementById(`name-${type}`).innerText = name;
+        if(type==='sal') document.getElementById(`sku-sal`).innerText = sku;
+        document.getElementById(`ui-${type}`).classList.remove('d-none');
+        document.getElementById(`sug-${type}`).style.display='none';
     }
 
-    function selectProd(sku, name) {
-        ACTIVE = {sku, name};
-        document.getElementById('sel-name').innerText = name;
-        document.getElementById('sel-sku').innerText = sku;
-        document.getElementById('form-add').classList.remove('d-none');
-        document.getElementById('results').style.display='none';
+    function suggestVendedor(val, inputId) {
+        const match = MEMORY[val.toLowerCase()];
+        if(match) document.getElementById(inputId).value = match;
     }
 
-    function addToList() {
-        const cg = document.getElementById('c-g').value;
-        const cr = document.getElementById('c-r').value;
-        QUEUE.push({...ACTIVE, cg, cr, st: document.getElementById('state').value});
-        renderUI();
-        document.getElementById('form-add').classList.add('d-none');
-        document.getElementById('search').value = "";
+    function addItem(type) {
+        if(type === 'sal') {
+            const c = document.getElementById('cant-sal').value;
+            if(!c) return;
+            QUEUE_SAL.push({...SELECTED, c});
+            renderList('sal');
+        } else {
+            const cg = document.getElementById('cg-dev').value;
+            const cr = document.getElementById('cr-dev').value;
+            if(!cg || !cr) return;
+            QUEUE_DEV.push({...SELECTED, cg, cr, st: document.getElementById('st-dev').value});
+            renderList('dev');
+        }
+        document.getElementById(`ui-${type}`).classList.add('d-none');
+        document.getElementById(`in-${type}`).value = "";
     }
 
-    function renderUI() {
-        document.getElementById('list-area').classList.remove('d-none');
-        document.getElementById('list-items').innerHTML = QUEUE.map(i => `
-            <div class="item-list">
-                <div class="d-flex justify-content-between"><b>${i.name}</b> <span class="badge bg-danger">REAL: ${i.cr}</span></div>
-                <small class="opacity-50">${i.st}</small>
+    function renderList(type) {
+        const area = document.getElementById(`area-${type}`);
+        const cont = document.getElementById(`list-${type}`);
+        const list = type === 'sal' ? QUEUE_SAL : QUEUE_DEV;
+        area.classList.remove('d-none');
+        cont.innerHTML = list.map(i => `
+            <div class="item-pill" style="border-left-color: ${type==='sal'?'#007AFF':'#FF3B30'}">
+                <div><b>${i.name}</b><br><small class="opacity-50">${i.st || i.sku}</small></div>
+                <span class="badge bg-dark">x${i.c || i.cr}</span>
             </div>
         `).join('');
     }
 
-    async function finalProcess() {
-        const cli = document.getElementById('cli').value;
-        const ven = document.getElementById('ven').value;
-        if(!cli || !ven) return Swal.fire("Error", "Cliente y Vendedor son obligatorios", "error");
+    async function process(sheet, type) {
+        const cli = document.getElementById(`cli-${type}`).value;
+        const ven = document.getElementById(`ven-${type}`).value;
+        if(!cli || !ven) return Swal.fire("Datos incompletos", "Cliente y Vendedor son requeridos", "warning");
 
-        const payload = QUEUE.map(i => [new Date(), "QC-OFFICIAL", i.sku, i.name, i.cr, cli, `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`]);
+        const list = type === 'sal' ? QUEUE_SAL : QUEUE_DEV;
+        const payload = list.map(i => [
+            new Date(), 
+            type==='sal'?'DESPACHO':'QC-RETORNO', 
+            i.sku, i.name, 
+            i.c || i.cr, 
+            cli, 
+            type==='sal' ? `Vend: ${ven}` : `Guia: ${i.cg} | Rev: ${i.st} | Vend: ${ven}`
+        ]);
+
+        Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading()});
+        await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
         
-        Swal.fire({title:'Guardando y Firmando...', didOpen:()=>Swal.showLoading()});
-        await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
-        
-        generateOfficialPDF(cli, ven);
-        sendWhatsApp(cli, ven);
-        
-        Swal.fire("Finalizado", "Reporte firmado y enviado", "success").then(()=>location.reload());
+        if(type==='dev') {
+            generatePDF(cli, ven, list);
+            sendWhatsApp(cli, ven, list);
+        }
+
+        Swal.fire("¡Éxito!", "Registrado correctamente", "success").then(()=>location.reload());
     }
 
-    function generateOfficialPDF(cli, ven) {
+    function generatePDF(cli, ven, list) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(20); doc.text("REPORTE TÉCNICO DE INSPECCIÓN", 14, 20);
-        doc.setFontSize(10); doc.text(`CLIENTE: ${cli} | VENDEDOR: ${ven}`, 14, 30);
+        doc.setFontSize(18); doc.text("REPORTE DE REVISIÓN LOGÍSTICA", 14, 20);
+        doc.setFontSize(10); doc.text(`CLIENTE: ${cli.toUpperCase()} | VENDEDOR: ${ven.toUpperCase()}`, 14, 30);
         
         doc.autoTable({
-            head: [['SKU', 'ARTÍCULO', 'GUÍA', 'REAL', 'ESTADO']],
-            body: QUEUE.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
-            startY: 40,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 122, 255] }
+            head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO']],
+            body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st]),
+            startY: 40, theme: 'grid', headStyles: {fillColor: [0, 122, 255]}
         });
 
-        // PIE DE PÁGINA AUTORIZADO
         const finalY = doc.lastAutoTable.finalY + 20;
         doc.line(14, finalY, 100, finalY);
-        doc.setFontSize(9);
         doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 5);
         doc.text("Asist. Inventario Logístico", 14, finalY + 10);
-        
         doc.save(`QC_${cli}.pdf`);
     }
 
-    function sendWhatsApp(cli, ven) {
-        let msg = `*REPORTE DE RETORNO - QC*%0ACliente: ${cli}%0A---%0A`;
-        QUEUE.forEach(i => {
-            msg += `• ${i.name} (${i.cr}/${i.cg}) - ${i.st}%0A`;
-        });
-        msg += `%0A_Firma: J. Angelo Nuñez Durand_`;
+    function sendWhatsApp(cli, ven, list) {
+        let msg = `*REPORTE QC - TWINS TITAN*%0A*Cliente:* ${cli}%0A*Vendedor:* ${ven}%0A---%0A`;
+        list.forEach(i => { msg += `• ${i.name} (Real: ${i.cr}/Guia: ${i.cg})%0A  _Estado: ${i.st}_%0A`; });
+        msg += `%0A*Autorizado por:* J. Angelo Nuñez Durand`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    function renderLog(h) {
-        document.getElementById('log-content').innerHTML = h.slice(0,20).map(r => `
-            <div class="panel-qc p-3 mb-2" style="font-size:13px">
-                <div class="d-flex justify-content-between text-accent fw-bold"><span>${r[5]}</span> <span>x${r[4]}</span></div>
-                <div class="fw-bold">${r[3]}</div>
-                <small class="opacity-50">${r[6]}</small>
-            </div>
-        `).join('');
-    }
-
     function nav(v) {
-        document.querySelectorAll('.view').forEach(e => e.classList.add('d-none'));
-        document.getElementById('v-'+v).classList.remove('d-none');
+        document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        document.getElementById('v-'+v).classList.add('active');
+        document.getElementById('n-'+v).classList.add('active');
     }
 
     window.onload = init;
