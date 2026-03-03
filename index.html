@@ -13,7 +13,6 @@
         :root { --accent: #007AFF; --bg: #F2F2F7; }
         body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 100px; }
         
-        /* Círculo de carga corregido */
         #loader { 
             position: fixed; inset: 0; background: rgba(255,255,255,0.9); 
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
@@ -22,7 +21,7 @@
 
         .glass-header {
             background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px);
-            padding: 20px; sticky: top; z-index: 1000; border-bottom: 0.5px solid #DDD;
+            padding: 20px; position: sticky; top: 0; z-index: 1000; border-bottom: 0.5px solid #DDD;
         }
         .brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
         .brand span { color: var(--accent); }
@@ -51,6 +50,11 @@
             border-radius: 15px; font-weight: 700; width: 100%;
         }
         .footer-auth { font-size: 9px; color: #8E8E93; text-align: center; margin-top: 15px; border-top: 1px solid #EEE; padding-top: 10px; }
+        
+        /* Estilo para los resultados de búsqueda */
+        .search-results-box {
+            max-height: 250px; overflow-y: auto; border-radius: 12px; margin-top: -10px;
+        }
     </style>
 </head>
 <body>
@@ -58,7 +62,7 @@
     <div id="loader">
         <div class="text-center">
             <div class="spinner-border text-primary mb-2"></div>
-            <div class="small fw-bold">CONECTANDO...</div>
+            <div class="small fw-bold">CONECTANDO SISTEMA...</div>
         </div>
     </div>
 
@@ -76,15 +80,16 @@
         <section id="v-ret" class="view">
             <div class="app-card">
                 <h5 class="fw-bold mb-3"><i class="fas fa-undo text-danger me-2"></i>Retornos</h5>
+                
                 <label class="small fw-bold text-muted ms-1">CLIENTE / ÁREA</label>
                 <input type="text" id="cli-r" class="smart-input" placeholder="Nombre del cliente" oninput="autoVendor(this.value, 'ven-r')">
                 
                 <label class="small fw-bold text-muted ms-1">VENDOR RESPONSABLE</label>
-                <input type="text" id="ven-r" class="smart-input" placeholder="Vendedor">
+                <input type="text" id="ven-r" class="smart-input" placeholder="Vendedor asignado">
 
                 <label class="small fw-bold text-muted ms-1">BUSCAR PRODUCTO</label>
-                <input type="text" id="src-r" class="smart-input" placeholder="SKU o Nombre..." oninput="searchP(this.value, 'res-r', 'r')">
-                <div id="res-r" class="list-group mb-3 shadow-sm" style="display:none;"></div>
+                <input type="text" id="src-r" class="smart-input" placeholder="Mínimo 2 letras o SKU..." oninput="searchP(this.value, 'res-r', 'r')">
+                <div id="res-r" class="list-group mb-3 shadow-sm search-results-box" style="display:none;"></div>
 
                 <div id="form-r" class="d-none bg-light p-3 rounded-4 border mb-3">
                     <div id="p-n-r" class="fw-bold text-primary mb-3"></div>
@@ -110,7 +115,7 @@
         <section id="v-his" class="view d-none">
             <div class="px-3 py-2">
                 <input type="date" id="h-date" class="smart-input mb-2" onchange="renderH()">
-                <input type="text" id="h-search" class="smart-input" placeholder="Buscar cliente..." oninput="renderH()">
+                <input type="text" id="h-search" class="smart-input" placeholder="Buscar por cliente..." oninput="renderH()">
             </div>
             <div id="feed-his"></div>
         </section>
@@ -122,27 +127,70 @@
     </nav>
 
     <script>
-        const API = "URL_DE_TU_SCRIPT"; 
-        let MASTER = []; let HIS = []; let CART_R = [];
+        const API = "TU_URL_DE_APPS_SCRIPT"; // DEBES REEMPLAZAR ESTO CON TU LINK REAL
+        
+        // Datos de respaldo por si el servidor falla (Modo Offline)
+        let MASTER = [
+            ["000", "PRODUCTO DE PRUEBA"],
+            ["111", "MUESTRA LOGISTICA"]
+        ]; 
+        let HIS = []; 
+        let CART_R = [];
 
         async function init() {
-            // Si en 4 segundos no responde la base de datos, entramos igual
-            setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(()=> document.getElementById('loader').style.display='none', 500); }, 4000);
+            const loader = document.getElementById('loader');
+            
+            // Si en 3 segundos no hay respuesta del servidor, desbloquea la pantalla
+            const timeout = setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(()=> loader.style.display='none', 500);
+            }, 3000);
 
             try {
                 const r = await fetch(API, {method:"POST", body: JSON.stringify({action:"load"})});
                 const d = await r.json();
-                MASTER = d.p; HIS = d.h;
+                if(d.p) MASTER = d.p; 
+                if(d.h) HIS = d.h;
+                clearTimeout(timeout);
+                loader.style.display = 'none';
                 renderH();
-            } catch(e) { console.log("Usando modo offline o error de link"); }
+            } catch(e) { 
+                console.warn("Usando base de datos local / offline"); 
+            }
         }
 
         function searchP(v, b, t) {
             const box = document.getElementById(b);
-            if(v.length < 1) { box.style.display='none'; return; }
-            const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = m.map(p => `<button class="list-group-item list-group-item-action" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small>${p[0]}</small></button>`).join('');
-            box.style.display = m.length ? 'block' : 'none';
+            if(v.length < 2) { box.style.display='none'; return; }
+            
+            const query = v.toLowerCase();
+            const matches = MASTER.filter(p => 
+                p[1].toLowerCase().includes(query) || 
+                p[0].toString().toLowerCase().includes(query)
+            ).slice(0, 10);
+
+            if(matches.length > 0) {
+                box.innerHTML = matches.map(p => `
+                    <button class="list-group-item list-group-item-action py-3" onclick="pick('${p[0]}','${p[1]}','${t}')">
+                        <div class="fw-bold text-dark">${p[1]}</div>
+                        <small class="text-muted">SKU: ${p[0]}</small>
+                    </button>
+                `).join('');
+                box.style.display = 'block';
+            } else {
+                box.innerHTML = '<div class="list-group-item small text-muted">Sin coincidencias</div>';
+                box.style.display = 'block';
+            }
+        }
+
+        function autoVendor(v, t) {
+            const cliente = v.toUpperCase();
+            const field = document.getElementById(t);
+            
+            // Lógica de sugerencia de vendor basada en el cliente
+            if(cliente.includes("UTILMAS")) field.value = "Elias";
+            else if(cliente.includes("GLOBAL")) field.value = "GLOBAL LOGISTICS CORP";
+            else field.value = ""; // Limpiar si no hay coincidencia
         }
 
         function pick(s, n, t) {
@@ -150,12 +198,21 @@
             document.getElementById(`p-n-${t}`).innerText = n;
             document.getElementById(`form-${t}`).classList.remove('d-none');
             document.getElementById(`res-${t}`).style.display='none';
+            document.getElementById(`src-${t}`).value = "";
         }
 
         function addP(t) {
-            const q = document.getElementById('cr-r').value;
-            if(!q) return;
-            CART_R.push({...window.active, q, cg: document.getElementById('cg-r').value, st: document.getElementById('st-r').value});
+            const cr = document.getElementById('cr-r').value;
+            const cg = document.getElementById('cg-r').value;
+            if(!cr) return Swal.fire("Error", "Ingresa la cantidad real", "error");
+            
+            CART_R.push({
+                ...window.active, 
+                q: cr, 
+                cg: cg || 0, 
+                st: document.getElementById('st-r').value
+            });
+            
             document.getElementById(`form-${t}`).classList.add('d-none');
             renderCart();
         }
@@ -163,23 +220,40 @@
         function renderCart() {
             const c = document.getElementById('cart-r');
             document.getElementById('list-r').classList.toggle('d-none', CART_R.length === 0);
-            c.innerHTML = CART_R.map((i, idx) => `<div class="p-2 border-bottom d-flex justify-content-between"><span><b>${i.q}</b> x ${i.n}</span><i class="fas fa-times text-danger" onclick="CART_R.splice(${idx},1);renderCart()"></i></div>`).join('');
+            c.innerHTML = CART_R.map((i, idx) => `
+                <div class="p-3 border rounded-3 mb-2 d-flex justify-content-between align-items-center bg-white shadow-sm">
+                    <div>
+                        <div class="fw-bold">${i.n}</div>
+                        <small class="text-muted">Cant: ${i.q} | Guía: ${i.cg} | ${i.st}</small>
+                    </div>
+                    <i class="fas fa-trash text-danger" onclick="CART_R.splice(${idx},1);renderCart()"></i>
+                </div>
+            `).join('');
         }
 
         async function save(sh, t) {
             const cli = document.getElementById('cli-r').value;
             const ven = document.getElementById('ven-r').value;
-            if(!cli || !ven) return Swal.fire("Atención", "Completa Cliente y Vendedor", "warning");
+            if(!cli || !ven) return Swal.fire("Atención", "Faltan datos del Cliente o Vendedor", "warning");
 
-            const payload = CART_R.map(i => [new Date(), "RETORNO", i.s, i.n, i.q, cli, `Guía:${i.cg} | Motivo:${i.st} | V:${ven}`]);
+            // Preparar datos para el Historial incluyendo tus datos de registro
+            const payload = CART_R.map(i => [
+                new Date(), 
+                "RETORNO", 
+                i.s, 
+                i.n, 
+                i.q, 
+                cli, 
+                `Guía:${i.cg} | Motivo:${i.st} | V:${ven}`
+            ]);
             
-            Swal.fire({title:'Guardando...', didOpen:()=>Swal.showLoading()});
+            Swal.fire({title:'Procesando...', didOpen:()=>Swal.showLoading()});
             try {
                 await fetch(API, {method:"POST", body: JSON.stringify({action:"save", sheet:sh, payload})});
                 CART_R = []; renderCart();
                 await init();
-                Swal.fire("Éxito", "Registrado correctamente", "success");
-            } catch(e) { Swal.fire("Error", "No se pudo conectar", "error"); }
+                Swal.fire("Éxito", "Movimiento registrado en inventario", "success");
+            } catch(e) { Swal.fire("Error", "Error de conexión al guardar", "error"); }
         }
 
         function renderH() {
@@ -190,25 +264,24 @@
             const filtered = HIS.filter(r => {
                 const fecha = new Date(r[0]).toISOString().split('T')[0];
                 const matchD = dateV ? fecha === dateV : true;
-                const matchS = r[5].toLowerCase().includes(searchV);
+                const matchS = r[5].toString().toLowerCase().includes(searchV);
                 return matchD && matchS;
             }).reverse();
 
             feed.innerHTML = filtered.map(r => `
-                <div class="app-card mb-2" style="padding:15px">
-                    <div class="d-flex justify-content-between small mb-1">
+                <div class="app-card mb-3">
+                    <div class="d-flex justify-content-between small mb-2">
                         <span class="badge ${r[1]=='RETORNO'?'bg-danger':'bg-primary'}">${r[1]}</span>
-                        <span class="text-muted">${new Date(r[0]).toLocaleDateString()}</span>
+                        <span class="text-muted">${new Date(r[0]).toLocaleString()}</span>
                     </div>
-                    <div class="fw-bold">${r[5]}</div>
-                    <div class="small">${r[4]} uds. - ${r[3]}</div>
+                    <div class="fw-bold text-uppercase">${r[5]}</div>
+                    <div class="my-2 p-2 bg-light rounded small">
+                        <b>${r[4]} unid.</b> - ${r[3]}
+                        <div class="text-muted mt-1">${r[6]}</div>
+                    </div>
                     <div class="footer-auth">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.</div>
                 </div>
             `).join('');
-        }
-
-        function autoVendor(v, t) {
-            if(v.toUpperCase().includes("GLOBAL")) document.getElementById(t).value = "GLOBAL LOGISTICS CORP";
         }
 
         function nav(v, btn) {
