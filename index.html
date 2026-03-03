@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN OS | Modern Robust</title>
+    <title>TITAN ELITE | J. Angelo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,367 +11,411 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
         :root {
-            --dark-base: #0F172A;
-            --card-bg: #FFFFFF;
-            --accent-blue: #2563EB;
-            --accent-purple: #7C3AED;
-            --danger: #EF4444;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
+            --bg: #0A0C10;
+            --card: #161B22;
+            --accent: #3B82F6;
+            --success: #10B981;
+            --danger: #F43F5E;
+            --text: #F0F6FC;
+            --muted: #8B949E;
+            --glass: rgba(22, 27, 34, 0.8);
         }
 
         body { 
-            background-color: #F8FAFC;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text-main); margin: 0; padding-bottom: 110px;
+            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text); margin: 0; overflow-x: hidden; padding-bottom: 100px;
         }
 
-        /* Header Estilo Moderno */
-        .header-modern {
-            background: var(--dark-base);
-            padding: 25px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-        }
-        .header-modern .brand { font-weight: 800; font-size: 24px; color: #fff; letter-spacing: -1px; }
-        .header-modern .status { font-size: 11px; color: #10B981; font-weight: 600; text-transform: uppercase; }
-
-        /* Tarjetas con profundidad */
-        .card-titan {
-            background: var(--card-bg); border-radius: 24px; padding: 22px;
-            margin: -20px 15px 20px 15px; border: 1px solid rgba(255,255,255,1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06); position: relative;
+        /* Header Estilo Cyberpunk */
+        .premium-header {
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky; top: 0; z-index: 2000;
         }
 
-        .section-label { font-size: 11px; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; margin: 15px 0 8px 5px; display: block; }
+        .brand-logo { font-weight: 800; font-size: 22px; letter-spacing: -1px; background: linear-gradient(90deg, #3B82F6, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Inputs de Alto Contraste */
-        .input-titan {
-            background: #F1F5F9; border: 2px solid transparent;
-            border-radius: 16px; padding: 16px; width: 100%; font-size: 16px; font-weight: 600;
-            margin-bottom: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Tarjetas Estilo Mobile-First */
+        .card-elite {
+            background: var(--card); border-radius: 24px; padding: 20px;
+            margin: 15px; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        .input-titan:focus { background: #fff; border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        /* Chips de Vendedores */
-        .vendor-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .chip {
-            background: #F1F5F9; border-radius: 12px; padding: 12px 15px;
-            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
-            transition: 0.2s; border: 2px solid transparent;
+        .label-tech { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 15px 0 8px 5px; display: block; opacity: 0.8; }
+
+        /* Inputs de Alta Gama */
+        .input-elite {
+            background: #0D1117; border: 1px solid #30363D;
+            border-radius: 16px; padding: 16px; width: 100%; font-size: 16px; color: #fff;
+            margin-bottom: 12px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .chip.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); box-shadow: 0 5px 15px rgba(37,99,235,0.3); }
+        .input-elite:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); background: #161B22; }
 
-        /* Botones de Acción */
-        .btn-titan {
+        /* Chips Vendedores */
+        .vendor-scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; scrollbar-width: none; }
+        .vendor-scroller::-webkit-scrollbar { display: none; }
+        .v-chip {
+            background: #21262D; border: 1px solid #30363D; padding: 12px 18px;
+            border-radius: 14px; font-size: 12px; font-weight: 700; white-space: nowrap; transition: 0.3s;
+        }
+        .v-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+
+        /* Botones Titan */
+        .btn-elite {
             border-radius: 18px; padding: 18px; font-weight: 800; border: none; width: 100%;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s;
+            transition: 0.3s; text-transform: uppercase;
         }
-        .btn-blue { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
-        .btn-red { background: linear-gradient(135deg, var(--danger), #B91C1C); color: white; }
-        .btn-titan:active { transform: scale(0.96); }
+        .btn-blue { background: var(--accent); color: #fff; }
+        .btn-green { background: var(--success); color: #fff; }
+        .btn-elite:active { transform: scale(0.95); opacity: 0.8; }
 
-        /* Listas de Trabajo */
-        .item-row {
-            background: #F8FAFC; border-radius: 16px; padding: 15px; margin-bottom: 10px;
-            border-left: 6px solid var(--accent-blue); display: flex; justify-content: space-between; align-items: center;
+        /* Historial Premium */
+        .history-card {
+            background: #161B22; border-radius: 20px; padding: 16px; margin-bottom: 12px;
+            border-left: 5px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
         }
+        .type-badge { font-size: 9px; padding: 4px 8px; border-radius: 6px; font-weight: 800; margin-bottom: 5px; display: inline-block; }
+        .bg-mkt { background: #D97706; color: white; }
+        .bg-vnt { background: #2563EB; color: white; }
+        .bg-ret { background: #DC2626; color: white; }
 
-        /* Tab Bar Navegación */
-        .nav-modern {
-            position: fixed; bottom: 0; width: 100%; background: #fff;
-            display: flex; justify-content: space-around; padding: 15px 0 30px 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 2000;
+        /* Navbar Inferior */
+        .nav-elite {
+            position: fixed; bottom: 0; width: 100%; background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(10px); display: flex; justify-content: space-around;
+            padding: 15px 0 30px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000;
         }
-        .nav-link { border: none; background: none; color: #94A3B8; font-weight: 700; font-size: 10px; text-align: center; }
-        .nav-link.active { color: var(--accent-blue); }
-        .nav-link i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .nav-tab { background: none; border: none; color: var(--muted); text-align: center; transition: 0.3s; }
+        .nav-tab.active { color: var(--accent); }
+        .nav-tab i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-tab span { font-size: 10px; font-weight: 700; }
 
         .view { display: none; }
-        .active-view { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active-view { display: block; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .search-pop {
-            position: absolute; width: 90%; background: white; border-radius: 18px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.2); z-index: 3000; display: none; margin-top: -10px;
+        .search-results {
+            background: #21262D; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: absolute; width: 100%; z-index: 100; display: none; margin-top: -10px; border: 1px solid #30363D;
         }
     </style>
 </head>
 <body>
 
-    <header class="header-modern">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="status"><i class="fas fa-circle me-1"></i> Sistema Activo</div>
-                <div class="brand">TITAN <span style="color:var(--accent-blue)">FLOW</span></div>
-            </div>
-            <div class="text-end text-white">
-                <div style="font-size:12px; font-weight:600; opacity:0.8">J. Angelo N.D.</div>
-                <div style="font-size:9px; opacity:0.6">Asist. Logística</div>
-            </div>
+    <header class="premium-header d-flex justify-content-between align-items-center">
+        <div>
+            <div class="brand-logo">TITAN ELITE</div>
+            <div style="font-size: 9px; color: var(--muted); font-weight: 700;">LOGISTICS INTELLIGENCE</div>
+        </div>
+        <div class="text-end">
+            <div style="font-size: 12px; font-weight: 800;">J. Angelo</div>
+            <div style="font-size: 9px; color: var(--success);"><i class="fas fa-bolt"></i> Sincronizado</div>
         </div>
     </header>
 
     <main>
         <section id="v-del" class="view active-view">
-            <div class="card-titan">
-                <span class="section-label">Parámetros</span>
+            <div class="card-elite">
+                <span class="label-tech">Tipo de Movimiento</span>
                 <div class="d-flex gap-2 mb-3">
-                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-VENTA" onclick="setM('VENTA')" style="background:#F1F5F9">VENTA</button>
-                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-MARKETING" onclick="setM('MARKETING')" style="background:#F1F5F9">MKT</button>
-                    <button class="btn btn-sm flex-fill rounded-pill fw-bold" id="m-OFICINA" onclick="setM('OFICINA')" style="background:#F1F5F9">OFICINA</button>
+                    <button class="v-chip flex-fill text-center active" id="m-VENTA" onclick="setM('VENTA')">VENTA</button>
+                    <button class="v-chip flex-fill text-center" id="m-MARKETING" onclick="setM('MARKETING')">MKT</button>
+                    <button class="v-chip flex-fill text-center" id="m-OFICINA" onclick="setM('OFICINA')">OFICINA</button>
                 </div>
 
-                <input type="text" id="cli-d" class="input-titan" placeholder="CLIENTE / DESTINO" oninput="saveSt()">
+                <input type="text" id="cli-d" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
                 
-                <span class="section-label">Vendedor Asignado</span>
-                <div class="vendor-container" id="vend-d">
-                    <div class="chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
-                    <div class="chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
-                    <div class="chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
-                    <div class="chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
-                    <div class="chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
+                <span class="label-tech">Vendedor Responsable</span>
+                <div class="vendor-scroller" id="vend-d">
+                    <div class="v-chip" onclick="setV('ELIAS AVILA','d')">ELIAS AVILA</div>
+                    <div class="v-chip" onclick="setV('EVELYN MURO','d')">EVELYN MURO</div>
+                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','d')">JHAYRO MAURICIO</div>
+                    <div class="v-chip" onclick="setV('PAULA GARCIA','d')">PAULA GARCIA</div>
+                    <div class="v-chip" onclick="setV('REGULO ANTEZA','d')">REGULO ANTEZA</div>
                 </div>
 
-                <div class="position-relative">
-                    <input type="text" id="src-d" class="input-titan" placeholder="🔍 BUSCAR PRODUCTO..." oninput="find(this.value, 'pop-d', 'd')">
-                    <div id="pop-d" class="search-pop"></div>
+                <div class="position-relative mt-3">
+                    <input type="text" id="src-d" class="input-elite" placeholder="🔍 Buscar producto o SKU..." oninput="find(this.value, 'res-d', 'd')">
+                    <div id="res-d" class="search-results"></div>
                 </div>
 
-                <div id="p-form-d" class="d-none mt-3">
-                    <div class="p-3 mb-3 rounded-4" style="background:#EFF6FF; border-left: 5px solid var(--accent-blue)">
+                <div id="form-d" class="d-none animate__animated animate__fadeIn">
+                    <div class="p-3 mb-3 rounded-4" style="background: rgba(59,130,246,0.1); border-left: 4px solid var(--accent)">
                         <b id="p-n-d"></b><br><small class="text-muted" id="p-s-d"></small>
                     </div>
-                    <input type="number" id="q-d" class="input-titan" placeholder="CANTIDAD">
-                    <button class="btn-titan btn-blue" onclick="addItem('d')">Añadir ítem <i class="fas fa-plus"></i></button>
+                    <input type="number" id="q-d" class="input-elite" placeholder="Cantidad a entregar">
+                    <button class="btn-elite btn-blue" onclick="addItem('d')">Añadir ítem <i class="fas fa-plus"></i></button>
                 </div>
 
-                <div id="q-list-d" class="mt-4 d-none">
+                <div id="list-d" class="mt-4 d-none">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="section-label">Lista de Carga</span>
-                        <button class="btn btn-sm text-danger fw-bold" onclick="clearList('d')">Borrar todo</button>
+                        <span class="label-tech">Lote actual</span>
+                        <span class="badge bg-danger rounded-pill" style="cursor:pointer" onclick="clearAll('d')">Limpiar</span>
                     </div>
                     <div id="items-d"></div>
-                    <button class="btn-titan btn-blue mt-3" onclick="syncAll('Pedidos', 'd')">Sincronizar <i class="fas fa-cloud-upload-alt"></i></button>
+                    <button class="btn-elite btn-blue shadow-lg mt-3" onclick="sync('Pedidos', 'd')">Confirmar Registro <i class="fas fa-save"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-ret" class="view">
-            <div class="card-titan">
-                <span class="section-label text-danger">Módulo de Retorno</span>
-                <input type="text" id="cli-r" class="input-titan" placeholder="CLIENTE ORIGEN" oninput="saveSt()">
+            <div class="card-elite">
+                <span class="label-tech text-danger">Módulo de Devoluciones</span>
+                <input type="text" id="cli-r" class="input-elite" placeholder="Nombre del Cliente" oninput="autoSave()">
                 
-                <span class="section-label">Responsable</span>
-                <div class="vendor-container" id="vend-r">
-                    <div class="chip" onclick="setV('ELIAS AVILA','r')">ELIAS AVILA</div>
-                    <div class="chip" onclick="setV('EVELYN MURO','r')">EVELYN MURO</div>
-                    <div class="chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO MAURICIO</div>
-                    <div class="chip" onclick="setV('PAULA GARCIA','r')">PAULA GARCIA</div>
-                    <div class="chip" onclick="setV('REGULO ANTEZA','r')">REGULO ANTEZA</div>
+                <span class="label-tech">Vendedor</span>
+                <div class="vendor-scroller" id="vend-r">
+                    <div class="v-chip" onclick="setV('ELIAS AVILA','r')">ELIAS AVILA</div>
+                    <div class="v-chip" onclick="setV('EVELYN MURO','r')">EVELYN MURO</div>
+                    <div class="v-chip" onclick="setV('JHAYRO MAURICIO','r')">JHAYRO MAURICIO</div>
+                    <div class="v-chip" onclick="setV('PAULA GARCIA','r')">PAULA GARCIA</div>
+                    <div class="v-chip" onclick="setV('REGULO ANTEZA','r')">REGULO ANTEZA</div>
                 </div>
 
-                <div class="position-relative">
-                    <input type="text" id="src-r" class="input-titan" placeholder="🔍 BUSCAR SKU FALLADO..." oninput="find(this.value, 'pop-r', 'r')">
-                    <div id="pop-r" class="search-pop"></div>
+                <div class="position-relative mt-3">
+                    <input type="text" id="src-r" class="input-elite" placeholder="🔍 SKU con falla..." oninput="find(this.value, 'res-r', 'r')">
+                    <div id="res-r" class="search-results"></div>
                 </div>
 
-                <div id="p-form-r" class="d-none mt-3">
-                    <div class="p-3 mb-3 rounded-4" style="background:#FEF2F2; border-left: 5px solid var(--danger)"><b id="p-n-r"></b></div>
+                <div id="form-r" class="d-none">
+                    <div class="p-3 mb-3 rounded-4" style="background: rgba(244,63,94,0.1); border-left: 4px solid var(--danger)"><b id="p-n-r"></b></div>
                     <div class="row g-2">
-                        <div class="col-6"><input type="number" id="cg-r" class="input-titan" placeholder="CANT. GUÍA"></div>
-                        <div class="col-6"><input type="number" id="cr-r" class="input-titan" placeholder="CANT. REAL"></div>
+                        <div class="col-6"><input type="number" id="cg-r" class="input-elite" placeholder="Cant. Guía"></div>
+                        <div class="col-6"><input type="number" id="cr-r" class="input-elite" placeholder="Cant. Real"></div>
                     </div>
-                    <select id="st-r" class="input-titan">
+                    <select id="st-r" class="input-elite">
                         <option>FALLADO A MERMA</option>
                         <option>SE ARREGLO EL PRODUCTO</option>
                         <option>PRODUCTO FALLA DE IMPORTACION</option>
                     </select>
-                    <textarea id="obs-r" class="input-titan" style="height:80px" placeholder="Observaciones con lápiz..."></textarea>
-                    <button class="btn-titan btn-red" onclick="addItem('r')">Añadir a QC <i class="fas fa-check"></i></button>
+                    <textarea id="obs-r" class="input-elite" style="height: 100px;" placeholder="Escribe detalles aquí (Lápiz)..."></textarea>
+                    <button class="btn-elite btn-green" onclick="addItem('r')">Validar QC <i class="fas fa-check-circle"></i></button>
                 </div>
 
-                <div id="q-list-r" class="mt-4 d-none">
+                <div id="list-r" class="mt-4 d-none">
                     <div id="items-r"></div>
-                    <button class="btn-titan btn-red mt-3" onclick="syncAll('Devoluciones', 'r')">Procesar & PDF <i class="fas fa-file-pdf"></i></button>
+                    <button class="btn-elite btn-green mt-3" onclick="sync('Devoluciones', 'r')">Procesar Retorno <i class="fas fa-cloud-upload-alt"></i></button>
                 </div>
             </div>
         </section>
 
         <section id="v-his" class="view">
-            <div class="px-3" id="his-feed"></div>
+            <div class="px-3 py-2">
+                <span class="label-tech">Últimos movimientos sincronizados</span>
+                <div id="his-feed"></div>
+            </div>
         </section>
     </main>
 
-    <nav class="nav-modern">
-        <button class="nav-link active" onclick="nav('del', this)"><i class="fas fa-dolly"></i>ENTREGA</button>
-        <button class="nav-link" onclick="nav('ret', this)"><i class="fas fa-undo"></i>RETORNO</button>
-        <button class="nav-link" onclick="nav('his', this)"><i class="fas fa-clock-rotate-left"></i>HISTORIAL</button>
+    <nav class="nav-elite">
+        <button class="nav-tab active" onclick="nav('del', this)"><i class="fas fa-box-open"></i><span>ENTREGA</span></button>
+        <button class="nav-tab" onclick="nav('ret', this)"><i class="fas fa-undo"></i><span>RETORNO</span></button>
+        <button class="nav-tab" onclick="nav('his', this)"><i class="fas fa-history"></i><span>HISTORIAL</span></button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let DB = []; let QD = []; let QR = []; let SEL = null; let MODE = "VENTA"; let VEN = {d: '', r: ''};
+        let DB_P = []; let QD = []; let QR = []; let MODE = "VENTA"; let VEN = {d:'', r:''}; let FULL_HIS = [];
 
         async function init() {
-            // Cargar de LocalStorage si existe
-            const local = JSON.parse(localStorage.getItem('TITAN_BACKUP'));
-            if(local) {
-                QD = local.QD || []; QR = local.QR || [];
-                document.getElementById('cli-d').value = local.cliD || '';
-                document.getElementById('cli-r').value = local.cliR || '';
-                if(local.venD) setV(local.venD, 'd');
-                if(local.venR) setV(local.venR, 'r');
-                setM(local.MODE || 'VENTA');
+            // Restaurar datos guardados
+            const saved = JSON.parse(localStorage.getItem('TITAN_ELITE_DATA'));
+            if(saved) {
+                QD = saved.QD || []; QR = saved.QR || [];
+                document.getElementById('cli-d').value = saved.cliD || '';
+                document.getElementById('cli-r').value = saved.cliR || '';
+                if(saved.venD) setV(saved.venD, 'd');
+                if(saved.venR) setV(saved.venR, 'r');
+                setM(saved.MODE || 'VENTA');
                 render('d'); render('r');
             }
 
-            const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-            const d = await r.json();
-            DB = d.p;
-            renderHistory(d.h);
+            try {
+                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
+                const d = await r.json();
+                DB_P = d.p;
+                FULL_HIS = d.h;
+                renderHistory(d.h);
+            } catch(e) { console.warn("Modo offline."); }
         }
 
-        // Persistencia
-        function saveSt() {
+        function autoSave() {
             const data = {
                 QD, QR, MODE,
                 cliD: document.getElementById('cli-d').value,
                 cliR: document.getElementById('cli-r').value,
                 venD: VEN.d, venR: VEN.r
             };
-            localStorage.setItem('TITAN_BACKUP', JSON.stringify(data));
+            localStorage.setItem('TITAN_ELITE_DATA', JSON.stringify(data));
         }
 
         function setM(m) {
             MODE = m;
-            document.querySelectorAll('[id^="m-"]').forEach(b => b.style.background = '#F1F5F9');
-            document.getElementById('m-'+m).style.background = 'var(--accent-blue)';
-            document.getElementById('m-'+m).style.color = 'white';
-            saveSt();
+            document.querySelectorAll('.v-chip').forEach(c => c.classList.remove('active'));
+            document.getElementById('m-'+m).classList.add('active');
+            autoSave();
         }
 
         function setV(n, t) {
-            document.querySelectorAll(`#vend-${t} .chip`).forEach(c => c.classList.remove('active'));
-            event?.target?.classList?.add('active') || Array.from(document.querySelectorAll(`#vend-${t} .chip`)).find(c => c.innerText === n)?.classList.add('active');
+            document.querySelectorAll(`#vend-${t} .v-chip`).forEach(c => c.classList.remove('active'));
             VEN[t] = n;
-            saveSt();
+            // Buscar chip por texto y activar
+            Array.from(document.querySelectorAll(`#vend-${t} .v-chip`)).find(c => c.innerText === n)?.classList.add('active');
+            autoSave();
         }
 
-        function find(v, b, t) {
-            const box = document.getElementById(b);
+        function find(v, boxId, type) {
+            const box = document.getElementById(boxId);
             if(v.length < 1) { box.style.display='none'; return; }
-            const matches = DB.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${t}')"><b>${p[1]}</b><br><small>${p[0]}</small></div>`).join('');
-            box.style.display = 'block';
+            const matches = DB_P.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = matches.map(p => `<div class="p-3 border-bottom" onclick="pick('${p[0]}','${p[1]}','${type}')"><b>${p[1]}</b><br><small class="text-muted">${p[0]}</small></div>`).join('');
+            box.style.display = matches.length ? 'block' : 'none';
         }
 
         function pick(s, n, t) {
-            SEL = {sku:s, name:n};
+            const p = {sku:s, name:n};
             document.getElementById(`p-n-${t}`).innerText = n;
             if(t==='d') document.getElementById(`p-s-${t}`).innerText = s;
-            document.getElementById(`p-form-${t}`).classList.remove('d-none');
-            document.querySelectorAll('.search-pop').forEach(p => p.style.display='none');
+            document.getElementById(`form-${t}`).classList.remove('d-none');
+            document.querySelectorAll('.search-results').forEach(x => x.style.display='none');
+            window.lastPick = p;
         }
 
         function addItem(t) {
             if(t==='d') {
                 const q = document.getElementById('q-d').value;
                 if(!q) return;
-                QD.push({...SEL, q, m: MODE});
-                // Limpiar campos de ítem
+                QD.push({...window.lastPick, q, mode: MODE});
                 document.getElementById('q-d').value = '';
                 document.getElementById('src-d').value = '';
-                document.getElementById('p-form-d').classList.add('d-none');
             } else {
                 const cg = document.getElementById('cg-r').value, cr = document.getElementById('cr-r').value;
                 if(!cg || !cr) return;
-                QR.push({...SEL, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
-                // Limpiar campos de ítem
+                QR.push({...window.lastPick, cg, cr, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value});
+                document.getElementById('src-r').value = '';
                 document.getElementById('cg-r').value = '';
                 document.getElementById('cr-r').value = '';
                 document.getElementById('obs-r').value = '';
-                document.getElementById('src-r').value = '';
-                document.getElementById('p-form-r').classList.add('d-none');
             }
             render(t);
-            saveSt();
+            document.getElementById(`form-${t}`).classList.add('d-none');
+            autoSave();
         }
 
         function render(t) {
             const list = t==='d' ? QD : QR;
-            const container = document.getElementById(`q-list-${t}`);
-            if(list.length > 0) container.classList.remove('d-none');
+            document.getElementById(`list-${t}`).classList.toggle('d-none', list.length === 0);
             document.getElementById(`items-${t}`).innerHTML = list.map((i, idx) => `
-                <div class="item-row" style="border-left-color: ${t==='d'?'var(--accent-blue)':'var(--danger)'}">
-                    <div><b>${i.name}</b><br><small>${i.m || i.st}</small></div>
+                <div class="history-card" style="border-left-color: ${t==='d'?'var(--accent)':'var(--danger)'}">
+                    <div><b>${i.name}</b><br><small class="text-muted">${i.mode || i.st}</small></div>
                     <div class="d-flex align-items-center gap-3">
                         <span class="fw-bold fs-5">x${i.q || i.cr}</span>
-                        <i class="fas fa-times-circle text-danger" onclick="removeItem('${t}', ${idx})"></i>
+                        <i class="fas fa-trash-alt text-danger" onclick="removeIdx('${t}', ${idx})"></i>
                     </div>
                 </div>
             `).join('');
         }
 
-        function removeItem(t, idx) {
+        function removeIdx(t, idx) {
             if(t==='d') QD.splice(idx, 1); else QR.splice(idx, 1);
-            render(t); saveSt();
+            render(t); autoSave();
         }
 
-        function clearList(t) {
-            if(t==='d') QD = []; else QR = [];
-            render(t); saveSt();
-        }
-
-        async function syncAll(sheet, t) {
+        async function sync(sheet, t) {
             const cli = document.getElementById(`cli-${t}`).value;
             const ven = VEN[t];
-            if(!cli || !ven) return Swal.fire("Atención", "Cliente y Vendedor son obligatorios", "warning");
+            if(!cli || !ven) return Swal.fire("Datos incompletos", "Cliente y Vendedor son obligatorios", "warning");
 
             const list = t==='d' ? QD : QR;
-            const payload = list.map(i => [new Date(), t==='d' ? i.m : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
+            const payload = list.map(i => [new Date(), t==='d' ? i.mode : 'DEVOLUCION', i.sku, i.name, i.q || i.cr, cli, t==='d' ? `Vend: ${ven}` : `Guia: ${i.cg} | Det: ${i.st} | Obs: ${i.obs} | Vend: ${ven}`]);
 
-            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading(), background: '#0F172A', color: '#fff'});
+            Swal.fire({title:'Sincronizando...', didOpen:()=>Swal.showLoading(), background: '#161B22', color: '#fff'});
             await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet, payload})});
             
-            if(t==='r') genPDF(cli, ven, list);
-            localStorage.removeItem('TITAN_BACKUP');
-            Swal.fire("Éxito", "Datos guardados en nube", "success").then(()=>location.reload());
-        }
-
-        function genPDF(cli, ven, list) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("REPORTE QC LOGÍSTICA", 14, 25);
-            doc.autoTable({
-                head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBS']],
-                body: list.map(i => [i.sku, i.name, i.cg, i.cr, i.st, i.obs]),
-                startY: 45, theme: 'grid'
-            });
-            const pY = doc.internal.pageSize.getHeight();
-            const pW = doc.internal.pageSize.getWidth();
-            doc.setTextColor(100); doc.setFontSize(10);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", pW/2, pY - 20, {align: 'center'});
-            doc.text("Asist. Inventario Logístico", pW/2, pY - 15, {align: 'center'});
-            doc.save(`QC_${cli}.pdf`);
+            localStorage.removeItem('TITAN_ELITE_DATA');
+            Swal.fire("Sincronizado", "Los datos están en la nube", "success").then(()=>location.reload());
         }
 
         function renderHistory(h) {
-            document.getElementById('his-feed').innerHTML = h.slice(0,25).map(r => `
-                <div class="item-row bg-white shadow-sm" style="border-left-color: ${r[1]==='DEVOLUCION'?'var(--danger)':'var(--accent-blue)'}">
-                    <div><span class="badge ${r[1]==='DEVOLUCION'?'bg-danger':'bg-primary'} mb-1">${r[1]}</span><br><b>${r[5]}</b><br><small>${r[3]}</small></div>
-                    <div class="text-end"><b>x${r[4]}</b><br><small style="font-size:9px">${new Date(r[0]).toLocaleDateString()}</small></div>
-                </div>
-            `).join('');
+            document.getElementById('his-feed').innerHTML = h.slice(0,30).map((r, idx) => {
+                const type = r[1];
+                const badgeClass = type === 'DEVOLUCION' ? 'bg-ret' : (type === 'VENTA' ? 'bg-vnt' : 'bg-mkt');
+                return `
+                <div class="history-card" onclick="showOptions(${idx})">
+                    <div>
+                        <span class="type-badge ${badgeClass}">${type}</span>
+                        <div class="fw-bold">${r[5]}</div>
+                        <small class="text-muted">${r[3]}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-accent fs-4">x${r[4]}</div>
+                        <small style="font-size:9px" class="opacity-50">${new Date(r[0]).toLocaleDateString()}</small>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function showOptions(idx) {
+            const r = FULL_HIS[idx];
+            Swal.fire({
+                title: 'Acciones de Registro',
+                text: `¿Qué deseas hacer con el registro de ${r[5]}?`,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp + PDF',
+                confirmButtonColor: '#25D366',
+                background: '#161B22',
+                color: '#fff'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    sendWhatsApp(r);
+                }
+            });
+        }
+
+        function sendWhatsApp(r) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // PDF Estético
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("COMPROBANTE LOGÍSTICO TITAN", 14, 25);
+            doc.setFontSize(10); doc.text(`CLIENTE: ${r[5].toUpperCase()} | FECHA: ${new Date(r[0]).toLocaleDateString()}`, 14, 35);
+            
+            doc.autoTable({
+                head: [['CAMPO', 'DETALLE']],
+                body: [
+                    ['TIPO', r[1]],
+                    ['PRODUCTO', r[3]],
+                    ['CANTIDAD', r[4]],
+                    ['INFO EXTRA', r[6]]
+                ],
+                startY: 50, theme: 'grid'
+            });
+
+            // Sello Centrado
+            const pY = doc.internal.pageSize.getHeight();
+            const pW = doc.internal.pageSize.getWidth();
+            doc.setTextColor(100);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", pW/2, pY - 20, {align: 'center'});
+            doc.text("Asist. Inventario Logístico", pW/2, pY - 15, {align: 'center'});
+            
+            // Descargar PDF
+            doc.save(`TITAN_${r[5]}.pdf`);
+
+            // Preparar WhatsApp
+            const venName = r[6].split('Vend: ')[1] || 'Vendedor';
+            const msg = `Hola ${venName}, te adjunto el reporte de *${r[1]}* para el cliente *${r[5]}*.\nProducto: ${r[3]}\nCantidad: ${r[4]}\n_Generado por J. Angelo Nuñez Durand_`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.add('active-view');
             b.classList.add('active');
             window.scrollTo(0,0);
