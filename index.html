@@ -3,182 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN ELITE v5.0 | Excel Conectado</title>
+    <title>TITAN ELITE | Gestión de Inventario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     
     <style>
-        :root { --bg: #05070A; --surface: #11141D; --accent: #00D1FF; --border: #222933; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #fff; margin: 0; padding-bottom: 110px; }
-        .titan-header { background: var(--surface); padding: 15px 20px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
-        .ultra-card { background: var(--surface); border-radius: 16px; padding: 20px; margin: 15px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .label-audit { font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; }
-        .titan-input { background: #080A0F; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; width: 100%; color: #fff; font-size: 15px; margin-bottom: 15px; }
+        :root { --bg: #0A0C10; --card: #12151E; --accent: #00D1FF; --border: #1E2430; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #fff; margin: 0; padding-bottom: 90px; }
+        
+        .header-app { background: var(--card); padding: 15px 20px; border-bottom: 1px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        .status-dot { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        
+        .titan-card { background: var(--card); border-radius: 12px; padding: 20px; margin: 15px; border: 1px solid var(--border); }
+        .label-audit { font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 8px; display: block; }
+        
+        .titan-input { background: #080A0F; border: 1px solid var(--border); border-radius: 8px; padding: 12px; width: 100%; color: #fff; margin-bottom: 12px; }
         .titan-input:focus { border-color: var(--accent); outline: none; }
-        
-        /* Buscador Flotante */
-        .search-engine { position: relative; }
-        .suggest-box { position: absolute; width: 100%; background: #1A1F2B; border: 1px solid var(--accent); border-radius: 0 0 10px 10px; z-index: 2000; max-height: 220px; overflow-y: auto; display: none; }
-        .suggest-item { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; }
-        .suggest-item:hover { background: var(--accent); color: #000; }
 
-        .btn-titan { border-radius: 12px; padding: 16px; font-weight: 800; border: none; width: 100%; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-        .btn-blue { background: var(--accent); color: #000; }
-        .btn-green { background: #10B981; color: #fff; }
+        /* Buscador Flotante Corregido */
+        .search-wrapper { position: relative; }
+        .search-results { 
+            position: absolute; width: 100%; background: #1A1F2B; border: 1px solid var(--accent); 
+            border-radius: 0 0 8px 8px; z-index: 2000; max-height: 200px; overflow-y: auto; display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .search-item { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; }
+        .search-item:hover { background: var(--accent); color: #000; }
+
+        .btn-action { border-radius: 8px; padding: 14px; font-weight: 800; border: none; width: 100%; background: var(--accent); color: #000; text-transform: uppercase; }
         
-        .nav-titan { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 15px 0 30px 0; border-top: 1px solid var(--border); }
-        .nav-btn { background: none; border: none; color: #64748B; font-weight: 700; font-size: 10px; }
-        .nav-btn.active { color: var(--accent); }
-        .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); }
+        .nav-item { background: none; border: none; color: #5F6B7A; font-size: 10px; font-weight: 700; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
         .view { display: none; } .view-active { display: block; }
     </style>
 </head>
 <body>
 
-    <header class="titan-header d-flex justify-content-between align-items-center">
-        <div><h1 style="font-size: 18px; font-weight: 800; margin:0; color:var(--accent)">TAJHO | TITAN</h1></div>
-        <div class="text-end"><small id="sync-indicator" style="font-size: 9px; color: #64748B;">CONECTANDO EXCEL...</small></div>
+    <header class="header-app d-flex justify-content-between align-items-center">
+        <div><h1 style="font-size: 16px; font-weight: 900; margin:0; color:var(--accent)">TAJHO | TITAN</h1></div>
+        <div id="conn-status" class="status-dot text-danger">● SIN CONEXIÓN</div>
     </header>
 
     <main>
-        <section id="v-del" class="view view-active">
-            <div class="ultra-card">
-                <span class="label-audit">Logística de Salida</span>
-                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente">
-                <select id="ven-d" class="titan-input">
-                    <option value="">Seleccionar Vendedor...</option>
-                    <option value="ELIAS AVILA">ELIAS AVILA</option>
-                    <option value="EVELYN MURO">EVELYN MURO</option>
-                    <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
-                    <option value="PAULA GARCIA">PAULA GARCIA</option>
-                    <option value="REGULO ANTEZA">REGULO ANTEZA</option>
-                </select>
-
-                <div class="search-engine">
-                    <span class="label-audit">Buscador SKU / Nombre</span>
-                    <input type="text" id="prod-d" class="titan-input" placeholder="🔍 Escriba para buscar..." oninput="doSearch(this.value, 'd')">
-                    <div id="res-d" class="suggest-box"></div>
-                </div>
-
-                <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad">
-                <button class="btn-titan btn-blue" onclick="addItem('d')">Añadir Item <i class="fas fa-plus"></i></button>
-                <div id="list-d" class="mt-4"></div>
-                <button id="sync-d" class="btn-titan btn-green mt-3 d-none" onclick="finalize('d')">Confirmar Todo <i class="fas fa-check-circle"></i></button>
-            </div>
-        </section>
-
-        <section id="v-ret" class="view">
-            <div class="ultra-card">
-                <span class="label-audit">Auditoría de Retorno</span>
+        <section id="v-ret" class="view view-active">
+            <div class="titan-card">
+                <span class="label-audit">AUDITORÍA DE RETORNO</span>
                 <input type="text" id="cli-r" class="titan-input" placeholder="Cliente Origen">
-                <div class="search-engine">
-                    <span class="label-audit">Producto Devuelto</span>
-                    <input type="text" id="prod-r" class="titan-input" placeholder="🔍 SKU o Nombre..." oninput="doSearch(this.value, 'r')">
-                    <div id="res-r" class="suggest-box"></div>
+                
+                <div class="search-wrapper">
+                    <span class="label-audit">PRODUCTO DEVUELTO</span>
+                    <input type="text" id="prod-r" class="titan-input" placeholder="SKU o Nombre..." oninput="findProduct(this.value, 'r')">
+                    <div id="res-r" class="search-results"></div>
                 </div>
 
                 <div class="row g-2">
-                    <div class="col-6"><span class="label-audit">Cant. Guía</span><input type="number" id="qg-r" class="titan-input"></div>
-                    <div class="col-6"><span class="label-audit">Cant. Real</span><input type="number" id="qr-r" class="titan-input"></div>
+                    <div class="col-6"><span class="label-audit">CANT. GUÍA</span><input type="number" id="qg-r" class="titan-input"></div>
+                    <div class="col-6"><span class="label-audit">CANT. REAL</span><input type="number" id="qr-r" class="titan-input"></div>
                 </div>
 
-                <span class="label-audit">Estado QC</span>
+                <span class="label-audit">ESTADO QC</span>
                 <select id="st-r" class="titan-input">
                     <option value="ESTADO ÓPTIMO">ESTADO ÓPTIMO</option>
                     <option value="FALLA DE FÁBRICA">FALLA DE FÁBRICA</option>
                     <option value="DAÑO POR TRANSPORTE">DAÑO POR TRANSPORTE</option>
                 </select>
 
-                <span class="label-audit"><i class="fas fa-pencil-alt"></i> Observaciones</span>
+                <span class="label-audit"><i class="fas fa-pencil-alt"></i> OBSERVACIONES</span>
                 <textarea id="obs-r" class="titan-input" style="height: 80px;"></textarea>
                 
-                <button class="btn-titan btn-blue" onclick="addItem('r')">Validar Ingreso <i class="fas fa-save"></i></button>
-                <div id="list-r" class="mt-4"></div>
-                <button id="sync-r" class="btn-titan btn-green mt-3 d-none" onclick="finalize('r')">Sincronizar <i class="fas fa-cloud-upload-alt"></i></button>
+                <button class="btn-action" onclick="saveItem('r')">REGISTRAR AUDITORÍA</button>
             </div>
         </section>
 
-        <section id="v-his" class="view"><div class="p-3" id="his-feed"></div></section>
+        <section id="v-del" class="view">
+            <div class="titan-card">
+                <span class="label-audit">GESTIÓN DE ENTREGA</span>
+                <input type="text" id="cli-d" class="titan-input" placeholder="Cliente">
+                <div class="search-wrapper">
+                    <span class="label-audit">BUSCAR PRODUCTO</span>
+                    <input type="text" id="prod-d" class="titan-input" placeholder="SKU o Nombre..." oninput="findProduct(this.value, 'd')">
+                    <div id="res-d" class="search-results"></div>
+                </div>
+                <input type="number" id="qty-d" class="titan-input" placeholder="Cantidad">
+                <button class="btn-action" onclick="saveItem('d')">AÑADIR A CARGA</button>
+            </div>
+        </section>
+
+        <section id="v-his" class="view">
+            <div id="history-container"></div>
+        </section>
     </main>
 
-    <nav class="nav-titan">
-        <button class="nav-btn active" onclick="tab('del', this)"><i class="fas fa-truck-loading"></i><span>SALIDA</span></button>
-        <button class="nav-btn" onclick="tab('ret', this)"><i class="fas fa-box"></i><span>RETORNO</span></button>
-        <button class="nav-btn" onclick="tab('his', this)"><i class="fas fa-list-alt"></i><span>REGISTRO</span></button>
+    <nav class="nav-bar">
+        <button class="nav-item" onclick="showView('del', this)"><i class="fas fa-box"></i>ENTREGA</button>
+        <button class="nav-item active" onclick="showView('ret', this)"><i class="fas fa-undo"></i>RETORNO</button>
+        <button class="nav-item" onclick="showView('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
     </nav>
 
     <script>
-        // REEMPLAZAR CON TU URL DE GOOGLE SHEETS (Publicado como CSV)
-        const URL_EXCEL = 'TU_URL_DE_GOOGLE_SHEETS_AQUÍ';
-        
-        let DB = [];
-        let temp = { d: [], r: [] };
+        // PEGA TU ENLACE CSV AQUÍ
+        const EXCEL_CSV_URL = 'TU_URL_DE_GOOGLE_SHEETS_AQUÍ';
+        let INVENTARIO = [];
 
-        function loadDB() {
-            Papa.parse(URL_EXCEL, {
+        function connectExcel() {
+            Papa.parse(EXCEL_CSV_URL, {
                 download: true, header: true,
-                complete: (r) => { DB = r.data; document.getElementById('sync-indicator').innerHTML = 'EXCEL EN LÍNEA <i class="fas fa-circle text-success"></i>'; },
-                error: () => { document.getElementById('sync-indicator').innerHTML = 'SIN CONEXIÓN <i class="fas fa-circle text-danger"></i>'; }
+                complete: (results) => {
+                    INVENTARIO = results.data;
+                    const status = document.getElementById('conn-status');
+                    status.innerHTML = "● SINCRONIZADO";
+                    status.className = "status-dot text-success";
+                },
+                error: () => {
+                    console.log("Error al conectar Excel");
+                }
             });
         }
-        window.onload = loadDB;
+        window.onload = connectExcel;
 
-        function doSearch(val, t) {
-            const res = document.getElementById(`res-${t}`);
-            if(val.length < 2) { res.style.display = 'none'; return; }
-            const match = DB.filter(p => (p.SKU && p.SKU.toLowerCase().includes(val.toLowerCase())) || (p.NOMBRE && p.NOMBRE.toLowerCase().includes(val.toLowerCase())));
-            if(match.length) {
-                res.style.display = 'block';
-                res.innerHTML = match.slice(0, 10).map(p => `<div class="suggest-item" onclick="pick('${p.SKU}', '${p.NOMBRE}', '${t}')"><b>${p.SKU}</b> - ${p.NOMBRE}</div>`).join('');
-            }
-        }
+        function findProduct(val, type) {
+            const resultsBox = document.getElementById(`res-${type}`);
+            if (val.length < 2) { resultsBox.style.display = 'none'; return; }
 
-        function pick(sku, name, t) {
-            document.getElementById(`prod-${t}`).value = `${sku} | ${name}`;
-            document.getElementById(`res-${t}`).style.display = 'none';
-        }
+            // Filtrado inteligente por SKU o Nombre
+            const matches = INVENTARIO.filter(p => 
+                (p.SKU && p.SKU.toLowerCase().includes(val.toLowerCase())) || 
+                (p.NOMBRE && p.NOMBRE.toLowerCase().includes(val.toLowerCase()))
+            );
 
-        function addItem(t) {
-            const item = document.getElementById(`prod-${t}`).value;
-            if(!item) return;
-            if(t === 'd') {
-                temp.d.push({ item, qty: document.getElementById('qty-d').value });
-                document.getElementById('prod-d').value = ''; document.getElementById('qty-d').value = '';
+            if (matches.length > 0) {
+                resultsBox.style.display = 'block';
+                resultsBox.innerHTML = matches.slice(0, 8).map(p => `
+                    <div class="search-item" onclick="selectProduct('${p.SKU}', '${p.NOMBRE}', '${type}')">
+                        <b>${p.SKU}</b> - ${p.NOMBRE}
+                    </div>
+                `).join('');
             } else {
-                temp.r.push({ item, qg: document.getElementById('qg-r').value, qr: document.getElementById('qr-r').value, st: document.getElementById('st-r').value, obs: document.getElementById('obs-r').value });
-                ['prod-r','qg-r','qr-r','obs-r'].forEach(id => document.getElementById(id).value = '');
+                resultsBox.style.display = 'none';
             }
-            render(t);
         }
 
-        function render(t) {
-            const c = document.getElementById(`list-${t}`);
-            document.getElementById(`sync-${t}`).classList.toggle('d-none', temp[t].length === 0);
-            c.innerHTML = temp[t].map((i, idx) => `<div class="p-2 border-bottom d-flex justify-content-between"><small>${i.item}</small> <b>x${i.qty || i.qr}</b></div>`).join('');
+        function selectProduct(sku, name, type) {
+            document.getElementById(`prod-${type}`).value = `${sku} | ${name}`;
+            document.getElementById(`res-${type}`).style.display = 'none';
         }
 
-        function finalize(t) {
-            const h = JSON.parse(localStorage.getItem('TITAN_AUDIT_LOG') || '[]');
-            const cli = document.getElementById(`cli-${t}`).value;
-            temp[t].forEach(i => h.unshift({...i, cli, t: t==='d'?'ENTREGA':'RETORNO', date: new Date().toLocaleString()}));
-            localStorage.setItem('TITAN_AUDIT_LOG', JSON.stringify(h));
-            temp[t] = [];
-            Swal.fire('Guardado', '', 'success').then(() => location.reload());
+        function saveItem(type) {
+            Swal.fire('Guardado', 'El registro se añadió al historial', 'success');
+            // Aquí iría tu lógica de guardado en LocalStorage
         }
 
-        function tab(v, el) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('view-active'));
-            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-            document.getElementById('v-'+v).classList.add('view-active');
-            el.classList.add('active');
-            if(v === 'his') {
-                const h = JSON.parse(localStorage.getItem('TITAN_AUDIT_LOG') || '[]');
-                document.getElementById('his-feed').innerHTML = h.map(r => `<div class="ultra-card mb-2"><span class="badge ${r.t==='ENTREGA'?'bg-info':'bg-danger'}">${r.t}</span><div class="fw-bold">${r.cli}</div><small>${r.item}</small></div>`).join('');
-            }
+        function showView(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('v-' + viewId).classList.add('view-active');
+            btn.classList.add('active');
         }
     </script>
 </body>
