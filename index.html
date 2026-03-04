@@ -77,15 +77,13 @@
         async function init() {
             MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             try {
-                // Forzamos la carga de datos sin caché
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                MASTER = d.p; 
-                LOGS = d.h; 
+                MASTER = d.p || []; 
+                LOGS = d.h || []; // Nos aseguramos de recibir el array
                 renderHis();
             } catch(e) { 
-                console.error("Error al sincronizar historial"); 
-                document.getElementById('feed-his').innerHTML = '<div class="text-center p-5 text-danger">Error de conexión con el historial.</div>';
+                console.error("Error de conexión");
             }
         }
 
@@ -135,7 +133,7 @@
         }
 
         function confirmSave() {
-            const cli = document.getElementById('cli').value.toUpperCase();
+            const cli = document.getElementById('cli').value.trim().toUpperCase();
             const ven = document.getElementById('ven').value;
             if(!cli || !ven || CART.length === 0) return Swal.fire("Error", "Faltan datos", "error");
             save(cli, ven);
@@ -144,7 +142,7 @@
         async function save(cli, ven) {
             MEM[cli] = ven; localStorage.setItem('T_V', JSON.stringify(MEM));
             const obs = document.getElementById('obs').value;
-            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
+            const payload = CART.map(i => [new Date().toISOString(), "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
 
             Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
             
@@ -153,9 +151,9 @@
                 CART = []; renderCart(); 
                 document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
                 
-                await Swal.fire("¡Listo!", `Devolución de ${cli} guardada.`, "success");
+                await Swal.fire("¡Listo!", `Registro guardado para ${cli}`, "success");
                 
-                // RECARGA ABSOLUTA
+                // Forzamos actualización antes de cambiar de vista
                 await init(); 
                 nav('his', document.querySelectorAll('.nav-item')[1]); 
             } catch(e) { Swal.fire("Error", "No se guardó", "error"); }
@@ -164,25 +162,36 @@
         function renderHis(f = "") {
             const feed = document.getElementById('feed-his');
             if(!LOGS || LOGS.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros aún en el sistema.</div>';
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No se recibieron datos de la base.</div>';
                 return;
             }
 
             const groups = {};
-            LOGS.filter(r => r[1] === "DEVOLUCION").forEach(r => {
-                const dateObj = new Date(r[0]);
-                // Agrupamos por minuto para asegurar que items del mismo proceso aparezcan juntos
-                const timestamp = dateObj.getFullYear() + "-" + (dateObj.getMonth()+1) + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
-                const vendor = r[6].split('|')[0].replace('Vendedor: ', '').trim();
+            // Filtrado simplificado para evitar que datos corruptos rompan el bucle
+            LOGS.forEach(r => {
+                if(!r || r[1] !== "DEVOLUCION" || !r[5]) return;
                 
-                if(f && !r[5].toLowerCase().includes(f.toLowerCase()) && !vendor.toLowerCase().includes(f.toLowerCase())) return;
+                const cliente = r[5].toString().toUpperCase();
+                const vendedorInfo = (r[6] || "").toString();
+                const vendorName = vendedorInfo.split('|')[0].replace('Vendedor: ', '').trim();
+                const fechaStr = new Date(r[0]).toLocaleString();
                 
-                const key = r[5] + "_" + timestamp;
-                if(!groups[key]) groups[key] = { cli: r[5], ven: vendor, date: dateObj.toLocaleString(), items: [] };
-                groups[key].items.push({ n: r[3], q: r[4], d: r[6] });
+                // Filtro de búsqueda
+                if(f && !cliente.includes(f.toUpperCase()) && !vendorName.toUpperCase().includes(f.toUpperCase())) return;
+                
+                // Agrupamos por Cliente y Fecha exacta de registro
+                const key = cliente + "_" + r[0];
+                if(!groups[key]) groups[key] = { cli: cliente, ven: vendorName, date: fechaStr, items: [] };
+                groups[key].items.push({ n: r[3], q: r[4], d: vendedorInfo });
             });
 
-            const html = Object.values(groups).reverse().map(g => `
+            const htmlArr = Object.values(groups).reverse();
+            if(htmlArr.length === 0) {
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No se encontraron resultados para la búsqueda.</div>';
+                return;
+            }
+
+            feed.innerHTML = htmlArr.map(g => `
                 <div class="hist-card">
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted"><b>${g.date}</b></small>
@@ -191,14 +200,12 @@
                     <div class="fw-800" style="font-size:16px">${g.cli}</div>
                     <div class="text-muted mb-3" style="font-size:12px">Atendido por: ${g.ven}</div>
                     <div class="d-flex gap-2">
-                        <button class="btn-opt" onclick="Swal.fire('Editar','En desarrollo','info')"><i class="fas fa-edit"></i> EDITAR</button>
+                        <button class="btn-opt" onclick="Swal.fire('Editar','Próximamente','info')"><i class="fas fa-edit"></i> EDITAR</button>
                         <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> LISTA</button>
                         <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
             `).join('');
-            
-            feed.innerHTML = html || '<div class="text-center p-5 text-muted">No se encontraron resultados para la búsqueda.</div>';
         }
 
         function viewItems(data) {
@@ -222,7 +229,7 @@
             doc.autoTable({
                 startY: 60,
                 head: [['Cant', 'Producto', 'Motivo']],
-                body: g.items.map(i => [i.q, i.n, i.d.split('|')[2] || '']),
+                body: g.items.map(i => [i.q, i.n, (i.d.split('|')[2] || '').trim()]),
                 headStyles: { fillColor: [255, 86, 48] }
             });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
@@ -233,7 +240,7 @@
             document.getElementById('v-reg').classList.toggle('d-none', v !== 'reg');
             document.getElementById('v-his').classList.toggle('d-none', v !== 'his');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            b.classList.add('active');
+            if(b) b.classList.add('active');
         }
 
         window.onload = init;
