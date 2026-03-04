@@ -36,7 +36,7 @@
         <section id="v-reg">
             <div class="card-custom">
                 <span class="label-custom">CLIENTE QUE DEVUELVE</span>
-                <input type="text" id="cli" class="input-custom" placeholder="Nombre completo..." oninput="suggestVendor(this.value)">
+                <input type="text" id="cli" class="input-custom" placeholder="Ej: UTILMAS..." oninput="suggestVendor(this.value)">
 
                 <span class="label-custom">VENDEDOR RESPONSABLE</span>
                 <select id="ven" class="input-custom">
@@ -59,7 +59,10 @@
 
         <section id="v-his" class="d-none">
             <div class="p-3">
-                <input type="text" id="filter" class="input-custom" placeholder="Buscar por cliente o vendedor..." oninput="renderHis(this.value)">
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" id="filter" class="input-custom mb-0" placeholder="Buscar cliente..." oninput="renderHis(this.value)">
+                    <button class="btn btn-light rounded-3" onclick="init()"><i class="fas fa-sync"></i></button>
+                </div>
                 <div id="feed-his"></div>
             </div>
         </section>
@@ -80,11 +83,9 @@
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p || []; 
-                LOGS = d.h || []; // Nos aseguramos de recibir el array
+                LOGS = d.h || []; 
                 renderHis();
-            } catch(e) { 
-                console.error("Error de conexión");
-            }
+            } catch(e) { console.error("Error de carga"); }
         }
 
         function suggestVendor(v) {
@@ -125,7 +126,7 @@
 
         function renderCart() {
             document.getElementById('cart-list').innerHTML = CART.map((i, idx) => `
-                <div class="p-2 border-bottom d-flex justify-content-between">
+                <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
                     <small><b>${i.f} un.</b> - ${i.name}</small>
                     <i class="fas fa-trash text-danger" onclick="CART.splice(${idx},1); renderCart();"></i>
                 </div>
@@ -142,18 +143,23 @@
         async function save(cli, ven) {
             MEM[cli] = ven; localStorage.setItem('T_V', JSON.stringify(MEM));
             const obs = document.getElementById('obs').value;
-            const payload = CART.map(i => [new Date().toISOString(), "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
+            // Estructura exacta de tus columnas A, B, C, D, E, F, G
+            const payload = CART.map(i => [
+                new Date().toISOString().split('T')[0], // A: Fecha
+                "DEVOLUCION",                           // B: ID/Acción
+                "CLIENTE",                              // C: ID genérico
+                i.name,                                 // D: Producto
+                i.f,                                    // E: Cantidad
+                cli,                                    // F: Motivo (Nombre del Cliente según tu captura)
+                `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}` // G: Detalles
+            ]);
 
             Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
-            
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
                 CART = []; renderCart(); 
                 document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
-                
-                await Swal.fire("¡Listo!", `Registro guardado para ${cli}`, "success");
-                
-                // Forzamos actualización antes de cambiar de vista
+                await Swal.fire("¡Éxito!", "Registro guardado.", "success");
                 await init(); 
                 nav('his', document.querySelectorAll('.nav-item')[1]); 
             } catch(e) { Swal.fire("Error", "No se guardó", "error"); }
@@ -162,32 +168,31 @@
         function renderHis(f = "") {
             const feed = document.getElementById('feed-his');
             if(!LOGS || LOGS.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No se recibieron datos de la base.</div>';
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros aún.</div>';
                 return;
             }
 
             const groups = {};
-            // Filtrado simplificado para evitar que datos corruptos rompan el bucle
             LOGS.forEach(r => {
-                if(!r || r[1] !== "DEVOLUCION" || !r[5]) return;
-                
-                const cliente = r[5].toString().toUpperCase();
-                const vendedorInfo = (r[6] || "").toString();
-                const vendorName = vendedorInfo.split('|')[0].replace('Vendedor: ', '').trim();
-                const fechaStr = new Date(r[0]).toLocaleString();
-                
-                // Filtro de búsqueda
-                if(f && !cliente.includes(f.toUpperCase()) && !vendorName.toUpperCase().includes(f.toUpperCase())) return;
-                
-                // Agrupamos por Cliente y Fecha exacta de registro
+                // Según tu imagen: Columna B (r[1]) es "DEVOLUCION"
+                if(r[1] !== "DEVOLUCION") return;
+
+                // Según tu imagen: Columna F (r[5]) es donde pones el nombre del cliente
+                const cliente = r[5] ? r[5].toString().toUpperCase() : "SIN NOMBRE";
+                const detalles = r[6] || "";
+                const fecha = r[0] ? r[0].toString().split('T')[0] : "---";
+
+                if(f && !cliente.includes(f.toUpperCase())) return;
+
+                // Agrupamos por Cliente y Fecha exacta
                 const key = cliente + "_" + r[0];
-                if(!groups[key]) groups[key] = { cli: cliente, ven: vendorName, date: fechaStr, items: [] };
-                groups[key].items.push({ n: r[3], q: r[4], d: vendedorInfo });
+                if(!groups[key]) groups[key] = { cli: cliente, date: fecha, items: [], rawDet: detalles };
+                groups[key].items.push({ n: r[3], q: r[4], d: detalles });
             });
 
             const htmlArr = Object.values(groups).reverse();
             if(htmlArr.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No se encontraron resultados para la búsqueda.</div>';
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay coincidencias.</div>';
                 return;
             }
 
@@ -198,9 +203,8 @@
                         <span class="badge bg-danger">DEVOLUCIÓN</span>
                     </div>
                     <div class="fw-800" style="font-size:16px">${g.cli}</div>
-                    <div class="text-muted mb-3" style="font-size:12px">Atendido por: ${g.ven}</div>
+                    <div class="text-muted mb-3" style="font-size:11px">${g.rawDet.split('|')[0]}</div>
                     <div class="d-flex gap-2">
-                        <button class="btn-opt" onclick="Swal.fire('Editar','Próximamente','info')"><i class="fas fa-edit"></i> EDITAR</button>
                         <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> LISTA</button>
                         <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i> PDF</button>
                     </div>
@@ -212,7 +216,7 @@
             const g = JSON.parse(atob(data));
             Swal.fire({
                 title: g.cli,
-                html: `<div class="text-start" style="font-size:13px">${g.items.map(i => `<div class="mb-2 border-bottom pb-2"><b>${i.q} un.</b> - ${i.n}<br><small class="text-danger">${i.d.split('|')[2] || ''}</small></div>`).join('')}</div>`
+                html: `<div class="text-start" style="font-size:13px">${g.items.map(i => `<div class="mb-2 border-bottom pb-2"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.d.split('|')[2] || ''}</small></div>`).join('')}</div>`
             });
         }
 
@@ -221,19 +225,18 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(255); doc.setFontSize(16); doc.text("HOJA DE RUTA - DEVOLUCIÓN", 14, 20);
+            doc.setTextColor(255); doc.setFontSize(16); doc.text("REPORTE DE DEVOLUCIÓN", 14, 20);
             doc.setTextColor(0); doc.setFontSize(10);
             doc.text(`CLIENTE: ${g.cli}`, 14, 40);
-            doc.text(`VENDEDOR: ${g.ven}`, 14, 46);
-            doc.text(`FECHA: ${g.date}`, 14, 52);
+            doc.text(`FECHA: ${g.date}`, 14, 46);
             doc.autoTable({
-                startY: 60,
-                head: [['Cant', 'Producto', 'Motivo']],
+                startY: 55,
+                head: [['Cant', 'Producto', 'Observación']],
                 body: g.items.map(i => [i.q, i.n, (i.d.split('|')[2] || '').trim()]),
                 headStyles: { fillColor: [255, 86, 48] }
             });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
-            doc.save(`${g.cli}.pdf`);
+            doc.save(`Devolucion_${g.cli}.pdf`);
         }
 
         function nav(v, b) {
