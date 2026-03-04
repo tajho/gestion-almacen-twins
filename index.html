@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN | Devoluciones</title>
+    <title>TITAN DEV | Intelligent Logistics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,125 +11,144 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
         :root {
             --primary: #0052cc;
             --danger: #ff5630;
-            --bg: #f7f8fa;
-            --surface: #ffffff;
-            --text: #172b4d;
-            --border: #ebecf0;
+            --accent: #6554c0;
+            --bg: #f8f9fc;
+            --glass: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
 
         body { 
             background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text); padding-bottom: 100px; margin: 0;
+            color: #172b4d; padding-bottom: 120px;
         }
 
-        /* BARRA DE CARGA INVISIBLE (Solo un hilo superior) */
-        #stealth-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+        /* BARRA DE SINCRONIZACIÓN INVISIBLE */
+        #sync-line {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
             z-index: 9999; background: transparent;
         }
-        .active-sync { background: linear-gradient(90deg, transparent, var(--primary), transparent); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .syncing { background: linear-gradient(90deg, #ff5630, #6554c0, #0052cc); animation: wave 1.5s infinite linear; }
+        @keyframes wave { from { background-position: -200px 0; } to { background-position: 200px 0; } }
 
-        .app-header {
-            background: #fff; padding: 18px 20px; border-bottom: 1px solid var(--border);
+        /* HEADER */
+        .header-premium {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .main-card {
-            background: var(--surface); border-radius: 24px; padding: 24px;
-            margin: 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        /* CARDS INTELIGENTES */
+        .card-smart {
+            background: #ffffff; border-radius: 30px; padding: 25px;
+            margin: 15px; border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: var(--shadow);
         }
 
-        .label-pro { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 0.5px; }
+        .label-smart { font-size: 10px; font-weight: 800; color: #8993a4; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; display: block; }
 
-        .input-pro {
-            width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border);
-            font-size: 15px; font-weight: 600; margin-bottom: 18px; transition: 0.2s; background: #fff;
+        .input-smart {
+            width: 100%; padding: 16px 20px; border-radius: 18px; border: 2px solid #edeff2;
+            font-size: 15px; font-weight: 600; margin-bottom: 20px; transition: 0.3s;
+            background: #fdfdfe;
         }
-        .input-pro:focus { border-color: var(--primary); outline: none; background: #fbfcfe; }
+        .input-smart:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px rgba(0,82,204,0.1); }
 
-        .search-box { position: relative; }
-        .search-results {
-            position: absolute; width: 100%; background: #fff; border-radius: 12px;
-            border: 1px solid var(--border); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-height: 250px; overflow-y: auto; display: none; margin-top: -10px;
+        /* SUGERENCIA DINÁMICA */
+        #vendor-badge {
+            font-size: 10px; padding: 4px 12px; border-radius: 10px;
+            background: #eef2ff; color: var(--primary); font-weight: 800;
+            display: none; margin-bottom: 15px; animation: fadeIn 0.5s;
         }
 
-        /* TARJETAS DE HISTORIAL */
+        /* HISTORIAL */
         .history-card {
-            background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 12px;
-            border: 1px solid var(--border); border-left: 5px solid var(--danger);
+            background: #fff; border-radius: 22px; padding: 20px; margin-bottom: 15px;
+            border-left: 6px solid var(--danger); transition: 0.3s; cursor: pointer;
         }
-        .hc-time { font-size: 11px; font-weight: 800; color: var(--danger); background: #fff0ed; padding: 3px 10px; border-radius: 20px; }
-        
-        .footer-claim { 
-            font-size: 9px; font-weight: 700; color: #97a0af; text-align: center;
-            margin-top: 15px; padding-top: 10px; border-top: 1px solid #f4f5f7;
-        }
+        .history-card:active { transform: scale(0.97); }
 
-        /* NAVEGACIÓN 2 OPCIONES */
-        .nav-titan {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: #172b4d; border-radius: 24px; display: flex;
-            padding: 12px; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        /* NAV BAR ESTILO FLOTANTE */
+        .nav-modern {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: #172b4d; border-radius: 25px; display: flex;
+            padding: 15px; gap: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.25);
         }
-        .nav-item { 
-            flex: 1; border: none; background: none; color: #a5adba;
-            font-size: 11px; font-weight: 800; text-align: center;
+        .nav-btn { flex: 1; border: none; background: none; color: #7a869a; font-size: 11px; font-weight: 700; transition: 0.3s; }
+        .nav-btn.active { color: #fff; transform: translateY(-3px); }
+        .nav-btn i { font-size: 22px; display: block; margin-bottom: 5px; }
+
+        .btn-action {
+            background: var(--danger); color: #fff; border: none; border-radius: 18px;
+            padding: 16px; font-weight: 800; letter-spacing: 1px; width: 100%; transition: 0.3s;
         }
-        .nav-item.active { color: #fff; background: rgba(255,255,255,0.1); border-radius: 16px; padding: 8px 0; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .btn-action:active { transform: scale(0.95); background: #de350b; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div id="stealth-loader"></div>
+    <div id="sync-line"></div>
 
-    <header class="app-header">
+    <header class="header-premium">
         <div>
-            <span class="fw-800" style="font-size: 20px;">TITAN <span style="color:var(--danger)">DEV</span></span>
+            <div style="font-size: 22px; font-weight: 900; letter-spacing: -1.5px;">TITAN <span style="color:var(--danger)">DEV</span></div>
+            <div style="font-size: 9px; font-weight: 800; color: #a5adba; text-transform: uppercase;">Intelligence Logistic v5.0</div>
         </div>
         <div class="text-end">
-            <small class="d-block fw-800 text-muted" style="font-size: 10px;">RESPONSABLE</small>
-            <span class="fw-700" style="font-size: 14px;">Angelo Durand</span>
+            <i class="fas fa-shield-alt text-primary"></i> <span class="fw-800" style="font-size: 13px;">Angelo Durand</span>
         </div>
     </header>
 
     <main class="container p-0">
         <section id="v-ret" class="view">
-            <div class="main-card">
-                <span class="label-pro">Origen de Mercadería</span>
-                <input type="text" id="cli-r" class="input-pro" placeholder="Cliente o Proveedor">
+            <div class="card-smart">
+                <span class="label-smart">Información del Cliente</span>
+                <input type="text" id="cli-r" class="input-smart" placeholder="Nombre del Cliente..." oninput="checkMemory(this.value)">
+                
+                <div id="vendor-badge"><i class="fas fa-magic"></i> VENDEDOR SUGERIDO: <span id="sug-v"></span></div>
+                
+                <span class="label-smart">Vendedor Asignado</span>
+                <input type="text" id="ven-r" class="input-smart" placeholder="Nombre del Vendedor...">
 
-                <span class="label-pro">Buscador de Ítem</span>
-                <div class="search-box">
-                    <input type="text" id="src-r" class="input-pro" placeholder="SKU o Nombre del producto..." oninput="find(this.value)">
-                    <div id="res-r" class="search-results"></div>
+                <span class="label-smart">Buscador de Mercadería</span>
+                <div class="position-relative">
+                    <input type="text" id="src-r" class="input-smart" placeholder="SKU o Nombre del producto..." oninput="find(this.value)">
+                    <div id="res-r" style="position:absolute; width:100%; z-index:100; background:#fff; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.1); display:none; margin-top:-15px;"></div>
                 </div>
 
-                <div id="form-r" class="d-none mt-2 p-3 rounded-4" style="background: #fff5f5; border: 1px solid #ffdbdb;">
-                    <b id="p-n-r" class="d-block text-danger mb-3" style="font-size: 16px;"></b>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6"><span class="label-pro">Cant. Guía</span><input type="number" id="cg-r" class="input-pro" placeholder="0"></div>
-                        <div class="col-6"><span class="label-pro">Cant. Real</span><input type="number" id="cr-r" class="input-pro" placeholder="0"></div>
+                <div id="form-r" class="d-none animate__animated animate__fadeIn">
+                    <div style="background: #fff5f5; border: 1px solid #ffebe6; padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+                        <b id="p-n-r" class="d-block text-danger mb-3" style="font-size: 16px;"></b>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <span class="label-smart">Guía</span>
+                                <input type="number" id="cg-r" class="input-smart" style="margin:0">
+                            </div>
+                            <div class="col-6">
+                                <span class="label-smart">Físico</span>
+                                <input type="number" id="cr-r" class="input-smart" style="margin:0">
+                            </div>
+                        </div>
+                        <span class="label-smart">Motivo</span>
+                        <select id="st-r" class="input-smart">
+                            <option value="MERMA">FALLA DE FÁBRICA / MERMA</option>
+                            <option value="CAMBIO">CAMBIO POR TALLA/MODELO</option>
+                            <option value="TÉCNICO">SERVICIO TÉCNICO</option>
+                        </select>
+                        <button class="btn-action" onclick="addItem()">AÑADIR A LA CARGA</button>
                     </div>
-                    <span class="label-pro">Motivo de Devolución</span>
-                    <select id="st-r" class="input-pro">
-                        <option value="MERMA">FALLADO / MERMA</option>
-                        <option value="CAMBIO">CAMBIO DE PRODUCTO</option>
-                        <option value="GARANTIA">GARANTÍA TÉCNICA</option>
-                    </select>
-                    <button class="btn btn-danger w-100 py-3 rounded-4 fw-800" onclick="addItem()">AÑADIR A LA LISTA</button>
                 </div>
 
-                <div id="list-r" class="mt-4 d-none">
-                    <div id="items-r"></div>
-                    <button class="btn btn-dark w-100 py-3 rounded-4 fw-800 mt-3" onclick="invisibleSync()">SINCRONIZAR INVISIBLE</button>
+                <div id="list-r" class="d-none">
+                    <div id="items-r" class="mb-3"></div>
+                    <button class="btn btn-dark w-100 py-3 rounded-4 fw-800 shadow" onclick="invisibleSync()">PROCESAR TODO</button>
                 </div>
             </div>
         </section>
@@ -139,22 +158,38 @@
         </section>
     </main>
 
-    <nav class="nav-titan">
-        <button class="nav-item active" onclick="nav('ret', this)"><i class="fas fa-box-open"></i>DEVOLUCIONES</button>
-        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
+    <nav class="nav-modern">
+        <button class="nav-btn active" onclick="nav('ret', this)"><i class="fas fa-file-import"></i>REGISTRO</button>
+        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-layer-group"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = []; let CART = []; let HIS_DATA = {};
+        let MASTER = []; let CART = []; let MEMORY = {};
 
         async function init() {
+            // Cargar memoria de clientes/vendedores
+            MEMORY = JSON.parse(localStorage.getItem('TITAN_MEMORY')) || {};
+            
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p;
-                processHis(d.h);
-            } catch(e) { console.warn("Offline"); }
+                renderHis(d.h);
+            } catch(e) { console.warn("Modo Offline"); }
+        }
+
+        // --- INTELIGENCIA DE SUGERENCIA ---
+        function checkMemory(cliente) {
+            const cli = cliente.trim().toUpperCase();
+            const badge = document.getElementById('vendor-badge');
+            if(MEMORY[cli]) {
+                badge.style.display = 'block';
+                document.getElementById('sug-v').innerText = MEMORY[cli];
+                document.getElementById('ven-r').value = MEMORY[cli];
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         function find(v) {
@@ -166,134 +201,147 @@
         }
 
         function pick(s, n) {
-            window.lastItem = {sku: s, name: n};
+            window.last = {sku:s, name:n};
             document.getElementById('p-n-r').innerText = n;
             document.getElementById('form-r').classList.remove('d-none');
             document.getElementById('res-r').style.display = 'none';
         }
 
         function addItem() {
-            const cg = document.getElementById('cg-r').value;
             const cr = document.getElementById('cr-r').value;
             if(!cr) return;
-            CART.push({...window.lastItem, cg, cr, st: document.getElementById('st-r').value});
+            CART.push({...window.last, cr, cg: document.getElementById('cg-r').value, st: document.getElementById('st-r').value});
             document.getElementById('form-r').classList.add('d-none');
             document.getElementById('src-r').value = '';
             renderCart();
         }
 
         function renderCart() {
-            const cont = document.getElementById('list-r');
-            const items = document.getElementById('items-r');
-            cont.classList.toggle('d-none', CART.length === 0);
-            items.innerHTML = CART.map((i, idx) => `
-                <div class="p-3 mb-2 bg-white rounded-3 border d-flex justify-content-between align-items-center">
-                    <div><b>${i.cr}</b> x ${i.name}<br><small class="text-muted">${i.st}</small></div>
-                    <i class="fas fa-trash text-muted" onclick="CART.splice(${idx},1); renderCart();"></i>
+            const c = document.getElementById('list-r');
+            c.classList.toggle('d-none', CART.length === 0);
+            document.getElementById('items-r').innerHTML = CART.map((i, idx) => `
+                <div class="p-3 mb-2 bg-light rounded-4 d-flex justify-content-between align-items-center border">
+                    <div><b>${i.cr}</b> unid. - ${i.name}<br><small class="text-muted">${i.st}</small></div>
+                    <i class="fas fa-trash-alt text-muted" onclick="CART.splice(${idx},1); renderCart();"></i>
                 </div>
             `).join('');
         }
 
-        // --- SINCRONIZACIÓN INVISIBLE ---
-        async function invisibleSync() {
-            const cli = document.getElementById('cli-r').value;
-            if(!cli) return Swal.fire("Error", "Falta el Cliente", "error");
+        // --- SINCRONIZACIÓN INVISIBLE E INTELIGENTE ---
+        function invisibleSync() {
+            const cli = document.getElementById('cli-r').value.trim().toUpperCase();
+            const ven = document.getElementById('ven-r').value.trim().toUpperCase();
+            
+            if(!cli || !ven) return Swal.fire("Campos Incompletos", "El cliente y el vendedor son obligatorios", "warning");
 
-            const bar = document.getElementById('stealth-loader');
-            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.cr, cli, `Guía: ${i.cg} | Motivo: ${i.st}`]);
+            // Guardar en memoria para la próxima vez
+            MEMORY[cli] = ven;
+            localStorage.setItem('TITAN_MEMORY', JSON.stringify(MEMORY));
+
+            const bar = document.getElementById('sync-line');
+            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.cr, cli, `Vendedor: ${ven} | Guía: ${i.cg} | ${i.st}`]);
             
-            // Acción inmediata: Limpiar UI y mostrar hilo de carga
-            bar.className = 'active-sync';
+            bar.className = 'syncing';
             CART = []; renderCart();
-            document.getElementById('cli-r').value = '';
-            
-            // Sincronización en segundo plano
+            document.getElementById('cli-r').value = ''; 
+            document.getElementById('ven-r').value = '';
+            document.getElementById('vendor-badge').style.display = 'none';
+
             fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})})
             .then(() => {
                 bar.className = '';
-                init(); // Actualiza historial silenciosamente
+                init(); // Actualiza historial sin interrumpir
             });
         }
 
-        function processHis(data) {
+        function renderHis(h) {
+            const feed = document.getElementById('feed-his');
             const groups = {};
-            data.filter(r => r[1] === "DEVOLUCION").forEach(r => {
+            h.filter(r => r[1] === "DEVOLUCION").forEach(r => {
                 const d = new Date(r[0]);
                 const time = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                 const key = r[5] + "_" + time;
-                if(!groups[key]) groups[key] = { cli: r[5], time, date: d.toLocaleDateString(), prods: [] };
-                groups[key].prods.push({ n: r[3], q: r[4], s: r[2], m: r[6] });
+                if(!groups[key]) groups[key] = { cli: r[5], date: d.toLocaleDateString(), time, p: [] };
+                groups[key].p.push({ n: r[3], q: r[4], m: r[6] });
             });
-            HIS_DATA = groups;
-            renderHis();
-        }
 
-        function renderHis() {
-            const feed = document.getElementById('feed-his');
-            feed.innerHTML = Object.values(HIS_DATA).reverse().slice(0, 15).map(g => `
+            feed.innerHTML = Object.values(groups).reverse().slice(0, 15).map(g => `
                 <div class="history-card" onclick="verPop('${btoa(JSON.stringify(g))}')">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="hc-time">${g.time}</span>
-                        <small class="text-muted fw-bold">${g.date}</small>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-danger rounded-pill" style="font-size:9px">DEVOLUCIÓN</span>
+                        <small class="text-muted fw-800">${g.date} ${g.time}</small>
                     </div>
-                    <div class="fw-800" style="font-size: 17px;">${g.cli}</div>
-                    <div class="text-muted" style="font-size: 13px;">${g.prods.length} productos devueltos</div>
-                    <div class="footer-claim">Autorizado: J. Angelo Nuñez Durand</div>
+                    <div style="font-weight: 800; font-size: 18px; color: #172b4d;">${g.cli}</div>
+                    <div class="text-muted" style="font-size: 13px;">${g.p.length} productos registrados</div>
+                    <div style="font-size: 9px; margin-top:10px; color: #a5adba; border-top: 1px solid #f4f5f7; padding-top:10px;">
+                        REVISIÓN: ANGELO DURAND | TITAN ELITE 2026
+                    </div>
                 </div>
             `).join('');
         }
 
-        function verPop(dataStr) {
-            const g = JSON.parse(atob(dataStr));
+        function verPop(str) {
+            const g = JSON.parse(atob(str));
             Swal.fire({
-                title: 'Detalle de Devolución',
+                title: 'Resumen Logístico',
                 html: `
-                    <div class="text-start" style="font-size:14px">
-                        <div class="mb-3 p-3 bg-light rounded-4">
-                            <b>Origen:</b> ${g.cli}<br>
-                            <b>Registro:</b> ${g.date} ${g.time}
+                    <div class="text-start" style="font-size:14px; color:#172b4d">
+                        <div class="mb-3 p-3 rounded-4" style="background:#f4f5f7">
+                            <b>Cliente:</b> ${g.cli}<br>
+                            <b>Registro:</b> ${g.date} a las ${g.time}
                         </div>
-                        ${g.prods.map(p => `
-                            <div class="border-bottom py-2">
-                                <b>${p.q} unid.</b> - ${p.n}<br>
-                                <small class="text-muted">${p.m}</small>
-                            </div>
-                        `).join('')}
+                        <div class="list-group list-group-flush">
+                            ${g.p.map(p => `
+                                <div class="list-group-item px-0 bg-transparent">
+                                    <div class="d-flex justify-content-between">
+                                        <b>${p.q} unid.</b>
+                                        <span class="text-danger fw-bold">PROCESADO</span>
+                                    </div>
+                                    <small class="d-block">${p.n}</small>
+                                    <small class="text-muted" style="font-size:11px">${p.m}</small>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `,
-                confirmButtonText: 'GENERAR PDF',
                 showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-file-pdf"></i> PDF',
                 cancelButtonText: 'CERRAR',
                 confirmButtonColor: '#ff5630',
-                customClass: { popup: 'rounded-5' }
+                customClass: { popup: 'rounded-5 shadow-lg' }
             }).then(r => { if(r.isConfirmed) genPDF(g); });
         }
 
         function genPDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18); doc.text("REPORTE DE DEVOLUCIÓN", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`CLIENTE/ORIGEN: ${g.cli}`, 14, 30);
-            doc.text(`FECHA: ${g.date} | HORA: ${g.time}`, 14, 35);
+            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("REPORTE DE DEVOLUCIÓN", 14, 22);
+            doc.setFontSize(9); doc.text("TITAN ELITE | GESTIÓN DE INVENTARIOS", 14, 28);
+            
+            doc.setTextColor(23, 43, 77); doc.setFontSize(11);
+            doc.text(`ORIGEN: ${g.cli}`, 14, 45);
+            doc.text(`FECHA: ${g.date} | HORA: ${g.time}`, 14, 51);
 
             doc.autoTable({
-                startY: 45,
-                head: [['Cant', 'Producto', 'Detalles']],
-                body: g.prods.map(p => [p.q, p.n, p.m]),
-                headStyles: { fillColor: [255, 86, 48] }
+                startY: 60,
+                head: [['Cant', 'Producto / SKU', 'Detalle de Referencia']],
+                body: g.p.map(p => [p.q, p.n, p.m]),
+                headStyles: { fillColor: [255, 86, 48] },
+                styles: { fontSize: 9 }
             });
 
-            doc.setFontSize(8);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
-            doc.save(`DEV_${g.cli}.pdf`);
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setFontSize(8); doc.setTextColor(150);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align:'center'});
+            doc.save(`TITAN_${g.cli}.pdf`);
         }
 
-        function nav(v, btn) {
+        function nav(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.add('d-none'));
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.remove('d-none');
-            btn.classList.add('active');
+            b.classList.add('active');
         }
 
         window.onload = init;
