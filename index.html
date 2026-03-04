@@ -77,13 +77,16 @@
         async function init() {
             MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             try {
-                // Forzamos la carga de datos frescos
+                // Forzamos la carga de datos sin caché
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p; 
-                LOGS = d.h; // Aquí llegan todas las devoluciones de la hoja
+                LOGS = d.h; 
                 renderHis();
-            } catch(e) { console.error("Error al sincronizar historial"); }
+            } catch(e) { 
+                console.error("Error al sincronizar historial"); 
+                document.getElementById('feed-his').innerHTML = '<div class="text-center p-5 text-danger">Error de conexión con el historial.</div>';
+            }
         }
 
         function suggestVendor(v) {
@@ -147,25 +150,29 @@
             
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
-                // REINICIO DE CAMPOS
                 CART = []; renderCart(); 
                 document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
                 
-                // NOTIFICACIÓN Y RECARGA
                 await Swal.fire("¡Listo!", `Devolución de ${cli} guardada.`, "success");
-                await init(); // Fuerza la recarga del historial antes de cambiar de vista
-                nav('his', document.querySelectorAll('.nav-item')[1]); // Te lleva directo al historial
+                
+                // RECARGA ABSOLUTA
+                await init(); 
+                nav('his', document.querySelectorAll('.nav-item')[1]); 
             } catch(e) { Swal.fire("Error", "No se guardó", "error"); }
         }
 
         function renderHis(f = "") {
             const feed = document.getElementById('feed-his');
+            if(!LOGS || LOGS.length === 0) {
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros aún en el sistema.</div>';
+                return;
+            }
+
             const groups = {};
-            
-            // Agrupamos registros por Cliente + Fecha (minuto exacto) para que se vea una sola tarjeta por devolución
             LOGS.filter(r => r[1] === "DEVOLUCION").forEach(r => {
                 const dateObj = new Date(r[0]);
-                const timestamp = dateObj.getFullYear() + "-" + dateObj.getMonth() + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
+                // Agrupamos por minuto para asegurar que items del mismo proceso aparezcan juntos
+                const timestamp = dateObj.getFullYear() + "-" + (dateObj.getMonth()+1) + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
                 const vendor = r[6].split('|')[0].replace('Vendedor: ', '').trim();
                 
                 if(f && !r[5].toLowerCase().includes(f.toLowerCase()) && !vendor.toLowerCase().includes(f.toLowerCase())) return;
@@ -185,20 +192,20 @@
                     <div class="text-muted mb-3" style="font-size:12px">Atendido por: ${g.ven}</div>
                     <div class="d-flex gap-2">
                         <button class="btn-opt" onclick="Swal.fire('Editar','En desarrollo','info')"><i class="fas fa-edit"></i> EDITAR</button>
-                        <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> VER LISTA</button>
+                        <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> LISTA</button>
                         <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
             `).join('');
             
-            feed.innerHTML = html || '<div class="text-center p-5 text-muted">No hay registros aún.</div>';
+            feed.innerHTML = html || '<div class="text-center p-5 text-muted">No se encontraron resultados para la búsqueda.</div>';
         }
 
         function viewItems(data) {
             const g = JSON.parse(atob(data));
             Swal.fire({
                 title: g.cli,
-                html: `<div class="text-start">${g.items.map(i => `<div class="mb-2 border-bottom"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.d.split('|')[2]}</small></div>`).join('')}</div>`
+                html: `<div class="text-start" style="font-size:13px">${g.items.map(i => `<div class="mb-2 border-bottom pb-2"><b>${i.q} un.</b> - ${i.n}<br><small class="text-danger">${i.d.split('|')[2] || ''}</small></div>`).join('')}</div>`
             });
         }
 
@@ -215,7 +222,7 @@
             doc.autoTable({
                 startY: 60,
                 head: [['Cant', 'Producto', 'Motivo']],
-                body: g.items.map(i => [i.q, i.n, i.d.split('|')[2]]),
+                body: g.items.map(i => [i.q, i.n, i.d.split('|')[2] || '']),
                 headStyles: { fillColor: [255, 86, 48] }
             });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
