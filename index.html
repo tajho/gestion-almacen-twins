@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN DEV | Intelligence 2026</title>
+    <title>TITAN LOGISTICS | Elite</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,303 +11,299 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         :root {
             --primary: #0052cc;
             --danger: #ff5630;
-            --bg: #f4f6f8;
-            --glass: #ffffff;
+            --dark: #172b4d;
+            --bg: #f8f9fa;
         }
 
         body { 
             background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #172b4d; padding-bottom: 110px;
+            color: var(--dark); padding-bottom: 100px;
         }
 
-        #sync-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
-            z-index: 9999; background: transparent; transition: 0.3s;
-        }
-        .syncing { background: linear-gradient(90deg, #ff5630, #0052cc); background-size: 200% 100%; animation: move 1.5s infinite linear; }
-        @keyframes move { from { background-position: 100% 0; } to { background-position: -100% 0; } }
-
-        .header-pro {
-            background: #fff; padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
+        /* HEADER */
+        .top-bar {
+            background: #fff; padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.06);
             display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .card-pro {
-            background: #ffffff; border-radius: 28px; padding: 22px;
-            margin: 15px; border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        /* CARDS */
+        .glass-card {
+            background: #ffffff; border-radius: 24px; padding: 20px;
+            margin: 15px; border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
         }
 
-        .label-pro { font-size: 10px; font-weight: 800; color: #8993a4; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .label-sm { font-size: 10px; font-weight: 800; color: #6b778c; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block; }
 
         .input-pro {
-            width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid #edeff2;
-            font-size: 15px; font-weight: 600; margin-bottom: 18px; transition: 0.3s;
+            width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #ebecf0;
+            font-size: 15px; font-weight: 600; margin-bottom: 15px; transition: 0.2s;
         }
-        .input-pro:focus { border-color: var(--primary); outline: none; }
+        .input-pro:focus { border-color: var(--primary); outline: none; background: #fff; }
 
-        /* CANVAS AREA */
-        .canvas-container {
-            border: 2px dashed #ccd1d9; border-radius: 18px; background: #fafbfc;
-            position: relative; overflow: hidden; margin-bottom: 20px;
-        }
-        canvas { touch-action: none; width: 100%; height: 150px; cursor: crosshair; }
-        .canvas-tool { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
-        .btn-tool { background: #fff; border: 1px solid #ddd; padding: 5px 10px; border-radius: 8px; font-size: 12px; }
-
-        /* HISTORY */
-        .hist-item {
-            background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 12px;
-            border-left: 5px solid var(--danger); box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        /* AREA DE NOTAS */
+        .notes-area {
+            background: #fff9db; border: 1px solid #f5e08e; border-radius: 12px;
+            padding: 10px; font-size: 14px; min-height: 60px; width: 100%;
+            resize: none; font-family: inherit;
         }
 
-        .nav-titan {
-            position: fixed; bottom: 20px; left: 15px; right: 15px;
-            background: #172b4d; border-radius: 22px; display: flex;
-            padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        /* HISTORIAL */
+        .hist-card {
+            background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 12px;
+            border-left: 6px solid var(--danger); transition: 0.2s;
         }
-        .nav-item { flex: 1; border: none; background: none; color: #7a869a; font-size: 10px; font-weight: 700; text-align: center; }
-        .nav-item.active { color: #fff; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .time-badge { font-size: 11px; background: #f4f5f7; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
 
-        .btn-finish {
-            background: #172b4d; color: #fff; border: none; border-radius: 16px;
-            padding: 18px; font-weight: 800; width: 100%; margin-top: 10px;
+        /* NAV */
+        .nav-bottom {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #fff; border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-around; padding: 12px;
+        }
+        .nav-link { border: none; background: none; color: #a5adba; font-weight: 700; font-size: 11px; }
+        .nav-link.active { color: var(--primary); }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        .btn-save {
+            background: var(--dark); color: #fff; border: none; border-radius: 15px;
+            padding: 15px; font-weight: 800; width: 100%; margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(23, 43, 77, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <div id="sync-loader"></div>
-
-    <header class="header-pro">
+    <header class="top-bar">
         <div>
-            <div style="font-size: 18px; font-weight: 900;">TITAN <span style="color:var(--danger)">DEV</span></div>
-            <div id="status-text" style="font-size: 9px; color: #36b37e; font-weight: 800;">● SISTEMA ACTIVO</div>
+            <div style="font-size: 16px; font-weight: 800;">TITAN <span style="color:var(--danger)">DEV</span></div>
+            <div style="font-size: 10px; color: #6b778c;">Logística de Inventarios</div>
         </div>
-        <div class="text-end">
-            <span style="font-size: 12px; font-weight: 800; color: #172b4d;">Angelo Durand</span>
-        </div>
+        <div class="time-badge"><i class="far fa-clock"></i> <span id="clock">--:--</span></div>
     </header>
 
-    <main class="container p-0">
+    <main>
         <section id="v-reg" class="view">
-            <div class="card-pro">
-                <span class="label-pro">Cliente</span>
-                <input type="text" id="cli" class="input-pro" placeholder="Nombre de Cliente..." oninput="checkMem(this.value)">
-                
-                <span class="label-pro">Vendedor</span>
-                <input type="text" id="ven" class="input-pro" placeholder="Vendedor asignado...">
+            <div class="glass-card">
+                <span class="label-sm">Datos de Ruta</span>
+                <input type="text" id="cli" class="input-pro" placeholder="Cliente..." oninput="autoSuggest(this.value)">
+                <input type="text" id="ven" class="input-pro" placeholder="Vendedor...">
 
-                <span class="label-pro">Producto (SKU o Nombre)</span>
+                <span class="label-sm">Buscador de Items</span>
                 <div class="position-relative">
-                    <input type="text" id="src" class="input-pro" placeholder="Buscar ítem..." oninput="finding(this.value)">
-                    <div id="res" class="list-group shadow-sm" style="position:absolute; width:100%; z-index:100; display:none; margin-top:-15px;"></div>
+                    <input type="text" id="src" class="input-pro" placeholder="SKU o Producto..." oninput="findItem(this.value)">
+                    <div id="results" class="list-group shadow-lg position-absolute w-100" style="z-index: 1000; display: none; margin-top: -10px;"></div>
                 </div>
 
-                <div id="mini-form" class="d-none p-3 rounded-4 mb-3" style="background: #f4f5f7;">
-                    <b id="p-name" class="d-block mb-2 text-danger"></b>
-                    <div class="row g-2">
-                        <div class="col-6"><input type="number" id="q" class="input-pro" placeholder="Cant."></div>
-                        <div class="col-6"><button class="btn btn-danger w-100 rounded-3 py-2 fw-bold" onclick="add()">AÑADIR</button></div>
-                    </div>
-                </div>
+                <div id="cart-box" class="mb-3"></div>
 
-                <div id="cart-list" class="mb-4"></div>
+                <span class="label-sm">Observaciones Rápidas</span>
+                <textarea id="notes" class="notes-area" placeholder="Escribe aquí información adicional..."></textarea>
 
-                <span class="label-pro"><i class="fas fa-pen"></i> Notas / Firma del proceso</span>
-                <div class="canvas-container">
-                    <canvas id="pad"></canvas>
-                    <div class="canvas-tool">
-                        <button class="btn-tool" onclick="clearPad()"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-
-                <button class="btn-finish" onclick="saveAll()">FINALIZAR Y GUARDAR <i class="fas fa-cloud-upload-alt ms-2"></i></button>
+                <button class="btn-save" onclick="processFinal()">GUARDAR DEVOLUCIÓN <i class="fas fa-check-circle ms-2"></i></button>
             </div>
         </section>
 
         <section id="v-his" class="view d-none">
-            <div id="feed-his" class="p-3"></div>
+            <div class="p-3">
+                <div class="position-relative mb-3">
+                    <i class="fas fa-search position-absolute" style="top: 15px; left: 15px; color: #a5adba;"></i>
+                    <input type="text" id="search-his" class="input-pro" style="padding-left: 45px;" placeholder="Buscar por cliente o vendedor..." oninput="filterHis(this.value)">
+                </div>
+                <div id="history-feed"></div>
+            </div>
         </section>
     </main>
 
-    <nav class="nav-titan">
-        <button class="nav-item active" onclick="nav('reg', this)"><i class="fas fa-plus-circle"></i>REGISTRO</button>
-        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-receipt"></i>LOGS</button>
+    <nav class="nav-bottom">
+        <button class="nav-link active" onclick="tab('reg', this)"><i class="fas fa-plus-square"></i>REGISTRO</button>
+        <button class="nav-link" onclick="tab('his', this)"><i class="fas fa-history"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = [], CART = [], MEM = {}, HIS = [];
-        let canvas, ctx, drawing = false;
+        let MASTER = [], CART = [], MEM = {}, HIS_DATA = [];
 
         function init() {
-            MEM = JSON.parse(localStorage.getItem('T_MEM')) || {};
-            canvas = document.getElementById('pad');
-            ctx = canvas.getContext('2d');
-            resizeCanvas();
-            
-            // Eventos de dibujo
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stop);
-            canvas.addEventListener('touchstart', start);
-            canvas.addEventListener('touchmove', draw);
-            canvas.addEventListener('touchend', stop);
-
-            fetchData();
+            MEM = JSON.parse(localStorage.getItem('TITAN_MEM')) || {};
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }, 1000);
+            fetchSync();
         }
 
-        async function fetchData() {
+        async function fetchSync() {
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                MASTER = d.p; HIS = d.h;
-                renderHis();
+                MASTER = d.p; HIS_DATA = d.h;
+                renderHistory();
             } catch(e) {}
         }
 
-        // --- LÓGICA DE DIBUJO ---
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = 150; }
-        function start(e) { drawing = true; draw(e); }
-        function stop() { drawing = false; ctx.beginPath(); }
-        function draw(e) {
-            if(!drawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#172b4d';
-            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
-        }
-        function clearPad() { ctx.clearRect(0,0,canvas.width,canvas.height); }
-
-        // --- LÓGICA DE CARGA ---
-        function checkMem(v) {
+        function autoSuggest(v) {
             const val = v.toUpperCase();
             if(MEM[val]) document.getElementById('ven').value = MEM[val];
         }
 
-        function finding(v) {
-            const res = document.getElementById('res');
-            if(v.length < 1) { res.style.display='none'; return; }
-            const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            res.innerHTML = m.map(p => `<button class="list-group-item list-group-item-action text-start" onclick="pick('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></button>`).join('');
-            res.style.display = m.length ? 'block' : 'none';
+        function findItem(v) {
+            const box = document.getElementById('results');
+            if(v.length < 1) { box.style.display='none'; return; }
+            const matches = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
+            box.innerHTML = matches.map(p => `
+                <button class="list-group-item list-group-item-action text-start" onclick="addToCart('${p[0]}','${p[1]}')">
+                    <b>${p[1]}</b><br><small class="text-muted">SKU: ${p[0]}</small>
+                </button>
+            `).join('');
+            box.style.display = matches.length ? 'block' : 'none';
         }
 
-        function pick(s, n) {
-            window.last = {sku:s, name:n};
-            document.getElementById('p-name').innerText = n;
-            document.getElementById('mini-form').classList.remove('d-none');
-            document.getElementById('res').style.display='none';
-        }
-
-        function add() {
-            const q = document.getElementById('q').value;
-            if(!q) return;
-            CART.push({...window.last, q});
-            document.getElementById('mini-form').classList.add('d-none');
-            document.getElementById('src').value = '';
-            renderCart();
+        function addToCart(sku, name) {
+            Swal.fire({
+                title: 'Cantidad',
+                input: 'number',
+                inputAttributes: { min: 1 },
+                showCancelButton: true,
+                confirmButtonColor: '#0052cc'
+            }).then(res => {
+                if(res.value) {
+                    CART.push({sku, name, q: res.value});
+                    document.getElementById('results').style.display='none';
+                    document.getElementById('src').value = '';
+                    renderCart();
+                }
+            });
         }
 
         function renderCart() {
-            document.getElementById('cart-list').innerHTML = CART.map((i, idx) => `
-                <div class="d-flex justify-content-between p-2 border-bottom">
-                    <span><b>${i.q}</b> x ${i.name}</span>
-                    <i class="fas fa-times text-danger" onclick="CART.splice(${idx},1); renderCart();"></i>
+            document.getElementById('cart-box').innerHTML = CART.map((i, idx) => `
+                <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded-3">
+                    <span style="font-size:13px"><b>${i.q}</b> x ${i.name}</span>
+                    <i class="fas fa-trash text-muted" onclick="CART.splice(${idx},1); renderCart();"></i>
                 </div>
             `).join('');
         }
 
-        // --- GUARDADO INVISIBLE ---
-        async function saveAll() {
+        async function processFinal() {
             const cli = document.getElementById('cli').value.toUpperCase();
             const ven = document.getElementById('ven').value.toUpperCase();
-            if(!cli || CART.length === 0) return Swal.fire("Incompleto", "Cliente y productos requeridos", "error");
+            const note = document.getElementById('notes').value;
+
+            if(!cli || CART.length === 0) return Swal.fire("Atención", "Falta cliente o productos", "warning");
 
             MEM[cli] = ven;
-            localStorage.setItem('T_MEM', JSON.stringify(MEM));
+            localStorage.setItem('TITAN_MEM', JSON.stringify(MEM));
 
-            const loader = document.getElementById('sync-loader');
-            const signature = canvas.toDataURL(); // Imagen de la nota/firma
-            
-            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.q, cli, `Vendedor: ${ven} | Ref: ${signature.substring(0,50)}...`]);
-            
-            // UI Update Inmediata
-            loader.className = 'syncing';
-            const tempCart = [...CART]; // Clon para el historial local
+            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.q, cli, `Vendedor: ${ven} | Nota: ${note}`]);
+
+            // Diálogo Moderno de Éxito
+            Swal.fire({
+                title: '¡Registro Exitoso!',
+                text: `Se guardó correctamente la devolución del cliente ${cli}`,
+                icon: 'success',
+                timer: 2500,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-5' }
+            });
+
+            // Reset y Envío
             CART = []; renderCart();
-            document.getElementById('cli').value = ''; document.getElementById('ven').value = '';
-            clearPad();
+            document.getElementById('cli').value = ''; 
+            document.getElementById('ven').value = '';
+            document.getElementById('notes').value = '';
 
             fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})})
-            .then(() => {
-                loader.className = '';
-                fetchData(); // Refresca historial real
-            });
+            .then(() => fetchSync());
         }
 
-        function renderHis() {
-            const feed = document.getElementById('feed-his');
+        function renderHistory(filter = "") {
+            const feed = document.getElementById('history-feed');
             const groups = {};
-            HIS.filter(r => r[1] === "DEVOLUCION").forEach(r => {
-                const key = r[5] + "_" + new Date(r[0]).getTime();
-                if(!groups[key]) groups[key] = { cli: r[5], date: new Date(r[0]).toLocaleString(), p: [] };
-                groups[key].p.push({ n: r[3], q: r[4], m: r[6] });
+            
+            HIS_DATA.filter(r => r[1] === "DEVOLUCION").forEach(r => {
+                const dateObj = new Date(r[0]);
+                const timeStr = dateObj.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const dateStr = dateObj.toLocaleDateString();
+                const vendor = r[6].split('|')[0].replace('Vendedor: ', '');
+                
+                // Filtro por Cliente o Vendedor
+                if(filter && !r[5].toLowerCase().includes(filter.toLowerCase()) && !vendor.toLowerCase().includes(filter.toLowerCase())) return;
+
+                const key = r[5] + "_" + r[0];
+                if(!groups[key]) groups[key] = { cli: r[5], ven: vendor, date: dateStr, time: timeStr, items: [] };
+                groups[key].items.push({ n: r[3], q: r[4] });
             });
 
-            feed.innerHTML = Object.values(groups).reverse().slice(0,10).map(g => `
-                <div class="hist-item" onclick="showDetail('${btoa(JSON.stringify(g))}')">
-                    <div class="d-flex justify-content-between"><small class="fw-bold text-danger">DEVOLUCIÓN</small><small>${g.date}</small></div>
-                    <div class="fw-800" style="font-size:16px">${g.cli}</div>
-                    <div class="text-muted" style="font-size:12px">${g.p.length} ítems registrados</div>
+            feed.innerHTML = Object.values(groups).reverse().slice(0,20).map(g => `
+                <div class="hist-card" onclick="openDetails('${btoa(JSON.stringify(g))}')">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="label-sm" style="color:var(--danger)">Hoja de Ruta</span>
+                        <div class="text-end">
+                            <div class="fw-bold" style="font-size:12px">${g.date}</div>
+                            <div class="text-muted" style="font-size:10px">${g.time}</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 16px; font-weight: 800; margin-top:5px;">${g.cli}</div>
+                    <div style="font-size: 12px; color: #6b778c;">Atendido por: <b>${g.ven}</b></div>
                 </div>
             `).join('');
         }
 
-        function showDetail(data) {
+        function filterHis(v) { renderHistory(v); }
+
+        function openDetails(data) {
             const g = JSON.parse(atob(data));
             Swal.fire({
-                title: 'Detalles de Registro',
-                html: `<div class="text-start">${g.p.map(p => `<div class="pb-2 border-bottom"><b>${p.q}</b> - ${p.n}</div>`).join('')}</div>`,
-                confirmButtonText: 'REPORTE PDF',
-                showCancelButton: true,
-                confirmButtonColor: '#172b4d'
-            }).then(r => { if(r.isConfirmed) genPDF(g); });
+                title: g.cli,
+                html: `
+                    <div class="text-start" style="font-size:14px">
+                        <p class="mb-2 text-muted">Vendedor: ${g.ven}</p>
+                        <hr>
+                        ${g.items.map(i => `<div class="d-flex justify-content-between mb-1"><span>${i.n}</span><b>x${i.q}</b></div>`).join('')}
+                    </div>
+                `,
+                confirmButtonText: '<i class="fas fa-file-pdf"></i> GENERAR REPORTE',
+                confirmButtonColor: '#172b4d',
+                showCancelButton: true
+            }).then(r => { if(r.isConfirmed) generatePDF(g); });
         }
 
-        function genPDF(g) {
+        function generatePDF(g) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(255); doc.setFontSize(18); doc.text("REPORTE LOGÍSTICO", 14, 20);
             
-            doc.setTextColor(0); doc.setFontSize(10);
-            doc.text(`CLIENTE: ${g.cli}`, 14, 40);
-            doc.text(`FECHA: ${g.date}`, 14, 46);
+            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255); doc.setFontSize(20); doc.text("REPORTE DE CARGA Y DEVOLUCIÓN", 14, 25);
+            
+            doc.setTextColor(0); doc.setFontSize(11);
+            doc.text(`CLIENTE: ${g.cli}`, 14, 50);
+            doc.text(`VENDEDOR: ${g.ven}`, 14, 56);
+            doc.text(`FECHA: ${g.date} | HORA: ${g.time}`, 14, 62);
 
             doc.autoTable({
-                startY: 55,
-                head: [['Cant', 'Producto', 'Referencia']],
-                body: g.p.map(p => [p.q, p.n, p.m.split('|')[0]]),
+                startY: 70,
+                head: [['Cant', 'Producto / Descripción']],
+                body: g.items.map(i => [i.q, i.n]),
                 headStyles: { fillColor: [255, 86, 48] }
             });
+
+            const finalY = doc.lastAutoTable.finalY + 25;
+            doc.setFontSize(8); doc.setTextColor(100);
+            doc.text("----------------------------------------------------------------", 105, finalY, {align:'center'});
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 5, {align:'center'});
             
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
-            doc.save(`TITAN_${g.cli}.pdf`);
+            doc.save(`REPORTE_${g.cli}_${g.date}.pdf`);
         }
 
-        function nav(v, b) {
+        function tab(v, b) {
             document.querySelectorAll('.view').forEach(x => x.classList.add('d-none'));
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
             document.getElementById('v-'+v).classList.remove('d-none');
             b.classList.add('active');
         }
