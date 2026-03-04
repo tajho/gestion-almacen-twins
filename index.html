@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN LOGISTICS | Control de Devoluciones</title>
+    <title>TITAN ELITE | Gestión de Devoluciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -12,220 +12,234 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        :root { --primary: #0052cc; --danger: #ff5630; --dark: #172b4d; --bg: #f4f6f9; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 90px; }
-        .top-header { background: #fff; padding: 15px 20px; border-bottom: 1px solid #e1e4e8; position: sticky; top: 0; z-index: 100; }
-        .card-titan { background: #fff; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .label-titan { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .input-titan { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #edeff2; font-size: 14px; font-weight: 600; margin-bottom: 15px; transition: 0.3s; }
-        .input-titan:focus { border-color: var(--primary); outline: none; }
-        .btn-save { background: var(--dark); color: #fff; border: none; border-radius: 15px; padding: 16px; font-weight: 800; width: 100%; transition: 0.3s; }
-        .btn-save:active { transform: scale(0.98); }
-        .hist-card { background: #fff; border-radius: 15px; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--danger); }
-        .nav-titan { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
-        .nav-btn { background: none; border: none; color: #a5adba; font-size: 10px; font-weight: 700; }
-        .nav-btn.active { color: var(--primary); }
+        :root { --primary: #0052cc; --danger: #ff5630; --dark: #172b4d; --bg: #f4f7fa; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 100px; }
+        
+        .header-elite { background: #fff; padding: 15px 20px; border-bottom: 2px solid var(--danger); position: sticky; top: 0; z-index: 1000; }
+        .card-custom { background: #fff; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
+        .label-custom { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .input-custom { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #edeff2; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
+        
+        /* TARJETAS DE HISTORIAL */
+        .hist-card { background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 15px; border-left: 6px solid var(--danger); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .btn-opt { flex: 1; border: none; background: #f4f5f7; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: var(--dark); transition: 0.2s; }
+        .btn-opt:active { background: #ebecf0; }
+        .btn-opt i { display: block; font-size: 16px; margin-bottom: 4px; }
+
+        .nav-elite { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; padding: 10px; border-top: 1px solid #eee; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; background: none; border: none; color: #a5adba; font-size: 10px; font-weight: 700; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <header class="top-header d-flex justify-content-between align-items-center">
-        <div><b style="font-size:18px">TITAN <span class="text-danger">ELITE</span></b><br><small class="text-muted">Control de Calidad</small></div>
-        <div class="text-end"><small class="fw-bold text-primary">J. Angelo Durand</small></div>
+    <header class="header-elite d-flex justify-content-between align-items-center">
+        <div><b style="font-size:18px">TITAN <span class="text-danger">ELITE</span></b><br><small class="text-muted">Control de Devoluciones</small></div>
+        <div class="text-end"><small class="fw-bold">J. Angelo Durand</small></div>
     </header>
 
-    <main>
+    <main id="app">
         <section id="v-reg">
-            <div class="card-titan">
-                <span class="label-titan">Cliente que devuelve</span>
-                <input type="text" id="cli" class="input-titan" placeholder="Nombre del cliente..." oninput="sugerirVendedor(this.value)">
+            <div class="card-custom">
+                <span class="label-custom">CLIENTE QUE DEVUELVE</span>
+                <input type="text" id="cli" class="input-custom" placeholder="Nombre completo..." oninput="suggestVendor(this.value)">
 
-                <span class="label-titan">Vendedor Responsable</span>
-                <select id="ven" class="input-titan">
-                    <option value="">Seleccionar Vendedor...</option>
-                    <option value="ELIAS AVILA">ELIAS AVILA</option>
-                    <option value="EVELYN MURO">EVELYN MURO</option>
-                    <option value="REGULO ANTEZANA">REGULO ANTEZANA</option>
-                    <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
-                    <option value="PAULA GARCIA">PAULA GARCIA</option>
+                <span class="label-custom">VENDEDOR RESPONSABLE</span>
+                <select id="ven" class="input-custom">
+                    <option value="">Seleccionar...</option>
+                    <option>ELIAS AVILA</option><option>EVELYN MURO</option>
+                    <option>REGULO ANTEZANA</option><option>JHAYRO MAURICIO</option>
+                    <option>PAULA GARCIA</option>
                 </select>
 
-                <span class="label-titan">Buscar Producto</span>
-                <input type="text" id="src" class="input-titan" placeholder="SKU o Nombre..." oninput="buscarItem(this.value)">
-                <div id="res" class="list-group mb-3 shadow-sm d-none"></div>
+                <span class="label-custom">BUSCAR PRODUCTO</span>
+                <input type="text" id="src" class="input-custom" placeholder="SKU o Nombre..." oninput="findP(this.value)">
+                <div id="res" class="list-group mb-3 d-none shadow-sm"></div>
 
-                <div id="form-item" class="p-3 rounded-4 mb-3 d-none" style="background:#f8f9fa; border:1px solid #dee2e6;">
-                    <b id="p-selected" class="text-danger d-block mb-2"></b>
-                    <div class="row g-2 mb-2">
-                        <div class="col-6"><span class="label-titan">Cant. Guía</span><input type="number" id="q-guia" class="input-titan" placeholder="0"></div>
-                        <div class="col-6"><span class="label-titan">Cant. Físico</span><input type="number" id="q-fis" class="input-titan" placeholder="0"></div>
-                    </div>
-                    <span class="label-titan">Motivo de Devolución</span>
-                    <select id="motivo" class="input-titan">
-                        <option value="PRODUCTO DAÑADO- MERMA">PRODUCTO DAÑADO - MERMA</option>
-                        <option value="BUEN ESTADO PRODUCTO- REINGRESO">BUEN ESTADO - REINGRESO</option>
-                        <option value="FALLA DE IMPORTACION- MERMA">FALLA DE IMPORTACIÓN - MERMA</option>
-                    </select>
-                    <button class="btn btn-primary w-100 rounded-3 fw-bold" onclick="agregarAlCarrito()">AÑADIR ÍTEM</button>
-                </div>
+                <div id="cart-list" class="mb-3"></div>
 
-                <div id="cart" class="mb-3"></div>
+                <span class="label-custom">OBSERVACIÓN / NOTA</span>
+                <textarea id="obs" class="input-custom" style="height: 70px;" placeholder="Detalles adicionales..."></textarea>
 
-                <span class="label-titan">Observaciones Generales</span>
-                <textarea id="obs" class="input-titan" style="height: 80px;" placeholder="Escribe aquí cualquier observación adicional..."></textarea>
-
-                <button class="btn-save" onclick="confirmarGuardado()">GUARDAR DEVOLUCIÓN <i class="fas fa-save ms-2"></i></button>
+                <button class="btn btn-dark w-100 py-3 rounded-4 fw-800" onclick="confirmSave()">GUARDAR DEVOLUCIÓN <i class="fas fa-save ms-2"></i></button>
             </div>
         </section>
 
         <section id="v-his" class="d-none">
             <div class="p-3">
-                <input type="text" id="filtro" class="input-titan" placeholder="Filtrar por cliente o vendedor..." oninput="renderHis(this.value)">
+                <input type="text" id="filter" class="input-custom" placeholder="Buscar por cliente o vendedor..." oninput="renderHis(this.value)">
                 <div id="feed-his"></div>
             </div>
         </section>
     </main>
 
-    <nav class="nav-titan">
-        <button class="nav-btn active" onclick="nav('reg', this)"><i class="fas fa-plus-circle d-block fa-2x"></i>REGISTRO</button>
-        <button class="nav-btn" onclick="nav('his', this)"><i class="fas fa-history d-block fa-2x"></i>HISTORIAL</button>
+    <nav class="nav-elite">
+        <button class="nav-item active" onclick="nav('reg', this)"><i class="fas fa-plus-circle fa-2x d-block"></i>NUEVO</button>
+        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-receipt fa-2x d-block"></i>HISTORIAL</button>
     </nav>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = [], CARRITO = [], MEMORY = {}, LOGS = [];
+        let MASTER = [], CART = [], LOGS = [], MEM = {};
 
         async function init() {
-            MEMORY = JSON.parse(localStorage.getItem('T_VEND')) || {};
+            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p; LOGS = d.h;
                 renderHis();
-            } catch(e) {}
+            } catch(e) { console.error("Error cargando datos"); }
         }
 
-        function sugerirVendedor(v) {
-            const c = v.toUpperCase();
-            if(MEMORY[c]) document.getElementById('ven').value = MEMORY[c];
+        function suggestVendor(v) {
+            if(MEM[v.toUpperCase()]) document.getElementById('ven').value = MEM[v.toUpperCase()];
         }
 
-        function buscarItem(v) {
+        function findP(v) {
             const box = document.getElementById('res');
             if(v.length < 2) { box.classList.add('d-none'); return; }
             const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = m.map(p => `<button class="list-group-item list-group-item-action" onclick="seleccionar('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></button>`).join('');
+            box.innerHTML = m.map(p => `<button class="list-group-item" onclick="openItem('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></button>`).join('');
             box.classList.remove('d-none');
         }
 
-        function seleccionar(sku, nombre) {
-            window.itemActual = {sku, nombre};
-            document.getElementById('p-selected').innerText = nombre;
-            document.getElementById('form-item').classList.remove('d-none');
+        function openItem(sku, name) {
             document.getElementById('res').classList.add('d-none');
-        }
-
-        function agregarAlCarrito() {
-            const g = document.getElementById('q-guia').value;
-            const f = document.getElementById('q-fis').value;
-            const m = document.getElementById('motivo').value;
-            if(!g || !f) return;
-            
-            CARRITO.push({...window.itemActual, g, f, m});
-            document.getElementById('form-item').classList.add('d-none');
-            document.getElementById('src').value = '';
-            renderCart();
-        }
-
-        function renderCart() {
-            document.getElementById('cart').innerHTML = CARRITO.map((i, idx) => `
-                <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
-                    <small><b>${i.f}/${i.g}</b> - ${i.nombre}<br><i class="text-muted">${i.m}</i></small>
-                    <i class="fas fa-times text-danger" onclick="CARRITO.splice(${idx},1); renderCart()"></i>
-                </div>
-            `).join('');
-        }
-
-        function confirmarGuardado() {
-            const cliente = document.getElementById('cli').value.toUpperCase();
-            const vendedor = document.getElementById('ven').value;
-            if(!cliente || !vendedor || CARRITO.length === 0) return Swal.fire("Campos incompletos","Verifica cliente, vendedor y productos","warning");
-
             Swal.fire({
-                title: '¿Confirmar Devolución?',
-                text: `Se registrará la devolución del cliente ${cliente}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#172b4d',
-                confirmButtonText: 'SÍ, GUARDAR'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    guardar(cliente, vendedor);
+                title: 'Detalle Devolución',
+                html: `
+                    <input id="sw-g" type="number" class="swal2-input" placeholder="Cant. Guía">
+                    <input id="sw-f" type="number" class="swal2-input" placeholder="Cant. Físico">
+                    <select id="sw-m" class="swal2-input">
+                        <option>PRODUCTO DAÑADO- MERMA</option>
+                        <option>BUEN ESTADO PRODUCTO- REINGRESO</option>
+                        <option>FALLA DE IMPORTACION- MERMA</option>
+                    </select>
+                `,
+                confirmButtonText: 'Añadir',
+                preConfirm: () => ({ g: document.getElementById('sw-g').value, f: document.getElementById('sw-f').value, m: document.getElementById('sw-m').value })
+            }).then(r => {
+                if(r.value && r.value.f) {
+                    CART.push({sku, name, ...r.value});
+                    renderCart();
+                    document.getElementById('src').value = '';
                 }
             });
         }
 
-        async function guardar(cli, ven) {
-            MEMORY[cli] = ven;
-            localStorage.setItem('T_VEND', JSON.stringify(MEMORY));
-
-            const obs = document.getElementById('obs').value;
-            const payload = CARRITO.map(i => [new Date(), "DEVOLUCION", i.sku, i.nombre, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
-
-            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
-
-            try {
-                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
-                Swal.fire("¡Éxito!", `Devolución de ${cli} registrada correctamente`, "success");
-                CARRITO = []; renderCart();
-                document.getElementById('cli').value = '';
-                document.getElementById('obs').value = '';
-                init(); // Recargar historial
-            } catch(e) { Swal.fire("Error", "No se pudo conectar con el servidor", "error"); }
-        }
-
-        function renderHis(f = "") {
-            const feed = document.getElementById('feed-his');
-            const filtered = LOGS.filter(r => r[1] === "DEVOLUCION" && (r[5].toLowerCase().includes(f.toLowerCase()) || r[6].toLowerCase().includes(f.toLowerCase())));
-            
-            feed.innerHTML = filtered.reverse().slice(0,15).map(r => `
-                <div class="hist-card" onclick="verPDF('${btoa(JSON.stringify(r))}')">
-                    <div class="d-flex justify-content-between"><small class="text-muted">${new Date(r[0]).toLocaleString()}</small><i class="fas fa-file-pdf text-danger"></i></div>
-                    <div class="fw-bold">${r[5]}</div>
-                    <small>${r[3]} (Cant: ${r[4]})</small>
+        function renderCart() {
+            document.getElementById('cart-list').innerHTML = CART.map((i, idx) => `
+                <div class="p-2 border-bottom d-flex justify-content-between">
+                    <small><b>${i.f} un.</b> - ${i.name}</small>
+                    <i class="fas fa-trash text-danger" onclick="CART.splice(${idx},1); renderCart();"></i>
                 </div>
             `).join('');
         }
 
-        function verPDF(dataBase64) {
-            const r = JSON.parse(atob(dataBase64));
+        function confirmSave() {
+            const cli = document.getElementById('cli').value.toUpperCase();
+            const ven = document.getElementById('ven').value;
+            if(!cli || !ven || CART.length === 0) return Swal.fire("Error", "Faltan datos críticos", "error");
+
+            Swal.fire({
+                title: '¿Confirmar Envío?',
+                text: `Se guardará la devolución de ${cli}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#172b4d',
+                confirmButtonText: 'SÍ, GUARDAR'
+            }).then(r => { if(r.isConfirmed) save(cli, ven); });
+        }
+
+        async function save(cli, ven) {
+            MEM[cli] = ven; localStorage.setItem('T_V', JSON.stringify(MEM));
+            const obs = document.getElementById('obs').value;
+            const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
+
+            Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+            
+            try {
+                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
+                Swal.fire("Guardado", `Cliente: ${cli}`, "success");
+                CART = []; renderCart(); 
+                document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
+                init(); // RECARGA INMEDIATA DEL HISTORIAL
+            } catch(e) { Swal.fire("Error", "Error de red", "error"); }
+        }
+
+        function renderHis(f = "") {
+            const feed = document.getElementById('feed-his');
+            // Agrupar por cliente y fecha para que no salgan filas separadas por cada producto
+            const groups = {};
+            LOGS.filter(r => r[1] === "DEVOLUCION").forEach(r => {
+                const vendor = r[6].split('|')[0].replace('Vendedor: ', '');
+                if(f && !r[5].toLowerCase().includes(f.toLowerCase()) && !vendor.toLowerCase().includes(f.toLowerCase())) return;
+                
+                const key = r[5] + "_" + new Date(r[0]).getTime();
+                if(!groups[key]) groups[key] = { cli: r[5], ven: vendor, date: new Date(r[0]).toLocaleString(), raw: r, items: [] };
+                groups[key].items.push({ sku: r[2], n: r[3], q: r[4], det: r[6] });
+            });
+
+            feed.innerHTML = Object.values(groups).reverse().map(g => `
+                <div class="hist-card">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted"><b>${g.date}</b></small>
+                        <span class="badge bg-danger">DEVOLUCIÓN</span>
+                    </div>
+                    <div class="fw-800" style="font-size:17px">${g.cli}</div>
+                    <div class="text-muted mb-3" style="font-size:12px">Vendedor: ${g.ven}</div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn-opt" onclick="editHis()"><i class="fas fa-edit"></i>EDITAR</button>
+                        <button class="btn-opt" onclick="viewList('${btoa(JSON.stringify(g.items))}')"><i class="fas fa-list"></i>LISTA</button>
+                        <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i>REPORTE</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewList(data) {
+            const items = JSON.parse(atob(data));
+            Swal.fire({
+                title: 'Artículos Devueltos',
+                html: `<div class="text-start">${items.map(i => `<div class="mb-2 border-bottom"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.det.split('|')[2]}</small></div>`).join('')}</div>`
+            });
+        }
+
+        function editHis() {
+            Swal.fire("Función en camino", "La edición de registros históricos requiere permisos de administrador.", "info");
+        }
+
+        function genPDF(data) {
+            const g = JSON.parse(atob(data));
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
             doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255); doc.setFontSize(18); doc.text("REPORTE DE DEVOLUCIÓN", 14, 22);
+            doc.setTextColor(255); doc.setFontSize(18); doc.text("HOJA DE RUTA - DEVOLUCIÓN", 14, 22);
             
             doc.setTextColor(0); doc.setFontSize(10);
-            doc.text(`CLIENTE: ${r[5]}`, 14, 45);
-            doc.text(`REGISTRO: ${new Date(r[0]).toLocaleString()}`, 14, 51);
-            doc.text(`DETALLE: ${r[6]}`, 14, 57);
+            doc.text(`CLIENTE: ${g.cli}`, 14, 45);
+            doc.text(`VENDEDOR: ${g.ven}`, 14, 51);
+            doc.text(`FECHA/HORA: ${g.date}`, 14, 57);
 
             doc.autoTable({
                 startY: 65,
-                head: [['SKU', 'Descripción', 'Cantidad Revisada']],
-                body: [[r[2], r[3], r[4]]],
+                head: [['Cant', 'Producto', 'Motivo / Detalle']],
+                body: g.items.map(i => [i.q, i.n, i.det.split('|')[2]]),
                 headStyles: { fillColor: [255, 86, 48] }
             });
 
-            doc.setFontSize(8);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, 120, {align:'center'});
-            doc.save(`DEV_${r[5]}.pdf`);
+            const finalY = doc.lastAutoTable.finalY + 25;
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align:'center'});
+            doc.save(`DEV_${g.cli}.pdf`);
         }
 
         function nav(v, b) {
             document.getElementById('v-reg').classList.toggle('d-none', v !== 'reg');
             document.getElementById('v-his').classList.toggle('d-none', v !== 'his');
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             b.classList.add('active');
         }
 
