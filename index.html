@@ -78,17 +78,17 @@
         let MASTER = [], CART = [], LOGS = [], MEM = {};
 
         async function init() {
-            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             try {
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
                 MASTER = d.p || []; 
                 LOGS = d.h || []; 
                 renderHis();
-            } catch(e) { console.error("Error de carga"); }
+            } catch(e) { console.error("Error"); }
         }
 
         function suggestVendor(v) {
+            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             if(MEM[v.toUpperCase()]) document.getElementById('ven').value = MEM[v.toUpperCase()];
         }
 
@@ -141,18 +141,13 @@
         }
 
         async function save(cli, ven) {
+            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             MEM[cli] = ven; localStorage.setItem('T_V', JSON.stringify(MEM));
             const obs = document.getElementById('obs').value;
-            // Estructura exacta de tus columnas A, B, C, D, E, F, G
-            const payload = CART.map(i => [
-                new Date().toISOString().split('T')[0], // A: Fecha
-                "DEVOLUCION",                           // B: ID/Acción
-                "CLIENTE",                              // C: ID genérico
-                i.name,                                 // D: Producto
-                i.f,                                    // E: Cantidad
-                cli,                                    // F: Motivo (Nombre del Cliente según tu captura)
-                `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}` // G: Detalles
-            ]);
+            
+            // Forzamos un formato de fecha simple para evitar errores de lectura
+            const fechaManual = new Date().toLocaleDateString();
+            const payload = CART.map(i => [fechaManual, "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
 
             Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
             try {
@@ -168,31 +163,32 @@
         function renderHis(f = "") {
             const feed = document.getElementById('feed-his');
             if(!LOGS || LOGS.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros aún.</div>';
+                feed.innerHTML = '<div class="text-center p-5 text-muted">Cargando datos...</div>';
                 return;
             }
 
             const groups = {};
             LOGS.forEach(r => {
-                // Según tu imagen: Columna B (r[1]) es "DEVOLUCION"
-                if(r[1] !== "DEVOLUCION") return;
+                // Filtro ultra-flexible: Si la columna B contiene DEVOLUCION, lo procesamos
+                if(!r[1] || !r[1].toString().toUpperCase().includes("DEVOLUCION")) return;
 
-                // Según tu imagen: Columna F (r[5]) es donde pones el nombre del cliente
-                const cliente = r[5] ? r[5].toString().toUpperCase() : "SIN NOMBRE";
-                const detalles = r[6] || "";
-                const fecha = r[0] ? r[0].toString().split('T')[0] : "---";
+                // Extraemos nombre del cliente de la columna F (según tu captura de pantalla)
+                const cliente = (r[5] || "SIN NOMBRE").toString().trim().toUpperCase();
+                const detalles = (r[6] || "").toString();
+                // Limpiamos la fecha de la columna A (quitamos la T y los milisegundos)
+                const fechaLimpia = (r[0] || "").toString().split('T')[0];
 
                 if(f && !cliente.includes(f.toUpperCase())) return;
 
-                // Agrupamos por Cliente y Fecha exacta
-                const key = cliente + "_" + r[0];
-                if(!groups[key]) groups[key] = { cli: cliente, date: fecha, items: [], rawDet: detalles };
+                // Agrupamos por Cliente y Fecha para no repetir tarjetas
+                const key = cliente + "_" + fechaLimpia;
+                if(!groups[key]) groups[key] = { cli: cliente, date: fechaLimpia, items: [], rawDet: detalles };
                 groups[key].items.push({ n: r[3], q: r[4], d: detalles });
             });
 
             const htmlArr = Object.values(groups).reverse();
             if(htmlArr.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay coincidencias.</div>';
+                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros de devoluciones.</div>';
                 return;
             }
 
@@ -200,20 +196,20 @@
                 <div class="hist-card">
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted"><b>${g.date}</b></small>
-                        <span class="badge bg-danger">DEVOLUCIÓN</span>
+                        <span class="badge bg-danger">TITAN ELITE</span>
                     </div>
                     <div class="fw-800" style="font-size:16px">${g.cli}</div>
-                    <div class="text-muted mb-3" style="font-size:11px">${g.rawDet.split('|')[0]}</div>
+                    <div class="text-muted mb-3" style="font-size:11px">${g.rawDet.split('|')[0] || 'Registro de almacén'}</div>
                     <div class="d-flex gap-2">
-                        <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> LISTA</button>
-                        <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i> PDF</button>
+                        <button class="btn-opt" onclick="viewItems('${btoa(unescape(encodeURIComponent(JSON.stringify(g))))}')"><i class="fas fa-list"></i> LISTA</button>
+                        <button class="btn-opt" onclick="genPDF('${btoa(unescape(encodeURIComponent(JSON.stringify(g))))}')"><i class="fas fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
             `).join('');
         }
 
         function viewItems(data) {
-            const g = JSON.parse(atob(data));
+            const g = JSON.parse(decodeURIComponent(escape(atob(data))));
             Swal.fire({
                 title: g.cli,
                 html: `<div class="text-start" style="font-size:13px">${g.items.map(i => `<div class="mb-2 border-bottom pb-2"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.d.split('|')[2] || ''}</small></div>`).join('')}</div>`
@@ -221,7 +217,7 @@
         }
 
         function genPDF(data) {
-            const g = JSON.parse(atob(data));
+            const g = JSON.parse(decodeURIComponent(escape(atob(data))));
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 30, 'F');
@@ -236,7 +232,7 @@
                 headStyles: { fillColor: [255, 86, 48] }
             });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
-            doc.save(`Devolucion_${g.cli}.pdf`);
+            doc.save(`Dev_${g.cli}.pdf`);
         }
 
         function nav(v, b) {
