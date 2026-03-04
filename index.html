@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | Gestión de Devoluciones</title>
+    <title>TITAN ELITE | App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -14,19 +14,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         :root { --primary: #0052cc; --danger: #ff5630; --dark: #172b4d; --bg: #f4f7fa; }
         body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 100px; }
-        
         .header-elite { background: #fff; padding: 15px 20px; border-bottom: 2px solid var(--danger); position: sticky; top: 0; z-index: 1000; }
-        .card-custom { background: #fff; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
+        .card-custom { background: #fff; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         .label-custom { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 5px; display: block; }
         .input-custom { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #edeff2; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-        
-        /* TARJETAS DE HISTORIAL */
         .hist-card { background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 15px; border-left: 6px solid var(--danger); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .btn-opt { flex: 1; border: none; background: #f4f5f7; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: var(--dark); transition: 0.2s; }
-        .btn-opt:active { background: #ebecf0; }
-        .btn-opt i { display: block; font-size: 16px; margin-bottom: 4px; }
-
-        .nav-elite { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; padding: 10px; border-top: 1px solid #eee; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .btn-opt { flex: 1; border: none; background: #f4f5f7; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: var(--dark); }
+        .nav-elite { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; padding: 10px; border-top: 1px solid #eee; }
         .nav-item { flex: 1; background: none; border: none; color: #a5adba; font-size: 10px; font-weight: 700; }
         .nav-item.active { color: var(--primary); }
     </style>
@@ -55,12 +49,10 @@
                 <span class="label-custom">BUSCAR PRODUCTO</span>
                 <input type="text" id="src" class="input-custom" placeholder="SKU o Nombre..." oninput="findP(this.value)">
                 <div id="res" class="list-group mb-3 d-none shadow-sm"></div>
-
                 <div id="cart-list" class="mb-3"></div>
 
                 <span class="label-custom">OBSERVACIÓN / NOTA</span>
                 <textarea id="obs" class="input-custom" style="height: 70px;" placeholder="Detalles adicionales..."></textarea>
-
                 <button class="btn btn-dark w-100 py-3 rounded-4 fw-800" onclick="confirmSave()">GUARDAR DEVOLUCIÓN <i class="fas fa-save ms-2"></i></button>
             </div>
         </section>
@@ -85,11 +77,13 @@
         async function init() {
             MEM = JSON.parse(localStorage.getItem('T_V')) || {};
             try {
+                // Forzamos la carga de datos frescos
                 const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
                 const d = await r.json();
-                MASTER = d.p; LOGS = d.h;
+                MASTER = d.p; 
+                LOGS = d.h; // Aquí llegan todas las devoluciones de la hoja
                 renderHis();
-            } catch(e) { console.error("Error cargando datos"); }
+            } catch(e) { console.error("Error al sincronizar historial"); }
         }
 
         function suggestVendor(v) {
@@ -140,16 +134,8 @@
         function confirmSave() {
             const cli = document.getElementById('cli').value.toUpperCase();
             const ven = document.getElementById('ven').value;
-            if(!cli || !ven || CART.length === 0) return Swal.fire("Error", "Faltan datos críticos", "error");
-
-            Swal.fire({
-                title: '¿Confirmar Envío?',
-                text: `Se guardará la devolución de ${cli}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#172b4d',
-                confirmButtonText: 'SÍ, GUARDAR'
-            }).then(r => { if(r.isConfirmed) save(cli, ven); });
+            if(!cli || !ven || CART.length === 0) return Swal.fire("Error", "Faltan datos", "error");
+            save(cli, ven);
         }
 
         async function save(cli, ven) {
@@ -157,83 +143,83 @@
             const obs = document.getElementById('obs').value;
             const payload = CART.map(i => [new Date(), "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
 
-            Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
             
             try {
                 await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
-                Swal.fire("Guardado", `Cliente: ${cli}`, "success");
+                // REINICIO DE CAMPOS
                 CART = []; renderCart(); 
                 document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
-                init(); // RECARGA INMEDIATA DEL HISTORIAL
-            } catch(e) { Swal.fire("Error", "Error de red", "error"); }
+                
+                // NOTIFICACIÓN Y RECARGA
+                await Swal.fire("¡Listo!", `Devolución de ${cli} guardada.`, "success");
+                await init(); // Fuerza la recarga del historial antes de cambiar de vista
+                nav('his', document.querySelectorAll('.nav-item')[1]); // Te lleva directo al historial
+            } catch(e) { Swal.fire("Error", "No se guardó", "error"); }
         }
 
         function renderHis(f = "") {
             const feed = document.getElementById('feed-his');
-            // Agrupar por cliente y fecha para que no salgan filas separadas por cada producto
             const groups = {};
+            
+            // Agrupamos registros por Cliente + Fecha (minuto exacto) para que se vea una sola tarjeta por devolución
             LOGS.filter(r => r[1] === "DEVOLUCION").forEach(r => {
-                const vendor = r[6].split('|')[0].replace('Vendedor: ', '');
+                const dateObj = new Date(r[0]);
+                const timestamp = dateObj.getFullYear() + "-" + dateObj.getMonth() + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
+                const vendor = r[6].split('|')[0].replace('Vendedor: ', '').trim();
+                
                 if(f && !r[5].toLowerCase().includes(f.toLowerCase()) && !vendor.toLowerCase().includes(f.toLowerCase())) return;
                 
-                const key = r[5] + "_" + new Date(r[0]).getTime();
-                if(!groups[key]) groups[key] = { cli: r[5], ven: vendor, date: new Date(r[0]).toLocaleString(), raw: r, items: [] };
-                groups[key].items.push({ sku: r[2], n: r[3], q: r[4], det: r[6] });
+                const key = r[5] + "_" + timestamp;
+                if(!groups[key]) groups[key] = { cli: r[5], ven: vendor, date: dateObj.toLocaleString(), items: [] };
+                groups[key].items.push({ n: r[3], q: r[4], d: r[6] });
             });
 
-            feed.innerHTML = Object.values(groups).reverse().map(g => `
+            const html = Object.values(groups).reverse().map(g => `
                 <div class="hist-card">
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted"><b>${g.date}</b></small>
                         <span class="badge bg-danger">DEVOLUCIÓN</span>
                     </div>
-                    <div class="fw-800" style="font-size:17px">${g.cli}</div>
-                    <div class="text-muted mb-3" style="font-size:12px">Vendedor: ${g.ven}</div>
-                    
+                    <div class="fw-800" style="font-size:16px">${g.cli}</div>
+                    <div class="text-muted mb-3" style="font-size:12px">Atendido por: ${g.ven}</div>
                     <div class="d-flex gap-2">
-                        <button class="btn-opt" onclick="editHis()"><i class="fas fa-edit"></i>EDITAR</button>
-                        <button class="btn-opt" onclick="viewList('${btoa(JSON.stringify(g.items))}')"><i class="fas fa-list"></i>LISTA</button>
-                        <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i>REPORTE</button>
+                        <button class="btn-opt" onclick="Swal.fire('Editar','En desarrollo','info')"><i class="fas fa-edit"></i> EDITAR</button>
+                        <button class="btn-opt" onclick="viewItems('${btoa(JSON.stringify(g))}')"><i class="fas fa-list"></i> VER LISTA</button>
+                        <button class="btn-opt" onclick="genPDF('${btoa(JSON.stringify(g))}')"><i class="fas fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
             `).join('');
+            
+            feed.innerHTML = html || '<div class="text-center p-5 text-muted">No hay registros aún.</div>';
         }
 
-        function viewList(data) {
-            const items = JSON.parse(atob(data));
+        function viewItems(data) {
+            const g = JSON.parse(atob(data));
             Swal.fire({
-                title: 'Artículos Devueltos',
-                html: `<div class="text-start">${items.map(i => `<div class="mb-2 border-bottom"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.det.split('|')[2]}</small></div>`).join('')}</div>`
+                title: g.cli,
+                html: `<div class="text-start">${g.items.map(i => `<div class="mb-2 border-bottom"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.d.split('|')[2]}</small></div>`).join('')}</div>`
             });
-        }
-
-        function editHis() {
-            Swal.fire("Función en camino", "La edición de registros históricos requiere permisos de administrador.", "info");
         }
 
         function genPDF(data) {
             const g = JSON.parse(atob(data));
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255); doc.setFontSize(18); doc.text("HOJA DE RUTA - DEVOLUCIÓN", 14, 22);
-            
+            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255); doc.setFontSize(16); doc.text("HOJA DE RUTA - DEVOLUCIÓN", 14, 20);
             doc.setTextColor(0); doc.setFontSize(10);
-            doc.text(`CLIENTE: ${g.cli}`, 14, 45);
-            doc.text(`VENDEDOR: ${g.ven}`, 14, 51);
-            doc.text(`FECHA/HORA: ${g.date}`, 14, 57);
-
+            doc.text(`CLIENTE: ${g.cli}`, 14, 40);
+            doc.text(`VENDEDOR: ${g.ven}`, 14, 46);
+            doc.text(`FECHA: ${g.date}`, 14, 52);
             doc.autoTable({
-                startY: 65,
-                head: [['Cant', 'Producto', 'Motivo / Detalle']],
-                body: g.items.map(i => [i.q, i.n, i.det.split('|')[2]]),
+                startY: 60,
+                head: [['Cant', 'Producto', 'Motivo']],
+                body: g.items.map(i => [i.q, i.n, i.d.split('|')[2]]),
                 headStyles: { fillColor: [255, 86, 48] }
             });
-
-            const finalY = doc.lastAutoTable.finalY + 25;
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY, {align:'center'});
-            doc.save(`DEV_${g.cli}.pdf`);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
+            doc.save(`${g.cli}.pdf`);
         }
 
         function nav(v, b) {
