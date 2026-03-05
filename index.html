@@ -3,108 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Devoluciones - Twins Elite</title>
+    <title>Control de Devoluciones - Twins Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans pb-20">
+<body class="bg-slate-100 font-sans pb-24">
 
-    <nav class="bg-blue-900 text-white shadow-md sticky top-0 z-10">
-        <div class="flex justify-around p-4 font-bold text-sm uppercase tracking-wider">
-            <button onclick="showSection('devolucion')" id="tab-devolucion" class="border-b-4 border-white pb-1">📦 Devolución</button>
-            <button onclick="showSection('historial')" id="tab-historial" class="opacity-70 pb-1">📜 Historial</button>
+    <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-20">
+        <div class="flex justify-around p-4 font-bold text-xs">
+            <button onclick="showSection('devolucion')" id="tab-devolucion" class="border-b-4 border-white pb-1">📦 REGISTRO</button>
+            <button onclick="showSection('contadores')" id="tab-contadores" class="opacity-70 pb-1">📊 MENSUAL</button>
+            <button onclick="showSection('historial')" id="tab-historial" class="opacity-70 pb-1">📜 HISTORIAL</button>
         </div>
     </nav>
 
     <main class="p-4 max-w-2xl mx-auto">
+        
         <section id="sec-devolucion" class="space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-900">
-                <h2 class="text-lg font-bold text-blue-900 mb-4 border-b pb-2">Datos de Cabecera</h2>
+            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-blue-900">
+                <h2 class="text-sm font-bold text-blue-900 mb-3 uppercase">Datos de Guía</h2>
                 <div class="grid grid-cols-1 gap-3">
                     <input type="text" id="cliente" placeholder="Nombre del Cliente" class="p-3 border rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500">
-                    <select id="vendedor" class="p-3 border rounded-lg w-full bg-gray-50 text-gray-700 outline-none">
-                        <option value="">Seleccionar Vendedor...</option>
-                        <option>Elias Ávila</option>
-                        <option>Evelyn Muro</option>
-                        <option>Regulo Antezana</option>
-                        <option>Paula García</option>
-                        <option>Jhayro Mauricio</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-green-500">
-                <h2 class="text-md font-bold text-gray-700 mb-3">Agregar Producto</h2>
-                <div class="space-y-3">
-                    <input type="text" id="producto" placeholder="SKU o Nombre (de tu Excel)" class="p-3 border rounded-lg w-full bg-blue-50">
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="number" id="cantRecibida" placeholder="Cant. Recibida" class="p-3 border rounded-lg w-full">
-                        <input type="number" id="cantAprobada" placeholder="Cant. Aprobada" class="p-3 border rounded-lg w-full">
+                        <select id="vendedor" class="p-3 border rounded-lg bg-gray-50 text-sm">
+                            <option value="">Vendedor...</option>
+                            <option>Elias Ávila</option>
+                            <option>Evelyn Muro</option>
+                            <option>Regulo Antezana</option>
+                            <option>Paula García</option>
+                            <option>Jhayro Mauricio</option>
+                        </select>
+                        <input type="number" id="cajasGuia" placeholder="Cajas según Guía" class="p-3 border rounded-lg w-full text-sm">
                     </div>
-                    <button onclick="agregarALista()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700">
-                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Agregar a la Lista
-                    </button>
                 </div>
             </div>
 
-            <div id="contenedor-tabla" class="hidden bg-white rounded-xl shadow-lg overflow-hidden border">
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-gray-100 text-gray-700 font-bold uppercase text-[10px]">
+            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-emerald-500">
+                <h2 class="text-sm font-bold text-gray-700 mb-3">Agregar Productos</h2>
+                <div class="space-y-3">
+                    <input type="text" id="producto" placeholder="Nombre del producto (Excel)" class="p-3 border rounded-lg w-full bg-blue-50 text-sm">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" id="cantAprobada" placeholder="Cantidad Aprobada" class="p-3 border rounded-lg w-full text-sm font-bold">
+                        <button onclick="agregarALista()" class="bg-emerald-600 text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-emerald-700">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Añadir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="contenedor-tabla" class="hidden bg-white rounded-xl shadow overflow-hidden border">
+                <table class="w-full text-[12px] text-left">
+                    <thead class="bg-gray-100 text-gray-600 font-bold uppercase">
                         <tr>
-                            <th class="p-3">Producto</th>
-                            <th class="p-3 text-center">Cant.</th>
-                            <th class="p-3 text-center">Obs.</th>
+                            <th class="p-3">Item</th>
+                            <th class="p-3 text-center">Cant</th>
+                            <th class="p-3 text-center">Obs</th>
                         </tr>
                     </thead>
                     <tbody id="cuerpo-tabla"></tbody>
                 </table>
-                <div class="p-4 bg-gray-50 border-t">
-                    <button onclick="finalizarReporte()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg hover:scale-[1.02] transition-transform">
-                        GUARDAR Y FINALIZAR
-                    </button>
-                </div>
+                <button onclick="finalizarReporte()" class="w-full bg-blue-900 text-white font-black py-4 border-t hover:bg-blue-800 transition-colors">
+                    FINALIZAR RECEPCIÓN
+                </button>
+            </div>
+        </section>
+
+        <section id="sec-contadores" class="hidden space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow">
+                <h2 class="text-lg font-bold text-gray-800 mb-1">Cajas Recibidas por Vendedor</h2>
+                <p id="mes-actual" class="text-xs text-blue-600 font-bold mb-4 uppercase"></p>
+                <div id="lista-contadores" class="space-y-3">
+                    </div>
             </div>
         </section>
 
         <section id="sec-historial" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-800">Historial de Reportes</h2>
-            <div id="lista-historial" class="space-y-4 text-center text-gray-400 italic">No hay registros guardados.</div>
+            <h2 class="text-lg font-bold text-gray-800">Reportes Generados</h2>
+            <div id="lista-historial" class="space-y-4"></div>
         </section>
     </main>
 
     <script>
         lucide.createIcons();
         let productosTemporales = [];
-        let historialReportes = JSON.parse(localStorage.getItem('historial_devoluciones')) || [];
+        let historialReportes = JSON.parse(localStorage.getItem('historial_v2')) || [];
 
         function showSection(section) {
-            document.getElementById('sec-devolucion').classList.toggle('hidden', section !== 'devolucion');
-            document.getElementById('sec-historial').classList.toggle('hidden', section !== 'historial');
-            document.getElementById('tab-devolucion').style.opacity = section === 'devolucion' ? "1" : "0.5";
-            document.getElementById('tab-historial').style.opacity = section === 'historial' ? "1" : "0.5";
+            ['devolucion', 'contadores', 'historial'].forEach(s => {
+                document.getElementById(`sec-${s}`).classList.add('hidden');
+                document.getElementById(`tab-${s}`).classList.add('opacity-70');
+                document.getElementById(`tab-${s}`).classList.remove('border-b-4');
+            });
+            document.getElementById(`sec-${section}`).classList.remove('hidden');
+            document.getElementById(`tab-${section}`).classList.remove('opacity-70');
+            document.getElementById(`tab-${section}`).classList.add('border-b-4', 'border-white');
+            
+            if(section === 'contadores') actualizarContadores();
             if(section === 'historial') actualizarHistorial();
         }
 
         function agregarALista() {
-            const prod = document.getElementById('producto').value;
-            const recibida = document.getElementById('cantRecibida').value;
+            const nombre = document.getElementById('producto').value;
             const aprobada = document.getElementById('cantAprobada').value;
+            if (!nombre || !aprobada) return;
 
-            if (!prod || !aprobada) return alert("Completa el producto y la cantidad aprobada.");
-
-            productosTemporales.push({
-                nombre: prod,
-                recibida: recibida,
-                aprobada: aprobada,
-                observacion: ""
-            });
-
+            productosTemporales.push({ nombre, aprobada, observacion: "" });
             renderizarTabla();
             document.getElementById('producto').value = '';
-            document.getElementById('cantRecibida').value = '';
             document.getElementById('cantAprobada').value = '';
         }
 
@@ -112,14 +119,13 @@
             const tabla = document.getElementById('contenedor-tabla');
             const cuerpo = document.getElementById('cuerpo-tabla');
             tabla.classList.toggle('hidden', productosTemporales.length === 0);
-            
-            cuerpo.innerHTML = productosTemporales.map((item, index) => `
+            cuerpo.innerHTML = productosTemporales.map((item, i) => `
                 <tr class="border-b">
-                    <td class="p-3 font-medium text-gray-800">${item.nombre}</td>
-                    <td class="p-3 text-center font-bold text-blue-800">${item.aprobada}</td>
+                    <td class="p-3">${item.nombre}</td>
+                    <td class="p-3 text-center font-bold">${item.aprobada}</td>
                     <td class="p-3 text-center">
-                        <button onclick="editarObservacion(${index})" class="p-1 rounded bg-gray-100">
-                            <i data-lucide="pencil" class="w-4 h-4 ${item.observacion ? 'text-green-600' : 'text-gray-400'}"></i>
+                        <button onclick="addObs(${i})" class="p-1 rounded bg-slate-50 border">
+                            <i data-lucide="pencil" class="w-3 h-3 ${item.observacion ? 'text-green-600' : 'text-slate-400'}"></i>
                         </button>
                     </td>
                 </tr>
@@ -127,61 +133,81 @@
             lucide.createIcons();
         }
 
-        function editarObservacion(index) {
-            const obs = prompt("Observación para " + productosTemporales[index].nombre, productosTemporales[index].observacion);
-            if (obs !== null) {
-                productosTemporales[index].observacion = obs;
-                renderizarTabla();
-            }
+        function addObs(i) {
+            const val = prompt("Observación del producto:", productosTemporales[i].observacion);
+            if (val !== null) { productosTemporales[i].observacion = val; renderizarTabla(); }
         }
 
         function finalizarReporte() {
             const cliente = document.getElementById('cliente').value;
             const vendedor = document.getElementById('vendedor').value;
-            if (!cliente || !vendedor) return alert("Indica Cliente y Vendedor.");
+            const cajas = parseInt(document.getElementById('cajasGuia').value) || 0;
+
+            if (!cliente || !vendedor) return alert("Faltan datos de cabecera.");
 
             const reporte = {
                 id: Date.now(),
                 fecha: new Date().toLocaleString(),
-                cliente,
-                vendedor,
+                timestamp: Date.now(),
+                cliente, vendedor, cajas,
                 items: [...productosTemporales]
             };
 
             historialReportes.unshift(reporte);
-            localStorage.setItem('historial_devoluciones', JSON.stringify(historialReportes));
-            
-            alert("Reporte guardado exitosamente.");
+            localStorage.setItem('historial_v2', JSON.stringify(historialReportes));
             productosTemporales = [];
             renderizarTabla();
             document.getElementById('cliente').value = '';
-            document.getElementById('vendedor').value = '';
+            document.getElementById('cajasGuia').value = '';
             showSection('historial');
+        }
+
+        function actualizarContadores() {
+            const lista = document.getElementById('lista-contadores');
+            const mesActual = new Date().getMonth();
+            const añoActual = new Date().getFullYear();
+            
+            document.getElementById('mes-actual').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(new Date());
+
+            const vendedores = ["Elias Ávila", "Evelyn Muro", "Regulo Antezana", "Paula García", "Jhayro Mauricio"];
+            const stats = {};
+            vendedores.forEach(v => stats[v] = 0);
+
+            historialReportes.forEach(rep => {
+                const fechaRep = new Date(rep.timestamp);
+                if(fechaRep.getMonth() === mesActual && fechaRep.getFullYear() === añoActual) {
+                    if(stats[rep.vendedor] !== undefined) stats[rep.vendedor] += rep.cajas;
+                }
+            });
+
+            lista.innerHTML = vendedores.map(v => `
+                <div class="flex justify-between items-center p-3 bg-slate-50 border rounded-lg">
+                    <span class="text-sm font-medium text-slate-700">${v}</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold text-sm">${stats[v]} Cajas</span>
+                </div>
+            `).join('');
         }
 
         function actualizarHistorial() {
             const lista = document.getElementById('lista-historial');
-            if (historialReportes.length === 0) return;
-
-            lista.innerHTML = historialReportes.map((rep, index) => `
-                <div class="bg-white p-5 rounded-xl shadow border-l-8 border-blue-900 text-left space-y-3">
-                    <div>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase">${rep.fecha}</p>
-                        <h3 class="font-black text-blue-900 text-lg leading-tight">${rep.cliente}</h3>
-                        <p class="text-xs font-semibold text-gray-500">Vendedor: ${rep.vendedor}</p>
+            lista.innerHTML = historialReportes.map((rep, idx) => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="font-black text-slate-800 leading-tight text-md">${rep.cliente}</h3>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">${rep.fecha}</p>
+                        </div>
+                        <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">📦 ${rep.cajas} CAJAS</span>
                     </div>
+                    <p class="text-[11px] text-slate-500 mb-3">Vendedor: ${rep.vendedor}</p>
                     
-                    <div class="text-[11px] bg-gray-50 p-3 rounded-lg border">
-                        <p class="font-bold mb-1 border-b pb-1">Productos (${rep.items.length}):</p>
-                        ${rep.items.map(i => `• ${i.nombre} [Cant: ${i.aprobada}] ${i.observacion ? '<i>(Obs: '+i.observacion+')</i>' : ''}`).join('<br>')}
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 pt-2">
-                        <button onclick="exportarPDF(${index})" class="bg-red-50 text-red-700 text-[11px] font-bold py-2 rounded border border-red-200 flex items-center justify-center gap-1">
-                            <i data-lucide="file-text" class="w-3 h-3"></i> REPORTE PDF
+                    <div class="flex gap-2 border-t pt-3">
+                        <button onclick="exportPDF(${idx})" class="flex-1 bg-red-600 text-white text-[11px] font-bold py-2 rounded flex items-center justify-center gap-1 uppercase">
+                            <i data-lucide="file-text" class="w-3 h-3"></i> PDF
                         </button>
-                        <button onclick="exportarExcel(${index})" class="bg-green-50 text-green-700 text-[11px] font-bold py-2 rounded border border-green-200 flex items-center justify-center gap-1">
-                            <i data-lucide="file-spreadsheet" class="w-3 h-3"></i> CUADRO EXCEL
+                        <button onclick="alert('LISTA DE PRODUCTOS:\\n${rep.items.map(i => '- ' + i.nombre + ' (' + i.aprobada + ')').join('\\n')}')" 
+                                class="flex-1 bg-slate-800 text-white text-[11px] font-bold py-2 rounded flex items-center justify-center gap-1 uppercase">
+                            <i data-lucide="list" class="w-3 h-3"></i> Ver Lista
                         </button>
                     </div>
                 </div>
@@ -189,56 +215,28 @@
             lucide.createIcons();
         }
 
-        // GENERACIÓN DE PDF PROFESIONAL
-        function exportarPDF(index) {
+        function exportPDF(idx) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const data = historialReportes[index];
+            const r = historialReportes[idx];
 
-            doc.setFontSize(18);
-            doc.text("REPORTE DE DEVOLUCIÓN DE MERCADERÍA", 14, 20);
-            
+            doc.setFontSize(14); doc.text("REPORTE DE RECEPCIÓN - DEVOLUCIONES", 14, 20);
             doc.setFontSize(10);
-            doc.text(`Fecha: ${data.fecha}`, 14, 30);
-            doc.text(`Cliente: ${data.cliente}`, 14, 35);
-            doc.text(`Vendedor: ${data.vendedor}`, 14, 40);
+            doc.text(`Cliente: ${r.cliente}`, 14, 30);
+            doc.text(`Vendedor: ${r.vendedor}`, 14, 35);
+            doc.text(`Cajas recibidas: ${r.cajas}`, 14, 40);
+            doc.text(`Fecha: ${r.fecha}`, 14, 45);
 
-            const rows = data.items.map(i => [i.nombre, i.recibida, i.aprobada, i.observacion]);
-            
             doc.autoTable({
-                startY: 50,
-                head: [['Producto', 'Cant. Recibida', 'Cant. Aprobada', 'Observación']],
-                body: rows,
-                theme: 'striped',
+                startY: 55,
+                head: [['Producto', 'Cant. Aprobada', 'Observación']],
+                body: r.items.map(i => [i.nombre, i.aprobada, i.observacion]),
                 headStyles: { fillColor: [30, 58, 138] }
             });
 
-            const finalY = doc.lastAutoTable.finalY + 20;
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "bold");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-
-            doc.save(`Reporte_${data.cliente.replace(/\s/g, '_')}.pdf`);
-        }
-
-        // GENERACIÓN DE EXCEL (XLSX)
-        function exportarExcel(index) {
-            const data = historialReportes[index];
-            const rows = data.items.map(i => ({
-                FECHA: data.fecha,
-                CLIENTE: data.cliente,
-                VENDEDOR: data.vendedor,
-                PRODUCTO: i.nombre,
-                CANT_RECIBIDA: i.recibida,
-                CANT_APROBADA: i.aprobada,
-                OBSERVACION: i.observacion,
-                AUTORIZADO_POR: "J. Angelo Nuñez Durand"
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(rows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Devolución");
-            XLSX.writeFile(wb, `Cuadro_${data.cliente.replace(/\s/g, '_')}.xlsx`);
+            doc.setFontSize(8);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
+            doc.save(`Reporte_${r.cliente.replace(/ /g,'_')}.pdf`);
         }
     </script>
 </body>
