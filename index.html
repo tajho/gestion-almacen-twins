@@ -3,193 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LOGÍSTICO - ANGELO NUÑEZ</title>
+    <title>SISTEMA LOGÍSTICO PRO - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --dark: #0f172a; --blue: #3b82f6; --green: #10b981; --red: #ef4444; --gray: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--gray); margin: 0; padding: 10px; }
-        .nav { display: flex; background: var(--dark); border-radius: 10px; margin-bottom: 15px; }
-        .nav-btn { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        .nav-btn.active { background: var(--blue); border-radius: 10px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .display-prod { background: #eff6ff; padding: 10px; border-radius: 8px; font-weight: bold; color: var(--blue); margin: 10px 0; border-left: 4px solid var(--blue); }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; }
-        .btn-add { background: var(--dark); }
-        .btn-save { background: var(--green); margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 15px; }
-        th { text-align: left; padding: 10px; background: #f1f5f9; }
-        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
-        .status { font-weight: bold; }
-        .status-ok { color: var(--green); }
-        .status-err { color: var(--red); }
+        :root { --dark: #0f172a; --accent: #3b82f6; --success: #10b981; --error: #ef4444; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 5px solid var(--accent); }
+        .status-indicator { font-size: 0.7rem; font-weight: bold; padding: 5px 10px; border-radius: 20px; float: right; }
+        .online { background: #dcfce7; color: #166534; }
+        .offline { background: #fee2e2; color: #991b1b; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-reg { background: var(--dark); }
+        .btn-pdf { background: var(--success); margin-top: 15px; }
+        .search-result { background: #eff6ff; padding: 10px; border-radius: 8px; font-weight: bold; color: var(--accent); min-height: 20px; margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        th { text-align: left; padding: 10px; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <div id="btn-reg" class="nav-btn active" onclick="switchTab('registro')">NUEVO INGRESO</div>
-    <div id="btn-hist" class="nav-btn" onclick="switchTab('historial')">CONSULTAR HISTORIAL</div>
-</div>
-
-<div id="view-registro">
     <div class="card">
-        <label>1. DATOS DE CABECERA</label>
-        <input type="text" id="cont_nro" placeholder="N° de Contenedor (Ej: 0116)">
-        <input type="file" id="packing_photo" accept="image/*">
+        <span id="db-status" class="status-indicator offline">SIN CONEXIÓN</span>
+        <h2 style="margin:0; font-size: 1.2rem;">Control de Inbound</h2>
+        <p style="font-size: 0.8rem; color: #64748b;">Asist. Logístico: J. Angelo Nuñez</p>
+
+        <label style="font-size: 0.7rem; font-weight: bold;">FOTO PACKING LIST</label>
+        <input type="file" id="packing-img" accept="image/*">
+
+        <label style="font-size: 0.7rem; font-weight: bold;">N° CONTENEDOR</label>
+        <input type="text" id="id-cont" placeholder="Ej: 0116">
     </div>
 
     <div class="card">
-        <label>2. BUSCADOR MAESTRO (Validación)</label>
-        <input type="text" id="sku_in" placeholder="Escriba código SKU..." oninput="buscarEnMaestro(this.value)">
-        <div id="prod_nombre" class="display-prod">Producto no seleccionado</div>
-        
+        <label style="font-size: 0.7rem; font-weight: bold;">BUSCADOR MAESTRO (SKU)</label>
+        <input type="text" id="sku-input" placeholder="Escriba código SKU..." oninput="validarSKU(this.value)">
+        <div id="sku-desc" class="search-result">Esperando código...</div>
+
         <div style="display: flex; gap: 10px;">
             <div style="flex: 1;">
-                <label>CANT. PACKING</label>
-                <input type="number" id="q_pack" placeholder="Dato foto">
+                <label style="font-size: 0.7rem;">CANT. PACKING</label>
+                <input type="number" id="c-pack" placeholder="Foto">
             </div>
             <div style="flex: 1;">
-                <label>CANT. FÍSICA</label>
-                <input type="number" id="q_fis" placeholder="Conteo">
+                <label style="font-size: 0.7rem;">CANT. CONTEO</label>
+                <input type="number" id="c-fis" placeholder="Físico">
             </div>
         </div>
-        <button class="btn btn-add" onclick="agregarItem()">+ REGISTRAR EN CONTEO</button>
+
+        <button class="btn btn-reg" onclick="agregarItem()">+ Registrar Item</button>
     </div>
 
     <div class="card">
-        <table id="tabla_conteo">
+        <table id="resumen">
             <thead>
-                <tr><th>SKU</th><th>Pck.</th><th>Fis.</th><th>Estado</th></tr>
+                <tr><th>SKU</th><th>Pck</th><th>Fis</th><th>Estado</th></tr>
             </thead>
-            <tbody id="body_conteo"></tbody>
+            <tbody id="resumen-body"></tbody>
         </table>
-        <button class="btn btn-save" onclick="finalizarIngreso()">GUARDAR Y CERRAR CONTENEDOR</button>
+        <button class="btn btn-pdf" onclick="cerrarYGenerar()">Finalizar y Crear Reporte</button>
     </div>
-</div>
 
-<div id="view-historial" class="hidden">
-    <div class="card">
-        <label>BUSCADOR DE HISTORIAL (Por SKU o Contenedor)</label>
-        <input type="text" id="hist_search" placeholder="Ej: AR-00036 o 0116" oninput="filtrarHistorial(this.value)">
-    </div>
-    <div class="card" id="lista_historial" style="max-height: 400px; overflow-y: auto; padding: 0;">
-        </div>
-</div>
+    <script>
+        // REEMPLAZA ESTA URL CON LA QUE TE DÉ AL "IMPLEMENTAR" DE NUEVO
+        const URL_API = "https://script.google.com/macros/s/AKfycbxGiHWFnxRctB4ufGHjMw8PQZVec0_HmjAKQX_BdiU1IReWuPYHpaePmjaf-ZSfOwC2/exec";
+        let dbMaestra = [];
+        let conteoTotal = {};
 
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-    let maestroData = [];
-    let conteoSesion = {};
-    let dbHistorial = []; // Aquí guardaremos lo que viene del Excel
+        // Sincronización con el Excel
+        window.onload = async () => {
+            const status = document.getElementById('db-status');
+            try {
+                const response = await fetch(URL_API);
+                const data = await response.json();
+                // Filtramos la fila de encabezados
+                dbMaestra = data.filter(r => r[0] && r[0] !== "CODIGO");
+                status.innerText = "CONECTADO: " + dbMaestra.length + " SKU";
+                status.className = "status-indicator online";
+            } catch (e) {
+                status.innerText = "ERROR DE CONEXIÓN";
+                console.error(e);
+            }
+        };
 
-    window.onload = async () => {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        maestroData = data.filter(r => r[0] && r[0] !== "CODIGO");
-        cargarHistorialDesdeExcel();
-    };
-
-    function switchTab(tab) {
-        document.getElementById('view-registro').classList.toggle('hidden', tab !== 'registro');
-        document.getElementById('view-historial').classList.toggle('hidden', tab !== 'historial');
-        document.getElementById('btn-reg').classList.toggle('active', tab === 'registro');
-        document.getElementById('btn-hist').classList.toggle('active', tab === 'historial');
-    }
-
-    function buscarEnMaestro(val) {
-        val = val.trim().toUpperCase();
-        const item = maestroData.find(p => p[0].toString().toUpperCase() === val);
-        document.getElementById('prod_nombre').innerText = item ? "✓ " + item[1] : "No existe en Maestro";
-    }
-
-    function agregarItem() {
-        const sku = document.getElementById('sku_in').value.toUpperCase().trim();
-        const pck = parseInt(document.getElementById('q_pack').value) || 0;
-        const fis = parseInt(document.getElementById('q_fis').value) || 0;
-        const desc = document.getElementById('prod_nombre').innerText;
-
-        if(!sku || fis === 0 || desc.includes("No existe")) return alert("Verifique SKU y Cantidades");
-
-        if(!conteoSesion[sku]) {
-            conteoSesion[sku] = { desc: desc.replace("✓ ", ""), packing: pck, físico: 0 };
+        function validarSKU(val) {
+            val = val.trim().toUpperCase();
+            const encontrado = dbMaestra.find(p => p[0].toString().toUpperCase() === val);
+            const descDiv = document.getElementById('sku-desc');
+            if(encontrado) {
+                descDiv.innerText = "✓ " + encontrado[1];
+                descDiv.style.color = "var(--accent)";
+            } else {
+                descDiv.innerText = "SKU No existe en Maestro";
+                descDiv.style.color = "var(--error)";
+            }
         }
-        
-        conteoSesion[sku].físico += fis;
-        if(pck > 0) conteoSesion[sku].packing = pck;
 
-        actualizarTablaRegistro();
-        document.getElementById('sku_in').value = "";
-        document.getElementById('q_fis').value = "";
-        document.getElementById('sku_in').focus();
-    }
+        function agregarItem() {
+            const sku = document.getElementById('sku-input').value.toUpperCase().trim();
+            const pack = parseInt(document.getElementById('c-pack').value) || 0;
+            const fis = parseInt(document.getElementById('c-fis').value) || 0;
+            const desc = document.getElementById('sku-desc').innerText;
 
-    function actualizarTablaRegistro() {
-        const tbody = document.getElementById('body_conteo');
-        tbody.innerHTML = "";
-        for(let s in conteoSesion) {
-            const it = conteoSesion[s];
-            const diff = it.físico === it.packing;
-            tbody.innerHTML += `<tr>
-                <td>${s}</td>
-                <td>${it.packing}</td>
-                <td><b>${it.físico}</b></td>
-                <td class="status ${diff ? 'status-ok' : 'status-err'}">${diff ? 'OK' : 'DIF.'}</td>
-            </tr>`;
+            if(!sku || fis === 0 || desc.includes("No existe")) {
+                alert("Verifica el código y las cantidades.");
+                return;
+            }
+
+            if(!conteoTotal[sku]) {
+                conteoTotal[sku] = { packing: pack, fisico: 0, desc: desc.replace("✓ ", "") };
+            }
+            conteoTotal[sku].fisico += fis;
+            if(pack > 0) conteoTotal[sku].packing = pack;
+
+            actualizarTabla();
+            
+            // Limpieza para el siguiente pallet
+            document.getElementById('sku-input').value = "";
+            document.getElementById('c-fis').value = "";
+            document.getElementById('sku-input').focus();
         }
-    }
 
-    async function finalizarIngreso() {
-        const cont = document.getElementById('cont_nro').value;
-        if(!cont || Object.keys(conteoSesion).length === 0) return alert("Datos insuficientes");
+        function actualizarTabla() {
+            const body = document.getElementById('resumen-body');
+            body.innerHTML = "";
+            for(let s in conteoTotal) {
+                const item = conteoTotal[s];
+                const diff = item.fisico === item.packing;
+                body.innerHTML += `<tr>
+                    <td>${s}</td>
+                    <td>${item.packing}</td>
+                    <td><b>${item.fisico}</b></td>
+                    <td style="color: ${diff ? 'green' : 'red'}; font-weight:bold;">${diff ? 'OK' : 'DIF'}</td>
+                </tr>`;
+            }
+        }
 
-        // Enviar a la pestaña "Historial" del Excel
-        await fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                contenedor: cont,
-                datos: conteoSesion,
-                fecha: new Date().toLocaleDateString(),
-                responsable: "J. Angelo Nuñez Durand"
-            })
-        });
+        function cerrarYGenerar() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const cont = document.getElementById('id-cont').value || "S/N";
 
-        alert("Contenedor Guardado en Base de Datos");
-        location.reload();
-    }
+            doc.setFontSize(16).text("REPORTE FINAL DE INGRESO: " + cont, 105, 20, {align: 'center'});
+            
+            const rows = [];
+            for(let s in conteoTotal) {
+                const i = conteoTotal[s];
+                rows.push([s, i.desc, i.packing, i.fisico, i.fisico - i.packing]);
+            }
 
-    async function cargarHistorialDesdeExcel() {
-        // En un escenario real, esto hace un fetch a una pestaña llamada "Historial"
-        // Simulamos datos para la demostración del buscador:
-        dbHistorial = [
-            { cont: "0116", sku: "AR-00036", desc: "BANDEJA 3 PISOS", fecha: "01/03/2026" },
-            { cont: "0110", sku: "AR-00557", desc: "BOLIGRAFO AZUL", fecha: "25/02/2026" }
-        ];
-        renderizarHistorial(dbHistorial);
-    }
+            doc.autoTable({
+                startY: 30,
+                head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
+                body: rows,
+                theme: 'grid',
+                headStyles: { fillColor: [15, 23, 42] }
+            });
 
-    function renderizarHistorial(datos) {
-        const div = document.getElementById('lista_historial');
-        div.innerHTML = datos.map(h => `
-            <div style="padding:15px; border-bottom:1px solid #eee;">
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="font-weight:bold; color:var(--blue);">${h.sku}</span>
-                    <span style="font-size:0.7rem; color:#64748b;">${h.fecha}</span>
-                </div>
-                <div style="font-size:0.8rem; margin:5px 0;">${h.desc}</div>
-                <div style="font-size:0.75rem; color:var(--dark);">Contenedor: <b>${h.cont}</b></div>
-            </div>
-        `).join("");
-    }
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.setFontSize(10).text("Recepción y conteo realizado por:", 105, finalY, {align: 'center'});
+            doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align: 'center'});
+            doc.text("------------------------------------------", 105, finalY + 12, {align: 'center'});
+            doc.text("Asist. Logístico.", 105, finalY + 17, {align: 'center'});
 
-    function filtrarHistorial(val) {
-        val = val.toUpperCase();
-        const filtrado = dbHistorial.filter(h => h.sku.includes(val) || h.cont.includes(val));
-        renderizarHistorial(filtrado);
-    }
-</script>
+            doc.save(`Recepcion_${cont}.pdf`);
+        }
+    </script>
 </body>
 </html>
