@@ -3,133 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Registro Ingreso - Contenedor 0116</title>
+    <title>Smart Inbound - Angelo Nuñez</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --bg: #f3f4f6; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        h2 { color: var(--primary); font-size: 1.1rem; margin-top: 0; }
-        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; }
-        .btn-register { background: var(--success); margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
-        .match { color: var(--success); font-weight: bold; }
-        .diff { color: #dc2626; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #1e293b; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--accent); padding-left: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .product-info { font-size: 0.85rem; color: var(--accent); font-weight: bold; min-height: 20px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-add:active { background: #1e293b; transform: scale(0.98); }
+        .btn-pdf { background: var(--success); color: white; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; font-size: 0.85rem; }
+        th { background: #f1f5f9; padding: 10px; text-align: left; color: #64748b; }
+        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        .badge { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>Conteo Físico por Pallets</h2>
-        <input type="text" id="sku_input" placeholder="Escribe el Código (ej: AR-00036)">
-        <input type="number" id="cant_input" placeholder="Cantidad recibida (ej: 15)">
-        <button onclick="sumarConteo()">Sumar al Conteo</button>
+        <h2>Ingreso de Mercadería</h2>
+        <input type="text" id="nro_contenedor" placeholder="N° de Contenedor (Ej: 0116)">
+        
+        <div style="margin: 15px 0; border-top: 1px solid #eee;"></div>
+        
+        <label style="font-size: 0.75rem; color: #64748b;">CÓDIGO DE PRODUCTO</label>
+        <input type="text" id="sku_input" placeholder="Escriba código..." oninput="buscarProducto(this.value)">
+        <div id="display_desc" class="product-info"></div>
+        
+        <label style="font-size: 0.75rem; color: #64748b;">CANTIDAD DE PALLET</label>
+        <input type="number" id="cant_input" placeholder="Ej: 15">
+        
+        <button class="btn btn-add" onclick="registrarEnExcel()">+ AGREGAR AL CONTEO</button>
     </div>
 
     <div class="card">
-        <h2>Estado de Carga - Contenedor 0116</h2>
-        <table id="tablaRevision">
+        <h2>Resumen del Conteo</h2>
+        <table>
             <thead>
                 <tr>
-                    <th>Cod.</th>
-                    <th>Pack.</th>
-                    <th>Físico</th>
+                    <th>SKU</th>
+                    <th>Cant.</th>
                     <th>Estado</th>
                 </tr>
             </thead>
-            <tbody id="listaCuerpo"></tbody>
+            <tbody id="tabla_resumen"></tbody>
         </table>
+        <button class="btn btn-pdf" onclick="generarReporteFinal()">REGISTRAR CONTEO DE CONTENEDOR</button>
     </div>
 
-    <button class="btn-register" onclick="generarReportePDF()">REGISTRAR CONTEO DE CONTENEDOR</button>
-
     <script>
-        // Datos extraídos de tu foto
-        const packingList = {
-            "AR-00036": { qty: 48, desc: "BANDEJA 3 PISOS" },
-            "AR-00085": { qty: 1200, desc: "CARTON MAQUETA 3MM" },
-            "AR-00090": { qty: 1500, desc: "CARTON MAQUETA 5MM" },
-            "AR-00557": { qty: 172800, desc: "BOLIGRAFO AZUL" },
-            "AR-00558": { qty: 120960, desc: "BOLIGRAFO ROJO" },
-            "AR-00559": { qty: 120960, desc: "BOLIGRAFO NEGRO" },
-            "AR-01205": { qty: 900, desc: "REGLA T 60 CM" },
-            "AR-01207": { qty: 600, desc: "REGLA T 80 CM" },
-            "AR-00780": { qty: 10000, desc: "PAPEL ALUMINIO 5 MT" },
-            "AR-00781": { qty: 5000, desc: "PAPEL ALUMINIO 8 MT" },
-            "AR-01361": { qty: 10000, desc: "TABLERO FORMICA A4" },
-            "AR-00236": { qty: 750, desc: "CLIPS FOTOCHECK" },
-            "AR-00326": { qty: 115200, desc: "CUCHILLA ECONOMICA" },
-            "AR-01121": { qty: 1000, desc: "FOTOCHECK PLASTICO" },
-            "AR-02760": { qty: 4800, desc: "CINTA MAGICA" },
-            "AR-03806": { qty: 360, desc: "PIZARRA 60X80" },
-            "AR-03808": { qty: 300, desc: "PIZARRA 80X120" }
+        const URL_API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
+        let maestroLocal = [];
+        let conteoFisico = {};
+
+        // Carga el maestro de productos al iniciar la app
+        window.onload = async () => {
+            try {
+                const response = await fetch(URL_API);
+                maestroLocal = await response.json();
+                console.log("Maestro cargado: ", maestroLocal.length, " productos");
+            } catch (e) { console.error("Error cargando maestro"); }
         };
 
-        let conteoFisico = {};
-        // Inicializar conteo en 0
-        Object.keys(packingList).forEach(sku => conteoFisico[sku] = 0);
+        function buscarProducto(sku) {
+            sku = sku.trim().toUpperCase();
+            const found = maestroLocal.find(p => p[0].toString().toUpperCase() === sku);
+            const display = document.getElementById('display_desc');
+            if(found) {
+                display.innerText = "✓ " + found[1]; // Nombre del producto
+                display.style.color = "var(--success)";
+            } else {
+                display.innerText = "Producto no encontrado en maestro";
+                display.style.color = "#ef4444";
+            }
+        }
 
-        function sumarConteo() {
-            const sku = document.getElementById('sku_input').value.trim().toUpperCase();
+        async function registrarEnExcel() {
+            const cont = document.getElementById('nro_contenedor').value;
+            const sku = document.getElementById('sku_input').value.toUpperCase();
             const cant = parseInt(document.getElementById('cant_input').value);
 
-            if (packingList[sku]) {
-                conteoFisico[sku] += cant;
-                actualizarTabla();
-                document.getElementById('cant_input').value = '';
+            if(!cont || !sku || !cant) return alert("Por favor complete todos los campos");
+
+            // Registro visual inmediato
+            conteoFisico[sku] = (conteoFisico[sku] || 0) + cant;
+            actualizarTabla();
+
+            // Envío a la Base de Datos (Excel)
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para Apps Script
+                    body: JSON.stringify({
+                        contenedor: cont,
+                        sku: sku,
+                        cantidad: cant
+                    })
+                });
+                
+                // Limpiar campos para el siguiente pallet
+                document.getElementById('sku_input').value = "";
+                document.getElementById('cant_input').value = "";
+                document.getElementById('display_desc').innerText = "";
                 document.getElementById('sku_input').focus();
-            } else {
-                alert("El código no existe en el packing list actual.");
+            } catch (e) {
+                alert("Error al sincronizar con Excel");
             }
         }
 
         function actualizarTabla() {
-            const body = document.getElementById('listaCuerpo');
-            body.innerHTML = '';
-            for (let sku in packingList) {
-                const esperado = packingList[sku].qty;
-                const actual = conteoFisico[sku];
-                const cuadra = actual === esperado;
-                
-                body.innerHTML += `
-                    <tr>
-                        <td>${sku}</td>
-                        <td>${esperado}</td>
-                        <td><b>${actual}</b></td>
-                        <td class="${cuadra ? 'match' : 'diff'}">${cuadra ? '✅ OK' : '...'}</td>
-                    </tr>
-                `;
+            const tbody = document.getElementById('tabla_resumen');
+            tbody.innerHTML = "";
+            for(let key in conteoFisico) {
+                tbody.innerHTML += `<tr><td>${key}</td><td><b>${conteoFisico[key]}</b></td><td><span class="badge">REGISTRADO</span></td></tr>`;
             }
         }
 
-        function generarReportePDF() {
+        function generarReporteFinal() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            const cont = document.getElementById('nro_contenedor').value;
             let y = 20;
 
-            doc.setFontSize(14).text("REPORTE DE INGRESO - CONTENEDOR 0116", 20, y);
+            doc.setFontSize(16).text("REPORTE FINAL DE INGRESO", 20, y);
             y += 10;
-            doc.setFontSize(10).text("CODIGO | PACKING | FISICO | RESULTADO", 20, y);
-            y += 7;
+            doc.setFontSize(12).text(`Contenedor: ${cont}`, 20, y);
+            y += 15;
 
-            for (let sku in packingList) {
-                const status = conteoFisico[sku] === packingList[sku].qty ? "CUADRA" : "DISCREPANCIA";
-                doc.text(`${sku} | ${packingList[sku].qty} | ${conteoFisico[sku]} | ${status}`, 20, y);
+            doc.setFontSize(10).text("SKU | CANTIDAD TOTAL | ESTADO", 20, y);
+            y += 8;
+
+            for(let sku in conteoFisico) {
+                doc.text(`${sku} | ${conteoFisico[sku]} | CUADRA CON REGISTRO`, 20, y);
                 y += 6;
             }
 
-            y += 15;
-            doc.text("________________________________", 20, y);
+            y += 20;
+            doc.setFontSize(10);
+            doc.text("--------------------------------------------------", 20, y);
             y += 5;
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, y);
             doc.text("Asist. Inventario Logístico.", 20, y+5);
 
-            doc.save("Reporte_Conteo_0116.pdf");
+            doc.save(`Reporte_Contenedor_${cont}.pdf`);
+            alert("Reporte Generado y Guardado.");
         }
-
-        actualizarTabla();
     </script>
 </body>
 </html>
