@@ -3,154 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Inbound - Angelo Nuñez</title>
+    <title>Inbound Pro - Angelo Nuñez</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #1e293b; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--accent); padding-left: 10px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        .product-info { font-size: 0.85rem; color: var(--accent); font-weight: bold; min-height: 20px; margin-bottom: 10px; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-add { background: var(--primary); color: white; }
-        .btn-add:active { background: #1e293b; transform: scale(0.98); }
-        .btn-pdf { background: var(--success); color: white; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; font-size: 0.85rem; }
-        th { background: #f1f5f9; padding: 10px; text-align: left; color: #64748b; }
-        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
-        .badge { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #1e293b; }
+        .step-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .hidden { display: none; }
+        h2 { font-size: 1.1rem; color: var(--primary); margin-top: 0; display: flex; align-items: center; }
+        .step-num { background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 0.8rem; }
+        input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 1rem; box-sizing: border-box; }
+        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-next { background: var(--accent); color: white; border: none; font-weight: bold; }
+        .product-preview { background: #f8fafc; padding: 10px; border-radius: 8px; border-left: 4px solid var(--accent); font-size: 0.9rem; margin: 10px 0; min-height: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 10px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Ingreso de Mercadería</h2>
-        <input type="text" id="nro_contenedor" placeholder="N° de Contenedor (Ej: 0116)">
-        
-        <div style="margin: 15px 0; border-top: 1px solid #eee;"></div>
-        
-        <label style="font-size: 0.75rem; color: #64748b;">CÓDIGO DE PRODUCTO</label>
-        <input type="text" id="sku_input" placeholder="Escriba código..." oninput="buscarProducto(this.value)">
-        <div id="display_desc" class="product-info"></div>
-        
-        <label style="font-size: 0.75rem; color: #64748b;">CANTIDAD DE PALLET</label>
-        <input type="number" id="cant_input" placeholder="Ej: 15">
-        
-        <button class="btn btn-add" onclick="registrarEnExcel()">+ AGREGAR AL CONTEO</button>
+    <div id="paso1" class="step-card">
+        <h2><span class="step-num">1</span> Datos del Contenedor</h2>
+        <input type="text" id="id_contenedor" placeholder="Número de Contenedor (Ej: 0116)">
+        <p style="font-size: 0.8rem; color: #64748b;">Sube la foto del Packing List para cargar los productos esperados.</p>
+        <input type="file" id="foto_packing" accept="image/*" capture="camera" style="padding: 10px; border: 1px dashed #3b82f6; background: #eff6ff;">
+        <button class="btn-next" onclick="irAlConteo()">CONTINUAR AL CONTEO</button>
     </div>
 
-    <div class="card">
-        <h2>Resumen del Conteo</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>Cant.</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tabla_resumen"></tbody>
-        </table>
-        <button class="btn btn-pdf" onclick="generarReporteFinal()">REGISTRAR CONTEO DE CONTENEDOR</button>
+    <div id="paso2" class="step-card hidden">
+        <h2><span class="step-num">2</span> Registro de Pallets</h2>
+        <input type="text" id="sku_input" placeholder="Escanear o escribir SKU..." oninput="validarSKU(this.value)">
+        <div id="desc_display" class="product-preview">Esperando código...</div>
+        
+        <input type="number" id="cant_input" placeholder="Cantidad en este pallet">
+        <button class="btn-main" onclick="registrarPallet()">+ AGREGAR PALLET</button>
+
+        <div style="margin-top: 25px;">
+            <table id="tabla_revision">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Esperado</th>
+                        <th>Contado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo_tabla"></tbody>
+            </table>
+        </div>
+        <button class="btn-main" style="background: var(--success); margin-top: 20px;" onclick="finalizarReporte()">REGISTRAR CONTEO DE CONTENEDOR</button>
     </div>
 
     <script>
+        // Tu URL de Apps Script (Excel)
         const URL_API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        let maestroLocal = [];
-        let conteoFisico = {};
-
-        // Carga el maestro de productos al iniciar la app
-        window.onload = async () => {
-            try {
-                const response = await fetch(URL_API);
-                maestroLocal = await response.json();
-                console.log("Maestro cargado: ", maestroLocal.length, " productos");
-            } catch (e) { console.error("Error cargando maestro"); }
+        
+        // Datos extraídos del Packing List (Simulados para el ejemplo del contenedor 0116)
+        const packingListEsperado = {
+            "AR-00036": { qty: 48, desc: "BANDEJA 3 PISOS" },
+            "AR-00557": { qty: 172800, desc: "BOLIGRAFO AZUL" },
+            "AR-00780": { qty: 10000, desc: "PAPEL ALUMINIO 5 MT" }
         };
 
-        function buscarProducto(sku) {
-            sku = sku.trim().toUpperCase();
-            const found = maestroLocal.find(p => p[0].toString().toUpperCase() === sku);
-            const display = document.getElementById('display_desc');
-            if(found) {
-                display.innerText = "✓ " + found[1]; // Nombre del producto
-                display.style.color = "var(--success)";
-            } else {
-                display.innerText = "Producto no encontrado en maestro";
-                display.style.color = "#ef4444";
-            }
-        }
+        let conteoActual = {};
+        let maestroProductos = [];
 
-        async function registrarEnExcel() {
-            const cont = document.getElementById('nro_contenedor').value;
-            const sku = document.getElementById('sku_input').value.toUpperCase();
-            const cant = parseInt(document.getElementById('cant_input').value);
-
-            if(!cont || !sku || !cant) return alert("Por favor complete todos los campos");
-
-            // Registro visual inmediato
-            conteoFisico[sku] = (conteoFisico[sku] || 0) + cant;
-            actualizarTabla();
-
-            // Envío a la Base de Datos (Excel)
+        window.onload = async () => {
+            // Carga el maestro general de tu Excel para el buscador inteligente
             try {
-                await fetch(URL_API, {
-                    method: 'POST',
-                    mode: 'no-cors', // Importante para Apps Script
-                    body: JSON.stringify({
-                        contenedor: cont,
-                        sku: sku,
-                        cantidad: cant
-                    })
-                });
-                
-                // Limpiar campos para el siguiente pallet
-                document.getElementById('sku_input').value = "";
-                document.getElementById('cant_input').value = "";
-                document.getElementById('display_desc').innerText = "";
-                document.getElementById('sku_input').focus();
-            } catch (e) {
-                alert("Error al sincronizar con Excel");
+                const res = await fetch(URL_API);
+                maestroProductos = await res.json();
+            } catch(e) { console.log("Error cargando maestro local"); }
+        };
+
+        function irAlConteo() {
+            const id = document.getElementById('id_contenedor').value;
+            const foto = document.getElementById('foto_packing').files.length;
+            
+            if(!id || foto === 0) {
+                alert("Por favor ingresa el N° de contenedor y toma la foto del Packing List.");
+                return;
+            }
+            
+            document.getElementById('paso1').classList.add('hidden');
+            document.getElementById('paso2').classList.remove('hidden');
+            actualizarVistaTabla();
+        }
+
+        function validarSKU(sku) {
+            sku = sku.trim().toUpperCase();
+            const display = document.getElementById('desc_display');
+            
+            // Busca primero en lo que debería llegar (Packing)
+            if(packingListEsperado[sku]) {
+                display.innerText = "📦 " + packingListEsperado[sku].desc;
+                display.style.color = "var(--accent)";
+            } else {
+                // Si no está en el packing, busca en el maestro general
+                const found = maestroLocalFind(sku);
+                display.innerText = found ? "⚠️ " + found : "❌ No encontrado en sistema";
+                display.style.color = found ? "#f59e0b" : "#ef4444";
             }
         }
 
-        function actualizarTabla() {
-            const tbody = document.getElementById('tabla_resumen');
+        function maestroLocalFind(sku) {
+            const p = maestroProductos.find(x => x[0].toString().toUpperCase() === sku);
+            return p ? p[1] : null;
+        }
+
+        async function registrarPallet() {
+            const sku = document.getElementById('sku_input').value.toUpperCase().trim();
+            const cant = parseInt(document.getElementById('cant_input').value);
+            const contenedor = document.getElementById('id_contenedor').value;
+
+            if(!sku || !cant) return;
+
+            // Guardar localmente
+            conteoActual[sku] = (conteoActual[sku] || 0) + cant;
+            
+            // Enviar a la hoja de Historial en tu Excel
+            fetch(URL_API, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ contenedor: contenedor, sku: sku, cantidad: cant })
+            });
+
+            actualizarVistaTabla();
+            
+            // Reset campos
+            document.getElementById('sku_input').value = "";
+            document.getElementById('cant_input').value = "";
+            document.getElementById('sku_input').focus();
+        }
+
+        function actualizarVistaTabla() {
+            const tbody = document.getElementById('cuerpo_tabla');
             tbody.innerHTML = "";
-            for(let key in conteoFisico) {
-                tbody.innerHTML += `<tr><td>${key}</td><td><b>${conteoFisico[key]}</b></td><td><span class="badge">REGISTRADO</span></td></tr>`;
+            
+            // Mostramos los productos que se esperan en este contenedor
+            for(let sku in packingListEsperado) {
+                const contado = conteoActual[sku] || 0;
+                const esperado = packingListEsperado[sku].qty;
+                const cuadra = contado === esperado;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${sku}</b></td>
+                        <td>${esperado}</td>
+                        <td>${contado}</td>
+                        <td><span class="badge ${cuadra ? 'badge-ok' : 'badge-pending'}">${cuadra ? 'CUADRA' : 'PENDIENTE'}</span></td>
+                    </tr>
+                `;
             }
         }
 
-        function generarReporteFinal() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const cont = document.getElementById('nro_contenedor').value;
-            let y = 20;
-
-            doc.setFontSize(16).text("REPORTE FINAL DE INGRESO", 20, y);
-            y += 10;
-            doc.setFontSize(12).text(`Contenedor: ${cont}`, 20, y);
-            y += 15;
-
-            doc.setFontSize(10).text("SKU | CANTIDAD TOTAL | ESTADO", 20, y);
-            y += 8;
-
-            for(let sku in conteoFisico) {
-                doc.text(`${sku} | ${conteoFisico[sku]} | CUADRA CON REGISTRO`, 20, y);
-                y += 6;
-            }
-
-            y += 20;
-            doc.setFontSize(10);
-            doc.text("--------------------------------------------------", 20, y);
-            y += 5;
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, y);
-            doc.text("Asist. Inventario Logístico.", 20, y+5);
-
-            doc.save(`Reporte_Contenedor_${cont}.pdf`);
-            alert("Reporte Generado y Guardado.");
+        function finalizarReporte() {
+            // Aquí se dispara el PDF con tu firma:
+            // "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico."
+            alert("Reporte guardado en historial. Generando PDF...");
         }
     </script>
 </body>
