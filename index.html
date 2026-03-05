@@ -3,84 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Devoluciones - Twins Elite</title>
+    <title>Twins Inventory Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .nav-active { color: #38bdf8; position: relative; }
+        .nav-active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 20px; height: 4px; background: #38bdf8; border-radius: 10px; }
+        input, select { background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; }
+        .btn-gradient { background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.4); }
+    </style>
 </head>
-<body class="bg-slate-100 font-sans pb-24">
+<body class="pb-28">
 
-    <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-20">
-        <div class="flex justify-around p-4 font-bold text-xs">
-            <button onclick="showSection('devolucion')" id="tab-devolucion" class="border-b-4 border-white pb-1">📦 REGISTRO</button>
-            <button onclick="showSection('contadores')" id="tab-contadores" class="opacity-70 pb-1">📊 MENSUAL</button>
-            <button onclick="showSection('historial')" id="tab-historial" class="opacity-70 pb-1">📜 HISTORIAL</button>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-card rounded-full px-8 py-4 z-50 shadow-2xl">
+        <div class="flex justify-between items-center text-gray-400">
+            <button onclick="showSection('devolucion')" id="tab-devolucion" class="nav-active"><i data-lucide="package"></i></button>
+            <button onclick="showSection('contadores')" id="tab-contadores"><i data-lucide="bar-chart-3"></i></button>
+            <button onclick="showSection('historial')" id="tab-historial"><i data-lucide="history"></i></button>
         </div>
     </nav>
 
-    <main class="p-4 max-w-2xl mx-auto">
+    <main class="p-6 max-w-xl mx-auto space-y-8">
         
-        <section id="sec-devolucion" class="space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-blue-900">
-                <h2 class="text-sm font-bold text-blue-900 mb-3 uppercase">Datos de Guía</h2>
-                <div class="grid grid-cols-1 gap-3">
-                    <input type="text" id="cliente" placeholder="Nombre del Cliente" class="p-3 border rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500">
-                    <div class="grid grid-cols-2 gap-3">
-                        <select id="vendedor" class="p-3 border rounded-lg bg-gray-50 text-sm">
-                            <option value="">Vendedor...</option>
-                            <option>Elias Ávila</option>
-                            <option>Evelyn Muro</option>
-                            <option>Regulo Antezana</option>
-                            <option>Paula García</option>
-                            <option>Jhayro Mauricio</option>
-                        </select>
-                        <input type="number" id="cajasGuia" placeholder="Cajas según Guía" class="p-3 border rounded-lg w-full text-sm">
-                    </div>
+        <header class="flex justify-between items-center mt-4">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight">Twins <span class="text-sky-400">Elite</span></h1>
+                <p class="text-gray-400 text-xs font-medium">Control de Inventario Logístico</p>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-sky-500/20 flex items-center justify-center border border-sky-500/30 text-sky-400">
+                <i data-lucide="user" class="w-5 h-5"></i>
+            </div>
+        </header>
+
+        <section id="sec-devolucion" class="space-y-6 animate-in fade-in duration-500">
+            <div class="glass-card p-6 rounded-3xl space-y-4">
+                <h2 class="text-sky-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 bg-sky-400 rounded-full animate-pulse"></span> Datos de Recepción
+                </h2>
+                <input type="text" id="cliente" placeholder="Nombre del Cliente" class="w-full p-4 rounded-2xl outline-none focus:border-sky-400 transition-all">
+                <div class="grid grid-cols-2 gap-3">
+                    <select id="vendedor" class="p-4 rounded-2xl outline-none text-sm">
+                        <option value="">Vendedor</option>
+                        <option>Elias Ávila</option>
+                        <option>Evelyn Muro</option>
+                        <option>Regulo Antezana</option>
+                        <option>Paula García</option>
+                        <option>Jhayro Mauricio</option>
+                    </select>
+                    <input type="number" id="cajasGuia" placeholder="Cajas Guía" class="p-4 rounded-2xl outline-none text-sm">
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-emerald-500">
-                <h2 class="text-sm font-bold text-gray-700 mb-3">Agregar Productos</h2>
-                <div class="space-y-3">
-                    <input type="text" id="producto" placeholder="Nombre del producto (Excel)" class="p-3 border rounded-lg w-full bg-blue-50 text-sm">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="number" id="cantAprobada" placeholder="Cantidad Aprobada" class="p-3 border rounded-lg w-full text-sm font-bold">
-                        <button onclick="agregarALista()" class="bg-emerald-600 text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-emerald-700">
-                            <i data-lucide="plus" class="w-4 h-4"></i> Añadir
-                        </button>
-                    </div>
+            <div class="glass-card p-6 rounded-3xl space-y-4 border-l-4 border-sky-500">
+                <h3 class="text-white text-sm font-bold">Escaneo de Items</h3>
+                <input type="text" id="producto" placeholder="SKU o Nombre del producto" class="w-full p-4 rounded-2xl outline-none">
+                <div class="flex gap-3">
+                    <input type="number" id="cantAprobada" placeholder="Cantidad" class="w-2/3 p-4 rounded-2xl outline-none font-bold text-sky-400">
+                    <button onclick="agregarALista()" class="w-1/3 btn-gradient rounded-2xl font-bold flex items-center justify-center">
+                        <i data-lucide="plus"></i>
+                    </button>
                 </div>
             </div>
 
-            <div id="contenedor-tabla" class="hidden bg-white rounded-xl shadow overflow-hidden border">
-                <table class="w-full text-[12px] text-left">
-                    <thead class="bg-gray-100 text-gray-600 font-bold uppercase">
-                        <tr>
-                            <th class="p-3">Item</th>
-                            <th class="p-3 text-center">Cant</th>
-                            <th class="p-3 text-center">Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cuerpo-tabla"></tbody>
-                </table>
-                <button onclick="finalizarReporte()" class="w-full bg-blue-900 text-white font-black py-4 border-t hover:bg-blue-800 transition-colors">
-                    FINALIZAR RECEPCIÓN
+            <div id="contenedor-tabla" class="hidden glass-card rounded-3xl overflow-hidden animate-in slide-in-from-bottom-4">
+                <div class="max-h-60 overflow-y-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5 text-[10px] uppercase text-gray-400">
+                            <tr>
+                                <th class="p-4">Producto</th>
+                                <th class="p-4 text-center">Cant</th>
+                                <th class="p-4 text-center">Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-tabla" class="text-sm"></tbody>
+                    </table>
+                </div>
+                <button onclick="finalizarReporte()" class="w-full p-5 bg-white/10 hover:bg-white/20 font-extrabold text-sky-400 uppercase tracking-widest text-xs transition-all">
+                    Finalizar y Firmar Reporte
                 </button>
             </div>
         </section>
 
-        <section id="sec-contadores" class="hidden space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow">
-                <h2 class="text-lg font-bold text-gray-800 mb-1">Cajas Recibidas por Vendedor</h2>
-                <p id="mes-actual" class="text-xs text-blue-600 font-bold mb-4 uppercase"></p>
-                <div id="lista-contadores" class="space-y-3">
-                    </div>
+        <section id="sec-contadores" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl text-center">
+                <i data-lucide="calendar" class="w-8 h-8 text-sky-400 mx-auto mb-2"></i>
+                <h2 id="mes-actual" class="text-xl font-extrabold uppercase tracking-tight"></h2>
+                <p class="text-gray-400 text-xs">Resumen de cajas por vendedor</p>
             </div>
+            <div id="lista-contadores" class="grid grid-cols-1 gap-3"></div>
         </section>
 
-        <section id="sec-historial" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-gray-800">Reportes Generados</h2>
+        <section id="sec-historial" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold">Historial Reciente</h2>
+                <i data-lucide="filter" class="text-gray-400 w-5 h-5"></i>
+            </div>
             <div id="lista-historial" class="space-y-4"></div>
         </section>
     </main>
@@ -88,18 +111,15 @@
     <script>
         lucide.createIcons();
         let productosTemporales = [];
-        let historialReportes = JSON.parse(localStorage.getItem('historial_v2')) || [];
+        let historialReportes = JSON.parse(localStorage.getItem('twins_pro_v3')) || [];
 
         function showSection(section) {
             ['devolucion', 'contadores', 'historial'].forEach(s => {
                 document.getElementById(`sec-${s}`).classList.add('hidden');
-                document.getElementById(`tab-${s}`).classList.add('opacity-70');
-                document.getElementById(`tab-${s}`).classList.remove('border-b-4');
+                document.getElementById(`tab-${s}`).classList.remove('nav-active');
             });
             document.getElementById(`sec-${section}`).classList.remove('hidden');
-            document.getElementById(`tab-${section}`).classList.remove('opacity-70');
-            document.getElementById(`tab-${section}`).classList.add('border-b-4', 'border-white');
-            
+            document.getElementById(`tab-${section}`).classList.add('nav-active');
             if(section === 'contadores') actualizarContadores();
             if(section === 'historial') actualizarHistorial();
         }
@@ -108,7 +128,6 @@
             const nombre = document.getElementById('producto').value;
             const aprobada = document.getElementById('cantAprobada').value;
             if (!nombre || !aprobada) return;
-
             productosTemporales.push({ nombre, aprobada, observacion: "" });
             renderizarTabla();
             document.getElementById('producto').value = '';
@@ -120,12 +139,12 @@
             const cuerpo = document.getElementById('cuerpo-tabla');
             tabla.classList.toggle('hidden', productosTemporales.length === 0);
             cuerpo.innerHTML = productosTemporales.map((item, i) => `
-                <tr class="border-b">
-                    <td class="p-3">${item.nombre}</td>
-                    <td class="p-3 text-center font-bold">${item.aprobada}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="addObs(${i})" class="p-1 rounded bg-slate-50 border">
-                            <i data-lucide="pencil" class="w-3 h-3 ${item.observacion ? 'text-green-600' : 'text-slate-400'}"></i>
+                <tr class="border-b border-white/5">
+                    <td class="p-4 font-medium text-gray-200">${item.nombre}</td>
+                    <td class="p-4 text-center font-bold text-sky-400">${item.aprobada}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="addObs(${i})" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mx-auto">
+                            <i data-lucide="pencil" class="w-3 h-3 ${item.observacion ? 'text-green-400' : 'text-gray-500'}"></i>
                         </button>
                     </td>
                 </tr>
@@ -134,7 +153,7 @@
         }
 
         function addObs(i) {
-            const val = prompt("Observación del producto:", productosTemporales[i].observacion);
+            const val = prompt("Nota técnica del item:", productosTemporales[i].observacion);
             if (val !== null) { productosTemporales[i].observacion = val; renderizarTabla(); }
         }
 
@@ -142,19 +161,18 @@
             const cliente = document.getElementById('cliente').value;
             const vendedor = document.getElementById('vendedor').value;
             const cajas = parseInt(document.getElementById('cajasGuia').value) || 0;
-
-            if (!cliente || !vendedor) return alert("Faltan datos de cabecera.");
+            if (!cliente || !vendedor) return alert("Por favor complete Cliente y Vendedor.");
 
             const reporte = {
                 id: Date.now(),
-                fecha: new Date().toLocaleString(),
+                fechaCompleta: new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }),
                 timestamp: Date.now(),
                 cliente, vendedor, cajas,
                 items: [...productosTemporales]
             };
 
             historialReportes.unshift(reporte);
-            localStorage.setItem('historial_v2', JSON.stringify(historialReportes));
+            localStorage.setItem('twins_pro_v3', JSON.stringify(historialReportes));
             productosTemporales = [];
             renderizarTabla();
             document.getElementById('cliente').value = '';
@@ -165,49 +183,52 @@
         function actualizarContadores() {
             const lista = document.getElementById('lista-contadores');
             const mesActual = new Date().getMonth();
-            const añoActual = new Date().getFullYear();
-            
-            document.getElementById('mes-actual').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(new Date());
-
+            document.getElementById('mes-actual').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date());
             const vendedores = ["Elias Ávila", "Evelyn Muro", "Regulo Antezana", "Paula García", "Jhayro Mauricio"];
             const stats = {};
             vendedores.forEach(v => stats[v] = 0);
-
             historialReportes.forEach(rep => {
-                const fechaRep = new Date(rep.timestamp);
-                if(fechaRep.getMonth() === mesActual && fechaRep.getFullYear() === añoActual) {
+                if(new Date(rep.timestamp).getMonth() === mesActual) {
                     if(stats[rep.vendedor] !== undefined) stats[rep.vendedor] += rep.cajas;
                 }
             });
 
             lista.innerHTML = vendedores.map(v => `
-                <div class="flex justify-between items-center p-3 bg-slate-50 border rounded-lg">
-                    <span class="text-sm font-medium text-slate-700">${v}</span>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold text-sm">${stats[v]} Cajas</span>
+                <div class="glass-card p-5 rounded-3xl flex justify-between items-center group hover:border-sky-500/50 transition-all">
+                    <div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">${v}</p>
+                        <p class="text-lg font-extrabold text-white">${stats[v]} <span class="text-gray-500 text-xs font-normal">cajas</span></p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-400">
+                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    </div>
                 </div>
             `).join('');
+            lucide.createIcons();
         }
 
         function actualizarHistorial() {
             const lista = document.getElementById('lista-historial');
             lista.innerHTML = historialReportes.map((rep, idx) => `
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <div class="flex justify-between items-start mb-2">
+                <div class="glass-card p-6 rounded-[2rem] space-y-4 border-t border-white/10">
+                    <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-black text-slate-800 leading-tight text-md">${rep.cliente}</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">${rep.fecha}</p>
+                            <p class="text-[10px] text-sky-400 font-bold uppercase tracking-widest mb-1">${rep.fechaCompleta}</p>
+                            <h3 class="text-lg font-extrabold text-white leading-tight">${rep.cliente}</h3>
+                            <p class="text-xs text-gray-400">Vend: ${rep.vendedor}</p>
                         </div>
-                        <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">📦 ${rep.cajas} CAJAS</span>
+                        <div class="bg-sky-500 text-white text-[10px] px-3 py-1.5 rounded-full font-black">
+                            ${rep.cajas} CAJAS
+                        </div>
                     </div>
-                    <p class="text-[11px] text-slate-500 mb-3">Vendedor: ${rep.vendedor}</p>
                     
-                    <div class="flex gap-2 border-t pt-3">
-                        <button onclick="exportPDF(${idx})" class="flex-1 bg-red-600 text-white text-[11px] font-bold py-2 rounded flex items-center justify-center gap-1 uppercase">
-                            <i data-lucide="file-text" class="w-3 h-3"></i> PDF
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="exportPDF(${idx})" class="flex-1 py-3 bg-red-500/10 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20">
+                            <i data-lucide="file-text" class="w-3 h-3"></i> Reporte PDF
                         </button>
-                        <button onclick="alert('LISTA DE PRODUCTOS:\\n${rep.items.map(i => '- ' + i.nombre + ' (' + i.aprobada + ')').join('\\n')}')" 
-                                class="flex-1 bg-slate-800 text-white text-[11px] font-bold py-2 rounded flex items-center justify-center gap-1 uppercase">
-                            <i data-lucide="list" class="w-3 h-3"></i> Ver Lista
+                        <button onclick="alert('LISTA:\\n${rep.items.map(i => '• ' + i.nombre + ' [' + i.aprobada + ']').join('\\n')}')" 
+                                class="flex-1 py-3 bg-white/5 text-gray-300 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/10">
+                            <i data-lucide="eye" class="w-3 h-3"></i> Ver Lista
                         </button>
                     </div>
                 </div>
@@ -219,24 +240,20 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const r = historialReportes[idx];
-
-            doc.setFontSize(14); doc.text("REPORTE DE RECEPCIÓN - DEVOLUCIONES", 14, 20);
+            doc.setFontSize(14); doc.text("REPORTE OFICIAL DE DEVOLUCIÓN", 14, 20);
             doc.setFontSize(10);
             doc.text(`Cliente: ${r.cliente}`, 14, 30);
             doc.text(`Vendedor: ${r.vendedor}`, 14, 35);
-            doc.text(`Cajas recibidas: ${r.cajas}`, 14, 40);
-            doc.text(`Fecha: ${r.fecha}`, 14, 45);
-
+            doc.text(`Cajas: ${r.cajas} | Fecha: ${r.fechaCompleta}`, 14, 40);
             doc.autoTable({
-                startY: 55,
-                head: [['Producto', 'Cant. Aprobada', 'Observación']],
+                startY: 50,
+                head: [['Item', 'Cant.', 'Observación']],
                 body: r.items.map(i => [i.nombre, i.aprobada, i.observacion]),
-                headStyles: { fillColor: [30, 58, 138] }
+                headStyles: { fillColor: [15, 23, 42] }
             });
-
             doc.setFontSize(8);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`Reporte_${r.cliente.replace(/ /g,'_')}.pdf`);
+            doc.save(`Reporte_Twins_${r.cliente}.pdf`);
         }
     </script>
 </body>
