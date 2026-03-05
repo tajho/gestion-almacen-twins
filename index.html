@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twins Elite Pro v5</title>
+    <title>Twins Elite Pro - v5.1</title>
     
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,17 +20,15 @@
             font-family: 'Outfit', sans-serif; 
             background: #020617; 
             color: #f1f5f9;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Efecto de Fondo Animado */
         .bg-glow {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 80%);
             z-index: -1;
         }
 
-        /* Cards con Neumorfismo y Cristal */
         .elite-card {
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(20px);
@@ -35,15 +37,15 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
-        /* Inputs Estilo "Dark Glass" */
         .elite-input {
             background: rgba(15, 23, 42, 0.8) !important;
             border: 2px solid rgba(255, 255, 255, 0.05) !important;
             border-radius: 1.25rem !important;
             padding: 1.25rem !important;
             color: #fff !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
+
         .elite-input:focus {
             border-color: #38bdf8 !important;
             background: rgba(15, 23, 42, 1) !important;
@@ -51,20 +53,18 @@
             outline: none;
         }
 
-        /* Botón de Acción Principal */
         .btn-elite {
             background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
             border-radius: 1.25rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.3s ease;
             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
         }
-        .btn-elite:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.5); }
+
         .btn-elite:active { transform: scale(0.95); }
 
-        /* Navegación Flotante "Dynamic Island" */
         .nav-island {
             background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(30px);
@@ -72,78 +72,64 @@
             border-radius: 3rem;
             bottom: 2rem;
         }
-        .nav-btn { color: #64748b; transition: 0.4s; }
-        .nav-btn.active { color: #38bdf8; transform: scale(1.2); }
 
-        /* Animación de entrada */
-        .fade-slide { animation: fadeSlide 0.6s ease-out; }
+        .nav-btn { color: #64748b; transition: 0.4s; }
+        .nav-btn.active { color: #38bdf8; transform: scale(1.15); }
+
+        .fade-slide { animation: fadeSlide 0.5s ease-out; }
         @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="pb-36">
+<body class="pb-36 px-4">
     <div class="bg-glow"></div>
 
-    <main class="max-w-lg mx-auto p-6 space-y-8">
+    <main class="max-w-lg mx-auto space-y-8">
         
-        <header class="flex justify-between items-end pt-4 mb-10">
+        <header class="flex justify-between items-end pt-8 mb-6">
             <div>
-                <p class="text-sky-400 font-black text-xs uppercase tracking-[0.4em] mb-1">Logistics Engine</p>
-                <h1 class="text-4xl font-black tracking-tighter italic">TWINS <span class="text-white opacity-40">ELITE</span></h1>
+                <p class="text-sky-400 font-black text-[10px] uppercase tracking-[0.4em]">Inventory Manager</p>
+                <h1 class="text-4xl font-black tracking-tighter italic">TWINS <span class="text-white opacity-30">ELITE</span></h1>
             </div>
-            <div class="h-14 w-14 elite-card flex items-center justify-center text-sky-400 border-sky-500/30">
-                <i data-lucide="cpu" class="w-7 h-7"></i>
+            <div class="h-12 w-12 elite-card flex items-center justify-center text-sky-400 border-sky-500/30">
+                <i data-lucide="layers"></i>
             </div>
         </header>
 
         <section id="sec-devolucion" class="fade-slide space-y-6">
-            <div class="elite-card p-8 space-y-5">
-                <div class="flex items-center gap-3">
-                    <span class="h-2 w-8 bg-sky-500 rounded-full"></span>
-                    <h2 class="font-bold text-sm text-gray-400 uppercase tracking-widest">Main Header</h2>
-                </div>
-                
-                <div class="space-y-4">
-                    <input type="text" id="cliente" placeholder="Nombre del Cliente" class="w-full elite-input">
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <select id="vendedor" class="elite-input text-sm font-semibold cursor-pointer appearance-none">
-                            <option value="">Vendedor</option>
-                            <option>Elias Ávila</option>
-                            <option>Evelyn Muro</option>
-                            <option>Regulo Antezana</option>
-                            <option>Paula García</option>
-                            <option>Jhayro Mauricio</option>
-                        </select>
-                        <input type="number" id="cajasGuia" placeholder="Cajas" class="elite-input text-center font-black text-xl">
-                    </div>
+            <div class="elite-card p-6 space-y-4">
+                <input type="text" id="cliente" placeholder="Cliente / Razón Social" class="w-full elite-input">
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="vendedor" class="elite-input text-sm font-semibold appearance-none">
+                        <option value="">Vendedor</option>
+                        <option>Elias Ávila</option>
+                        <option>Evelyn Muro</option>
+                        <option>Regulo Antezana</option>
+                        <option>Paula García</option>
+                        <option>Jhayro Mauricio</option>
+                    </select>
+                    <input type="number" id="cajasGuia" placeholder="Cajas" class="elite-input text-center font-black">
                 </div>
             </div>
 
-            <div class="elite-card p-8 border-l-8 border-sky-500">
-                <h3 class="text-white font-black text-lg mb-4 flex items-center gap-2">
-                    <i data-lucide="box" class="text-sky-400"></i> Entrada de Items
-                </h3>
-                <div class="flex flex-col gap-4">
-                    <input type="text" id="producto" placeholder="SKU / Nombre Producto" class="w-full elite-input">
+            <div class="elite-card p-6 border-l-4 border-sky-500">
+                <h3 class="text-white font-black text-sm uppercase tracking-widest mb-4">Añadir Items</h3>
+                <div class="space-y-4">
+                    <input type="text" id="producto" placeholder="SKU o Descripción" class="w-full elite-input">
                     <div class="flex gap-4">
-                        <input type="number" id="cantAprobada" placeholder="0" class="w-1/3 elite-input text-center font-black text-2xl text-sky-400">
-                        <button onclick="agregarALista()" class="w-2/3 btn-elite flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle"></i> AGREGAR
+                        <input type="number" id="cantAprobada" placeholder="0" class="w-1/3 elite-input text-center font-black text-sky-400">
+                        <button onclick="agregarALista()" class="w-2/3 btn-elite text-white flex items-center justify-center gap-2 text-xs">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> AGREGAR
                         </button>
                     </div>
                 </div>
             </div>
 
             <div id="contenedor-tabla" class="hidden elite-card overflow-hidden">
-                <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                    <span class="text-xs font-black uppercase tracking-widest text-gray-400">Pre-visualización</span>
-                    <span id="badge-count" class="bg-sky-500 text-[10px] font-black px-2 py-1 rounded">0 ITEMS</span>
-                </div>
-                <div id="cuerpo-tabla" class="max-h-64 overflow-y-auto divide-y divide-white/5"></div>
-                <button onclick="finalizarReporte()" class="w-full p-6 bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white font-black uppercase text-xs tracking-[0.3em] transition-all">
+                <div id="cuerpo-tabla" class="divide-y divide-white/5 max-h-60 overflow-y-auto"></div>
+                <button onclick="finalizarReporte()" class="w-full p-5 bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white font-black uppercase text-[10px] tracking-[0.3em] transition-all">
                     Finalizar y Generar Registro
                 </button>
             </div>
@@ -154,22 +140,16 @@
 
     </main>
 
-    <nav class="fixed left-1/2 -translate-x-1/2 w-[80%] max-w-sm nav-island p-2 flex justify-around items-center z-50">
-        <button onclick="showSection('devolucion')" id="tab-devolucion" class="nav-btn active p-4">
-            <i data-lucide="plus-square"></i>
-        </button>
-        <button onclick="showSection('contadores')" id="tab-contadores" class="nav-btn p-4">
-            <i data-lucide="pie-chart"></i>
-        </button>
-        <button onclick="showSection('historial')" id="tab-historial" class="nav-btn p-4">
-            <i data-lucide="archive"></i>
-        </button>
+    <nav class="fixed left-1/2 -translate-x-1/2 w-[85%] max-w-sm nav-island p-2 flex justify-around items-center z-50 shadow-2xl">
+        <button onclick="showSection('devolucion')" id="tab-devolucion" class="nav-btn active p-4"><i data-lucide="plus-circle"></i></button>
+        <button onclick="showSection('contadores')" id="tab-contadores" class="nav-btn p-4"><i data-lucide="bar-chart-3"></i></button>
+        <button onclick="showSection('historial')" id="tab-historial" class="nav-btn p-4"><i data-lucide="history"></i></button>
     </nav>
 
     <script>
         lucide.createIcons();
         let productosTemporales = [];
-        let historialReportes = JSON.parse(localStorage.getItem('twins_elite_v5')) || [];
+        let historialReportes = JSON.parse(localStorage.getItem('twins_elite_final_v1')) || [];
 
         function showSection(section) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -194,21 +174,17 @@
         function renderizarLista() {
             const contenedor = document.getElementById('contenedor-tabla');
             const cuerpo = document.getElementById('cuerpo-tabla');
-            const badge = document.getElementById('badge-count');
-            
             contenedor.classList.toggle('hidden', productosTemporales.length === 0);
-            badge.innerText = `${productosTemporales.length} ITEMS`;
-            
             cuerpo.innerHTML = productosTemporales.map((item, i) => `
-                <div class="p-5 flex justify-between items-center group">
-                    <div class="flex-1">
-                        <p class="text-xs font-black text-white uppercase mb-1">${item.nombre}</p>
-                        <p class="text-[10px] text-gray-500 font-bold">${item.observacion || 'Sin observación'}</p>
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[11px] font-bold text-white uppercase">${item.nombre}</p>
+                        <p class="text-[9px] text-gray-500">${item.observacion || 'Sin notas'}</p>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl font-black text-sky-400">${item.aprobada}</span>
-                        <button onclick="addObs(${i})" class="h-10 w-10 elite-card flex items-center justify-center">
-                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl font-black text-sky-400">${item.aprobada}</span>
+                        <button onclick="addObs(${i})" class="h-8 w-8 elite-card flex items-center justify-center border-none bg-white/5">
+                            <i data-lucide="edit-2" class="w-3 h-3"></i>
                         </button>
                     </div>
                 </div>
@@ -217,7 +193,7 @@
         }
 
         function addObs(i) {
-            const val = prompt("Nota técnica:", productosTemporales[i].observacion);
+            const val = prompt("Observación:", productosTemporales[i].observacion);
             if (val !== null) { productosTemporales[i].observacion = val; renderizarLista(); }
         }
 
@@ -225,19 +201,19 @@
             const cliente = document.getElementById('cliente').value;
             const vendedor = document.getElementById('vendedor').value;
             const cajas = parseInt(document.getElementById('cajasGuia').value) || 0;
-            if (!cliente || !vendedor) return alert("Complete los datos requeridos.");
+            if (!cliente || !vendedor) return alert("Faltan datos.");
 
             const reporte = {
                 id: Date.now(),
-                fecha: new Date().toLocaleDateString('es-PE'),
-                hora: new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
+                fecha: new Date().toLocaleDateString(),
+                hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 timestamp: Date.now(),
                 cliente, vendedor, cajas,
                 items: [...productosTemporales]
             };
 
             historialReportes.unshift(reporte);
-            localStorage.setItem('twins_elite_v5', JSON.stringify(historialReportes));
+            localStorage.setItem('twins_elite_final_v1', JSON.stringify(historialReportes));
             productosTemporales = [];
             renderizarLista();
             document.getElementById('cliente').value = '';
@@ -249,122 +225,70 @@
             const lista = document.getElementById('sec-contadores');
             const mesActual = new Date().getMonth();
             const vendedores = ["Elias Ávila", "Evelyn Muro", "Regulo Antezana", "Paula García", "Jhayro Mauricio"];
-            
-            lista.innerHTML = `<h2 class="text-2xl font-black mb-6 px-4 tracking-tighter uppercase">Productividad Mensual</h2>`;
-            
+            lista.innerHTML = `<h2 class="text-xl font-black px-4 uppercase tracking-tighter">Productividad</h2>`;
             vendedores.forEach(v => {
-                let totalCajas = 0;
+                let total = 0;
                 historialReportes.forEach(r => {
-                    if(new Date(r.timestamp).getMonth() === mesActual && r.vendedor === v) totalCajas += r.cajas;
+                    if(new Date(r.timestamp).getMonth() === mesActual && r.vendedor === v) total += r.cajas;
                 });
-                
                 lista.innerHTML += `
-                    <div class="elite-card p-6 flex justify-between items-center border-l-4 border-sky-500">
-                        <p class="font-black text-gray-400 text-xs uppercase">${v}</p>
-                        <p class="text-2xl font-black text-white">${totalCajas} <span class="text-sky-400 italic text-sm">cajas</span></p>
-                    </div>
-                `;
+                    <div class="elite-card p-5 flex justify-between items-center border-l-4 border-sky-500">
+                        <p class="font-bold text-xs text-gray-400 uppercase">${v}</p>
+                        <p class="text-xl font-black">${total} <span class="text-sky-400 text-[10px]">CAJAS</span></p>
+                    </div>`;
             });
         }
 
         function actualizarHistorial() {
             const lista = document.getElementById('sec-historial');
-            lista.innerHTML = `<h2 class="text-2xl font-black mb-6 px-4 tracking-tighter uppercase">Archivo Maestro</h2>`;
-            lista.innerHTML += historialReportes.map((rep, idx) => `
-                <div class="elite-card p-6 space-y-4 relative overflow-hidden">
+            lista.innerHTML = historialReportes.map((rep, idx) => `
+                <div class="elite-card p-6 space-y-4 border-white/5">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-[10px] font-black text-sky-400 uppercase mb-1">${rep.fecha} • ${rep.hora}</p>
-                            <h3 class="text-xl font-black text-white uppercase">${rep.cliente}</h3>
-                            <p class="text-[10px] text-gray-500 font-bold uppercase mt-1">Vend: ${rep.vendedor}</p>
+                            <p class="text-[9px] font-black text-sky-400 uppercase">${rep.fecha} • ${rep.hora}</p>
+                            <h3 class="text-lg font-black text-white uppercase">${rep.cliente}</h3>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase">${rep.vendedor}</p>
                         </div>
-                        <div class="text-center bg-sky-500/10 px-4 py-2 rounded-2xl border border-sky-500/20">
+                        <div class="text-right">
                             <p class="text-2xl font-black text-white">${rep.cajas}</p>
-                            <p class="text-[8px] font-black text-sky-400 uppercase">Cajas</p>
+                            <p class="text-[8px] font-black text-gray-500 uppercase">Cajas</p>
                         </div>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="exportPDF(${idx})" class="flex-1 btn-elite py-4 text-[10px] flex items-center justify-center gap-2">
-                            <i data-lucide="file-text" class="w-4 h-4"></i> GENERAR PDF
-                        </button>
-                        <button onclick="eliminarRep(${idx})" class="w-14 h-14 elite-card flex items-center justify-center text-red-400">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
-                    </div>
+                    <button onclick="exportPDF(${idx})" class="w-full btn-elite py-3 text-[10px] flex items-center justify-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> DESCARGAR PDF
+                    </button>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        function eliminarRep(idx) {
-            if(confirm("¿Borrar este registro?")) {
-                historialReportes.splice(idx, 1);
-                localStorage.setItem('twins_elite_v5', JSON.stringify(historialReportes));
-                actualizarHistorial();
-            }
-        }
-
-        // --- PDF STRUCTURAL PRO ---
         function exportPDF(idx) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const r = historialReportes[idx];
 
-            // Header Corporativo
-            doc.setFillColor(2, 6, 23);
-            doc.rect(0, 0, 210, 50, 'F');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(26);
-            doc.setFont("helvetica", "bold");
-            doc.text("TWINS ELITE", 20, 25);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(56, 189, 248);
-            doc.text("SISTEMA DE CONTROL LOGÍSTICO E INVENTARIOS", 20, 32);
+            doc.setFillColor(2, 6, 23); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TWINS ELITE", 15, 25);
+            doc.setFontSize(9); doc.text("REPORTE OFICIAL DE INVENTARIO", 15, 32);
 
-            // Folio
-            doc.setFontSize(10);
-            doc.setTextColor(255, 255, 255);
-            doc.text(`REGISTRO ID: TR-00${idx + 1}`, 150, 25);
-            doc.text(`FECHA: ${r.fecha}`, 150, 32);
+            doc.setTextColor(40, 40, 40); doc.setFontSize(10);
+            doc.text(`CLIENTE: ${r.cliente.toUpperCase()}`, 15, 55);
+            doc.text(`VENDEDOR: ${r.vendedor}`, 15, 62);
+            doc.text(`FECHA: ${r.fecha} ${r.hora}`, 15, 69);
+            doc.text(`CAJAS: ${r.cajas}`, 15, 76);
 
-            // Datos del Cliente
-            doc.setTextColor(2, 6, 23);
-            doc.setFontSize(12);
-            doc.text("DATOS DEL MOVIMIENTO", 20, 65);
-            doc.setDrawColor(56, 189, 248);
-            doc.line(20, 67, 70, 67);
-
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text(`CLIENTE:`, 20, 78); doc.setFont("helvetica", "bold"); doc.text(`${r.cliente.toUpperCase()}`, 60, 78);
-            doc.setFont("helvetica", "normal"); doc.text(`VENDEDOR:`, 20, 86); doc.text(`${r.vendedor}`, 60, 86);
-            doc.text(`TOTAL CAJAS:`, 20, 94); doc.setFontSize(14); doc.setTextColor(37, 99, 235); doc.text(`${r.cajas} UNIDADES`, 60, 94);
-
-            // Tabla Profesional
             doc.autoTable({
-                startY: 105,
-                head: [['DESCRIPCIÓN DEL PRODUCTO', 'CANTIDAD', 'OBSERVACIÓN']],
+                startY: 85,
+                head: [['PRODUCTO', 'CANT', 'OBSERVACIÓN']],
                 body: r.items.map(i => [i.nombre.toUpperCase(), i.aprobada, i.observacion || '-']),
-                headStyles: { fillColor: [2, 6, 23], halign: 'center', fontStyle: 'bold' },
-                styles: { fontSize: 9, cellPadding: 5 },
-                columnStyles: { 1: { halign: 'center', fontStyle: 'bold' } }
+                headStyles: { fillColor: [2, 6, 23] }
             });
 
-            // Footer de Firma
-            const finalY = doc.lastAutoTable.finalY + 35;
-            doc.setDrawColor(200, 200, 200);
-            doc.line(60, finalY, 150, finalY);
-            
-            doc.setFontSize(9);
-            doc.setTextColor(100, 100, 100);
-            doc.setFont("helvetica", "bold");
-            doc.text("REVISIÓN AUTORIZADA POR", 105, finalY + 8, { align: "center" });
-            doc.setFont("helvetica", "normal");
-            doc.text("J. Angelo Nuñez Durand - Asist. Inventario Logístico", 105, finalY + 15, { align: "center" });
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.setDrawColor(200, 200, 200); doc.line(70, finalY, 140, finalY);
+            doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 10, { align: "center" });
 
-            doc.save(`Reporte_Elite_${r.cliente}.pdf`);
+            doc.save(`Reporte_${r.cliente}.pdf`);
         }
     </script>
 </body>
