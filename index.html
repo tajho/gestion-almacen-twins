@@ -7,196 +7,192 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #ef4444; --card: #1e293b; }
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; margin: 0; overflow-x: hidden; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --success: #10b981; --warn: #f59e0b; --danger: #ef4444; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 80px; }
         
-        /* Navegación por Secciones */
-        .tabs { display: flex; background: var(--card); sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
-        .tab-btn { flex: 1; padding: 18px; text-align: center; border: none; background: none; color: #94a3b8; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.75rem; text-transform: uppercase; }
-        .tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); background: rgba(59, 130, 246, 0.1); }
+        /* Navegación Inferior */
+        .navbar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; border-top: 1px solid #334155; z-index: 1000; }
+        .nav-item { flex: 1; padding: 15px; text-align: center; color: #94a3b8; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .nav-item.active { color: var(--accent); border-top: 3px solid var(--accent); background: rgba(59, 130, 246, 0.1); }
 
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .section { display: none; animation: fadeIn 0.4s ease; }
+        .container { padding: 20px; max-width: 500px; margin: 0 auto; }
+        .section { display: none; animation: slideIn 0.3s ease; }
         .section.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Inputs y Buscador */
+        .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #334155; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: white; box-sizing: border-box; }
+        .search-res { background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 10px; font-weight: bold; }
 
-        /* Tarjetas y Estética */
-        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
-        h2 { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-top: 0; display: flex; justify-content: space-between; }
-        
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #334155; border-radius: 10px; background: #0f172a; color: white; box-sizing: border-box; font-size: 1rem; }
-        input:focus { border-color: var(--accent); outline: none; }
+        /* TARJETAS DE ITEM (Lo que pediste) */
+        .item-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; border-left: 6px solid #475569; position: relative; transition: 0.3s; }
+        .item-card.complete { border-left-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .item-card.mismatch { border-left-color: var(--warn); }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .item-sku { font-size: 0.8rem; font-weight: 800; color: var(--accent); }
+        .item-name { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 2px; }
+        .stats-grid { display: flex; gap: 15px; background: #0f172a; padding: 10px; border-radius: 8px; }
+        .stat-val { font-size: 1rem; font-weight: bold; display: block; }
+        .stat-lbl { font-size: 0.6rem; color: #64748b; text-transform: uppercase; }
 
-        .preview { background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; border-left: 4px solid var(--accent); margin: 10px 0; font-weight: bold; color: var(--accent); }
-        
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; margin-top: 10px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-add { background: var(--accent); color: white; }
-        .btn-pdf { background: transparent; border: 2px solid var(--success); color: var(--success); }
-
-        /* Tabla de Auditoría */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        th { text-align: left; padding: 12px; color: #94a3b8; border-bottom: 1px solid #334155; }
-        td { padding: 12px; border-bottom: 1px solid #334155; }
-        .diff-tag { font-weight: bold; padding: 4px 8px; border-radius: 6px; }
+        .btn-pdf { background: var(--success); color: white; }
     </style>
 </head>
 <body>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openSection(event, 'sec-inicio')">1. Inicio</button>
-        <button class="tab-btn" onclick="openSection(event, 'sec-conteo')">2. Conteo</button>
-        <button class="tab-btn" onclick="openSection(event, 'sec-reporte')">3. Reporte</button>
-    </div>
-
     <div class="container">
-        
-        <div id="sec-inicio" class="section active">
+        <div id="sec-config" class="section active">
             <div class="card">
-                <h2>IDENTIFICACIÓN DE CARGA</h2>
-                <label style="font-size: 0.7rem;">N° CONTENEDOR / GUÍA</label>
-                <input type="text" id="id_contenedor" placeholder="Ej: 0116-A">
-                <label style="font-size: 0.7rem;">FOTO PACKING LIST</label>
+                <h3 style="margin:0 0 15px 0; font-size: 1rem;">1. DATOS DE ARRIBO</h3>
+                <label style="font-size: 0.7rem;">N° CONTENEDOR / REFERENCIA</label>
+                <input type="text" id="id_cont" placeholder="Ej: CONT-0116">
+                <label style="font-size: 0.7rem;">EVIDENCIA PACKING (FOTO)</label>
                 <input type="file" id="foto_pck" accept="image/*">
-                <button class="btn btn-add" onclick="document.querySelector('.tab-btn:nth-child(2)').click()">Siguiente Paso</button>
+                <button class="btn btn-add" onclick="go(1)">Comenzar Conteo</button>
             </div>
         </div>
 
         <div id="sec-conteo" class="section">
             <div class="card">
-                <h2>BUSCADOR MAESTRO <span id="sync-icon" style="color:var(--success)">●</span></h2>
-                <input type="text" id="busqueda" placeholder="SKU o Nombre del producto..." oninput="ejecutarBusqueda(this.value)">
-                <div id="res_busqueda" class="preview">Esperando SKU...</div>
-
+                <input type="text" id="buscador" placeholder="Buscar por SKU o Nombre..." oninput="doSearch(this.value)">
+                <div id="search_feedback" class="search-res">Esperando SKU...</div>
+                
                 <div style="display: flex; gap: 10px;">
-                    <div style="flex:1">
-                        <label style="font-size: 0.7rem;">CANT. PACKING</label>
-                        <input type="number" id="cant_pck" placeholder="Dato Foto">
-                    </div>
-                    <div style="flex:1">
-                        <label style="font-size: 0.7rem;">CANT. FÍSICA</label>
-                        <input type="number" id="cant_fis" placeholder="Conteo">
-                    </div>
+                    <input type="number" id="c_pck" placeholder="Cant. Packing">
+                    <input type="number" id="c_fis" placeholder="Bultos/Físico">
                 </div>
-                <button class="btn btn-add" onclick="registrarItem()">Registrar Bulto</button>
+                <button class="btn btn-add" onclick="addItem()">Registrar Item</button>
             </div>
+
+            <div id="contenedor-items">
+                </div>
         </div>
 
         <div id="sec-reporte" class="section">
-            <div class="card">
-                <h2>RESUMEN DE CUADRE</h2>
-                <table id="tabla_resumen">
-                    <thead>
-                        <tr><th>PRODUCTO</th><th>PK</th><th>FIS</th><th>DIF</th></tr>
-                    </thead>
-                    <tbody id="cuerpo_tabla"></tbody>
-                </table>
-                <button class="btn btn-pdf" onclick="exportarPDF()">Generar PDF Detallado</button>
+            <div class="card" style="text-align: center;">
+                <h3 style="margin:0;">FINALIZAR RECEPCIÓN</h3>
+                <p style="font-size: 0.8rem; color: #94a3b8;">Se generará el reporte oficial firmado.</p>
+                <button class="btn btn-pdf" onclick="makePDF()">Generar PDF Profesional</button>
             </div>
         </div>
+    </div>
 
+    <div class="navbar">
+        <div class="nav-item active" onclick="go(0)">Inicio</div>
+        <div class="nav-item" onclick="go(1)">Conteo</div>
+        <div class="nav-item" onclick="go(2)">Reporte</div>
     </div>
 
 <script>
-    // URL DE TU GOOGLE APPS SCRIPT (REEMPLAZAR AQUÍ)
-    const URL_MAESTRO = "https://script.google.com/macros/s/AKfycbz2FWrNqYTWr2TZiD56WDidmjAg1Xkgx2Bkka6uG_xUGhtwMUAOhFiDIHBpxvKIAHmh/exec"; 
-    
-    let dbMaestra = [];
-    let itemsContados = {};
-    let itemSeleccionado = null;
+    const API = "TU_URL_AQUI"; 
+    let maestro = [];
+    let items = {};
+    let selected = null;
 
-    // Carga de datos sin interrupción
     window.onload = async () => {
         try {
-            const r = await fetch(URL_MAESTRO);
-            dbMaestra = await r.json();
-            console.log("Maestro Sincronizado");
-        } catch (e) { console.error("Error de conexión"); }
+            const r = await fetch(API);
+            maestro = await r.json();
+            console.log("Conectado");
+        } catch (e) { alert("Error de conexión"); }
     };
 
-    function openSection(evt, sectionName) {
-        let sections = document.getElementsByClassName("section");
-        for (let s of sections) s.classList.remove("active");
-        let tabs = document.getElementsByClassName("tab-btn");
-        for (let t tabs) t.classList.remove("active");
-        document.getElementById(sectionName).classList.add("active");
-        evt.currentTarget.classList.add("active");
+    function go(idx) {
+        const sections = document.querySelectorAll('.section');
+        const navs = document.querySelectorAll('.nav-item');
+        sections.forEach((s, i) => s.classList.toggle('active', i === idx));
+        navs.forEach((n, i) => n.classList.toggle('active', i === idx));
     }
 
-    function ejecutarBusqueda(val) {
-        val = val.trim().toUpperCase();
-        if(val.length < 2) return;
-        const p = dbMaestra.find(x => x[0].toString().includes(val) || x[1].toString().includes(val));
-        const visor = document.getElementById('res_busqueda');
+    function doSearch(v) {
+        v = v.trim().toUpperCase();
+        const p = maestro.find(x => x[0].toString().includes(v) || x[1].toString().includes(v));
+        const f = document.getElementById('search_feedback');
         if(p) {
-            itemSeleccionado = { sku: p[0], nombre: p[1] };
-            visor.innerText = `📦 [${p[0]}] ${p[1]}`;
-            visor.style.color = "var(--accent)";
+            selected = { sku: p[0], nombre: p[1] };
+            f.innerText = `📦 ${p[1]}`;
+            f.style.color = "var(--accent)";
         } else {
-            itemSeleccionado = null;
-            visor.innerText = "NO ENCONTRADO EN MAESTRO";
-            visor.style.color = "var(--danger)";
+            selected = null;
+            f.innerText = "NO ENCONTRADO";
+            f.style.color = "var(--danger)";
         }
     }
 
-    function registrarItem() {
-        const pck = parseInt(document.getElementById('cant_pck').value) || 0;
-        const fis = parseInt(document.getElementById('cant_fis').value) || 0;
-        const cont = document.getElementById('id_contenedor').value;
+    function addItem() {
+        const pk = parseInt(document.getElementById('c_pck').value) || 0;
+        const fs = parseInt(document.getElementById('c_fis').value) || 0;
+        const cont = document.getElementById('id_cont').value;
 
-        if(!itemSeleccionado || fis === 0 || !cont) return alert("Complete Contenedor y Cantidad");
+        if(!selected || fs === 0 || !cont) return alert("Complete los datos");
 
-        const sku = itemSeleccionado.sku;
-        if(!itemsContados[sku]) {
-            itemsContados[sku] = { nombre: itemSeleccionado.nombre, p: pck, f: 0 };
+        const sku = selected.sku;
+        if(!items[sku]) {
+            items[sku] = { nombre: selected.nombre, p: pk, f: 0 };
         }
-        itemsContados[sku].f += fis;
-        if(pck > 0) itemsContados[sku].p = pck;
+        items[sku].f += fs;
+        if(pk > 0) items[sku].p = pk;
 
-        // SINCRONIZACIÓN INVISIBLE AL EXCEL (POST)
-        fetch(URL_MAESTRO, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fis })
+        // Sincronización Invisible
+        fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fs }) });
+
+        renderItems();
+        document.getElementById('buscador').value = "";
+        document.getElementById('c_fis').value = "";
+        document.getElementById('buscador').focus();
+    }
+
+    function renderItems() {
+        const container = document.getElementById('contenedor-items');
+        container.innerHTML = "";
+        
+        // Mostrar primero el último agregado
+        const keys = Object.keys(items).reverse();
+        
+        keys.forEach(k => {
+            const it = items[k];
+            const isOk = it.f === it.p;
+            const diff = it.f - it.p;
+            
+            container.innerHTML += `
+                <div class="item-card ${isOk ? 'complete' : 'mismatch'}">
+                    <div class="item-header">
+                        <div>
+                            <span class="item-sku">${k}</span>
+                            <span class="item-name">${it.nombre}</span>
+                        </div>
+                        <span style="font-size:0.7rem; font-weight:bold; color:${isOk ? 'var(--success)' : 'var(--warn)'}">
+                            ${isOk ? 'CUADRADO ✓' : 'PENDIENTE'}
+                        </span>
+                    </div>
+                    <div class="stats-grid">
+                        <div style="flex:1"><span class="stat-lbl">Packing</span><span class="stat-val">${it.p}</span></div>
+                        <div style="flex:1"><span class="stat-lbl">Físico</span><span class="stat-val">${it.f}</span></div>
+                        <div style="flex:1"><span class="stat-lbl">Diferencia</span><span class="stat-val" style="color:${diff === 0 ? 'white' : 'var(--danger)'}">${diff}</span></div>
+                    </div>
+                </div>
+            `;
         });
-
-        actualizarVisualizacion();
-        // Limpiar para siguiente bulto
-        document.getElementById('busqueda').value = "";
-        document.getElementById('cant_fis').value = "";
-        document.getElementById('busqueda').focus();
     }
 
-    function actualizarVisualizacion() {
-        const tbody = document.getElementById('cuerpo_tabla');
-        tbody.innerHTML = "";
-        for(let s in itemsContados) {
-            const i = itemsContados[s];
-            const d = i.f - i.p;
-            tbody.innerHTML += `<tr>
-                <td><b>${s}</b><br><small>${i.nombre.substring(0,25)}</small></td>
-                <td>${i.p}</td>
-                <td>${i.f}</td>
-                <td style="color:${d === 0 ? 'var(--success)' : 'var(--danger)'}">${d}</td>
-            </tr>`;
-        }
-    }
-
-    function exportarPDF() {
+    function makePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const cont = document.getElementById('id_contenedor').value;
+        const c = document.getElementById('id_cont').value;
 
-        doc.setFontSize(18).text("REPORTE DETALLADO DE RECEPCIÓN", 105, 20, {align:'center'});
-        doc.setFontSize(10).text(`CONTENEDOR: ${cont} | FECHA: ${new Date().toLocaleString()}`, 105, 28, {align:'center'});
+        doc.setFontSize(18).text("RECEPCIÓN DE INVENTARIO", 105, 20, {align:'center'});
+        doc.setFontSize(10).text(`RECEPCIÓN: ${c} | FECHA: ${new Date().toLocaleString()}`, 105, 28, {align:'center'});
 
-        const rows = Object.keys(itemsContados).map(s => [s, itemsContados[s].nombre, itemsContados[s].p, itemsContados[s].f, itemsContados[s].f - itemsContados[s].p]);
+        const rows = Object.keys(items).map(s => [s, items[s].nombre, items[s].p, items[s].f, items[s].f - items[s].p]);
 
         doc.autoTable({
             startY: 35,
-            head: [['CÓDIGO', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF.']],
+            head: [['COD', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
             body: rows,
-            theme: 'grid',
+            theme: 'striped',
             headStyles: { fillColor: [15, 23, 42] }
         });
 
@@ -204,7 +200,7 @@
         doc.text("Revisión autorizada por:", 105, y, {align:'center'});
         doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
         doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 14, {align:'center'});
-        doc.save(`Reporte_Logistico_${cont}.pdf`);
+        doc.save(`Ingreso_${c}.pdf`);
     }
 </script>
 </body>
