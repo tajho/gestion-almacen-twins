@@ -2,247 +2,148 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TITAN ELITE | App</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Devoluciones - Twins Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        :root { --primary: #0052cc; --danger: #ff5630; --dark: #172b4d; --bg: #f4f7fa; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 100px; }
-        .header-elite { background: #fff; padding: 15px 20px; border-bottom: 2px solid var(--danger); position: sticky; top: 0; z-index: 1000; }
-        .card-custom { background: #fff; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .label-custom { font-size: 11px; font-weight: 800; color: #6b778c; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .input-custom { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #edeff2; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-        .hist-card { background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 15px; border-left: 6px solid var(--danger); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .btn-opt { flex: 1; border: none; background: #f4f5f7; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: var(--dark); }
-        .nav-elite { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; padding: 10px; border-top: 1px solid #eee; }
-        .nav-item { flex: 1; background: none; border: none; color: #a5adba; font-size: 10px; font-weight: 700; }
-        .nav-item.active { color: var(--primary); }
+        .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
 
-    <header class="header-elite d-flex justify-content-between align-items-center">
-        <div><b style="font-size:18px">TITAN <span class="text-danger">ELITE</span></b><br><small class="text-muted">Control de Devoluciones</small></div>
-        <div class="text-end"><small class="fw-bold">J. Angelo Durand</small></div>
-    </header>
-
-    <main id="app">
-        <section id="v-reg">
-            <div class="card-custom">
-                <span class="label-custom">CLIENTE QUE DEVUELVE</span>
-                <input type="text" id="cli" class="input-custom" placeholder="Ej: UTILMAS..." oninput="suggestVendor(this.value)">
-
-                <span class="label-custom">VENDEDOR RESPONSABLE</span>
-                <select id="ven" class="input-custom">
-                    <option value="">Seleccionar...</option>
-                    <option>ELIAS AVILA</option><option>EVELYN MURO</option>
-                    <option>REGULO ANTEZANA</option><option>JHAYRO MAURICIO</option>
-                    <option>PAULA GARCIA</option>
-                </select>
-
-                <span class="label-custom">BUSCAR PRODUCTO</span>
-                <input type="text" id="src" class="input-custom" placeholder="SKU o Nombre..." oninput="findP(this.value)">
-                <div id="res" class="list-group mb-3 d-none shadow-sm"></div>
-                <div id="cart-list" class="mb-3"></div>
-
-                <span class="label-custom">OBSERVACIÓN / NOTA</span>
-                <textarea id="obs" class="input-custom" style="height: 70px;" placeholder="Detalles adicionales..."></textarea>
-                <button class="btn btn-dark w-100 py-3 rounded-4 fw-800" onclick="confirmSave()">GUARDAR DEVOLUCIÓN <i class="fas fa-save ms-2"></i></button>
-            </div>
-        </section>
-
-        <section id="v-his" class="d-none">
-            <div class="p-3">
-                <div class="d-flex gap-2 mb-3">
-                    <input type="text" id="filter" class="input-custom mb-0" placeholder="Buscar cliente..." oninput="renderHis(this.value)">
-                    <button class="btn btn-light rounded-3" onclick="init()"><i class="fas fa-sync"></i></button>
-                </div>
-                <div id="feed-his"></div>
-            </div>
-        </section>
-    </main>
-
-    <nav class="nav-elite">
-        <button class="nav-item active" onclick="nav('reg', this)"><i class="fas fa-plus-circle fa-2x d-block"></i>NUEVO</button>
-        <button class="nav-item" onclick="nav('his', this)"><i class="fas fa-receipt fa-2x d-block"></i>HISTORIAL</button>
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="flex justify-around p-4">
+            <button onclick="showSection('devolucion')" id="tab-devolucion" class="font-bold pb-2 active-tab text-lg">📦 Devolución</button>
+            <button onclick="showSection('historial')" id="tab-historial" class="font-bold pb-2 text-gray-500 text-lg">📜 Historial</button>
+        </div>
     </nav>
 
+    <main class="p-4 max-w-2xl mx-auto">
+
+        <section id="sec-devolucion" class="space-y-4">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4 text-gray-700">Nueva Devolución</h2>
+                
+                <div class="space-y-3">
+                    <label class="block">
+                        <span class="text-gray-600 italic">Nombre del Cliente</span>
+                        <input type="text" id="cliente" oninput="sugerirVendedor()" placeholder="Escribe el nombre del cliente..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-gray-600 italic">Vendedor Asignado</span>
+                        <select id="vendedor" class="w-full p-3 border rounded-lg bg-gray-50">
+                            <option value="">Selecciona un vendedor</option>
+                            <option value="Elias Ávila">Elias Ávila</option>
+                            <option value="Evelyn Muro">Evelyn Muro</option>
+                            <option value="Regulo Antezana">Regulo Antezana</option>
+                            <option value="Paula García">Paula García</option>
+                            <option value="Jhayro Mauricio">Jhayro Mauricio</option>
+                        </select>
+                    </label>
+
+                    <hr class="my-4">
+
+                    <label class="block">
+                        <span class="text-gray-600 italic">Producto (Datos de tu Excel)</span>
+                        <input type="text" id="producto" placeholder="Código o nombre del producto..." class="w-full p-3 border rounded-lg">
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <label>
+                            <span class="text-gray-600 italic">Cant. Recibida</span>
+                            <input type="number" id="cantRecibida" class="w-full p-3 border rounded-lg">
+                        </label>
+                        <label>
+                            <span class="text-gray-600 italic">Cant. Aprobada</span>
+                            <input type="number" id="cantAprobada" class="w-full p-3 border rounded-lg">
+                        </label>
+                    </div>
+
+                    <label class="flex items-center space-x-3 mt-4">
+                        <input type="checkbox" id="estadoFisico" class="w-5 h-5">
+                        <span class="text-gray-700 font-medium text-sm">¿Producto completo y revisado?</span>
+                    </label>
+                </div>
+
+                <button onclick="guardarDevolucion()" class="w-full mt-6 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
+                    Finalizar y Generar Reporte
+                </button>
+            </div>
+        </section>
+
+        <section id="sec-historial" class="hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-700">Historial de Reportes</h2>
+            <div id="lista-historial" class="space-y-3">
+                <p class="text-gray-500 text-center italic">No hay registros aún.</p>
+            </div>
+        </section>
+
+    </main>
+
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbxCeMB7Cf1DpA41NEmprwR0XqrvdD_-xTEbl3vKsMlaHIp_r3b5MpMWcbrQKyOiYFF2NQ/exec";
-        let MASTER = [], CART = [], LOGS = [], MEM = {};
+        // Lógica simple para sugerir vendedor (Memoria Temporal)
+        const memoriaClientes = {
+            "Cliente A": "Elias Ávila",
+            "Cliente B": "Evelyn Muro"
+        };
 
-        async function init() {
-            try {
-                const r = await fetch(API, {method: "POST", body: JSON.stringify({action: "load"})});
-                const d = await r.json();
-                MASTER = d.p || []; 
-                LOGS = d.h || []; 
-                renderHis();
-            } catch(e) { console.error("Error"); }
+        function sugerirVendedor() {
+            const cliente = document.getElementById('cliente').value;
+            const selectVendedor = document.getElementById('vendedor');
+            if (memoriaClientes[cliente]) {
+                selectVendedor.value = memoriaClientes[cliente];
+            }
         }
 
-        function suggestVendor(v) {
-            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
-            if(MEM[v.toUpperCase()]) document.getElementById('ven').value = MEM[v.toUpperCase()];
-        }
-
-        function findP(v) {
-            const box = document.getElementById('res');
-            if(v.length < 2) { box.classList.add('d-none'); return; }
-            const m = MASTER.filter(p => p[1].toLowerCase().includes(v.toLowerCase()) || p[0].toString().includes(v)).slice(0,5);
-            box.innerHTML = m.map(p => `<button class="list-group-item" onclick="openItem('${p[0]}','${p[1]}')"><b>${p[1]}</b><br><small>${p[0]}</small></button>`).join('');
-            box.classList.remove('d-none');
-        }
-
-        function openItem(sku, name) {
-            document.getElementById('res').classList.add('d-none');
-            Swal.fire({
-                title: 'Detalle Devolución',
-                html: `
-                    <input id="sw-g" type="number" class="swal2-input" placeholder="Cant. Guía">
-                    <input id="sw-f" type="number" class="swal2-input" placeholder="Cant. Físico">
-                    <select id="sw-m" class="swal2-input">
-                        <option>PRODUCTO DAÑADO- MERMA</option>
-                        <option>BUEN ESTADO PRODUCTO- REINGRESO</option>
-                        <option>FALLA DE IMPORTACION- MERMA</option>
-                    </select>
-                `,
-                confirmButtonText: 'Añadir',
-                preConfirm: () => ({ g: document.getElementById('sw-g').value, f: document.getElementById('sw-f').value, m: document.getElementById('sw-m').value })
-            }).then(r => {
-                if(r.value && r.value.f) {
-                    CART.push({sku, name, ...r.value});
-                    renderCart();
-                    document.getElementById('src').value = '';
-                }
-            });
-        }
-
-        function renderCart() {
-            document.getElementById('cart-list').innerHTML = CART.map((i, idx) => `
-                <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
-                    <small><b>${i.f} un.</b> - ${i.name}</small>
-                    <i class="fas fa-trash text-danger" onclick="CART.splice(${idx},1); renderCart();"></i>
-                </div>
-            `).join('');
-        }
-
-        function confirmSave() {
-            const cli = document.getElementById('cli').value.trim().toUpperCase();
-            const ven = document.getElementById('ven').value;
-            if(!cli || !ven || CART.length === 0) return Swal.fire("Error", "Faltan datos", "error");
-            save(cli, ven);
-        }
-
-        async function save(cli, ven) {
-            MEM = JSON.parse(localStorage.getItem('T_V')) || {};
-            MEM[cli] = ven; localStorage.setItem('T_V', JSON.stringify(MEM));
-            const obs = document.getElementById('obs').value;
+        function showSection(section) {
+            document.getElementById('sec-devolucion').classList.toggle('hidden', section !== 'devolucion');
+            document.getElementById('sec-historial').classList.toggle('hidden', section !== 'historial');
             
-            // Forzamos un formato de fecha simple para evitar errores de lectura
-            const fechaManual = new Date().toLocaleDateString();
-            const payload = CART.map(i => [fechaManual, "DEVOLUCION", i.sku, i.name, i.f, cli, `Vendedor: ${ven} | Guía: ${i.g} | Motivo: ${i.m} | Obs: ${obs}`]);
-
-            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
-            try {
-                await fetch(API, {method: "POST", body: JSON.stringify({action: "save", sheet: "Devoluciones", payload})});
-                CART = []; renderCart(); 
-                document.getElementById('cli').value = ''; document.getElementById('obs').value = '';
-                await Swal.fire("¡Éxito!", "Registro guardado.", "success");
-                await init(); 
-                nav('his', document.querySelectorAll('.nav-item')[1]); 
-            } catch(e) { Swal.fire("Error", "No se guardó", "error"); }
+            document.getElementById('tab-devolucion').classList.toggle('active-tab', section === 'devolucion');
+            document.getElementById('tab-historial').classList.toggle('active-tab', section === 'historial');
         }
 
-        function renderHis(f = "") {
-            const feed = document.getElementById('feed-his');
-            if(!LOGS || LOGS.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">Cargando datos...</div>';
-                return;
-            }
+        const historial = [];
 
-            const groups = {};
-            LOGS.forEach(r => {
-                // Filtro ultra-flexible: Si la columna B contiene DEVOLUCION, lo procesamos
-                if(!r[1] || !r[1].toString().toUpperCase().includes("DEVOLUCION")) return;
+        function guardarDevolucion() {
+            const data = {
+                id: Date.now(),
+                fecha: new Date().toLocaleDateString(),
+                cliente: document.getElementById('cliente').value,
+                vendedor: document.getElementById('vendedor').value,
+                producto: document.getElementById('producto').value,
+                aprobado: document.getElementById('cantAprobada').value
+            };
 
-                // Extraemos nombre del cliente de la columna F (según tu captura de pantalla)
-                const cliente = (r[5] || "SIN NOMBRE").toString().trim().toUpperCase();
-                const detalles = (r[6] || "").toString();
-                // Limpiamos la fecha de la columna A (quitamos la T y los milisegundos)
-                const fechaLimpia = (r[0] || "").toString().split('T')[0];
+            if(!data.cliente || !data.producto) return alert("Por favor completa los datos básicos.");
 
-                if(f && !cliente.includes(f.toUpperCase())) return;
+            historial.unshift(data);
+            actualizarHistorial();
+            alert("Reporte guardado. Revisión autorizada por J. Angelo Nuñez Durand.");
+            limpiarFormulario();
+            showSection('historial');
+        }
 
-                // Agrupamos por Cliente y Fecha para no repetir tarjetas
-                const key = cliente + "_" + fechaLimpia;
-                if(!groups[key]) groups[key] = { cli: cliente, date: fechaLimpia, items: [], rawDet: detalles };
-                groups[key].items.push({ n: r[3], q: r[4], d: detalles });
-            });
-
-            const htmlArr = Object.values(groups).reverse();
-            if(htmlArr.length === 0) {
-                feed.innerHTML = '<div class="text-center p-5 text-muted">No hay registros de devoluciones.</div>';
-                return;
-            }
-
-            feed.innerHTML = htmlArr.map(g => `
-                <div class="hist-card">
-                    <div class="d-flex justify-content-between mb-2">
-                        <small class="text-muted"><b>${g.date}</b></small>
-                        <span class="badge bg-danger">TITAN ELITE</span>
-                    </div>
-                    <div class="fw-800" style="font-size:16px">${g.cli}</div>
-                    <div class="text-muted mb-3" style="font-size:11px">${g.rawDet.split('|')[0] || 'Registro de almacén'}</div>
-                    <div class="d-flex gap-2">
-                        <button class="btn-opt" onclick="viewItems('${btoa(unescape(encodeURIComponent(JSON.stringify(g))))}')"><i class="fas fa-list"></i> LISTA</button>
-                        <button class="btn-opt" onclick="genPDF('${btoa(unescape(encodeURIComponent(JSON.stringify(g))))}')"><i class="fas fa-file-pdf"></i> PDF</button>
-                    </div>
+        function actualizarHistorial() {
+            const contenedor = document.getElementById('lista-historial');
+            contenedor.innerHTML = historial.map(item => `
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+                    <p class="text-sm text-gray-400">${item.fecha}</p>
+                    <p class="font-bold">${item.cliente}</p>
+                    <p class="text-sm text-gray-600">Prod: ${item.producto} | Aprobado: ${item.aprobado}</p>
+                    <p class="text-xs text-blue-600 font-semibold mt-1">Vendedor: ${item.vendedor}</p>
                 </div>
             `).join('');
         }
 
-        function viewItems(data) {
-            const g = JSON.parse(decodeURIComponent(escape(atob(data))));
-            Swal.fire({
-                title: g.cli,
-                html: `<div class="text-start" style="font-size:13px">${g.items.map(i => `<div class="mb-2 border-bottom pb-2"><b>${i.q} un.</b> - ${i.n}<br><small class="text-muted">${i.d.split('|')[2] || ''}</small></div>`).join('')}</div>`
-            });
+        function limpiarFormulario() {
+            document.getElementById('cliente').value = '';
+            document.getElementById('producto').value = '';
+            document.getElementById('cantRecibida').value = '';
+            document.getElementById('cantAprobada').value = '';
         }
-
-        function genPDF(data) {
-            const g = JSON.parse(decodeURIComponent(escape(atob(data))));
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(23, 43, 77); doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(255); doc.setFontSize(16); doc.text("REPORTE DE DEVOLUCIÓN", 14, 20);
-            doc.setTextColor(0); doc.setFontSize(10);
-            doc.text(`CLIENTE: ${g.cli}`, 14, 40);
-            doc.text(`FECHA: ${g.date}`, 14, 46);
-            doc.autoTable({
-                startY: 55,
-                head: [['Cant', 'Producto', 'Observación']],
-                body: g.items.map(i => [i.q, i.n, (i.d.split('|')[2] || '').trim()]),
-                headStyles: { fillColor: [255, 86, 48] }
-            });
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, doc.lastAutoTable.finalY + 20, {align:'center'});
-            doc.save(`Dev_${g.cli}.pdf`);
-        }
-
-        function nav(v, b) {
-            document.getElementById('v-reg').classList.toggle('d-none', v !== 'reg');
-            document.getElementById('v-his').classList.toggle('d-none', v !== 'his');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(b) b.classList.add('active');
-        }
-
-        window.onload = init;
     </script>
 </body>
 </html>
