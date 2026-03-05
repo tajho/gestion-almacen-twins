@@ -3,223 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ANGELO NUÑEZ | LOGISTICS PRO</title>
+    <title>AUDITORÍA PACKING | ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #3b82f6; --bg: #020617; --card: #1e293b; --success: #10b981; --danger: #ef4444; --text-main: #f8fafc; --text-dim: #94a3b8; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 0; overflow-x: hidden; }
-
-        /* App Shell */
-        .app-header { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 20px; sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        :root { --bg: #020617; --card: #1e293b; --accent: #3b82f6; --success: #10b981; --warn: #f59e0b; --danger: #ef4444; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding-bottom: 90px; }
         
-        .nav-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(15px); padding: 8px; border-radius: 24px; display: flex; gap: 8px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 1000; width: 90%; max-width: 400px; }
-        .nav-btn { flex: 1; padding: 12px; border: none; background: none; color: var(--text-dim); font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 18px; transition: 0.3s; }
-        .nav-btn.active { background: var(--primary); color: white; }
-
-        .container { padding: 20px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
-        .view { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .view.active { display: block; }
-
-        /* Estilos de Componentes */
-        .glass-card { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 24px; margin-bottom: 20px; }
-        label { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block; }
+        /* Layout */
+        .header { padding: 25px 20px; background: linear-gradient(180deg, rgba(30,41,59,1) 0%, rgba(2,6,23,1) 100%); border-bottom: 1px solid #334155; }
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .glass { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 16px; color: white; font-size: 1rem; margin-bottom: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
+        /* Formulario */
+        label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
+        input { width: 100%; background: #020617; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
 
-        .search-feedback { padding: 16px; border-radius: 16px; background: rgba(59, 130, 246, 0.15); border-left: 4px solid var(--primary); margin-bottom: 20px; font-weight: 600; min-height: 56px; display: flex; align-items: center; }
+        /* Visualizador de Búsqueda */
+        .item-preview { background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
+        .sku-tag { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+        .desc-tag { font-size: 0.75rem; color: #94a3b8; display: block; }
 
-        /* Tarjetas de Producto Modernas */
-        .item-row { background: var(--card); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; overflow: hidden; }
-        .item-row.matched { border-left: 6px solid var(--success); background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(30, 41, 59, 1) 100%); }
-        .item-row.error { border-left: 6px solid var(--danger); }
+        /* Tarjeta de Progreso Dinámico */
+        .audit-card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .progress-track { width: 100%; height: 8px; background: #020617; border-radius: 10px; margin: 12px 0; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.6s ease; border-radius: 10px; }
         
-        .data-grid { display: flex; justify-content: space-between; margin-top: 12px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px; }
-        .data-box { text-align: center; }
-        .data-label { font-size: 0.6rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
-        .data-value { font-size: 1.1rem; font-weight: 800; }
+        .color-ok { background: var(--success); box-shadow: 0 0 12px var(--success); }
+        .color-run { background: var(--accent); }
+        .color-err { background: var(--danger); }
 
-        .btn-main { width: 100%; padding: 18px; border: none; border-radius: 18px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; letter-spacing: 1px; }
-        .btn-blue { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
-        .btn-green { background: var(--success); color: white; }
+        /* Botonera */
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-main { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .btn-done { background: var(--success); color: white; margin-top: 20px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 90%; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); display: flex; border-radius: 20px; padding: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .nav-opt { flex: 1; text-align: center; color: #64748b; font-size: 0.7rem; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 15px; }
+        .nav-opt.active { color: white; background: var(--accent); }
+
+        .view { display: none; }
+        .view.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="user-profile">
-            <div class="avatar">AN</div>
-            <div>
-                <div style="font-weight: 800; font-size: 0.9rem;">J. ANGELO NUÑEZ DURAND</div>
-                <div style="font-size: 0.7rem; color: var(--text-dim);">Asist. Inventario Logístico</div>
-            </div>
+<header class="header">
+    <div style="font-weight: 800; font-size: 1.2rem;">LOGÍSTICA AUDIT</div>
+    <div style="font-size: 0.7rem; color: var(--accent);">J. ANGELO NUÑEZ DURAND</div>
+</header>
+
+<div class="container">
+    <div id="v1" class="view active">
+        <div class="glass">
+            <label>Paso 1: Identificación</label>
+            <input type="text" id="cont_id" placeholder="N° Contenedor / Código">
+            <label>Paso 2: Foto del Packing List</label>
+            <input type="file" id="foto_pck" accept="image/*">
+            <button class="btn btn-main" onclick="nav(1)">Abrir Panel de Auditoría</button>
         </div>
-    </header>
-
-    <div class="container">
-        
-        <div id="view-setup" class="view active">
-            <div class="glass-card">
-                <label>Paso 01</label>
-                <h2 style="margin: 0 0 20px 0;">Configurar Arribo</h2>
-                <input type="text" id="cont_id" placeholder="N° Contenedor / Código Guía">
-                <label>Documentación</label>
-                <input type="file" id="pck_file" accept="image/*">
-                <button class="btn-main btn-blue" onclick="switchView(1)">Iniciar Operación</button>
-            </div>
-        </div>
-
-        <div id="view-scan" class="view">
-            <div class="glass-card">
-                <label>Buscador Inteligente</label>
-                <input type="text" id="m_search" placeholder="Escribe SKU o Producto..." oninput="searchMaster(this.value)">
-                <div id="search_res" class="search-feedback">Esperando entrada de datos...</div>
-                
-                <div style="display: flex; gap: 12px;">
-                    <div style="flex:1"><label>Packing</label><input type="number" id="q_pck" placeholder="0"></div>
-                    <div style="flex:1"><label>Físico</label><input type="number" id="q_fis" placeholder="0"></div>
-                </div>
-                <button class="btn-main btn-blue" onclick="addRecord()">Registrar en Inventario</button>
-            </div>
-
-            <div id="records_container">
-                </div>
-        </div>
-
-        <div id="view-report" class="view">
-            <div class="glass-card" style="text-align: center;">
-                <h2 style="margin-top:0;">Cierre de Auditoría</h2>
-                <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 24px;">Verifica que todos los ítems estén marcados en verde antes de exportar.</p>
-                <button class="btn-main btn-green" onclick="generateReport()">Generar PDF Profesional</button>
-            </div>
-        </div>
-
     </div>
 
-    <nav class="nav-bar">
-        <button class="nav-btn active" onclick="switchView(0)">Arribo</button>
-        <button class="nav-btn" onclick="switchView(1)">Conteo</button>
-        <button class="nav-btn" onclick="switchView(2)">Cierre</button>
-    </nav>
+    <div id="v2" class="view">
+        <div class="glass">
+            <label>Buscador (Maestro)</label>
+            <input type="text" id="search" placeholder="Escribe SKU o nombre..." oninput="lookup(this.value)">
+            
+            <div id="preview_box" class="item-preview">
+                <span id="p_sku" class="sku-tag">---</span>
+                <span id="p_name" class="desc-tag">Esperando selección...</span>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div style="flex:1">
+                    <label>Cant. Según Foto</label>
+                    <input type="number" id="q_target" placeholder="Packing">
+                </div>
+                <div style="flex:1">
+                    <label>Cant. Físico</label>
+                    <input type="number" id="q_real" placeholder="Conteo">
+                </div>
+            </div>
+            <button class="btn btn-main" onclick="register()">Registrar y Sumar</button>
+        </div>
+
+        <div id="audit_list">
+            </div>
+    </div>
+
+    <div id="v3" class="view">
+        <div class="glass" style="text-align: center;">
+            <h2 style="margin:0;">Cierre de Reporte</h2>
+            <p style="color: #94a3b8; font-size: 0.8rem;">Basado en la auditoría del packing fotografiado.</p>
+            <button class="btn btn-done" onclick="generatePDF()">Exportar PDF Profesional</button>
+        </div>
+    </div>
+</div>
+
+<nav class="nav">
+    <div class="nav-opt active" onclick="nav(0)">CONFIG</div>
+    <div class="nav-opt" onclick="nav(1)">CONTEO</div>
+    <div class="nav-opt" onclick="nav(2)">REPORTE</div>
+</nav>
 
 <script>
-    const API_URL = "TU_URL_AQUI"; 
-    let masterData = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbz2FWrNqYTWr2TZiD56WDidmjAg1Xkgx2Bkka6uG_xUGhtwMUAOhFiDIHBpxvKIAHmh/exec"; 
+    let master = [];
     let log = {};
-    let activeItem = null;
+    let active = null;
 
     window.onload = async () => {
         try {
             const r = await fetch(API_URL);
-            masterData = await r.json();
-            console.log("Conectado con Maestro");
-        } catch (e) { console.error("Error de enlace"); }
+            master = await r.json();
+        } catch (e) { console.error("Sin conexión al maestro"); }
     };
 
-    function switchView(idx) {
-        const views = document.querySelectorAll('.view');
-        const btns = document.querySelectorAll('.nav-btn');
-        views.forEach((v, i) => v.classList.toggle('active', i === idx));
-        btns.forEach((b, i) => b.classList.toggle('active', i === idx));
+    function nav(idx) {
+        document.querySelectorAll('.view').forEach((v, i) => v.classList.toggle('active', i === idx));
+        document.querySelectorAll('.nav-opt').forEach((n, i) => n.classList.toggle('active', i === idx));
     }
 
-    function searchMaster(val) {
-        val = val.trim().toUpperCase();
-        if(val.length < 2) return;
-        const p = masterData.find(x => x[0].toString().includes(val) || x[1].toString().includes(val));
-        const fb = document.getElementById('search_res');
-        if(p) {
-            activeItem = { sku: p[0], nombre: p[1] };
-            fb.innerText = `✅ [${p[0]}] ${p[1]}`;
-            fb.style.color = "var(--primary)";
-        } else {
-            activeItem = null;
-            fb.innerText = "❌ Producto no existe";
-            fb.style.color = "var(--danger)";
+    function lookup(v) {
+        v = v.trim().toUpperCase();
+        const found = master.find(x => x[0].toString().includes(v) || x[1].toString().includes(v));
+        if(found) {
+            active = { sku: found[0], nombre: found[1] };
+            document.getElementById('p_sku').innerText = found[0];
+            document.getElementById('p_name').innerText = found[1];
         }
     }
 
-    function addRecord() {
-        const pck = parseInt(document.getElementById('q_pck').value) || 0;
-        const fis = parseInt(document.getElementById('q_fis').value) || 0;
+    function register() {
+        const target = parseInt(document.getElementById('q_target').value) || 0;
+        const real = parseInt(document.getElementById('q_real').value) || 0;
         const cont = document.getElementById('cont_id').value;
 
-        if(!activeItem || fis === 0 || !cont) return alert("Completa los datos mínimos");
+        if(!active || real === 0 || !cont) return alert("Complete Contenedor y Cantidades");
 
-        const sku = activeItem.sku;
-        if(!log[sku]) log[sku] = { nombre: activeItem.nombre, p: pck, f: 0 };
-        log[sku].f += fis;
-        if(pck > 0) log[sku].p = pck;
+        const sku = active.sku;
+        if(!log[sku]) log[sku] = { nombre: active.nombre, target: target, current: 0 };
+        
+        log[sku].current += real;
+        if(target > 0) log[sku].target = target;
 
-        // Sincronización Invisible (POST)
-        fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fis }) });
+        // Sincronización Invisible al Historial
+        fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: real }) });
 
-        renderUI();
-        document.getElementById('m_search').value = "";
-        document.getElementById('q_fis').value = "";
-        document.getElementById('m_search').focus();
+        render();
+        // Reset campos buscador
+        document.getElementById('search').value = "";
+        document.getElementById('q_real').value = "";
+        document.getElementById('search').focus();
     }
 
-    function renderUI() {
-        const container = document.getElementById('records_container');
-        container.innerHTML = "";
+    function render() {
+        const list = document.getElementById('audit_list');
+        list.innerHTML = "";
         
         Object.keys(log).reverse().forEach(k => {
             const i = log[k];
-            const isMatch = i.f === i.p;
-            const diff = i.f - i.p;
+            const pct = Math.min((i.current / i.target) * 100, 100);
+            const color = i.current === i.target ? 'color-ok' : (i.current > i.target ? 'color-err' : 'color-run');
             
-            container.innerHTML += `
-                <div class="item-row ${isMatch ? 'matched' : (i.p > 0 && i.f != i.p ? 'error' : '')}">
-                    <div style="font-weight: 800; font-size: 0.85rem; color: var(--primary);">${k}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">${i.nombre}</div>
-                    <div class="data-grid">
-                        <div class="data-box"><span class="data-label">Packing</span><span class="data-value">${i.p}</span></div>
-                        <div class="data-box"><span class="data-label">Físico</span><span class="data-value">${i.f}</span></div>
-                        <div class="data-box"><span class="data-label">Diferencia</span><span class="data-value" style="color:${diff < 0 ? 'var(--danger)' : (diff > 0 ? 'var(--warn)' : 'white')}">${diff}</span></div>
+            list.innerHTML += `
+                <div class="audit-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:800; font-size:0.9rem;">${k}</span>
+                        <span style="font-size:0.8rem; font-weight:bold;">${i.current} / ${i.target}</span>
+                    </div>
+                    <span style="font-size:0.7rem; color:#94a3b8; display:block; margin-top:2px;">${i.nombre}</span>
+                    
+                    <div class="progress-track">
+                        <div class="progress-fill ${color}" style="width: ${pct}%"></div>
+                    </div>
+                    
+                    <div style="text-align:right; font-size:0.65rem; font-weight:800; color:${i.current === i.target ? 'var(--success)' : (i.current > i.target ? 'var(--danger)' : 'var(--accent)')}">
+                        ${i.current === i.target ? '✓ CUADRADO' : (i.current > i.target ? '⚠ EXCESO' : 'EN CONTEO...')}
                     </div>
                 </div>
             `;
         });
     }
 
-    function generateReport() {
+    function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const cont = document.getElementById('cont_id').value;
+        const c = document.getElementById('cont_id').value;
 
-        // Estética PDF Corporativa
-        doc.setFillColor(15, 23, 42);
-        doc.rect(0, 0, 210, 50, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22).text("REPORTE DE INVENTARIO", 105, 25, {align:'center'});
-        doc.setFontSize(10).text(`CONTENEDOR: ${cont} | FECHA: ${new Date().toLocaleString()}`, 105, 35, {align:'center'});
+        doc.setFillColor(2, 6, 23).rect(0, 0, 210, 45, 'F');
+        doc.setTextColor(255, 255, 255).setFontSize(22).text("REPORTE DE AUDITORÍA FÍSICA", 105, 22, {align:'center'});
+        doc.setFontSize(10).text(`SEGÚN PACKING DE REFERENCIA | CONTENEDOR: ${c}`, 105, 32, {align:'center'});
 
-        const rows = Object.keys(log).map(s => [s, log[s].nombre, log[s].p, log[s].f, log[s].f - log[s].p]);
+        const rows = Object.keys(log).map(s => [s, log[s].nombre, log[s].target, log[s].current, log[s].current - log[s].target]);
 
         doc.autoTable({
-            startY: 55,
-            head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
+            startY: 50,
+            head: [['SKU', 'DESCRIPCIÓN', 'PACK. FOTO', 'CONTEO', 'DIF']],
             body: rows,
-            theme: 'striped',
             headStyles: { fillColor: [59, 130, 246] },
-            styles: { fontSize: 8 }
+            theme: 'grid'
         });
 
         const y = doc.lastAutoTable.finalY + 30;
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10).text("Revisión autorizada por:", 105, y, {align:'center'});
-        doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 7, {align:'center'});
-        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 13, {align:'center'});
+        doc.setTextColor(0,0,0).text("Revisión autorizada por:", 105, y, {align:'center'});
+        doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
+        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 14, {align:'center'});
         
-        doc.save(`Ingreso_${cont}.pdf`);
+        doc.save(`Auditoria_Packing_${c}.pdf`);
     }
 </script>
 </body>
