@@ -3,178 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LOGÍSTICO - ANGELO NUÑEZ</title>
+    <title>TERMINAL LOGÍSTICA | ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --blue: #3b82f6; --green: #10b981; --red: #ef4444; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; margin: 0; padding: 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid var(--blue); }
-        .status-pill { font-size: 0.7rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; float: right; }
-        .online { background: #dcfce7; color: #166534; }
-        .offline { background: #fee2e2; color: #991b1b; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        .results-area { background: #f1f5f9; padding: 12px; border-radius: 8px; margin-top: 5px; min-height: 40px; font-weight: bold; color: var(--blue); }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; margin-top: 10px; }
-        .btn-add { background: var(--primary); }
-        .btn-pdf { background: var(--green); margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 15px; }
-        th { text-align: left; padding: 10px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; --success: #10b981; --danger: #ef4444; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 500px; }
+        
+        /* Header & Status */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .online { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        
+        /* Cards */
+        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); margin-bottom: 20px; border: 1px solid #334155; }
+        h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        /* Form Elements */
+        label { display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 600; }
+        input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; color: white; font-size: 1rem; margin-top: 5px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        
+        .search-preview { background: #0f172a; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 4px solid var(--accent); font-weight: 500; font-size: 0.9rem; min-height: 20px; color: var(--accent); }
+        
+        /* Buttons */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-finish { background: transparent; border: 2px solid var(--success); color: var(--success); }
+        .btn-finish:hover { background: var(--success); color: white; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th { text-align: left; color: #94a3b8; padding: 10px; border-bottom: 1px solid #334155; }
+        td { padding: 12px 10px; border-bottom: 1px solid #1e293b; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+        .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-diff { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <span id="conn-status" class="status-pill offline">DESCONECTADO</span>
-    <h2 style="margin:0; font-size: 1.1rem;">Recepción de Contenedor</h2>
-    <p style="font-size: 0.75rem; color: #64748b; margin: 5px 0;">Asist. Logístico: J. Angelo Nuñez Durand</p>
-    
-    <label style="font-size: 0.7rem; font-weight: bold;">NRO. CONTENEDOR</label>
-    <input type="text" id="nro_cont" placeholder="Ej: 0116">
-    <label style="font-size: 0.7rem; font-weight: bold;">ADJUNTAR FOTO PACKING</label>
-    <input type="file" id="foto_pck" accept="image/*">
-</div>
-
-<div class="card">
-    <label style="font-size: 0.7rem; font-weight: bold;">BUSCADOR POR CÓDIGO O NOMBRE</label>
-    <input type="text" id="buscador" placeholder="Escriba SKU o nombre del producto..." oninput="busquedaMaestra(this.value)">
-    <div id="resultado_nombre" class="results-area">Escriba para buscar en Maestro...</div>
-
-    <div style="display: flex; gap: 10px;">
-        <div style="flex: 1;">
-            <label style="font-size: 0.7rem;">CANT. PACKING</label>
-            <input type="number" id="c_pack" placeholder="Dato foto">
+<div class="app-container">
+    <div class="header">
+        <div>
+            <h1 style="font-size: 1.2rem; margin: 0;">LOGÍSTICA PRO</h1>
+            <p style="font-size: 0.7rem; color: #94a3b8; margin: 2px 0;">J. ANGELO NUÑEZ DURAND</p>
         </div>
-        <div style="flex: 1;">
-            <label style="font-size: 0.7rem;">CANT. FÍSICO</label>
-            <input type="number" id="c_fis" placeholder="Conteo">
-        </div>
+        <div id="conn-tag"><span class="status-dot online"></span> <small>SINCRO ON</small></div>
     </div>
-    <button class="btn btn-add" onclick="registrar()">+ Agregar al Conteo</button>
-</div>
 
-<div class="card">
-    <table>
-        <thead>
-            <tr><th>SKU / PRODUCTO</th><th>PCK</th><th>FIS</th><th>DIF</th></tr>
-        </thead>
-        <tbody id="lista_cuerpo"></tbody>
-    </table>
-    <button class="btn btn-pdf" onclick="exportarPDF()">Finalizar y Generar PDF</button>
+    <div class="card">
+        <h2>📦 Identificación de Carga</h2>
+        <label>N° CONTENEDOR / REFERENCIA</label>
+        <input type="text" id="nro_cont" placeholder="Ej: 0116-2026">
+        <label>PACKING LIST (IMAGEN)</label>
+        <input type="file" id="img_pck" accept="image/*">
+    </div>
+
+    <div class="card">
+        <h2>🔍 Validación Maestra</h2>
+        <input type="text" id="master_search" placeholder="SKU o Nombre del producto..." oninput="filtrarMaestro(this.value)">
+        <div id="search_feedback" class="search-preview">Esperando entrada...</div>
+        
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label>CANT. PACKING</label>
+                <input type="number" id="q_esperada" placeholder="0">
+            </div>
+            <div style="flex: 1;">
+                <label>CANT. FÍSICA</label>
+                <input type="number" id="q_conteo" placeholder="0">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="registrarBulto()">Registrar Movimiento</button>
+    </div>
+
+    <div class="card">
+        <h2>📊 Resumen de Auditoría</h2>
+        <table id="tabla_main">
+            <thead>
+                <tr><th>SKU</th><th>PCK</th><th>FIS</th><th>EST</th></tr>
+            </thead>
+            <tbody id="lista_cuerpo"></tbody>
+        </table>
+        <button class="btn btn-finish" onclick="generarReporteFinal()">Finalizar y Exportar PDF</button>
+    </div>
 </div>
 
 <script>
-    // PEGA AQUÍ TU URL DE GOOGLE SCRIPTS (EL QUE TERMINA EN /exec)
-    const MI_URL = "https://script.google.com/macros/s/AKfycbxRFAliu8qm_GJys3iWTAHu_wDVeLJjsZOflY5n89G8_QPOYbccdKgWXGZByh3bSG0m/exec"; 
+    // URL DE TU GOOGLE APPS SCRIPT
+    const API_URL = "TU_URL_AQUI"; 
     
-    let maestro = [];
-    let conteoActual = {};
-    let productoSeleccionado = null;
+    let baseDatos = [];
+    let itemsRegistrados = {};
+    let itemActual = null;
 
+    // Carga inicial de datos
     window.onload = async () => {
-        const status = document.getElementById('conn-status');
         try {
-            const res = await fetch(MI_URL);
-            maestro = await res.json();
-            status.innerText = "✓ CONECTADO: " + (maestro.length - 1) + " SKU";
-            status.className = "status-pill online";
-        } catch (e) {
-            status.innerText = "ERROR DE CONEXIÓN";
-            status.className = "status-pill offline";
-        }
+            const r = await fetch(API_URL);
+            baseDatos = await r.json();
+            console.log("Maestro Cargado");
+        } catch (e) { document.getElementById('conn-tag').innerHTML = "⚠️ ERROR"; }
     };
 
-    function busquedaMaestra(val) {
+    function filtrarMaestro(val) {
         val = val.trim().toUpperCase();
-        if (val.length < 2) return;
+        if(val.length < 2) return;
 
-        // BUSCA POR CÓDIGO (Columna 0) O POR NOMBRE (Columna 1)
-        const encontrado = maestro.find(p => 
-            p[0].toString().includes(val) || 
-            p[1].toString().includes(val)
-        );
+        const p = baseDatos.find(x => x[0].toString().includes(val) || x[1].toString().includes(val));
+        const feedback = document.getElementById('search_feedback');
 
-        const resDiv = document.getElementById('resultado_nombre');
-        if (encontrado) {
-            productoSeleccionado = { sku: encontrado[0], nombre: encontrado[1] };
-            resDiv.innerText = `[${encontrado[0]}] - ${encontrado[1]}`;
-            resDiv.style.color = "var(--blue)";
+        if(p) {
+            itemActual = { sku: p[0], nombre: p[1] };
+            feedback.innerText = `📦 ${p[0]} | ${p[1]}`;
+            feedback.style.color = "var(--accent)";
+            feedback.style.borderColor = "var(--accent)";
         } else {
-            productoSeleccionado = null;
-            resDiv.innerText = "PRODUCTO NO ENCONTRADO";
-            resDiv.style.color = "var(--red)";
+            itemActual = null;
+            feedback.innerText = "PRODUCTO NO REGISTRADO";
+            feedback.style.color = "var(--danger)";
+            feedback.style.borderColor = "var(--danger)";
         }
     }
 
-    function registrar() {
-        const pk = parseInt(document.getElementById('c_pack').value) || 0;
-        const fs = parseInt(document.getElementById('c_fis').value) || 0;
+    function registrarBulto() {
+        const pck = parseInt(document.getElementById('q_esperada').value) || 0;
+        const fis = parseInt(document.getElementById('q_conteo').value) || 0;
+        const cont = document.getElementById('nro_cont').value;
 
-        if (!productoSeleccionado || fs === 0) {
-            alert("Selecciona un producto válido y cantidad física.");
+        if(!itemActual || fis === 0 || !cont) {
+            alert("Complete Contenedor, Producto y Cantidad Física");
             return;
         }
 
-        const sku = productoSeleccionado.sku;
-        if (!conteoActual[sku]) {
-            conteoActual[sku] = { nombre: productoSeleccionado.nombre, pck: pk, fis: 0 };
+        const sku = itemActual.sku;
+        if(!itemsRegistrados[sku]) {
+            itemsRegistrados[sku] = { nombre: itemActual.nombre, pck: pck, fis: 0 };
         }
         
-        conteoActual[sku].fis += fs;
-        if (pk > 0) conteoActual[sku].pck = pk;
+        itemsRegistrados[sku].fis += fis;
+        if(pck > 0) itemsRegistrados[sku].pck = pck;
 
-        renderTabla();
-        // Reset
-        document.getElementById('buscador').value = "";
-        document.getElementById('c_fis').value = "";
-        document.getElementById('resultado_nombre').innerText = "Escriba para buscar en Maestro...";
-        document.getElementById('buscador').focus();
-    }
-
-    function renderTabla() {
-        const body = document.getElementById('lista_cuerpo');
-        body.innerHTML = "";
-        for (let s in conteoActual) {
-            const i = conteoActual[s];
-            const diff = i.fis - i.pck;
-            body.innerHTML += `<tr>
-                <td><b>${s}</b><br><small>${i.nombre}</small></td>
-                <td>${i.pck}</td>
-                <td><b>${i.fis}</b></td>
-                <td style="color:${diff === 0 ? 'green' : 'red'}">${diff}</td>
-            </tr>`;
-        }
-    }
-
-    function exportarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const n = document.getElementById('nro_cont').value || "S/N";
-
-        doc.setFontSize(16).text("REPORTE DE INGRESO LOGÍSTICO: " + n, 105, 20, {align:'center'});
-        
-        const rows = [];
-        for (let s in conteoActual) {
-            const i = conteoActual[s];
-            rows.push([s, i.nombre, i.pck, i.fis, i.fis - i.pck]);
-        }
-
-        doc.autoTable({
-            startY: 30,
-            head: [['SKU', 'PRODUCTO', 'PACKING', 'CONTEO', 'DIF']],
-            body: rows,
-            theme: 'grid',
-            headStyles: { fillColor: [15, 23, 42] }
+        // SINCRONIZACIÓN EN SEGUNDO PLANO (Background Sync)
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+                contenedor: cont,
+                sku: sku,
+                cantidad: fis,
+                timestamp: new Date().toISOString()
+            })
         });
 
-        const finalY = doc.lastAutoTable.finalY + 30;
-        doc.setFontSize(10).text("Recepción y conteo realizado por:", 105, finalY, {align:'center'});
-        doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align:'center'});
-        doc.text("------------------------------------------", 105, finalY + 12, {align:'center'});
-        doc.text("Asist. Logístico.", 105, finalY + 17, {align:'center'});
+        actualizarUI();
+        
+        // Reset campos
+        document.getElementById('master_search').value = "";
+        document.getElementById('q_conteo').value = "";
+        document.getElementById('master_search').focus();
+    }
 
-        doc.save(`Ingreso_${n}.pdf`);
+    function actualizarUI() {
+        const b = document.getElementById('lista_cuerpo');
+        b.innerHTML = "";
+        for(let s in itemsRegistrados) {
+            const it = itemsRegistrados[s];
+            const diff = it.fis === it.pck;
+            b.innerHTML += `
+                <tr>
+                    <td><b>${s}</b><br><small style="color:#94a3b8">${it.nombre.substring(0,20)}</small></td>
+                    <td>${it.pck}</td>
+                    <td>${it.fis}</td>
+                    <td><span class="badge ${diff ? 'badge-ok' : 'badge-diff'}">${diff ? 'OK' : 'DIF'}</span></td>
+                </tr>`;
+        }
+    }
+
+    function generarReporteFinal() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const n = document.getElementById('nro_cont').value;
+
+        // Estilo Corporativo PDF
+        doc.setFillColor(30, 41, 59);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20).text("REPORTE DE AUDITORÍA LOGÍSTICA", 105, 20, {align:'center'});
+        doc.setFontSize(10).text(`CONTENEDOR: ${n} | FECHA: ${new Date().toLocaleString()}`, 105, 30, {align:'center'});
+
+        const rows = Object.keys(itemsRegistrados).map(s => {
+            const i = itemsRegistrados[s];
+            return [s, i.nombre, i.pck, i.fis, i.fis - i.pck];
+        });
+
+        doc.autoTable({
+            startY: 45,
+            head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
+            body: rows,
+            headStyles: { fillColor: [59, 130, 246] },
+            theme: 'striped'
+        });
+
+        const y = doc.lastAutoTable.finalY + 35;
+        doc.setTextColor(0, 0, 0);
+        doc.text("Recepción y conteo realizado por:", 105, y, {align:'center'});
+        doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
+        doc.setFont(undefined, 'normal').text("--------------------------------------------------", 105, y + 13, {align:'center'});
+        doc.text("Asist. Logístico.", 105, y + 18, {align:'center'});
+
+        doc.save(`Auditoria_${n}.pdf`);
     }
 </script>
 </body>
