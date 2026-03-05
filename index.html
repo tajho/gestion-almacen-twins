@@ -3,293 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twins Elite Pro - v5.1</title>
-    
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>App Registro Ingreso - Contenedor 0116</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
-    
     <style>
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background: #020617; 
-            color: #f1f5f9;
-            min-height: 100vh;
-        }
-
-        .bg-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 80%);
-            z-index: -1;
-        }
-
-        .elite-card {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-        }
-
-        .elite-input {
-            background: rgba(15, 23, 42, 0.8) !important;
-            border: 2px solid rgba(255, 255, 255, 0.05) !important;
-            border-radius: 1.25rem !important;
-            padding: 1.25rem !important;
-            color: #fff !important;
-            transition: all 0.3s ease;
-        }
-
-        .elite-input:focus {
-            border-color: #38bdf8 !important;
-            background: rgba(15, 23, 42, 1) !important;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
-            outline: none;
-        }
-
-        .btn-elite {
-            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-            border-radius: 1.25rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-elite:active { transform: scale(0.95); }
-
-        .nav-island {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 3rem;
-            bottom: 2rem;
-        }
-
-        .nav-btn { color: #64748b; transition: 0.4s; }
-        .nav-btn.active { color: #38bdf8; transform: scale(1.15); }
-
-        .fade-slide { animation: fadeSlide 0.5s ease-out; }
-        @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        :root { --primary: #2563eb; --success: #16a34a; --bg: #f3f4f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        h2 { color: var(--primary); font-size: 1.1rem; margin-top: 0; }
+        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; }
+        .btn-register { background: var(--success); margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+        .match { color: var(--success); font-weight: bold; }
+        .diff { color: #dc2626; }
     </style>
 </head>
-<body class="pb-36 px-4">
-    <div class="bg-glow"></div>
+<body>
 
-    <main class="max-w-lg mx-auto space-y-8">
-        
-        <header class="flex justify-between items-end pt-8 mb-6">
-            <div>
-                <p class="text-sky-400 font-black text-[10px] uppercase tracking-[0.4em]">Inventory Manager</p>
-                <h1 class="text-4xl font-black tracking-tighter italic">TWINS <span class="text-white opacity-30">ELITE</span></h1>
-            </div>
-            <div class="h-12 w-12 elite-card flex items-center justify-center text-sky-400 border-sky-500/30">
-                <i data-lucide="layers"></i>
-            </div>
-        </header>
+    <div class="card">
+        <h2>Conteo Físico por Pallets</h2>
+        <input type="text" id="sku_input" placeholder="Escribe el Código (ej: AR-00036)">
+        <input type="number" id="cant_input" placeholder="Cantidad recibida (ej: 15)">
+        <button onclick="sumarConteo()">Sumar al Conteo</button>
+    </div>
 
-        <section id="sec-devolucion" class="fade-slide space-y-6">
-            <div class="elite-card p-6 space-y-4">
-                <input type="text" id="cliente" placeholder="Cliente / Razón Social" class="w-full elite-input">
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="vendedor" class="elite-input text-sm font-semibold appearance-none">
-                        <option value="">Vendedor</option>
-                        <option>Elias Ávila</option>
-                        <option>Evelyn Muro</option>
-                        <option>Regulo Antezana</option>
-                        <option>Paula García</option>
-                        <option>Jhayro Mauricio</option>
-                    </select>
-                    <input type="number" id="cajasGuia" placeholder="Cajas" class="elite-input text-center font-black">
-                </div>
-            </div>
+    <div class="card">
+        <h2>Estado de Carga - Contenedor 0116</h2>
+        <table id="tablaRevision">
+            <thead>
+                <tr>
+                    <th>Cod.</th>
+                    <th>Pack.</th>
+                    <th>Físico</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="listaCuerpo"></tbody>
+        </table>
+    </div>
 
-            <div class="elite-card p-6 border-l-4 border-sky-500">
-                <h3 class="text-white font-black text-sm uppercase tracking-widest mb-4">Añadir Items</h3>
-                <div class="space-y-4">
-                    <input type="text" id="producto" placeholder="SKU o Descripción" class="w-full elite-input">
-                    <div class="flex gap-4">
-                        <input type="number" id="cantAprobada" placeholder="0" class="w-1/3 elite-input text-center font-black text-sky-400">
-                        <button onclick="agregarALista()" class="w-2/3 btn-elite text-white flex items-center justify-center gap-2 text-xs">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i> AGREGAR
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="contenedor-tabla" class="hidden elite-card overflow-hidden">
-                <div id="cuerpo-tabla" class="divide-y divide-white/5 max-h-60 overflow-y-auto"></div>
-                <button onclick="finalizarReporte()" class="w-full p-5 bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white font-black uppercase text-[10px] tracking-[0.3em] transition-all">
-                    Finalizar y Generar Registro
-                </button>
-            </div>
-        </section>
-
-        <section id="sec-contadores" class="hidden fade-slide space-y-4"></section>
-        <section id="sec-historial" class="hidden fade-slide space-y-6"></section>
-
-    </main>
-
-    <nav class="fixed left-1/2 -translate-x-1/2 w-[85%] max-w-sm nav-island p-2 flex justify-around items-center z-50 shadow-2xl">
-        <button onclick="showSection('devolucion')" id="tab-devolucion" class="nav-btn active p-4"><i data-lucide="plus-circle"></i></button>
-        <button onclick="showSection('contadores')" id="tab-contadores" class="nav-btn p-4"><i data-lucide="bar-chart-3"></i></button>
-        <button onclick="showSection('historial')" id="tab-historial" class="nav-btn p-4"><i data-lucide="history"></i></button>
-    </nav>
+    <button class="btn-register" onclick="generarReportePDF()">REGISTRAR CONTEO DE CONTENEDOR</button>
 
     <script>
-        lucide.createIcons();
-        let productosTemporales = [];
-        let historialReportes = JSON.parse(localStorage.getItem('twins_elite_final_v1')) || [];
+        // Datos extraídos de tu foto
+        const packingList = {
+            "AR-00036": { qty: 48, desc: "BANDEJA 3 PISOS" },
+            "AR-00085": { qty: 1200, desc: "CARTON MAQUETA 3MM" },
+            "AR-00090": { qty: 1500, desc: "CARTON MAQUETA 5MM" },
+            "AR-00557": { qty: 172800, desc: "BOLIGRAFO AZUL" },
+            "AR-00558": { qty: 120960, desc: "BOLIGRAFO ROJO" },
+            "AR-00559": { qty: 120960, desc: "BOLIGRAFO NEGRO" },
+            "AR-01205": { qty: 900, desc: "REGLA T 60 CM" },
+            "AR-01207": { qty: 600, desc: "REGLA T 80 CM" },
+            "AR-00780": { qty: 10000, desc: "PAPEL ALUMINIO 5 MT" },
+            "AR-00781": { qty: 5000, desc: "PAPEL ALUMINIO 8 MT" },
+            "AR-01361": { qty: 10000, desc: "TABLERO FORMICA A4" },
+            "AR-00236": { qty: 750, desc: "CLIPS FOTOCHECK" },
+            "AR-00326": { qty: 115200, desc: "CUCHILLA ECONOMICA" },
+            "AR-01121": { qty: 1000, desc: "FOTOCHECK PLASTICO" },
+            "AR-02760": { qty: 4800, desc: "CINTA MAGICA" },
+            "AR-03806": { qty: 360, desc: "PIZARRA 60X80" },
+            "AR-03808": { qty: 300, desc: "PIZARRA 80X120" }
+        };
 
-        function showSection(section) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`sec-${section}`).classList.remove('hidden');
-            document.getElementById(`tab-${section}`).classList.add('active');
-            if(section === 'contadores') actualizarContadores();
-            if(section === 'historial') actualizarHistorial();
+        let conteoFisico = {};
+        // Inicializar conteo en 0
+        Object.keys(packingList).forEach(sku => conteoFisico[sku] = 0);
+
+        function sumarConteo() {
+            const sku = document.getElementById('sku_input').value.trim().toUpperCase();
+            const cant = parseInt(document.getElementById('cant_input').value);
+
+            if (packingList[sku]) {
+                conteoFisico[sku] += cant;
+                actualizarTabla();
+                document.getElementById('cant_input').value = '';
+                document.getElementById('sku_input').focus();
+            } else {
+                alert("El código no existe en el packing list actual.");
+            }
         }
 
-        function agregarALista() {
-            const nombre = document.getElementById('producto').value;
-            const aprobada = document.getElementById('cantAprobada').value;
-            if (!nombre || !aprobada) return;
-            productosTemporales.push({ nombre, aprobada, observacion: "" });
-            renderizarLista();
-            document.getElementById('producto').value = '';
-            document.getElementById('cantAprobada').value = '';
-            document.getElementById('producto').focus();
+        function actualizarTabla() {
+            const body = document.getElementById('listaCuerpo');
+            body.innerHTML = '';
+            for (let sku in packingList) {
+                const esperado = packingList[sku].qty;
+                const actual = conteoFisico[sku];
+                const cuadra = actual === esperado;
+                
+                body.innerHTML += `
+                    <tr>
+                        <td>${sku}</td>
+                        <td>${esperado}</td>
+                        <td><b>${actual}</b></td>
+                        <td class="${cuadra ? 'match' : 'diff'}">${cuadra ? '✅ OK' : '...'}</td>
+                    </tr>
+                `;
+            }
         }
 
-        function renderizarLista() {
-            const contenedor = document.getElementById('contenedor-tabla');
-            const cuerpo = document.getElementById('cuerpo-tabla');
-            contenedor.classList.toggle('hidden', productosTemporales.length === 0);
-            cuerpo.innerHTML = productosTemporales.map((item, i) => `
-                <div class="p-4 flex justify-between items-center">
-                    <div>
-                        <p class="text-[11px] font-bold text-white uppercase">${item.nombre}</p>
-                        <p class="text-[9px] text-gray-500">${item.observacion || 'Sin notas'}</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl font-black text-sky-400">${item.aprobada}</span>
-                        <button onclick="addObs(${i})" class="h-8 w-8 elite-card flex items-center justify-center border-none bg-white/5">
-                            <i data-lucide="edit-2" class="w-3 h-3"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        function addObs(i) {
-            const val = prompt("Observación:", productosTemporales[i].observacion);
-            if (val !== null) { productosTemporales[i].observacion = val; renderizarLista(); }
-        }
-
-        function finalizarReporte() {
-            const cliente = document.getElementById('cliente').value;
-            const vendedor = document.getElementById('vendedor').value;
-            const cajas = parseInt(document.getElementById('cajasGuia').value) || 0;
-            if (!cliente || !vendedor) return alert("Faltan datos.");
-
-            const reporte = {
-                id: Date.now(),
-                fecha: new Date().toLocaleDateString(),
-                hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                timestamp: Date.now(),
-                cliente, vendedor, cajas,
-                items: [...productosTemporales]
-            };
-
-            historialReportes.unshift(reporte);
-            localStorage.setItem('twins_elite_final_v1', JSON.stringify(historialReportes));
-            productosTemporales = [];
-            renderizarLista();
-            document.getElementById('cliente').value = '';
-            document.getElementById('cajasGuia').value = '';
-            showSection('historial');
-        }
-
-        function actualizarContadores() {
-            const lista = document.getElementById('sec-contadores');
-            const mesActual = new Date().getMonth();
-            const vendedores = ["Elias Ávila", "Evelyn Muro", "Regulo Antezana", "Paula García", "Jhayro Mauricio"];
-            lista.innerHTML = `<h2 class="text-xl font-black px-4 uppercase tracking-tighter">Productividad</h2>`;
-            vendedores.forEach(v => {
-                let total = 0;
-                historialReportes.forEach(r => {
-                    if(new Date(r.timestamp).getMonth() === mesActual && r.vendedor === v) total += r.cajas;
-                });
-                lista.innerHTML += `
-                    <div class="elite-card p-5 flex justify-between items-center border-l-4 border-sky-500">
-                        <p class="font-bold text-xs text-gray-400 uppercase">${v}</p>
-                        <p class="text-xl font-black">${total} <span class="text-sky-400 text-[10px]">CAJAS</span></p>
-                    </div>`;
-            });
-        }
-
-        function actualizarHistorial() {
-            const lista = document.getElementById('sec-historial');
-            lista.innerHTML = historialReportes.map((rep, idx) => `
-                <div class="elite-card p-6 space-y-4 border-white/5">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[9px] font-black text-sky-400 uppercase">${rep.fecha} • ${rep.hora}</p>
-                            <h3 class="text-lg font-black text-white uppercase">${rep.cliente}</h3>
-                            <p class="text-[10px] text-gray-500 font-bold uppercase">${rep.vendedor}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-2xl font-black text-white">${rep.cajas}</p>
-                            <p class="text-[8px] font-black text-gray-500 uppercase">Cajas</p>
-                        </div>
-                    </div>
-                    <button onclick="exportPDF(${idx})" class="w-full btn-elite py-3 text-[10px] flex items-center justify-center gap-2">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> DESCARGAR PDF
-                    </button>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        function exportPDF(idx) {
+        function generarReportePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const r = historialReportes[idx];
+            let y = 20;
 
-            doc.setFillColor(2, 6, 23); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TWINS ELITE", 15, 25);
-            doc.setFontSize(9); doc.text("REPORTE OFICIAL DE INVENTARIO", 15, 32);
+            doc.setFontSize(14).text("REPORTE DE INGRESO - CONTENEDOR 0116", 20, y);
+            y += 10;
+            doc.setFontSize(10).text("CODIGO | PACKING | FISICO | RESULTADO", 20, y);
+            y += 7;
 
-            doc.setTextColor(40, 40, 40); doc.setFontSize(10);
-            doc.text(`CLIENTE: ${r.cliente.toUpperCase()}`, 15, 55);
-            doc.text(`VENDEDOR: ${r.vendedor}`, 15, 62);
-            doc.text(`FECHA: ${r.fecha} ${r.hora}`, 15, 69);
-            doc.text(`CAJAS: ${r.cajas}`, 15, 76);
+            for (let sku in packingList) {
+                const status = conteoFisico[sku] === packingList[sku].qty ? "CUADRA" : "DISCREPANCIA";
+                doc.text(`${sku} | ${packingList[sku].qty} | ${conteoFisico[sku]} | ${status}`, 20, y);
+                y += 6;
+            }
 
-            doc.autoTable({
-                startY: 85,
-                head: [['PRODUCTO', 'CANT', 'OBSERVACIÓN']],
-                body: r.items.map(i => [i.nombre.toUpperCase(), i.aprobada, i.observacion || '-']),
-                headStyles: { fillColor: [2, 6, 23] }
-            });
+            y += 15;
+            doc.text("________________________________", 20, y);
+            y += 5;
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, y);
+            doc.text("Asist. Inventario Logístico.", 20, y+5);
 
-            const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setDrawColor(200, 200, 200); doc.line(70, finalY, 140, finalY);
-            doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 10, { align: "center" });
-
-            doc.save(`Reporte_${r.cliente}.pdf`);
+            doc.save("Reporte_Conteo_0116.pdf");
         }
+
+        actualizarTabla();
     </script>
 </body>
 </html>
