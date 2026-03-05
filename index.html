@@ -3,186 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA DE INGRESO LOGÍSTICO - ANGELO NUÑEZ</title>
+    <title>SISTEMA LOGÍSTICO - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --dark-bg: #0f172a; --card-bg: #1e293b; --accent: #3b82f6; --success: #10b981; --text: #f8fafc; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--dark-bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 25px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); margin-bottom: 20px; }
-        label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        input { width: 100%; background: #334155; border: 1px solid #475569; padding: 12px; border-radius: 8px; color: white; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; }
-        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
-        .product-info { background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 15px; font-weight: 600; color: var(--accent); }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-add { background: var(--accent); color: white; }
+        :root { --main: #1e293b; --accent: #3b82f6; --success: #10b981; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 4px solid var(--accent); }
+        h2 { font-size: 1.1rem; color: var(--main); margin-top: 0; }
+        label { font-size: 0.75rem; color: #64748b; font-weight: bold; display: block; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .hint { background: #f1f5f9; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; color: var(--accent); margin-bottom: 15px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-add { background: var(--main); color: white; }
         .btn-pdf { background: var(--success); color: white; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        th { text-align: left; padding: 8px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; }
         .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; font-size: 0.9rem; }
-        th { background: #334155; color: #94a3b8; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #334155; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-        .badge-ok { background: #064e3b; color: #6ee7b7; }
-        .badge-diff { background: #7f1d1d; color: #fca5a5; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1 style="font-size: 1.4rem; margin: 0;">CONTROL DE INGRESOS LOGÍSTICOS</h1>
-        <p style="font-size: 0.8rem; color: #94a3b8;">Gestión de Almacén - J. Angelo Nuñez Durand</p>
+    <div id="step1" class="card">
+        <h2>Recepción de Contenedor</h2>
+        <label>NÚMERO DE CONTENERDOR (COD. INTERNO)</label>
+        <input type="text" id="nro_cont" placeholder="Ej: 0116">
+        <label>SUBIR PACKING LIST (FOTO)</label>
+        <input type="file" id="packing_file" accept="image/*">
+        <button class="btn btn-add" onclick="iniciar()">CONTINUAR AL CONTEO</button>
     </div>
 
-    <div id="setup-section" class="card">
-        <label>Identificación de Contenedor</label>
-        <input type="text" id="nro_contenedor" placeholder="Ej: CONT-2026-0116">
-        <label>Documentación (Cargar Packing List)</label>
-        <input type="file" id="packing_photo" accept="image/*">
-        <button class="btn btn-add" onclick="iniciarConteo()">Iniciar Proceso de Recepción</button>
-    </div>
+    <div id="step2" class="card hidden">
+        <h2 id="cont_title">Contenedor: --</h2>
+        <label>CÓDIGO (SKU)</label>
+        <input type="text" id="sku_in" placeholder="Ej: AR-00036" oninput="buscar(this.value)">
+        <div id="desc_out" class="hint">Escriba un código...</div>
 
-    <div id="conteo-section" class="card hidden">
-        <div id="info-cont" style="margin-bottom: 15px; font-weight: bold; color: var(--success);"></div>
-        <label>Código de Producto (SKU)</label>
-        <input type="text" id="sku_input" placeholder="Escriba o escanee..." oninput="autoBusqueda(this.value)">
-        <div id="display_nombre" class="product-info">Esperando código...</div>
-        
-        <label>Cantidad de Packing (Esperada)</label>
-        <input type="number" id="cant_packing" placeholder="Según documento">
-        
-        <label>Cantidad de Pallet (Contado)</label>
-        <input type="number" id="cant_pallet" placeholder="Cantidad física actual">
-        
-        <button class="btn btn-add" onclick="registrarItem()">Registrar y Sumar</button>
+        <label>CANTIDAD PACKING (SEGÚN DOCUMENTO)</label>
+        <input type="number" id="cant_pack" placeholder="Cantidad total esperada">
+
+        <label>CANTIDAD CONTEO (POR PALLET)</label>
+        <input type="number" id="cant_fis" placeholder="Ej: 15">
+
+        <button class="btn btn-add" onclick="agregar()">REGISTRAR ITEM</button>
 
         <table>
             <thead>
                 <tr>
                     <th>SKU</th>
-                    <th>Packing</th>
-                    <th>Conteo</th>
-                    <th>Dif.</th>
+                    <th>Pack.</th>
+                    <th>Físico</th>
                 </tr>
             </thead>
-            <tbody id="lista_cuerpo"></tbody>
+            <tbody id="tabla_body"></tbody>
         </table>
-        
-        <button class="btn btn-pdf" onclick="generarReporteProfesional()">Cerrar Contenedor y Generar PDF</button>
+
+        <button class="btn btn-pdf" onclick="generarPDF()">GENERAR REPORTE FINAL</button>
     </div>
 </div>
 
 <script>
-    const URL_API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-    let maestroProductos = [];
-    let registroContenedor = {};
+    const API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
+    let maestro = [];
+    let items = {};
 
     window.onload = async () => {
-        try {
-            const res = await fetch(URL_API);
-            const data = await res.json();
-            // Limpieza: Asumimos que la columna 0 es SKU y la 1 es Nombre
-            maestroProductos = data.slice(1); 
-            console.log("Maestro cargado exitosamente.");
-        } catch(e) { alert("Error de conexión con la base de datos maestra."); }
+        const res = await fetch(API);
+        const data = await res.json();
+        // Según tu foto: Columna A (0) es Código, Columna B (1) es Descripción
+        maestro = data.filter(r => r[0] && r[0] !== "CODIGO");
     };
 
-    function iniciarConteo() {
-        const cont = document.getElementById('nro_contenedor').value;
-        if(!cont) return alert("Ingrese N° de Contenedor");
-        document.getElementById('info-cont').innerText = "TRABAJANDO: " + cont;
-        document.getElementById('setup-section').classList.add('hidden');
-        document.getElementById('conteo-section').classList.remove('hidden');
+    function iniciar() {
+        const n = document.getElementById('nro_cont').value;
+        if(!n) return alert("Falta N° de Contenedor");
+        document.getElementById('cont_title').innerText = "Contenedor: " + n;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
     }
 
-    function autoBusqueda(sku) {
-        sku = sku.trim().toUpperCase();
-        const found = maestroProductos.find(p => p[0].toString().toUpperCase() === sku);
-        const display = document.getElementById('display_nombre');
-        if(found) {
-            display.innerText = "PROD: " + found[1];
-            display.style.color = "#3b82f6";
-        } else {
-            display.innerText = "SKU NO ENCONTRADO EN MAESTRO";
-            display.style.color = "#ef4444";
-        }
+    function buscar(val) {
+        val = val.trim().toUpperCase();
+        const f = maestro.find(p => p[0].toString().toUpperCase() === val);
+        document.getElementById('desc_out').innerText = f ? "📦 " + f[1] : "No encontrado";
     }
 
-    function registrarItem() {
-        const sku = document.getElementById('sku_input').value.toUpperCase();
-        const pack = parseInt(document.getElementById('cant_packing').value) || 0;
-        const pal = parseInt(document.getElementById('cant_pallet').value) || 0;
+    function agregar() {
+        const sku = document.getElementById('sku_in').value.toUpperCase();
+        const p = parseInt(document.getElementById('cant_pack').value) || 0;
+        const f = parseInt(document.getElementById('cant_fis').value) || 0;
+        const cont = document.getElementById('nro_cont').value;
 
-        if(!sku || isNaN(pal)) return alert("Datos incompletos");
+        if(!sku || isNaN(f)) return alert("Revisa el código o cantidad");
 
-        if(!registroContenedor[sku]) {
-            registroContenedor[sku] = { packing: pack, contado: 0 };
-        }
+        if(!items[sku]) items[sku] = { desc: document.getElementById('desc_out').innerText, pack: p, fis: 0 };
+        items[sku].fis += f;
+        if(p > 0) items[sku].pack = p;
+
+        render();
         
-        registroContenedor[sku].contado += pal;
-        // Si se actualiza el packing en el registro, lo mantenemos
-        if(pack > 0) registroContenedor[sku].packing = pack;
+        // Enviar al Historial de Excel
+        fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: f }) });
 
-        actualizarTabla();
-        
-        // Reset campos específicos
-        document.getElementById('sku_input').value = "";
-        document.getElementById('cant_pallet').value = "";
-        document.getElementById('display_nombre').innerText = "Esperando código...";
-        document.getElementById('sku_input').focus();
+        document.getElementById('sku_in').value = "";
+        document.getElementById('cant_fis').value = "";
+        document.getElementById('sku_in').focus();
     }
 
-    function actualizarTabla() {
-        const tbody = document.getElementById('lista_cuerpo');
-        tbody.innerHTML = "";
-        for(let sku in registroContenedor) {
-            const item = registroContenedor[sku];
-            const dif = item.contado - item.packing;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${sku}</td>
-                    <td>${item.packing}</td>
-                    <td><b>${item.contado}</b></td>
-                    <td><span class="badge ${dif === 0 ? 'badge-ok' : 'badge-diff'}">${dif}</span></td>
-                </tr>`;
+    function render() {
+        const b = document.getElementById('tabla_body');
+        b.innerHTML = "";
+        for(let s in items) {
+            b.innerHTML += `<tr><td>${s}</td><td>${items[s].pack}</td><td><b>${items[s].fis}</b></td></tr>`;
         }
     }
 
-    function generarReporteProfesional() {
+    function generarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const cont = document.getElementById('nro_contenedor').value;
+        const n = document.getElementById('nro_cont').value;
 
-        // Cabecera
-        doc.setFontSize(18).text("REPORTE DE RECEPCIÓN DE MERCADERÍA", 105, 20, {align: 'center'});
-        doc.setFontSize(10).text(`Contenedor: ${cont} | Fecha: ${new Date().toLocaleString()}`, 105, 28, {align: 'center'});
-
-        // Tabla de Datos
-        const bodyData = [];
-        for(let sku in registroContenedor) {
-            const item = registroContenedor[sku];
-            bodyData.push([sku, item.packing, item.contado, item.contado === item.packing ? "CUADRA" : "DIFERENCIA"]);
+        doc.setFontSize(16).text("REPORTE DE CONTEO - CONTENEDOR " + n, 105, 20, {align:'center'});
+        
+        const rows = [];
+        for(let s in items) {
+            rows.push([s, items[s].desc.replace("📦 ", ""), items[s].pack, items[s].fis]);
         }
 
         doc.autoTable({
-            startY: 35,
-            head: [['CÓDIGO', 'CANT. PACKING', 'CANT. CONTEO', 'ESTADO']],
-            body: bodyData,
-            theme: 'striped',
-            headStyles: { fillColor: [15, 23, 42] }
+            startY: 30,
+            head: [['CÓDIGO', 'PRODUCTO', 'CANT. PACKING', 'CANT. CONTEO']],
+            body: rows,
+            theme: 'grid',
+            headStyles: { fillColor: [30, 41, 59] }
         });
 
-        // Pie de página centralizado
         const finalY = doc.lastAutoTable.finalY + 30;
         doc.setFontSize(10);
-        doc.text("Recepción y conteo realizado por:", 105, finalY, {align: 'center'});
-        doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align: 'center'});
-        doc.text("------------------------------------------", 105, finalY + 12, {align: 'center'});
-        doc.text("Asist. Logístico.", 105, finalY + 17, {align: 'center'});
+        doc.text("Recepción y conteo realizado por:", 105, finalY, {align:'center'});
+        doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align:'center'});
+        doc.text("------------------------------------------", 105, finalY + 12, {align:'center'});
+        doc.text("Asist. Logístico.", 105, finalY + 17, {align:'center'});
 
-        doc.save(`Recepción_${cont}.pdf`);
+        doc.save(`Recepcion_${n}.pdf`);
     }
 </script>
 </body>
