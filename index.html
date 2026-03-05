@@ -3,145 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LOGÍSTICO | ANGELO NUÑEZ</title>
+    <title>SISTEMA LOGÍSTICO PRO | ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #ef4444; }
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; margin: 0; padding: 15px; }
-        .card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid #334155; }
-        .status { font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; float: right; }
-        .online { background: #064e3b; color: #34d399; }
-        .offline { background: #7f1d1d; color: #f87171; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: white; box-sizing: border-box; }
-        .preview-box { background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin: 10px 0; color: var(--accent); font-weight: bold; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #ef4444; --card: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; margin: 0; overflow-x: hidden; }
+        
+        /* Navegación por Secciones */
+        .tabs { display: flex; background: var(--card); sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
+        .tab-btn { flex: 1; padding: 18px; text-align: center; border: none; background: none; color: #94a3b8; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.75rem; text-transform: uppercase; }
+        .tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); background: rgba(59, 130, 246, 0.1); }
+
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tarjetas y Estética */
+        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        h2 { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-top: 0; display: flex; justify-content: space-between; }
+        
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #334155; border-radius: 10px; background: #0f172a; color: white; box-sizing: border-box; font-size: 1rem; }
+        input:focus { border-color: var(--accent); outline: none; }
+
+        .preview { background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; border-left: 4px solid var(--accent); margin: 10px 0; font-weight: bold; color: var(--accent); }
+        
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; margin-top: 10px; }
         .btn-add { background: var(--accent); color: white; }
         .btn-pdf { background: transparent; border: 2px solid var(--success); color: var(--success); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 15px; }
-        th { text-align: left; color: #94a3b8; padding: 10px; border-bottom: 2px solid #334155; }
-        td { padding: 10px; border-bottom: 1px solid #334155; }
+
+        /* Tabla de Auditoría */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        th { text-align: left; padding: 12px; color: #94a3b8; border-bottom: 1px solid #334155; }
+        td { padding: 12px; border-bottom: 1px solid #334155; }
+        .diff-tag { font-weight: bold; padding: 4px 8px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <span id="conn-status" class="status offline">SINCRO OFF</span>
-    <h2 style="margin:0; font-size: 1.1rem;">INBOUND: <span id="view-cont">---</span></h2>
-    <input type="text" id="cont-id" placeholder="N° CONTENEDOR (Ej: 0116)" oninput="document.getElementById('view-cont').innerText = this.value">
-</div>
-
-<div class="card">
-    <label style="font-size:0.7rem; font-weight:bold;">BUSCADOR MAESTRO</label>
-    <input type="text" id="sku-search" placeholder="Escriba SKU o Nombre..." oninput="buscarProducto(this.value)">
-    <div id="res-nombre" class="preview-box">Esperando entrada...</div>
-
-    <div style="display: flex; gap: 10px;">
-        <div style="flex:1"><label style="font-size:0.7rem;">PACKING</label><input type="number" id="q-pack" placeholder="Cantidad Foto"></div>
-        <div style="flex:1"><label style="font-size:0.7rem;">FÍSICO</label><input type="number" id="q-fisico" placeholder="Conteo"></div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openSection(event, 'sec-inicio')">1. Inicio</button>
+        <button class="tab-btn" onclick="openSection(event, 'sec-conteo')">2. Conteo</button>
+        <button class="tab-btn" onclick="openSection(event, 'sec-reporte')">3. Reporte</button>
     </div>
-    <button class="btn btn-add" onclick="registrar()">+ REGISTRAR CONTEO</button>
-</div>
 
-<div class="card">
-    <table id="tabla-conteo">
-        <thead><tr><th>PRODUCTO</th><th>PK</th><th>FIS</th><th>DIF</th></tr></thead>
-        <tbody id="lista-items"></tbody>
-    </table>
-    <button class="btn btn-pdf" onclick="generarReporte()">GENERAR REPORTE FINAL</button>
-</div>
+    <div class="container">
+        
+        <div id="sec-inicio" class="section active">
+            <div class="card">
+                <h2>IDENTIFICACIÓN DE CARGA</h2>
+                <label style="font-size: 0.7rem;">N° CONTENEDOR / GUÍA</label>
+                <input type="text" id="id_contenedor" placeholder="Ej: 0116-A">
+                <label style="font-size: 0.7rem;">FOTO PACKING LIST</label>
+                <input type="file" id="foto_pck" accept="image/*">
+                <button class="btn btn-add" onclick="document.querySelector('.tab-btn:nth-child(2)').click()">Siguiente Paso</button>
+            </div>
+        </div>
+
+        <div id="sec-conteo" class="section">
+            <div class="card">
+                <h2>BUSCADOR MAESTRO <span id="sync-icon" style="color:var(--success)">●</span></h2>
+                <input type="text" id="busqueda" placeholder="SKU o Nombre del producto..." oninput="ejecutarBusqueda(this.value)">
+                <div id="res_busqueda" class="preview">Esperando SKU...</div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1">
+                        <label style="font-size: 0.7rem;">CANT. PACKING</label>
+                        <input type="number" id="cant_pck" placeholder="Dato Foto">
+                    </div>
+                    <div style="flex:1">
+                        <label style="font-size: 0.7rem;">CANT. FÍSICA</label>
+                        <input type="number" id="cant_fis" placeholder="Conteo">
+                    </div>
+                </div>
+                <button class="btn btn-add" onclick="registrarItem()">Registrar Bulto</button>
+            </div>
+        </div>
+
+        <div id="sec-reporte" class="section">
+            <div class="card">
+                <h2>RESUMEN DE CUADRE</h2>
+                <table id="tabla_resumen">
+                    <thead>
+                        <tr><th>PRODUCTO</th><th>PK</th><th>FIS</th><th>DIF</th></tr>
+                    </thead>
+                    <tbody id="cuerpo_tabla"></tbody>
+                </table>
+                <button class="btn btn-pdf" onclick="exportarPDF()">Generar PDF Detallado</button>
+            </div>
+        </div>
+
+    </div>
 
 <script>
-    // PEGA AQUÍ TU URL DE GOOGLE SCRIPTS
-    const URL_API = "https://script.google.com/macros/s/AKfycbz2FWrNqYTWr2TZiD56WDidmjAg1Xkgx2Bkka6uG_xUGhtwMUAOhFiDIHBpxvKIAHmh/exec"; 
+    // URL DE TU GOOGLE APPS SCRIPT (REEMPLAZAR AQUÍ)
+    const URL_MAESTRO = "https://script.google.com/macros/s/AKfycbz2FWrNqYTWr2TZiD56WDidmjAg1Xkgx2Bkka6uG_xUGhtwMUAOhFiDIHBpxvKIAHmh/exec"; 
     
-    let maestro = [];
-    let items = {};
-    let actual = null;
+    let dbMaestra = [];
+    let itemsContados = {};
+    let itemSeleccionado = null;
 
+    // Carga de datos sin interrupción
     window.onload = async () => {
-        const s = document.getElementById('conn-status');
         try {
-            const r = await fetch(URL_API);
-            maestro = await r.json();
-            s.innerText = "SINCRO ON";
-            s.className = "status online";
-        } catch (e) { s.innerText = "ERROR DE CONEXIÓN"; }
+            const r = await fetch(URL_MAESTRO);
+            dbMaestra = await r.json();
+            console.log("Maestro Sincronizado");
+        } catch (e) { console.error("Error de conexión"); }
     };
 
-    function buscarProducto(v) {
-        v = v.trim().toUpperCase();
-        if(v.length < 2) return;
-        const p = maestro.find(x => x[0].includes(v) || x[1].includes(v));
-        const res = document.getElementById('res-nombre');
+    function openSection(evt, sectionName) {
+        let sections = document.getElementsByClassName("section");
+        for (let s of sections) s.classList.remove("active");
+        let tabs = document.getElementsByClassName("tab-btn");
+        for (let t tabs) t.classList.remove("active");
+        document.getElementById(sectionName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function ejecutarBusqueda(val) {
+        val = val.trim().toUpperCase();
+        if(val.length < 2) return;
+        const p = dbMaestra.find(x => x[0].toString().includes(val) || x[1].toString().includes(val));
+        const visor = document.getElementById('res_busqueda');
         if(p) {
-            actual = { sku: p[0], nombre: p[1] };
-            res.innerText = `📦 ${p[1]}`;
-            res.style.color = "var(--accent)";
+            itemSeleccionado = { sku: p[0], nombre: p[1] };
+            visor.innerText = `📦 [${p[0]}] ${p[1]}`;
+            visor.style.color = "var(--accent)";
         } else {
-            actual = null;
-            res.innerText = "PRODUCTO NO ENCONTRADO";
-            res.style.color = "var(--danger)";
+            itemSeleccionado = null;
+            visor.innerText = "NO ENCONTRADO EN MAESTRO";
+            visor.style.color = "var(--danger)";
         }
     }
 
-    function registrar() {
-        const pk = parseInt(document.getElementById('q-pack').value) || 0;
-        const fs = parseInt(document.getElementById('q-fisico').value) || 0;
-        const cont = document.getElementById('cont-id').value;
+    function registrarItem() {
+        const pck = parseInt(document.getElementById('cant_pck').value) || 0;
+        const fis = parseInt(document.getElementById('cant_fis').value) || 0;
+        const cont = document.getElementById('id_contenedor').value;
 
-        if(!actual || fs === 0 || !cont) return alert("Complete todos los campos");
+        if(!itemSeleccionado || fis === 0 || !cont) return alert("Complete Contenedor y Cantidad");
 
-        if(!items[actual.sku]) items[actual.sku] = { nombre: actual.nombre, p: pk, f: 0 };
-        items[actual.sku].f += fs;
-        if(pk > 0) items[actual.sku].p = pk;
+        const sku = itemSeleccionado.sku;
+        if(!itemsContados[sku]) {
+            itemsContados[sku] = { nombre: itemSeleccionado.nombre, p: pck, f: 0 };
+        }
+        itemsContados[sku].f += fis;
+        if(pck > 0) itemsContados[sku].p = pck;
 
-        // Sincronización en segundo plano al Historial
-        fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: actual.sku, cantidad: fs }) });
+        // SINCRONIZACIÓN INVISIBLE AL EXCEL (POST)
+        fetch(URL_MAESTRO, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fis })
+        });
 
-        actualizarTabla();
-        document.getElementById('sku-search').value = "";
-        document.getElementById('q-fisico').value = "";
-        document.getElementById('sku-search').focus();
+        actualizarVisualizacion();
+        // Limpiar para siguiente bulto
+        document.getElementById('busqueda').value = "";
+        document.getElementById('cant_fis').value = "";
+        document.getElementById('busqueda').focus();
     }
 
-    function actualizarTabla() {
-        const b = document.getElementById('lista-items');
-        b.innerHTML = "";
-        for(let s in items) {
-            const i = items[s];
+    function actualizarVisualizacion() {
+        const tbody = document.getElementById('cuerpo_tabla');
+        tbody.innerHTML = "";
+        for(let s in itemsContados) {
+            const i = itemsContados[s];
             const d = i.f - i.p;
-            b.innerHTML += `<tr>
-                <td><b>${s}</b><br><small>${i.nombre}</small></td>
-                <td>${i.p}</td><td>${i.f}</td>
+            tbody.innerHTML += `<tr>
+                <td><b>${s}</b><br><small>${i.nombre.substring(0,25)}</small></td>
+                <td>${i.p}</td>
+                <td>${i.f}</td>
                 <td style="color:${d === 0 ? 'var(--success)' : 'var(--danger)'}">${d}</td>
             </tr>`;
         }
     }
 
-    function generarReporte() {
+    function exportarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const n = document.getElementById('cont-id').value;
+        const cont = document.getElementById('id_contenedor').value;
 
-        doc.setFontSize(18).text("REPORTE DE INGRESO LOGÍSTICO", 105, 20, {align:'center'});
-        doc.setFontSize(10).text("CONTENEDOR: " + n + " | FECHA: " + new Date().toLocaleString(), 105, 28, {align:'center'});
+        doc.setFontSize(18).text("REPORTE DETALLADO DE RECEPCIÓN", 105, 20, {align:'center'});
+        doc.setFontSize(10).text(`CONTENEDOR: ${cont} | FECHA: ${new Date().toLocaleString()}`, 105, 28, {align:'center'});
 
-        const rows = Object.keys(items).map(s => [s, items[s].nombre, items[s].p, items[s].f, items[s].f - items[s].p]);
+        const rows = Object.keys(itemsContados).map(s => [s, itemsContados[s].nombre, itemsContados[s].p, itemsContados[s].f, itemsContados[s].f - itemsContados[s].p]);
 
         doc.autoTable({
             startY: 35,
-            head: [['CÓDIGO', 'DESCRIPCIÓN', 'PACKING', 'FÍSICO', 'DIFERENCIA']],
+            head: [['CÓDIGO', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF.']],
             body: rows,
             theme: 'grid',
             headStyles: { fillColor: [15, 23, 42] }
         });
 
         const y = doc.lastAutoTable.finalY + 30;
-        doc.text("Recepción autorizada por:", 105, y, {align:'center'});
+        doc.text("Revisión autorizada por:", 105, y, {align:'center'});
         doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
         doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 14, {align:'center'});
-        doc.save(`Ingreso_${n}.pdf`);
+        doc.save(`Reporte_Logistico_${cont}.pdf`);
     }
 </script>
 </body>
