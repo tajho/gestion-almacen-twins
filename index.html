@@ -3,167 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbound Smart - Angelo Nuñez</title>
+    <title>SISTEMA DE INGRESO LOGÍSTICO - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .step-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 5px solid var(--accent); }
+        :root { --dark-bg: #0f172a; --card-bg: #1e293b; --accent: #3b82f6; --success: #10b981; --text: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--dark-bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 25px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; background: #334155; border: 1px solid #475569; padding: 12px; border-radius: 8px; color: white; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; }
+        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .product-info { background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 15px; font-weight: 600; color: var(--accent); }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-add { background: var(--accent); color: white; }
+        .btn-pdf { background: var(--success); color: white; margin-top: 15px; }
         .hidden { display: none; }
-        h2 { font-size: 1.2rem; color: var(--primary); margin-top: 0; margin-bottom: 20px; }
-        
-        /* Estilo para carga de archivos */
-        .file-upload { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; border-radius: 10px; background: #f1f5f9; cursor: pointer; transition: 0.3s; }
-        .file-upload:hover { border-color: var(--accent); background: #eff6ff; }
-        
-        input[type="text"], input[type="number"], select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .btn-next { background: var(--accent); color: white; }
-        .btn-add { background: var(--primary); color: white; }
-        .btn-final { background: var(--success); color: white; margin-top: 20px; }
-        
-        .product-hint { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
-        th { text-align: left; padding: 12px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; font-size: 0.9rem; }
+        th { background: #334155; color: #94a3b8; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #334155; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .badge-ok { background: #064e3b; color: #6ee7b7; }
+        .badge-diff { background: #7f1d1d; color: #fca5a5; }
     </style>
 </head>
 <body>
 
-    <div id="step1" class="step-card">
-        <h2>Identificación del Contenedor</h2>
-        <label style="font-size: 0.8rem; color: #64748b;">NRO. DE CONTENEDOR / REFERENCIA</label>
-        <input type="text" id="id_contenedor" placeholder="Ej: CONT-0116">
-        
-        <label style="font-size: 0.8rem; color: #64748b; display: block; margin-top: 15px;">SUBIR FOTO DEL PACKING LIST</label>
-        <div class="file-upload" onclick="document.getElementById('file_input').click()">
-            <span id="file_status">📁 Toca para subir o seleccionar foto</span>
-            <input type="file" id="file_input" accept="image/*" class="hidden" onchange="handleFile(this)">
-        </div>
-        
-        <button class="btn btn-next" style="margin-top: 20px;" onclick="startInbound()">INICIAR CONTEO FÍSICO</button>
+<div class="container">
+    <div class="header">
+        <h1 style="font-size: 1.4rem; margin: 0;">CONTROL DE INGRESOS LOGÍSTICOS</h1>
+        <p style="font-size: 0.8rem; color: #94a3b8;">Gestión de Almacén - J. Angelo Nuñez Durand</p>
     </div>
 
-    <div id="step2" class="step-card hidden">
-        <h2 id="header_cont">Contenedor: --</h2>
-        
-        <input type="text" id="sku_input" placeholder="Código de producto..." oninput="lookUp(this.value)">
-        <div id="desc_preview" class="product-hint">Esperando código...</div>
-        
-        <input type="number" id="cant_input" placeholder="Cantidad (ej: 20)">
-        <button class="btn btn-add" onclick="saveToHistory()">+ AGREGAR A CONTEO</button>
+    <div id="setup-section" class="card">
+        <label>Identificación de Contenedor</label>
+        <input type="text" id="nro_contenedor" placeholder="Ej: CONT-2026-0116">
+        <label>Documentación (Cargar Packing List)</label>
+        <input type="file" id="packing_photo" accept="image/*">
+        <button class="btn btn-add" onclick="iniciarConteo()">Iniciar Proceso de Recepción</button>
+    </div>
 
-        <table id="summary_table">
+    <div id="conteo-section" class="card hidden">
+        <div id="info-cont" style="margin-bottom: 15px; font-weight: bold; color: var(--success);"></div>
+        <label>Código de Producto (SKU)</label>
+        <input type="text" id="sku_input" placeholder="Escriba o escanee..." oninput="autoBusqueda(this.value)">
+        <div id="display_nombre" class="product-info">Esperando código...</div>
+        
+        <label>Cantidad de Packing (Esperada)</label>
+        <input type="number" id="cant_packing" placeholder="Según documento">
+        
+        <label>Cantidad de Pallet (Contado)</label>
+        <input type="number" id="cant_pallet" placeholder="Cantidad física actual">
+        
+        <button class="btn btn-add" onclick="registrarItem()">Registrar y Sumar</button>
+
+        <table>
             <thead>
                 <tr>
                     <th>SKU</th>
-                    <th>Contado</th>
-                    <th>Estado</th>
+                    <th>Packing</th>
+                    <th>Conteo</th>
+                    <th>Dif.</th>
                 </tr>
             </thead>
-            <tbody id="summary_body"></tbody>
+            <tbody id="lista_cuerpo"></tbody>
         </table>
-
-        <button class="btn btn-final" onclick="generateReport()">REGISTRAR Y GENERAR PDF</button>
+        
+        <button class="btn btn-pdf" onclick="generarReporteProfesional()">Cerrar Contenedor y Generar PDF</button>
     </div>
+</div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        let maestroGlobal = [];
-        let conteoSesion = {};
+<script>
+    const URL_API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
+    let maestroProductos = [];
+    let registroContenedor = {};
 
-        // Carga inicial del maestro de productos para búsqueda rápida
-        window.onload = async () => {
-            try {
-                const res = await fetch(API_URL);
-                maestroGlobal = await res.json();
-            } catch(e) { console.error("Error al sincronizar con el Maestro de Excel"); }
-        };
+    window.onload = async () => {
+        try {
+            const res = await fetch(URL_API);
+            const data = await res.json();
+            // Limpieza: Asumimos que la columna 0 es SKU y la 1 es Nombre
+            maestroProductos = data.slice(1); 
+            console.log("Maestro cargado exitosamente.");
+        } catch(e) { alert("Error de conexión con la base de datos maestra."); }
+    };
 
-        function handleFile(input) {
-            if(input.files.length > 0) {
-                document.getElementById('file_status').innerText = "✅ Foto seleccionada: " + input.files[0].name;
-            }
+    function iniciarConteo() {
+        const cont = document.getElementById('nro_contenedor').value;
+        if(!cont) return alert("Ingrese N° de Contenedor");
+        document.getElementById('info-cont').innerText = "TRABAJANDO: " + cont;
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('conteo-section').classList.remove('hidden');
+    }
+
+    function autoBusqueda(sku) {
+        sku = sku.trim().toUpperCase();
+        const found = maestroProductos.find(p => p[0].toString().toUpperCase() === sku);
+        const display = document.getElementById('display_nombre');
+        if(found) {
+            display.innerText = "PROD: " + found[1];
+            display.style.color = "#3b82f6";
+        } else {
+            display.innerText = "SKU NO ENCONTRADO EN MAESTRO";
+            display.style.color = "#ef4444";
+        }
+    }
+
+    function registrarItem() {
+        const sku = document.getElementById('sku_input').value.toUpperCase();
+        const pack = parseInt(document.getElementById('cant_packing').value) || 0;
+        const pal = parseInt(document.getElementById('cant_pallet').value) || 0;
+
+        if(!sku || isNaN(pal)) return alert("Datos incompletos");
+
+        if(!registroContenedor[sku]) {
+            registroContenedor[sku] = { packing: pack, contado: 0 };
+        }
+        
+        registroContenedor[sku].contado += pal;
+        // Si se actualiza el packing en el registro, lo mantenemos
+        if(pack > 0) registroContenedor[sku].packing = pack;
+
+        actualizarTabla();
+        
+        // Reset campos específicos
+        document.getElementById('sku_input').value = "";
+        document.getElementById('cant_pallet').value = "";
+        document.getElementById('display_nombre').innerText = "Esperando código...";
+        document.getElementById('sku_input').focus();
+    }
+
+    function actualizarTabla() {
+        const tbody = document.getElementById('lista_cuerpo');
+        tbody.innerHTML = "";
+        for(let sku in registroContenedor) {
+            const item = registroContenedor[sku];
+            const dif = item.contado - item.packing;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${sku}</td>
+                    <td>${item.packing}</td>
+                    <td><b>${item.contado}</b></td>
+                    <td><span class="badge ${dif === 0 ? 'badge-ok' : 'badge-diff'}">${dif}</span></td>
+                </tr>`;
+        }
+    }
+
+    function generarReporteProfesional() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const cont = document.getElementById('nro_contenedor').value;
+
+        // Cabecera
+        doc.setFontSize(18).text("REPORTE DE RECEPCIÓN DE MERCADERÍA", 105, 20, {align: 'center'});
+        doc.setFontSize(10).text(`Contenedor: ${cont} | Fecha: ${new Date().toLocaleString()}`, 105, 28, {align: 'center'});
+
+        // Tabla de Datos
+        const bodyData = [];
+        for(let sku in registroContenedor) {
+            const item = registroContenedor[sku];
+            bodyData.push([sku, item.packing, item.contado, item.contado === item.packing ? "CUADRA" : "DIFERENCIA"]);
         }
 
-        function startInbound() {
-            const id = document.getElementById('id_contenedor').value;
-            if(!id) return alert("Ingresa el número de contenedor");
-            
-            document.getElementById('header_cont').innerText = "Contenedor: " + id;
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-        }
+        doc.autoTable({
+            startY: 35,
+            head: [['CÓDIGO', 'CANT. PACKING', 'CANT. CONTEO', 'ESTADO']],
+            body: bodyData,
+            theme: 'striped',
+            headStyles: { fillColor: [15, 23, 42] }
+        });
 
-        function lookUp(val) {
-            val = val.toUpperCase().trim();
-            const found = maestroGlobal.find(p => p[0].toString().toUpperCase() === val);
-            const preview = document.getElementById('desc_preview');
-            if(found) {
-                preview.innerText = "✓ " + found[1];
-                preview.style.color = "#0369a1";
-            } else {
-                preview.innerText = "No encontrado en Maestro";
-                preview.style.color = "#ef4444";
-            }
-        }
+        // Pie de página centralizado
+        const finalY = doc.lastAutoTable.finalY + 30;
+        doc.setFontSize(10);
+        doc.text("Recepción y conteo realizado por:", 105, finalY, {align: 'center'});
+        doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align: 'center'});
+        doc.text("------------------------------------------", 105, finalY + 12, {align: 'center'});
+        doc.text("Asist. Logístico.", 105, finalY + 17, {align: 'center'});
 
-        async function saveToHistory() {
-            const sku = document.getElementById('sku_input').value.toUpperCase().trim();
-            const cant = parseInt(document.getElementById('cant_input').value);
-            const contenedor = document.getElementById('id_contenedor').value;
-
-            if(!sku || !cant) return;
-
-            // Actualizar tabla visual
-            conteoSesion[sku] = (conteoSesion[sku] || 0) + cant;
-            renderTable();
-
-            // Enviar a la hoja Historial en Excel
-            fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ contenedor: contenedor, sku: sku, cantidad: cant })
-            });
-
-            // Limpiar campos
-            document.getElementById('sku_input').value = "";
-            document.getElementById('cant_input').value = "";
-            document.getElementById('desc_preview').innerText = "";
-            document.getElementById('sku_input').focus();
-        }
-
-        function renderTable() {
-            const body = document.getElementById('summary_body');
-            body.innerHTML = "";
-            for(let sku in conteoSesion) {
-                body.innerHTML += `<tr><td>${sku}</td><td><b>${conteoSesion[sku]}</b></td><td>✅</td></tr>`;
-            }
-        }
-
-        function generateReport() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const cont = document.getElementById('id_contenedor').value;
-            let y = 20;
-
-            doc.setFontSize(16).text("REGISTRO DE INGRESO - LOGÍSTICA", 20, y);
-            y += 10;
-            doc.setFontSize(12).text(`Contenedor: ${cont}`, 20, y);
-            y += 15;
-
-            for(let sku in conteoSesion) {
-                doc.text(`${sku} | Total Contado: ${conteoSesion[sku]}`, 20, y);
-                y += 7;
-            }
-
-            y += 20;
-            doc.text("--------------------------------------------", 20, y);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, y + 7);
-            doc.text("Asist. Inventario Logístico.", 20, y + 14);
-
-            doc.save(`Reporte_${cont}.pdf`);
-        }
-    </script>
+        doc.save(`Recepción_${cont}.pdf`);
+    }
+</script>
 </body>
 </html>
