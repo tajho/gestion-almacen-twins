@@ -3,168 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbound Pro - Angelo Nuñez</title>
+    <title>Inbound Smart - Angelo Nuñez</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f1f5f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #1e293b; }
-        .step-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .step-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 5px solid var(--accent); }
         .hidden { display: none; }
-        h2 { font-size: 1.1rem; color: var(--primary); margin-top: 0; display: flex; align-items: center; }
-        .step-num { background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 0.8rem; }
-        input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 1rem; box-sizing: border-box; }
-        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-next { background: var(--accent); color: white; border: none; font-weight: bold; }
-        .product-preview { background: #f8fafc; padding: 10px; border-radius: 8px; border-left: 4px solid var(--accent); font-size: 0.9rem; margin: 10px 0; min-height: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { text-align: left; padding: 10px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .badge-ok { background: #dcfce7; color: #166534; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
+        h2 { font-size: 1.2rem; color: var(--primary); margin-top: 0; margin-bottom: 20px; }
+        
+        /* Estilo para carga de archivos */
+        .file-upload { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; border-radius: 10px; background: #f1f5f9; cursor: pointer; transition: 0.3s; }
+        .file-upload:hover { border-color: var(--accent); background: #eff6ff; }
+        
+        input[type="text"], input[type="number"], select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn-next { background: var(--accent); color: white; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-final { background: var(--success); color: white; margin-top: 20px; }
+        
+        .product-hint { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th { text-align: left; padding: 12px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
-    <div id="paso1" class="step-card">
-        <h2><span class="step-num">1</span> Datos del Contenedor</h2>
-        <input type="text" id="id_contenedor" placeholder="Número de Contenedor (Ej: 0116)">
-        <p style="font-size: 0.8rem; color: #64748b;">Sube la foto del Packing List para cargar los productos esperados.</p>
-        <input type="file" id="foto_packing" accept="image/*" capture="camera" style="padding: 10px; border: 1px dashed #3b82f6; background: #eff6ff;">
-        <button class="btn-next" onclick="irAlConteo()">CONTINUAR AL CONTEO</button>
+    <div id="step1" class="step-card">
+        <h2>Identificación del Contenedor</h2>
+        <label style="font-size: 0.8rem; color: #64748b;">NRO. DE CONTENEDOR / REFERENCIA</label>
+        <input type="text" id="id_contenedor" placeholder="Ej: CONT-0116">
+        
+        <label style="font-size: 0.8rem; color: #64748b; display: block; margin-top: 15px;">SUBIR FOTO DEL PACKING LIST</label>
+        <div class="file-upload" onclick="document.getElementById('file_input').click()">
+            <span id="file_status">📁 Toca para subir o seleccionar foto</span>
+            <input type="file" id="file_input" accept="image/*" class="hidden" onchange="handleFile(this)">
+        </div>
+        
+        <button class="btn btn-next" style="margin-top: 20px;" onclick="startInbound()">INICIAR CONTEO FÍSICO</button>
     </div>
 
-    <div id="paso2" class="step-card hidden">
-        <h2><span class="step-num">2</span> Registro de Pallets</h2>
-        <input type="text" id="sku_input" placeholder="Escanear o escribir SKU..." oninput="validarSKU(this.value)">
-        <div id="desc_display" class="product-preview">Esperando código...</div>
+    <div id="step2" class="step-card hidden">
+        <h2 id="header_cont">Contenedor: --</h2>
         
-        <input type="number" id="cant_input" placeholder="Cantidad en este pallet">
-        <button class="btn-main" onclick="registrarPallet()">+ AGREGAR PALLET</button>
+        <input type="text" id="sku_input" placeholder="Código de producto..." oninput="lookUp(this.value)">
+        <div id="desc_preview" class="product-hint">Esperando código...</div>
+        
+        <input type="number" id="cant_input" placeholder="Cantidad (ej: 20)">
+        <button class="btn btn-add" onclick="saveToHistory()">+ AGREGAR A CONTEO</button>
 
-        <div style="margin-top: 25px;">
-            <table id="tabla_revision">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Esperado</th>
-                        <th>Contado</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpo_tabla"></tbody>
-            </table>
-        </div>
-        <button class="btn-main" style="background: var(--success); margin-top: 20px;" onclick="finalizarReporte()">REGISTRAR CONTEO DE CONTENEDOR</button>
+        <table id="summary_table">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Contado</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="summary_body"></tbody>
+        </table>
+
+        <button class="btn btn-final" onclick="generateReport()">REGISTRAR Y GENERAR PDF</button>
     </div>
 
     <script>
-        // Tu URL de Apps Script (Excel)
-        const URL_API = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        
-        // Datos extraídos del Packing List (Simulados para el ejemplo del contenedor 0116)
-        const packingListEsperado = {
-            "AR-00036": { qty: 48, desc: "BANDEJA 3 PISOS" },
-            "AR-00557": { qty: 172800, desc: "BOLIGRAFO AZUL" },
-            "AR-00780": { qty: 10000, desc: "PAPEL ALUMINIO 5 MT" }
-        };
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
+        let maestroGlobal = [];
+        let conteoSesion = {};
 
-        let conteoActual = {};
-        let maestroProductos = [];
-
+        // Carga inicial del maestro de productos para búsqueda rápida
         window.onload = async () => {
-            // Carga el maestro general de tu Excel para el buscador inteligente
             try {
-                const res = await fetch(URL_API);
-                maestroProductos = await res.json();
-            } catch(e) { console.log("Error cargando maestro local"); }
+                const res = await fetch(API_URL);
+                maestroGlobal = await res.json();
+            } catch(e) { console.error("Error al sincronizar con el Maestro de Excel"); }
         };
 
-        function irAlConteo() {
+        function handleFile(input) {
+            if(input.files.length > 0) {
+                document.getElementById('file_status').innerText = "✅ Foto seleccionada: " + input.files[0].name;
+            }
+        }
+
+        function startInbound() {
             const id = document.getElementById('id_contenedor').value;
-            const foto = document.getElementById('foto_packing').files.length;
+            if(!id) return alert("Ingresa el número de contenedor");
             
-            if(!id || foto === 0) {
-                alert("Por favor ingresa el N° de contenedor y toma la foto del Packing List.");
-                return;
-            }
-            
-            document.getElementById('paso1').classList.add('hidden');
-            document.getElementById('paso2').classList.remove('hidden');
-            actualizarVistaTabla();
+            document.getElementById('header_cont').innerText = "Contenedor: " + id;
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
         }
 
-        function validarSKU(sku) {
-            sku = sku.trim().toUpperCase();
-            const display = document.getElementById('desc_display');
-            
-            // Busca primero en lo que debería llegar (Packing)
-            if(packingListEsperado[sku]) {
-                display.innerText = "📦 " + packingListEsperado[sku].desc;
-                display.style.color = "var(--accent)";
+        function lookUp(val) {
+            val = val.toUpperCase().trim();
+            const found = maestroGlobal.find(p => p[0].toString().toUpperCase() === val);
+            const preview = document.getElementById('desc_preview');
+            if(found) {
+                preview.innerText = "✓ " + found[1];
+                preview.style.color = "#0369a1";
             } else {
-                // Si no está en el packing, busca en el maestro general
-                const found = maestroLocalFind(sku);
-                display.innerText = found ? "⚠️ " + found : "❌ No encontrado en sistema";
-                display.style.color = found ? "#f59e0b" : "#ef4444";
+                preview.innerText = "No encontrado en Maestro";
+                preview.style.color = "#ef4444";
             }
         }
 
-        function maestroLocalFind(sku) {
-            const p = maestroProductos.find(x => x[0].toString().toUpperCase() === sku);
-            return p ? p[1] : null;
-        }
-
-        async function registrarPallet() {
+        async function saveToHistory() {
             const sku = document.getElementById('sku_input').value.toUpperCase().trim();
             const cant = parseInt(document.getElementById('cant_input').value);
             const contenedor = document.getElementById('id_contenedor').value;
 
             if(!sku || !cant) return;
 
-            // Guardar localmente
-            conteoActual[sku] = (conteoActual[sku] || 0) + cant;
-            
-            // Enviar a la hoja de Historial en tu Excel
-            fetch(URL_API, {
+            // Actualizar tabla visual
+            conteoSesion[sku] = (conteoSesion[sku] || 0) + cant;
+            renderTable();
+
+            // Enviar a la hoja Historial en Excel
+            fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ contenedor: contenedor, sku: sku, cantidad: cant })
             });
 
-            actualizarVistaTabla();
-            
-            // Reset campos
+            // Limpiar campos
             document.getElementById('sku_input').value = "";
             document.getElementById('cant_input').value = "";
+            document.getElementById('desc_preview').innerText = "";
             document.getElementById('sku_input').focus();
         }
 
-        function actualizarVistaTabla() {
-            const tbody = document.getElementById('cuerpo_tabla');
-            tbody.innerHTML = "";
-            
-            // Mostramos los productos que se esperan en este contenedor
-            for(let sku in packingListEsperado) {
-                const contado = conteoActual[sku] || 0;
-                const esperado = packingListEsperado[sku].qty;
-                const cuadra = contado === esperado;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${sku}</b></td>
-                        <td>${esperado}</td>
-                        <td>${contado}</td>
-                        <td><span class="badge ${cuadra ? 'badge-ok' : 'badge-pending'}">${cuadra ? 'CUADRA' : 'PENDIENTE'}</span></td>
-                    </tr>
-                `;
+        function renderTable() {
+            const body = document.getElementById('summary_body');
+            body.innerHTML = "";
+            for(let sku in conteoSesion) {
+                body.innerHTML += `<tr><td>${sku}</td><td><b>${conteoSesion[sku]}</b></td><td>✅</td></tr>`;
             }
         }
 
-        function finalizarReporte() {
-            // Aquí se dispara el PDF con tu firma:
-            // "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico."
-            alert("Reporte guardado en historial. Generando PDF...");
+        function generateReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const cont = document.getElementById('id_contenedor').value;
+            let y = 20;
+
+            doc.setFontSize(16).text("REGISTRO DE INGRESO - LOGÍSTICA", 20, y);
+            y += 10;
+            doc.setFontSize(12).text(`Contenedor: ${cont}`, 20, y);
+            y += 15;
+
+            for(let sku in conteoSesion) {
+                doc.text(`${sku} | Total Contado: ${conteoSesion[sku]}`, 20, y);
+                y += 7;
+            }
+
+            y += 20;
+            doc.text("--------------------------------------------", 20, y);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, y + 7);
+            doc.text("Asist. Inventario Logístico.", 20, y + 14);
+
+            doc.save(`Reporte_${cont}.pdf`);
         }
     </script>
 </body>
