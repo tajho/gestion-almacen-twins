@@ -5,144 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Devoluciones - Twins Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; }
-    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans pb-20">
 
-    <nav class="bg-white shadow-md sticky top-0 z-10">
-        <div class="flex justify-around p-4">
-            <button onclick="showSection('devolucion')" id="tab-devolucion" class="font-bold pb-2 active-tab text-lg">📦 Devolución</button>
-            <button onclick="showSection('historial')" id="tab-historial" class="font-bold pb-2 text-gray-500 text-lg">📜 Historial</button>
+    <nav class="bg-blue-800 text-white shadow-md sticky top-0 z-10">
+        <div class="flex justify-around p-4 font-bold">
+            <button onclick="showSection('devolucion')" id="tab-devolucion" class="border-b-4 border-white pb-1">📦 Devolución</button>
+            <button onclick="showSection('historial')" id="tab-historial" class="opacity-70 pb-1">📜 Historial</button>
         </div>
     </nav>
 
     <main class="p-4 max-w-2xl mx-auto">
-
         <section id="sec-devolucion" class="space-y-4">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-bold mb-4 text-gray-700">Nueva Devolución</h2>
-                
-                <div class="space-y-3">
-                    <label class="block">
-                        <span class="text-gray-600 italic">Nombre del Cliente</span>
-                        <input type="text" id="cliente" oninput="sugerirVendedor()" placeholder="Escribe el nombre del cliente..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                    </label>
-
-                    <label class="block">
-                        <span class="text-gray-600 italic">Vendedor Asignado</span>
-                        <select id="vendedor" class="w-full p-3 border rounded-lg bg-gray-50">
-                            <option value="">Selecciona un vendedor</option>
-                            <option value="Elias Ávila">Elias Ávila</option>
-                            <option value="Evelyn Muro">Evelyn Muro</option>
-                            <option value="Regulo Antezana">Regulo Antezana</option>
-                            <option value="Paula García">Paula García</option>
-                            <option value="Jhayro Mauricio">Jhayro Mauricio</option>
-                        </select>
-                    </label>
-
-                    <hr class="my-4">
-
-                    <label class="block">
-                        <span class="text-gray-600 italic">Producto (Datos de tu Excel)</span>
-                        <input type="text" id="producto" placeholder="Código o nombre del producto..." class="w-full p-3 border rounded-lg">
-                    </label>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <label>
-                            <span class="text-gray-600 italic">Cant. Recibida</span>
-                            <input type="number" id="cantRecibida" class="w-full p-3 border rounded-lg">
-                        </label>
-                        <label>
-                            <span class="text-gray-600 italic">Cant. Aprobada</span>
-                            <input type="number" id="cantAprobada" class="w-full p-3 border rounded-lg">
-                        </label>
-                    </div>
-
-                    <label class="flex items-center space-x-3 mt-4">
-                        <input type="checkbox" id="estadoFisico" class="w-5 h-5">
-                        <span class="text-gray-700 font-medium text-sm">¿Producto completo y revisado?</span>
-                    </label>
+            <div class="bg-white p-5 rounded-xl shadow-lg">
+                <h2 class="text-lg font-bold text-blue-800 mb-4 border-b pb-2">Datos de Cabecera</h2>
+                <div class="grid grid-cols-1 gap-3">
+                    <input type="text" id="cliente" placeholder="Nombre del Cliente" class="p-3 border rounded-lg w-full">
+                    <select id="vendedor" class="p-3 border rounded-lg w-full bg-gray-50 text-gray-700">
+                        <option value="">Seleccionar Vendedor...</option>
+                        <option>Elias Ávila</option>
+                        <option>Evelyn Muro</option>
+                        <option>Regulo Antezana</option>
+                        <option>Paula García</option>
+                        <option>Jhayro Mauricio</option>
+                    </select>
                 </div>
+            </div>
 
-                <button onclick="guardarDevolucion()" class="w-full mt-6 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
-                    Finalizar y Generar Reporte
-                </button>
+            <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-500">
+                <h2 class="text-md font-bold text-gray-700 mb-3">Agregar Producto</h2>
+                <div class="space-y-3">
+                    <input type="text" id="producto" placeholder="SKU o Nombre (de tu Excel)" class="p-3 border rounded-lg w-full bg-yellow-50">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" id="cantRecibida" placeholder="Cant. Recibida" class="p-3 border rounded-lg w-full">
+                        <input type="number" id="cantAprobada" placeholder="Cant. Aprobada" class="p-3 border rounded-lg w-full">
+                    </div>
+                    <button onclick="agregarALista()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle"></i> Agregar a la Lista
+                    </button>
+                </div>
+            </div>
+
+            <div id="contenedor-tabla" class="hidden bg-white rounded-xl shadow-lg overflow-hidden">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-200 text-gray-700 font-bold">
+                        <tr>
+                            <th class="p-3">Producto</th>
+                            <th class="p-3 text-center">Cant.</th>
+                            <th class="p-3 text-center">Obs.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla"></tbody>
+                </table>
+                <div class="p-4 bg-gray-50 border-t">
+                    <button onclick="finalizarReporteCompleto()" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-md">
+                        GENERAR REPORTE PARA COBRANZAS
+                    </button>
+                </div>
             </div>
         </section>
 
         <section id="sec-historial" class="hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-700">Historial de Reportes</h2>
-            <div id="lista-historial" class="space-y-3">
-                <p class="text-gray-500 text-center italic">No hay registros aún.</p>
-            </div>
+            <div id="lista-historial" class="space-y-3 italic text-gray-400 text-center">No hay registros.</div>
         </section>
-
     </main>
 
     <script>
-        // Lógica simple para sugerir vendedor (Memoria Temporal)
-        const memoriaClientes = {
-            "Cliente A": "Elias Ávila",
-            "Cliente B": "Evelyn Muro"
-        };
-
-        function sugerirVendedor() {
-            const cliente = document.getElementById('cliente').value;
-            const selectVendedor = document.getElementById('vendedor');
-            if (memoriaClientes[cliente]) {
-                selectVendedor.value = memoriaClientes[cliente];
-            }
-        }
+        lucide.createIcons();
+        let productosTemporales = [];
+        let historialReportes = [];
 
         function showSection(section) {
             document.getElementById('sec-devolucion').classList.toggle('hidden', section !== 'devolucion');
             document.getElementById('sec-historial').classList.toggle('hidden', section !== 'historial');
-            
-            document.getElementById('tab-devolucion').classList.toggle('active-tab', section === 'devolucion');
-            document.getElementById('tab-historial').classList.toggle('active-tab', section === 'historial');
+            document.getElementById('tab-devolucion').style.opacity = section === 'devolucion' ? "1" : "0.5";
+            document.getElementById('tab-historial').style.opacity = section === 'historial' ? "1" : "0.5";
         }
 
-        const historial = [];
+        function agregarALista() {
+            const prod = document.getElementById('producto').value;
+            const recibida = document.getElementById('cantRecibida').value;
+            const aprobada = document.getElementById('cantAprobada').value;
 
-        function guardarDevolucion() {
-            const data = {
+            if (!prod || !aprobada) return alert("Completa el producto y la cantidad aprobada.");
+
+            const item = {
                 id: Date.now(),
-                fecha: new Date().toLocaleDateString(),
-                cliente: document.getElementById('cliente').value,
-                vendedor: document.getElementById('vendedor').value,
-                producto: document.getElementById('producto').value,
-                aprobado: document.getElementById('cantAprobada').value
+                nombre: prod,
+                recibida: recibida,
+                aprobada: aprobada,
+                observacion: ""
             };
 
-            if(!data.cliente || !data.producto) return alert("Por favor completa los datos básicos.");
+            productosTemporales.push(item);
+            renderizarTabla();
+            
+            // Limpiar campos de producto solamente
+            document.getElementById('producto').value = '';
+            document.getElementById('cantRecibida').value = '';
+            document.getElementById('cantAprobada').value = '';
+        }
 
-            historial.unshift(data);
+        function renderizarTabla() {
+            const tabla = document.getElementById('contenedor-tabla');
+            const cuerpo = document.getElementById('cuerpo-tabla');
+            
+            if (productosTemporales.length > 0) tabla.classList.remove('hidden');
+            
+            cuerpo.innerHTML = productosTemporales.map((item, index) => `
+                <tr class="border-b">
+                    <td class="p-3 font-medium">${item.nombre}</td>
+                    <td class="p-3 text-center font-bold text-blue-700">${item.aprobada}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="editarObservacion(${index})" class="text-gray-500 hover:text-blue-600">
+                            <i data-lucide="pencil" class="w-5 h-5 ${item.observacion ? 'text-green-500' : ''}"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function editarObservacion(index) {
+            const obs = prompt("Escribe la observación para este item:", productosTemporales[index].observacion);
+            if (obs !== null) {
+                productosTemporales[index].observacion = obs;
+                renderizarTabla();
+            }
+        }
+
+        function finalizarReporteCompleto() {
+            const cliente = document.getElementById('cliente').value;
+            const vendedor = document.getElementById('vendedor').value;
+
+            if (!cliente || !vendedor) return alert("Faltan datos del cliente o vendedor.");
+
+            const nuevoReporte = {
+                id: Date.now(),
+                fecha: new Date().toLocaleString(),
+                cliente: cliente,
+                vendedor: vendedor,
+                items: [...productosTemporales]
+            };
+
+            historialReportes.unshift(nuevoReporte);
+            alert("Reporte Generado con éxito.\nRevisión autorizada por J. Angelo Nuñez Durand.");
+            
+            // Reset de la App
+            productosTemporales = [];
+            renderizarTabla();
+            document.getElementById('contenedor-tabla').classList.add('hidden');
+            document.getElementById('cliente').value = '';
+            document.getElementById('vendedor').value = '';
+            
             actualizarHistorial();
-            alert("Reporte guardado. Revisión autorizada por J. Angelo Nuñez Durand.");
-            limpiarFormulario();
             showSection('historial');
         }
 
         function actualizarHistorial() {
-            const contenedor = document.getElementById('lista-historial');
-            contenedor.innerHTML = historial.map(item => `
-                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
-                    <p class="text-sm text-gray-400">${item.fecha}</p>
-                    <p class="font-bold">${item.cliente}</p>
-                    <p class="text-sm text-gray-600">Prod: ${item.producto} | Aprobado: ${item.aprobado}</p>
-                    <p class="text-xs text-blue-600 font-semibold mt-1">Vendedor: ${item.vendedor}</p>
+            const lista = document.getElementById('lista-historial');
+            lista.innerHTML = historialReportes.map(rep => `
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-800 text-left">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">${rep.fecha}</p>
+                    <p class="font-black text-blue-900">${rep.cliente}</p>
+                    <p class="text-xs text-gray-600">Vendedor: ${rep.vendedor}</p>
+                    <div class="mt-2 text-[11px] bg-gray-50 p-2 rounded">
+                        ${rep.items.map(i => `• ${i.nombre} (${i.aprobada}) ${i.observacion ? '- Obs: '+i.observacion : ''}`).join('<br>')}
+                    </div>
                 </div>
             `).join('');
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('cliente').value = '';
-            document.getElementById('producto').value = '';
-            document.getElementById('cantRecibida').value = '';
-            document.getElementById('cantAprobada').value = '';
         }
     </script>
 </body>
