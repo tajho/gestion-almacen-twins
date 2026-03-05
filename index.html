@@ -3,217 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AUDITORÍA PACKING | ANGELO NUÑEZ</title>
+    <title>LOGÍSTICA VISION | ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #020617; --card: #1e293b; --accent: #3b82f6; --success: #10b981; --warn: #f59e0b; --danger: #ef4444; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding-bottom: 90px; }
+        :root { --bg: #020617; --card: #1e293b; --accent: #3b82f6; --success: #10b981; --warn: #f59e0b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 90px; }
         
-        /* Layout */
-        .header { padding: 25px 20px; background: linear-gradient(180deg, rgba(30,41,59,1) 0%, rgba(2,6,23,1) 100%); border-bottom: 1px solid #334155; }
-        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
-        .glass { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .container { padding: 20px; max-width: 500px; margin: 0 auto; }
+        .glass { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
         
-        /* Formulario */
-        label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
-        input { width: 100%; background: #020617; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        /* Scanner Effect */
+        .scanning-loader { display: none; text-align: center; padding: 20px; border: 2px dashed var(--accent); border-radius: 15px; margin-bottom: 15px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        /* Visualizador de Búsqueda */
-        .item-preview { background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
-        .sku-tag { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
-        .desc-tag { font-size: 0.75rem; color: #94a3b8; display: block; }
+        input { width: 100%; background: #020617; border: 1px solid #334155; padding: 16px; border-radius: 12px; color: white; font-size: 1rem; margin: 10px 0; box-sizing: border-box; }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-scan { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .btn-add { background: var(--success); color: white; margin-top: 10px; }
 
-        /* Tarjeta de Progreso Dinámico */
-        .audit-card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .progress-track { width: 100%; height: 8px; background: #020617; border-radius: 10px; margin: 12px 0; overflow: hidden; }
-        .progress-fill { height: 100%; transition: width 0.6s ease; border-radius: 10px; }
-        
-        .color-ok { background: var(--success); box-shadow: 0 0 12px var(--success); }
-        .color-run { background: var(--accent); }
-        .color-err { background: var(--danger); }
-
-        /* Botonera */
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-main { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
-        .btn-done { background: var(--success); color: white; margin-top: 20px; }
-
-        .nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 90%; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); display: flex; border-radius: 20px; padding: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
-        .nav-opt { flex: 1; text-align: center; color: #64748b; font-size: 0.7rem; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 15px; }
-        .nav-opt.active { color: white; background: var(--accent); }
-
-        .view { display: none; }
-        .view.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .item-card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .progress-bar { height: 10px; background: #020617; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); transition: 0.5s; }
+        .status-badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; float: right; }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <div style="font-weight: 800; font-size: 1.2rem;">LOGÍSTICA AUDIT</div>
-    <div style="font-size: 0.7rem; color: var(--accent);">J. ANGELO NUÑEZ DURAND</div>
-</header>
-
 <div class="container">
-    <div id="v1" class="view active">
-        <div class="glass">
-            <label>Paso 1: Identificación</label>
-            <input type="text" id="cont_id" placeholder="N° Contenedor / Código">
-            <label>Paso 2: Foto del Packing List</label>
-            <input type="file" id="foto_pck" accept="image/*">
-            <button class="btn btn-main" onclick="nav(1)">Abrir Panel de Auditoría</button>
+    <div class="glass">
+        <h2 style="margin:0 0 10px 0; font-size: 1.1rem;">📸 LECTOR DE PACKING IA</h2>
+        <p style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 15px;">Sube la foto para sugerir cantidades automáticamente.</p>
+        
+        <input type="text" id="id_cont" placeholder="N° Contenedor / Operación">
+        <input type="file" id="foto_pck" accept="image/*" onchange="leerPackingIA(this)">
+        
+        <div id="loader" class="scanning-loader">
+            <span style="color: var(--accent); font-weight: 800;">ANALIZANDO PACKING LIST...</span>
         </div>
     </div>
 
-    <div id="v2" class="view">
-        <div class="glass">
-            <label>Buscador (Maestro)</label>
-            <input type="text" id="search" placeholder="Escribe SKU o nombre..." oninput="lookup(this.value)">
-            
-            <div id="preview_box" class="item-preview">
-                <span id="p_sku" class="sku-tag">---</span>
-                <span id="p_name" class="desc-tag">Esperando selección...</span>
+    <div class="glass" id="panel-conteo" style="display:none;">
+        <label style="font-size: 0.7rem; font-weight: bold; color: var(--accent);">PRODUCTO IDENTIFICADO</label>
+        <input type="text" id="sku_auto" placeholder="Buscando SKU en foto...">
+        
+        <div style="display: flex; gap: 10px;">
+            <div style="flex:1">
+                <label style="font-size: 0.65rem;">SUGERIDO (FOTO)</label>
+                <input type="number" id="q_sugerido" style="border-color: var(--accent);">
             </div>
-
-            <div style="display: flex; gap: 10px;">
-                <div style="flex:1">
-                    <label>Cant. Según Foto</label>
-                    <input type="number" id="q_target" placeholder="Packing">
-                </div>
-                <div style="flex:1">
-                    <label>Cant. Físico</label>
-                    <input type="number" id="q_real" placeholder="Conteo">
-                </div>
+            <div style="flex:1">
+                <label style="font-size: 0.65rem;">CONTEO FÍSICO</label>
+                <input type="number" id="q_fisico" placeholder="0">
             </div>
-            <button class="btn btn-main" onclick="register()">Registrar y Sumar</button>
         </div>
-
-        <div id="audit_list">
-            </div>
+        <button class="btn btn-add" onclick="registrarAuditoria()">Confirmar e Ir Sumando</button>
     </div>
 
-    <div id="v3" class="view">
-        <div class="glass" style="text-align: center;">
-            <h2 style="margin:0;">Cierre de Reporte</h2>
-            <p style="color: #94a3b8; font-size: 0.8rem;">Basado en la auditoría del packing fotografiado.</p>
-            <button class="btn btn-done" onclick="generatePDF()">Exportar PDF Profesional</button>
-        </div>
-    </div>
+    <div id="lista_auditoria"></div>
 </div>
 
-<nav class="nav">
-    <div class="nav-opt active" onclick="nav(0)">CONFIG</div>
-    <div class="nav-opt" onclick="nav(1)">CONTEO</div>
-    <div class="nav-opt" onclick="nav(2)">REPORTE</div>
-</nav>
-
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz2FWrNqYTWr2TZiD56WDidmjAg1Xkgx2Bkka6uG_xUGhtwMUAOhFiDIHBpxvKIAHmh/exec"; 
-    let master = [];
+    const API = "TU_URL_AQUI";
     let log = {};
-    let active = null;
 
-    window.onload = async () => {
+    // FUNCIÓN MAESTRA: Lectura de Foto con OCR
+    async function leerPackingIA(input) {
+        if (!input.files || !input.files[0]) return;
+        
+        const loader = document.getElementById('loader');
+        const panel = document.getElementById('panel-conteo');
+        loader.style.display = 'block';
+        panel.style.display = 'none';
+
         try {
-            const r = await fetch(API_URL);
-            master = await r.json();
-        } catch (e) { console.error("Sin conexión al maestro"); }
-    };
-
-    function nav(idx) {
-        document.querySelectorAll('.view').forEach((v, i) => v.classList.toggle('active', i === idx));
-        document.querySelectorAll('.nav-opt').forEach((n, i) => n.classList.toggle('active', i === idx));
-    }
-
-    function lookup(v) {
-        v = v.trim().toUpperCase();
-        const found = master.find(x => x[0].toString().includes(v) || x[1].toString().includes(v));
-        if(found) {
-            active = { sku: found[0], nombre: found[1] };
-            document.getElementById('p_sku').innerText = found[0];
-            document.getElementById('p_name').innerText = found[1];
+            const image = input.files[0];
+            const { data: { text } } = await Tesseract.recognize(image, 'spa');
+            
+            // Lógica de detección: Buscamos números grandes después de palabras clave
+            console.log("Texto detectado:", text);
+            
+            // Intento de extracción (Ejemplo: busca números de 2-4 dígitos que suelen ser cantidades)
+            const numeros = text.match(/\b\d{1,4}\b/g) || [];
+            const sugerido = numeros.length > 0 ? Math.max(...numeros.map(Number)) : 0;
+            
+            // Mostrar resultados sugeridos
+            document.getElementById('q_sugerido').value = sugerido;
+            document.getElementById('sku_auto').value = text.substring(0, 15).replace(/[^a-zA-Z0-9]/g, ''); // Intento de SKU
+            
+            loader.style.display = 'none';
+            panel.style.display = 'block';
+            document.getElementById('q_fisico').focus();
+            
+        } catch (e) {
+            alert("Error leyendo la imagen. Intenta una foto más clara.");
+            loader.style.display = 'none';
         }
     }
 
-    function register() {
-        const target = parseInt(document.getElementById('q_target').value) || 0;
-        const real = parseInt(document.getElementById('q_real').value) || 0;
-        const cont = document.getElementById('cont_id').value;
+    function registrarAuditoria() {
+        const sku = document.getElementById('sku_auto').value.toUpperCase();
+        const pck = parseInt(document.getElementById('q_sugerido').value) || 0;
+        const fis = parseInt(document.getElementById('q_fisico').value) || 0;
+        const cont = document.getElementById('id_cont').value;
 
-        if(!active || real === 0 || !cont) return alert("Complete Contenedor y Cantidades");
+        if(!sku || fis === 0) return alert("Complete los datos detectados");
 
-        const sku = active.sku;
-        if(!log[sku]) log[sku] = { nombre: active.nombre, target: target, current: 0 };
-        
-        log[sku].current += real;
-        if(target > 0) log[sku].target = target;
+        if(!log[sku]) log[sku] = { p: pck, f: 0 };
+        log[sku].f += fis;
+        log[sku].p = pck;
 
-        // Sincronización Invisible al Historial
-        fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: real }) });
+        // Sincro en segundo plano
+        fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fis }) });
 
-        render();
-        // Reset campos buscador
-        document.getElementById('search').value = "";
-        document.getElementById('q_real').value = "";
-        document.getElementById('search').focus();
+        actualizarLista();
+        document.getElementById('panel-conteo').style.display = 'none';
     }
 
-    function render() {
-        const list = document.getElementById('audit_list');
+    function actualizarLista() {
+        const list = document.getElementById('lista_auditoria');
         list.innerHTML = "";
-        
-        Object.keys(log).reverse().forEach(k => {
-            const i = log[k];
-            const pct = Math.min((i.current / i.target) * 100, 100);
-            const color = i.current === i.target ? 'color-ok' : (i.current > i.target ? 'color-err' : 'color-run');
-            
+        Object.keys(log).forEach(k => {
+            const item = log[k];
+            const pct = (item.f / item.p) * 100;
             list.innerHTML += `
-                <div class="audit-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:800; font-size:0.9rem;">${k}</span>
-                        <span style="font-size:0.8rem; font-weight:bold;">${i.current} / ${i.target}</span>
-                    </div>
-                    <span style="font-size:0.7rem; color:#94a3b8; display:block; margin-top:2px;">${i.nombre}</span>
-                    
-                    <div class="progress-track">
-                        <div class="progress-fill ${color}" style="width: ${pct}%"></div>
-                    </div>
-                    
-                    <div style="text-align:right; font-size:0.65rem; font-weight:800; color:${i.current === i.target ? 'var(--success)' : (i.current > i.target ? 'var(--danger)' : 'var(--accent)')}">
-                        ${i.current === i.target ? '✓ CUADRADO' : (i.current > i.target ? '⚠ EXCESO' : 'EN CONTEO...')}
-                    </div>
+                <div class="item-card">
+                    <span class="status-badge" style="background:${item.f===item.p?'var(--success)':'var(--warn)'}">
+                        ${item.f===item.p?'CUADRADO':'PENDIENTE'}
+                    </span>
+                    <div style="font-weight:900; font-size:0.9rem;">${k}</div>
+                    <div style="font-size:0.7rem; color:#94a3b8; margin:5px 0;">Cant. Foto: ${item.p} | Físico: ${item.f}</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(pct,100)}%; background:${item.f===item.p?'var(--success)':'var(--accent)'}"></div></div>
                 </div>
             `;
         });
-    }
-
-    function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const c = document.getElementById('cont_id').value;
-
-        doc.setFillColor(2, 6, 23).rect(0, 0, 210, 45, 'F');
-        doc.setTextColor(255, 255, 255).setFontSize(22).text("REPORTE DE AUDITORÍA FÍSICA", 105, 22, {align:'center'});
-        doc.setFontSize(10).text(`SEGÚN PACKING DE REFERENCIA | CONTENEDOR: ${c}`, 105, 32, {align:'center'});
-
-        const rows = Object.keys(log).map(s => [s, log[s].nombre, log[s].target, log[s].current, log[s].current - log[s].target]);
-
-        doc.autoTable({
-            startY: 50,
-            head: [['SKU', 'DESCRIPCIÓN', 'PACK. FOTO', 'CONTEO', 'DIF']],
-            body: rows,
-            headStyles: { fillColor: [59, 130, 246] },
-            theme: 'grid'
-        });
-
-        const y = doc.lastAutoTable.finalY + 30;
-        doc.setTextColor(0,0,0).text("Revisión autorizada por:", 105, y, {align:'center'});
-        doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
-        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 14, {align:'center'});
-        
-        doc.save(`Auditoria_Packing_${c}.pdf`);
     }
 </script>
 </body>
