@@ -3,172 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LOGÍSTICO PRO - ANGELO NUÑEZ</title>
+    <title>LOGÍSTICA - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --dark: #0f172a; --accent: #3b82f6; --success: #10b981; --error: #ef4444; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padding: 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 5px solid var(--accent); }
-        .status-indicator { font-size: 0.7rem; font-weight: bold; padding: 5px 10px; border-radius: 20px; float: right; }
-        .online { background: #dcfce7; color: #166534; }
-        .offline { background: #fee2e2; color: #991b1b; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-reg { background: var(--dark); }
-        .btn-pdf { background: var(--success); margin-top: 15px; }
-        .search-result { background: #eff6ff; padding: 10px; border-radius: 8px; font-weight: bold; color: var(--accent); min-height: 20px; margin: 5px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        th { text-align: left; padding: 10px; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .status { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
+        .online { background: #d4edda; color: #155724; }
+        .offline { background: #f8d7da; color: #721c24; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
+        .btn-blue { background: #007bff; }
+        .btn-green { background: #28a745; margin-top: 10px; }
+        #preview { background: #e9ecef; padding: 10px; border-radius: 5px; margin: 10px 0; font-weight: bold; min-height: 20px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <span id="db-status" class="status-indicator offline">SIN CONEXIÓN</span>
-        <h2 style="margin:0; font-size: 1.2rem;">Control de Inbound</h2>
-        <p style="font-size: 0.8rem; color: #64748b;">Asist. Logístico: J. Angelo Nuñez</p>
-
-        <label style="font-size: 0.7rem; font-weight: bold;">FOTO PACKING LIST</label>
-        <input type="file" id="packing-img" accept="image/*">
-
-        <label style="font-size: 0.7rem; font-weight: bold;">N° CONTENEDOR</label>
-        <input type="text" id="id-cont" placeholder="Ej: 0116">
+        <div id="status-box" class="status offline">PROBANDO CONEXIÓN...</div>
+        <h3>Recepción de Contenedor</h3>
+        <input type="text" id="cont" placeholder="N° Contenedor (Ej: 0116)">
+        <label>Foto Packing:</label>
+        <input type="file" id="foto" accept="image/*">
     </div>
 
     <div class="card">
-        <label style="font-size: 0.7rem; font-weight: bold;">BUSCADOR MAESTRO (SKU)</label>
-        <input type="text" id="sku-input" placeholder="Escriba código SKU..." oninput="validarSKU(this.value)">
-        <div id="sku-desc" class="search-result">Esperando código...</div>
-
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label style="font-size: 0.7rem;">CANT. PACKING</label>
-                <input type="number" id="c-pack" placeholder="Foto">
-            </div>
-            <div style="flex: 1;">
-                <label style="font-size: 0.7rem;">CANT. CONTEO</label>
-                <input type="number" id="c-fis" placeholder="Físico">
-            </div>
+        <label>Buscador de Producto:</label>
+        <input type="text" id="sku" placeholder="Escriba SKU..." oninput="buscar(this.value)">
+        <div id="preview">Esperando código...</div>
+        
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="p_pack" placeholder="Cant. Packing">
+            <input type="number" id="p_fis" placeholder="Cant. Conteo">
         </div>
-
-        <button class="btn btn-reg" onclick="agregarItem()">+ Registrar Item</button>
+        <button class="btn btn-blue" onclick="agregar()">REGISTRAR ITEM</button>
     </div>
 
-    <div class="card">
-        <table id="resumen">
-            <thead>
-                <tr><th>SKU</th><th>Pck</th><th>Fis</th><th>Estado</th></tr>
-            </thead>
-            <tbody id="resumen-body"></tbody>
+    <div id="lista" class="card">
+        <table style="width:100%; text-align:left;">
+            <thead><tr><th>SKU</th><th>Pack.</th><th>Fis.</th></tr></thead>
+            <tbody id="tabla-body"></tbody>
         </table>
-        <button class="btn btn-pdf" onclick="cerrarYGenerar()">Finalizar y Crear Reporte</button>
+        <button class="btn btn-green" onclick="cerrar()">GENERAR REPORTE PDF</button>
     </div>
 
     <script>
-        // REEMPLAZA ESTA URL CON LA QUE TE DÉ AL "IMPLEMENTAR" DE NUEVO
-        const URL_API = "https://script.google.com/macros/s/AKfycbxGiHWFnxRctB4ufGHjMw8PQZVec0_HmjAKQX_BdiU1IReWuPYHpaePmjaf-ZSfOwC2/exec";
-        let dbMaestra = [];
-        let conteoTotal = {};
+        // PEGA AQUÍ TU URL DE GOOGLE SCRIPTS (EL QUE TERMINA EN /exec)
+        const MI_URL = "https://script.google.com/macros/s/AKfycbyhcy51epa-RqZkEtuPiKqZ9qd-4CrUaVtAGgpTsxHuYNM84BlZbld3S5A_kXFdtgh2/exec"; 
+        
+        let maestro = [];
+        let conteo = {};
 
-        // Sincronización con el Excel
         window.onload = async () => {
-            const status = document.getElementById('db-status');
+            const s = document.getElementById('status-box');
             try {
-                const response = await fetch(URL_API);
-                const data = await response.json();
-                // Filtramos la fila de encabezados
-                dbMaestra = data.filter(r => r[0] && r[0] !== "CODIGO");
-                status.innerText = "CONECTADO: " + dbMaestra.length + " SKU";
-                status.className = "status-indicator online";
+                const r = await fetch(MI_URL);
+                maestro = await r.json();
+                s.innerText = "✓ CONECTADO: " + (maestro.length - 1) + " PRODUCTOS";
+                s.className = "status online";
             } catch (e) {
-                status.innerText = "ERROR DE CONEXIÓN";
-                console.error(e);
+                s.innerText = "X ERROR DE URL O PERMISOS";
+                s.className = "status offline";
             }
         };
 
-        function validarSKU(val) {
+        function buscar(val) {
             val = val.trim().toUpperCase();
-            const encontrado = dbMaestra.find(p => p[0].toString().toUpperCase() === val);
-            const descDiv = document.getElementById('sku-desc');
-            if(encontrado) {
-                descDiv.innerText = "✓ " + encontrado[1];
-                descDiv.style.color = "var(--accent)";
+            const f = maestro.find(p => p[0].toString().toUpperCase() === val);
+            const p = document.getElementById('preview');
+            if(f) {
+                p.innerText = "✓ " + f[1];
+                p.style.color = "blue";
             } else {
-                descDiv.innerText = "SKU No existe en Maestro";
-                descDiv.style.color = "var(--error)";
+                p.innerText = "PRODUCTO NO EXISTE";
+                p.style.color = "red";
             }
         }
 
-        function agregarItem() {
-            const sku = document.getElementById('sku-input').value.toUpperCase().trim();
-            const pack = parseInt(document.getElementById('c-pack').value) || 0;
-            const fis = parseInt(document.getElementById('c-fis').value) || 0;
-            const desc = document.getElementById('sku-desc').innerText;
-
-            if(!sku || fis === 0 || desc.includes("No existe")) {
-                alert("Verifica el código y las cantidades.");
-                return;
-            }
-
-            if(!conteoTotal[sku]) {
-                conteoTotal[sku] = { packing: pack, fisico: 0, desc: desc.replace("✓ ", "") };
-            }
-            conteoTotal[sku].fisico += fis;
-            if(pack > 0) conteoTotal[sku].packing = pack;
-
-            actualizarTabla();
+        function agregar() {
+            const s = document.getElementById('sku').value.toUpperCase().trim();
+            const pk = parseInt(document.getElementById('p_pack').value) || 0;
+            const fs = parseInt(document.getElementById('p_fis').value) || 0;
             
-            // Limpieza para el siguiente pallet
-            document.getElementById('sku-input').value = "";
-            document.getElementById('c-fis').value = "";
-            document.getElementById('sku-input').focus();
+            if(!s || fs === 0) return;
+
+            if(!conteo[s]) conteo[s] = { p: pk, f: 0 };
+            conteo[s].f += fs;
+            if(pk > 0) conteo[s].p = pk;
+
+            render();
+            document.getElementById('sku').value = "";
+            document.getElementById('p_fis').value = "";
+            document.getElementById('sku').focus();
         }
 
-        function actualizarTabla() {
-            const body = document.getElementById('resumen-body');
-            body.innerHTML = "";
-            for(let s in conteoTotal) {
-                const item = conteoTotal[s];
-                const diff = item.fisico === item.packing;
-                body.innerHTML += `<tr>
-                    <td>${s}</td>
-                    <td>${item.packing}</td>
-                    <td><b>${item.fisico}</b></td>
-                    <td style="color: ${diff ? 'green' : 'red'}; font-weight:bold;">${diff ? 'OK' : 'DIF'}</td>
-                </tr>`;
+        function render() {
+            const b = document.getElementById('tabla-body');
+            b.innerHTML = "";
+            for(let k in conteo) {
+                b.innerHTML += `<tr><td>${k}</td><td>${conteo[k].p}</td><td>${conteo[k].f}</td></tr>`;
             }
         }
 
-        function cerrarYGenerar() {
+        function cerrar() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const cont = document.getElementById('id-cont').value || "S/N";
-
-            doc.setFontSize(16).text("REPORTE FINAL DE INGRESO: " + cont, 105, 20, {align: 'center'});
+            const c = document.getElementById('cont').value;
+            doc.text("REPORTE CONTENEDOR: " + c, 20, 20);
             
-            const rows = [];
-            for(let s in conteoTotal) {
-                const i = conteoTotal[s];
-                rows.push([s, i.desc, i.packing, i.fisico, i.fisico - i.packing]);
-            }
-
-            doc.autoTable({
-                startY: 30,
-                head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
-                body: rows,
-                theme: 'grid',
-                headStyles: { fillColor: [15, 23, 42] }
-            });
-
-            const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setFontSize(10).text("Recepción y conteo realizado por:", 105, finalY, {align: 'center'});
-            doc.text("J. Angelo Nuñez Durand", 105, finalY + 7, {align: 'center'});
-            doc.text("------------------------------------------", 105, finalY + 12, {align: 'center'});
-            doc.text("Asist. Logístico.", 105, finalY + 17, {align: 'center'});
-
-            doc.save(`Recepcion_${cont}.pdf`);
+            const rows = Object.keys(conteo).map(k => [k, conteo[k].p, conteo[k].f, conteo[k].f - conteo[k].p]);
+            doc.autoTable({ startY: 30, head: [['SKU', 'PACKING', 'CONTEO', 'DIF']], body: rows });
+            
+            const y = doc.lastAutoTable.finalY + 30;
+            doc.text("Recepción y conteo por: J. Angelo Nuñez Durand", 105, y, {align:'center'});
+            doc.text("Asist. Logístico.", 105, y + 10, {align:'center'});
+            doc.save(`Recepcion_${c}.pdf`);
         }
     </script>
 </body>
