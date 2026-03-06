@@ -2,185 +2,240 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LOGÍSTICO - ANGELO NUÑEZ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INBOUND VISION PRO - ANGELO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #000000; --success: #10b981; --border: #e5e7eb; --accent: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111827; margin: 0; padding: 0; }
+        :root { --primary: #000000; --accent: #2563eb; --success: #10b981; --border: #e5e7eb; --bg: #ffffff; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #111827; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* Header Corporativo */
-        .header { padding: 25px 20px; border-bottom: 2px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
-        .header h1 { font-size: 1.4rem; margin: 0; font-weight: 900; letter-spacing: -1px; }
-        .header p { font-size: 0.7rem; color: #6b7280; margin: 5px 0 0; text-transform: uppercase; font-weight: 700; }
+        /* Header Minimalista */
+        .header { padding: 30px 20px; border-bottom: 1px solid var(--border); background: #fff; position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-size: 1.5rem; margin: 0; font-weight: 900; letter-spacing: -1.5px; }
+        .header p { font-size: 0.75rem; color: #6b7280; margin: 5px 0 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
-        /* Sincronización con IA */
-        .sync-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .sync-card h3 { font-size: 0.8rem; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
-        .sync-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: monospace; font-size: 0.75rem; margin-bottom: 10px; box-sizing: border-box; }
+        /* Zona de Sincronización */
+        .sync-box { background: #fafafa; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; text-align: center; }
+        .sync-box textarea { width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 12px; font-family: monospace; font-size: 0.75rem; box-sizing: border-box; resize: none; background: #fff; }
+        .btn-load { width: 100%; margin-top: 15px; padding: 16px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .btn-load:active { transform: scale(0.97); }
+
+        /* Tarjeta de Ítem Moderna */
+        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; }
+        .item-card.exacto { border-color: var(--success); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
         
-        /* Tarjetas de Producto */
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
-        .item-card.exacto { border: 2px solid var(--success); background: #f0fdf4; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .sku-name { font-weight: 900; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .sku-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; }
+        .item-card.exacto .sku-status { color: var(--success); }
+
+        .card-body { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .qty-info { display: flex; gap: 15px; }
+        .qty-col { text-align: center; }
+        .qty-label { font-size: 0.6rem; color: #9ca3af; font-weight: 700; display: block; text-transform: uppercase; }
+        .qty-num { font-size: 1.3rem; font-weight: 800; }
+
+        .btn-plus { background: #f3f4f6; color: #000; border: none; width: 55px; height: 55px; border-radius: 16px; font-size: 1.8rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-plus:active { background: #e5e7eb; transform: scale(0.9); }
+        .item-card.exacto .btn-plus { background: #dcfce7; color: var(--success); }
+
+        /* Barra de Progreso Inteligente */
+        .progress-container { width: 100%; height: 6px; background: #f3f4f6; border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease, background 0.3s ease; border-radius: 10px; }
+        .item-card.exacto .progress-bar { background: var(--success); width: 100% !important; }
+
+        /* Footer y Reporte */
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.9); border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 50; }
+        .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; }
         
-        .sku-info { flex: 1; }
-        .sku-title { font-weight: 800; font-size: 1.1rem; display: block; }
-        .sku-status { font-size: 0.65rem; font-weight: 700; margin-top: 4px; display: block; }
+        /* Overlay Numérico Táctil */
+        #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
+        .calc-pad { background: #fff; width: 100%; max-width: 400px; border-radius: 30px 30px 0 0; padding: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.3); }
+        .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2rem; font-weight: 800; text-align: right; margin-bottom: 20px; color: #000; }
+        .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 700; border-radius: 15px; cursor: pointer; text-align: center; color: #000; }
+        .calc-btn:active { background: #e5e7eb; }
+        .calc-btn.action { background: #000; color: #fff; border: none; }
+        .calc-btn.action:active { background: #333; }
 
-        .counter { display: flex; align-items: center; gap: 15px; }
-        .qty-box { text-align: center; }
-        .qty-label { font-size: 0.6rem; color: #94a3b8; font-weight: 800; display: block; text-transform: uppercase; }
-        .qty-num { font-size: 1.2rem; font-weight: 900; }
-
-        .btn-plus { background: #f1f5f9; border: none; width: 48px; height: 48px; border-radius: 14px; font-size: 1.6rem; font-weight: 900; cursor: pointer; color: var(--primary); }
-        .btn-plus:active { background: #e2e8f0; transform: scale(0.9); }
-
-        /* Pie de página y Reporte */
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); }
-        .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
-
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+<div id="calc-overlay" class="hidden" onclick="cerrarCalc(event)">
+    <div class="calc-pad" onclick="event.stopPropagation()">
+        <div style="text-align:center; font-size:0.8rem; color:#9ca3af; margin-bottom:10px; font-weight:600;">INGRESA CANTIDAD DE CAJAS</div>
+        <div class="calc-display" id="calc-display">0</div>
+        <div class="calc-grid">
+            <div class="calc-btn" onclick="pressN(1)">1</div>
+            <div class="calc-btn" onclick="pressN(2)">2</div>
+            <div class="calc-btn" onclick="pressN(3)">3</div>
+            <div class="calc-btn" onclick="pressN(4)">4</div>
+            <div class="calc-btn" onclick="pressN(5)">5</div>
+            <div class="calc-btn" onclick="pressN(6)">6</div>
+            <div class="calc-btn" onclick="pressN(7)">7</div>
+            <div class="calc-btn" onclick="pressN(8)">8</div>
+            <div class="calc-btn" onclick="pressN(9)">9</div>
+            <div class="calc-btn action" onclick="clearCalc()">C</div>
+            <div class="calc-btn" onclick="pressN(0)">0</div>
+            <div class="calc-btn action" onclick="confirmarCalc()">OK</div>
+        </div>
+    </div>
+</div>
+
 <div class="header">
-    <h1>INBOUND BOX-CONTROL</h1>
-    <p>Revisión Autorizada: J. Angelo Nuñez Durand</p>
+    <p>Revisión Autorizada</p>
+    <h1>J. ANGELO NUÑEZ</h1>
 </div>
 
 <div class="container">
-    <div class="sync-card" id="sync-zone">
-        <h3>1. PEGAR CÓDIGO DEL PACKING (JSON)</h3>
-        <textarea id="data-input" class="sync-input" rows="4" placeholder="Pega el código generado por la IA aquí..."></textarea>
-        <button onclick="cargarData()" style="background:var(--primary); color:white; border:none; width:100%; padding:14px; border-radius:10px; font-weight:800; cursor:pointer;">INICIAR CONTEO DE CONTENEDOR</button>
+    <div class="sync-box" id="sync-ui">
+        <div style="font-size: 3rem; margin-bottom: 15px;">🔗</div>
+        <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase;">1. Pegar Código de Gemini</p>
+        <textarea id="json-input" rows="4" placeholder="Pega el código JSON generado por la IA aquí..."></textarea>
+        <button class="btn-load" onclick="cargarPacking()">INICIAR DESCARGA</button>
     </div>
 
-    <div id="lista-items">
-        <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 50px;">
-            Sube la foto del packing al chat, copia el código y pégalo arriba para empezar.
-        </p>
-    </div>
-    
+    <div id="lista-conteo">
+        </div>
     <div style="height: 120px;"></div>
 </div>
 
-<div class="footer hidden" id="footer-actions">
+<div class="footer hidden" id="footer-ui">
     <button class="btn-report" onclick="generarReporte()">FINALIZAR Y CREAR REPORTE PDF</button>
 </div>
 
 <script>
-    let items = [];
+    let db = [];
+    let currentItemIndex = null;
+    let currentCalcValue = "";
 
-    // Función para cargar los datos procesados por la IA
-    function cargarData() {
-        const input = document.getElementById('data-input').value;
+    function cargarPacking() {
         try {
-            items = JSON.parse(input);
-            document.getElementById('sync-zone').classList.add('hidden');
-            document.getElementById('footer-actions').classList.remove('hidden');
+            const data = document.getElementById('json-input').value;
+            db = JSON.parse(data);
+            document.getElementById('sync-ui').classList.add('hidden');
+            document.getElementById('footer-ui').classList.remove('hidden');
             render();
-        } catch (e) {
-            alert("Error: El código no es válido. Asegúrate de copiar todo el bloque JSON.");
-        }
+        } catch(e) { alert("Error: El código no es válido. Pégalo de nuevo."); }
     }
 
-    // Función para sumar por cajas
-    function sumar(index) {
-        const item = items[index];
-        const cantCajas = prompt(`¿Cuántas CAJAS de ${item.sku} ingresan?\n(Capacidad: ${item.u_por_caja} und/caja)`, "1");
-        
-        if (cantCajas !== null && cantCajas !== "") {
-            const bultos = parseFloat(cantCajas);
-            if (!isNaN(bultos)) {
-                items[index].fisico += (bultos * item.u_por_caja);
-                render();
-            }
-        }
-    }
-
-    // Renderizado de la lista
     function render() {
-        const container = document.getElementById('lista-items');
+        const container = document.getElementById('lista-conteo');
         container.innerHTML = "";
-        
-        items.forEach((item, index) => {
-            const esExacto = item.fisico === item.pck;
-            const cajasFisicas = item.fisico / item.u_por_caja;
-            const faltanteCajas = (item.pck - item.fisico) / item.u_por_caja;
+        db.forEach((item, i) => {
+            const ok = item.fisico === item.pck;
+            const cjFis = (item.fisico / item.u_por_caja);
+            const porc = Math.min((item.fisico / item.pck) * 100, 100);
             
             container.innerHTML += `
-                <div class="item-card ${esExacto ? 'exacto' : ''}">
-                    <div class="sku-info">
-                        <span class="sku-title">${item.sku}</span>
-                        <span class="sku-status" style="color:${esExacto ? 'var(--success)' : '#f59e0b'}">
-                            ${esExacto ? '✓ EXACTO' : `Faltan ${faltanteCajas.toFixed(1)} cajas`}
-                        </span>
+                <div class="item-card ${ok ? 'exacto' : ''}">
+                    <div class="card-header">
+                        <span class="sku-name">${item.sku}</span>
+                        <span class="sku-status">${ok ? '✓ EXACTO' : 'PENDIENTE'}</span>
                     </div>
-                    <div class="counter">
-                        <div class="qty-box">
-                            <span class="qty-label">CJ PCK</span>
-                            <div class="qty-num" style="color:#94a3b8">${item.cajas_pck}</div>
+                    <div class="card-body">
+                        <div class="qty-info">
+                            <div class="qty-col">
+                                <span class="qty-label">CJ PCK</span>
+                                <div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div>
+                            </div>
+                            <div class="qty-col">
+                                <span class="qty-label">CJ FIS</span>
+                                <div class="qty-num">${cjFis.toFixed(ok ? 0 : 1)}</div>
+                            </div>
                         </div>
-                        <div class="qty-box">
-                            <span class="qty-label">CJ FIS</span>
-                            <div class="qty-num">${cajasFisicas}</div>
-                        </div>
-                        <button class="btn-plus" onclick="sumar(${index})">+</button>
+                        <button class="btn-plus" onclick="abrirCalc(${i})">${ok ? '✓' : '+'}</button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${porc}%"></div>
                     </div>
                 </div>
             `;
         });
     }
 
-    // Generación del Reporte PDF
+    // Funciones del Panel Táctil Numérico
+    function abrirCalc(i) {
+        if(db[i].fisico === db[i].pck) return; // Ya está exacto
+        currentItemIndex = i;
+        currentCalcValue = "";
+        actualizarDisplay();
+        document.getElementById('calc-overlay').classList.remove('hidden');
+    }
+
+    function cerrarCalc(e) { document.getElementById('calc-overlay').classList.add('hidden'); }
+
+    function pressN(n) {
+        currentCalcValue += n.toString();
+        actualizarDisplay();
+    }
+
+    function clearCalc() {
+        currentCalcValue = "";
+        actualizarDisplay();
+    }
+
+    function actualizarDisplay() {
+        const display = document.getElementById('calc-display');
+        display.innerText = currentCalcValue === "" ? "0" : currentCalcValue;
+    }
+
+    function confirmarCalc() {
+        if(currentCalcValue === "" || currentItemIndex === null) return;
+        const bultos = parseFloat(currentCalcValue);
+        const item = db[currentItemIndex];
+        
+        db[currentItemIndex].fisico += (bultos * item.u_por_caja);
+        
+        cerrarCalc();
+        render();
+    }
+
+    // Reporte PDF
     function generarReporte() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Encabezado del PDF
         doc.setFillColor(0, 0, 0);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20).setFont(undefined, 'bold').text("REPORTE DE INBOUND", 15, 25);
+        doc.setFont("helvetica", "bold").setFontSize(22).text("REPORTE DE INBOUND", 15, 25);
         
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10).setFont(undefined, 'normal').text(`Fecha de Emisión: ${new Date().toLocaleString()}`, 15, 50);
+        doc.setTextColor(0,0,0);
+        doc.setFontSize(10).setFont("helvetica", "normal").text(`Contenedor verificado el: ${new Date().toLocaleString()}`, 15, 48);
 
-        const tableData = items.map(i => [
-            i.sku, 
-            i.u_por_caja,
-            i.pck, 
-            i.fisico, 
-            i.fisico === i.pck ? "EXACTO" : (i.fisico - i.pck)
+        const rows = db.map(item => [
+            item.sku, 
+            item.u_por_caja,
+            item.pck, 
+            item.fisico, 
+            item.fisico === item.pck ? "EXACTO" : (item.fisico - item.pck)
         ]);
 
         doc.autoTable({
             startY: 55,
-            head: [['SKU', 'UND/CJ', 'TOT. PACKING', 'TOT. CONTEO', 'ESTADO/DIF']],
-            body: tableData,
+            head: [['SKU', 'UND/CJ', 'TOT. PCK', 'TOT. FIS', 'ESTADO/DIF']],
+            body: rows,
             theme: 'grid',
             headStyles: { fillColor: [0, 0, 0], fontSize: 9 },
             styles: { fontSize: 8 },
             columnStyles: { 4: { fontStyle: 'bold' } }
         });
 
-        const finalY = doc.lastAutoTable.finalY + 35;
+        const y = doc.lastAutoTable.finalY + 35;
+        doc.line(15, y, 85, y);
+        doc.setFontSize(11).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 15, y + 8);
+        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 15, y + 14);
         
-        // Firma Autorizada
-        doc.line(15, finalY, 80, finalY);
-        doc.setFontSize(10).setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 15, finalY + 7);
-        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 15, finalY + 12);
-        
-        doc.text("Revisión autorizada y conforme.", 15, finalY + 22);
-
-        doc.save(`Inbound_Angelo_${new Date().getTime()}.pdf`);
+        doc.save(`Reporte_Angelo_Inbound.pdf`);
     }
 </script>
 </body>
 </html>
-
