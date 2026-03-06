@@ -3,159 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA TWINS - J. ANGELO NUÑEZ</title>
+    <title>TWINS LOGISTICS PRO | J. ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --main: #000000; --accent: #ffffff; --border: #cccccc; --bg: #f4f4f4; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); margin: 0; padding-bottom: 120px; }
+        :root { --black: #000000; --white: #ffffff; --gray-1: #f8f9fa; --gray-2: #e9ecef; --gray-3: #dee2e6; }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background-color: var(--white); color: var(--black); margin: 0; padding-bottom: 120px; line-height: 1.5; }
         
-        .header { background: var(--main); color: var(--accent); padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #333; }
-        .header h1 { font-size: 0.9rem; margin: 0; letter-spacing: 1px; font-weight: 800; }
+        /* Navigation & Dashboard */
+        .nav-header { background: var(--black); color: var(--white); padding: 30px 20px; text-align: center; }
+        .nav-header h1 { margin: 0; font-size: 0.8rem; letter-spacing: 4px; font-weight: 900; text-transform: uppercase; }
         
-        .dash { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-bottom: 1px solid var(--border); padding: 15px; }
-        .dash-col { text-align: center; border-right: 1px solid #eee; }
-        .dash-val { display: block; font-size: 1.2rem; font-weight: 900; }
-        .dash-lbl { font-size: 0.6rem; color: #777; text-transform: uppercase; }
+        .kpi-container { display: flex; border-bottom: 1px solid var(--black); background: var(--white); }
+        .kpi-box { flex: 1; padding: 20px; text-align: center; border-right: 1px solid var(--gray-2); }
+        .kpi-val { display: block; font-size: 1.5rem; font-weight: 900; color: var(--black); }
+        .kpi-lbl { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
 
-        .container { padding: 12px; max-width: 600px; margin: auto; }
-        .card { background: #fff; border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; position: relative; }
-        .sku-tag { background: #000; color: #fff; font-size: 0.75rem; padding: 3px 8px; font-weight: bold; }
-        .sku-desc { font-size: 0.8rem; margin: 10px 0; color: #333; font-weight: 500; }
+        .container { padding: 20px; max-width: 650px; margin: auto; }
         
-        .input-box { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-        input[type="number"] { flex: 1; border: 2px solid #000; padding: 12px; font-size: 1.2rem; font-weight: 900; outline: none; border-radius: 4px; }
-        .plan-val { font-size: 0.8rem; font-weight: bold; color: #666; }
+        /* Professional Item Card */
+        .card { border: 1px solid var(--black); margin-bottom: 15px; padding: 20px; transition: all 0.2s ease; }
+        .card:hover { background: var(--gray-1); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .sku-badge { border: 1.5px solid var(--black); padding: 4px 10px; font-size: 0.75rem; font-weight: 900; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-3); }
+        .complete .status-dot { background: var(--black); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        
+        .item-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
+        
+        /* Pro Inputs */
+        .input-wrapper { display: flex; align-items: center; border-bottom: 2px solid var(--black); padding: 5px 0; }
+        .input-wrapper label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; margin-right: 15px; }
+        input[type="number"] { border: none; font-size: 1.3rem; font-weight: 900; width: 100px; outline: none; background: transparent; }
+        .plan-info { margin-left: auto; font-size: 0.75rem; font-weight: 700; color: #555; }
 
-        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 20px; border-top: 1px solid var(--border); z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-        .btn { background: #000; color: #fff; border: none; padding: 18px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .status-bar { text-align: center; font-size: 0.65rem; padding: 5px; background: #eee; font-weight: bold; }
+        /* Action Bar */
+        .action-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); border-top: 1px solid var(--black); padding: 25px 20px; z-index: 1000; }
+        .btn-black { background: var(--black); color: var(--white); border: none; width: 100%; padding: 20px; font-size: 0.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+        .btn-black:active { opacity: 0.8; }
+
+        /* Setup View */
+        textarea { width: 100%; border: 1px solid var(--black); padding: 20px; font-size: 0.8rem; min-height: 150px; outline: none; margin-bottom: 15px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>REVISIÓN LOGÍSTICA TWINS</h1>
+<div class="nav-header">
+    <h1>Logistics Intelligence Twins</h1>
 </div>
 
-<div class="status-bar" id="status">SISTEMA LISTO</div>
-
-<div id="dash-panel" class="dash hidden">
-    <div class="dash-col"><span class="dash-val" id="total-fis">0</span><span class="dash-lbl">CJ INGRESADAS</span></div>
-    <div class="dash-col" style="border:0"><span class="dash-val" id="total-per">0%</span><span class="dash-lbl">AVANCE</span></div>
+<div id="dashboard" class="kpi-container hidden">
+    <div class="kpi-box"><span class="kpi-val" id="total-received">0</span><span class="kpi-lbl">Recibido</span></div>
+    <div class="kpi-box" style="border:none;"><span class="kpi-val" id="total-progress">0%</span><span class="kpi-lbl">Eficiencia</span></div>
 </div>
 
 <div class="container">
-    <div id="setup">
-        <textarea id="json-input" rows="8" style="width:100%; padding:15px; margin-bottom:10px; border:1px solid #ccc" placeholder="PEGA EL JSON AQUÍ..."></textarea>
-        <button class="btn" onclick="initApp()">CARGAR CONTENEDOR</button>
+    <div id="setup-view">
+        <p style="font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Importar datos de contenedor (JSON):</p>
+        <textarea id="json-input" placeholder="Pegue la estructura de datos aquí..."></textarea>
+        <button class="btn-black" onclick="initializeSystem()">Inicializar Sistema</button>
     </div>
-    <div id="list"></div>
+    <div id="inventory-list"></div>
 </div>
 
-<div class="footer hidden" id="footer-ui">
-    <button class="btn" onclick="makePDF()">GENERAR REPORTE OFICIAL</button>
+<div class="action-bar hidden" id="action-bar">
+    <button class="btn-black" onclick="generateProfessionalPDF()">Finalizar y Exportar Reporte</button>
 </div>
 
 <script>
-    let items = [];
-    const FIRMA_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+    let inventoryData = [];
+    
+    // Firma caligráfica generada por código (Vectorial elegante)
+    const signatureAsset = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEchJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
 
-    function log(m) { document.getElementById('status').innerText = m; }
-
-    function initApp() {
-        const raw = document.getElementById('json-input').value;
+    function initializeSystem() {
+        const input = document.getElementById('json-input').value;
         try {
-            items = JSON.parse(raw).map(i => ({...i, fisico: 0}));
-            document.getElementById('setup').classList.add('hidden');
-            document.getElementById('dash-panel').classList.remove('hidden');
-            document.getElementById('footer-ui').classList.remove('hidden');
-            log("CONTENEDOR CARGADO CON ÉXITO");
-            draw();
-        } catch(e) { alert("ERROR: JSON NO VÁLIDO"); }
+            inventoryData = JSON.parse(input).map(i => ({...i, current: 0}));
+            document.getElementById('setup-view').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('action-bar').classList.remove('hidden');
+            renderInventory();
+        } catch(e) { alert("Error en estructura JSON. Por favor verifique."); }
     }
 
-    function draw() {
-        const list = document.getElementById('list');
+    function renderInventory() {
+        const list = document.getElementById('inventory-list');
         list.innerHTML = "";
-        let fTotal = 0, eTotal = 0;
-
-        items.forEach((item, i) => {
-            const boxes = item.fisico / item.u_por_caja;
-            fTotal += boxes; eTotal += item.cajas_pck;
+        inventoryData.forEach((item, index) => {
+            const boxes = item.current / item.u_por_caja;
+            const isComplete = boxes >= item.cajas_pck;
+            
             list.innerHTML += `
-                <div class="card">
-                    <span class="sku-tag">${item.sku}</span>
-                    <div class="sku-desc">${item.desc}</div>
-                    <div class="input-box">
+                <div class="card ${isComplete ? 'complete' : ''}">
+                    <div class="card-header">
+                        <span class="sku-badge">${item.sku}</span>
+                        <div class="status-dot"></div>
+                    </div>
+                    <div class="item-name">${item.desc}</div>
+                    <div class="input-wrapper">
+                        <label>Ingreso Físico</label>
                         <input type="number" value="${boxes || ''}" placeholder="0" 
-                               oninput="items[${i}].fisico = (parseFloat(this.value)||0)*${item.u_por_caja}; updateDash();" 
-                               inputmode="numeric">
-                        <span class="plan-val">/ ${item.cajas_pck} CJ</span>
+                               oninput="updateItem(${index}, this.value)" inputmode="numeric">
+                        <span class="plan-info">PLAN: ${item.cajas_pck} CJ</span>
                     </div>
                 </div>`;
         });
-        updateDash();
+        updateDashboard();
     }
 
-    function updateDash() {
-        let f = 0, e = 0;
-        items.forEach(i => { f += (i.fisico/i.u_por_caja); e += i.cajas_pck; });
-        document.getElementById('total-fis').innerText = Math.round(f);
-        document.getElementById('total-per').innerText = e > 0 ? Math.round((f/e)*100) + "%" : "0%";
+    function updateItem(index, val) {
+        const num = parseFloat(val) || 0;
+        inventoryData[index].current = num * inventoryData[index].u_por_caja;
+        updateDashboard();
     }
 
-    function makePDF() {
-        if (typeof jspdf === 'undefined') {
-            alert("ERROR: No hay conexión a Internet para cargar el motor PDF. Intenta de nuevo.");
-            return;
-        }
-        log("GENERANDO ARCHIVO...");
+    function updateDashboard() {
+        let rec = 0, exp = 0;
+        inventoryData.forEach(i => {
+            rec += (i.current / i.u_por_caja);
+            exp += i.cajas_pck;
+        });
+        document.getElementById('total-received').innerText = Math.round(rec);
+        document.getElementById('total-progress').innerText = exp > 0 ? Math.round((rec/exp)*100) + "%" : "0%";
+    }
+
+    function generateProfessionalPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header Negro Industrial
+        // Estilo Corporativo Blanco y Negro
         doc.setFillColor(0,0,0);
-        doc.rect(0, 0, 210, 30, 'F');
+        doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14).setFont(undefined, 'bold').text("REPORTE DE INVENTARIO - TWINS", 105, 18, {align:'center'});
+        doc.setFontSize(18).setFont(undefined, 'bold').text("INVENTORY DISPATCH REPORT", 105, 18, {align:'center'});
+        doc.setFontSize(8).setFont(undefined, 'normal').text("TWINS MANAGEMENT SYSTEM | LOGISTICS DIVISION", 105, 28, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleDateString()} | REVISOR: J. ANGELO NUÑEZ D.`, 15, 40);
+        doc.setFontSize(10).setFont(undefined, 'bold').text(`AUDIT DATE: ${new Date().toLocaleDateString()}`, 15, 50);
+        doc.text(`REVISOR: J. ANGELO NUÑEZ DURAND`, 15, 56);
 
-        const rows = items.map(i => [
+        const rows = inventoryData.map(i => [
             i.sku, 
             i.desc.substring(0,45), 
             i.cajas_pck, 
-            (i.fisico/i.u_por_caja).toFixed(0),
-            (i.fisico/i.u_por_caja >= i.cajas_pck ? "CONFORME" : "FALTANTE")
+            (i.current/i.u_por_caja).toFixed(0),
+            (i.current/i.u_por_caja >= i.cajas_pck ? "VERIFIED" : "INCOMPLETE")
         ]);
 
         doc.autoTable({
-            startY: 45,
-            head: [['SKU', 'PRODUCTO', 'PLAN', 'REAL', 'ESTADO']],
+            startY: 65,
+            head: [['SKU', 'PRODUCT DESCRIPTION', 'TARGET', 'ACTUAL', 'STATUS']],
             body: rows,
-            headStyles: { fillColor: [0, 0, 0] },
-            styles: { fontSize: 7 }
+            headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontSize: 8 },
+            styles: { fontSize: 7, lineColor: [220, 220, 220], lineWidth: 0.1 }
         });
 
-        const y = doc.lastAutoTable.finalY + 10;
+        const finalY = doc.lastAutoTable.finalY + 20;
         
-        // Firma y Pie de página exacto
-        try {
-            doc.addImage(FIRMA_B64, 'PNG', 80, y, 50, 25);
-        } catch(e) { console.log("Firma omitida por error de render."); }
+        // Firma Caligráfica Generada
+        doc.addImage(signatureAsset, 'PNG', 75, finalY, 60, 25);
+        doc.setLineWidth(0.5).line(70, finalY + 22, 140, finalY + 22);
         
-        doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 30, {align:'center'});
-        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, y + 35, {align:'center'});
-        doc.setFontSize(7).text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, y + 42, {align:'center'});
+        doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
+        doc.setFontSize(7).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, finalY + 33, {align:'center'});
+        doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 40, {align:'center'});
 
-        doc.save(`Twins_Reporte_${new Date().getTime()}.pdf`);
-        log("DESCARGA COMPLETADA");
-        setTimeout(() => log("SISTEMA LISTO"), 3000);
+        doc.save(`Twins_Report_${new Date().getTime()}.pdf`);
     }
 </script>
 </body>
