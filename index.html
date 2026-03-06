@@ -3,218 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INBOUND VISION - ANGELO NUÑEZ</title>
+    <title>SISTEMA LOGÍSTICO - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #000000; --accent: #2563eb; --success: #10b981; --border: #e2e8f0; }
-        body { font-family: 'Inter', sans-serif; background: #ffffff; margin: 0; padding: 0; color: #1e293b; }
+        :root { --primary: #000000; --success: #10b981; --border: #e5e7eb; --accent: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111827; margin: 0; padding: 0; }
         
-        .header { padding: 25px 20px; border-bottom: 1px solid var(--border); background: #fff; }
-        .header h1 { font-size: 1.3rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .header p { font-size: 0.7rem; color: #64748b; margin-top: 5px; text-transform: uppercase; font-weight: 700; }
-
+        /* Header Corporativo */
+        .header { padding: 25px 20px; border-bottom: 2px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-size: 1.4rem; margin: 0; font-weight: 900; letter-spacing: -1px; }
+        .header p { font-size: 0.7rem; color: #6b7280; margin: 5px 0 0; text-transform: uppercase; font-weight: 700; }
+        
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
-        /* Zona de Carga */
-        .upload-card { border: 2px dashed var(--border); border-radius: 20px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #fafafa; }
-        .upload-card:hover { border-color: var(--accent); }
-        .loading-text { font-size: 0.9rem; color: var(--accent); font-weight: 600; margin-top: 10px; }
-
-        /* Lista de Items */
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
-        .item-card.exacto { border-left: 6px solid var(--success); background: #f0fdf4; }
+        /* Sincronización con IA */
+        .sync-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .sync-card h3 { font-size: 0.8rem; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .sync-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: monospace; font-size: 0.75rem; margin-bottom: 10px; box-sizing: border-box; }
         
-        .sku-text { font-weight: 800; font-size: 1rem; display: block; }
-        .desc-text { font-size: 0.7rem; color: #64748b; display: block; }
+        /* Tarjetas de Producto */
+        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+        .item-card.exacto { border: 2px solid var(--success); background: #f0fdf4; }
+        
+        .sku-info { flex: 1; }
+        .sku-title { font-weight: 800; font-size: 1.1rem; display: block; }
+        .sku-status { font-size: 0.65rem; font-weight: 700; margin-top: 4px; display: block; }
 
-        .counter-zone { display: flex; align-items: center; gap: 15px; }
+        .counter { display: flex; align-items: center; gap: 15px; }
         .qty-box { text-align: center; }
-        .qty-label { font-size: 0.6rem; color: #94a3b8; font-weight: 700; display: block; }
-        .qty-num { font-size: 1.1rem; font-weight: 800; }
+        .qty-label { font-size: 0.6rem; color: #94a3b8; font-weight: 800; display: block; text-transform: uppercase; }
+        .qty-num { font-size: 1.2rem; font-weight: 900; }
 
-        .btn-inc { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 10px; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
-        .btn-inc:active { background: var(--border); transform: scale(0.9); }
+        .btn-plus { background: #f1f5f9; border: none; width: 48px; height: 48px; border-radius: 14px; font-size: 1.6rem; font-weight: 900; cursor: pointer; color: var(--primary); }
+        .btn-plus:active { background: #e2e8f0; transform: scale(0.9); }
 
-        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; background: #fff; border-top: 1px solid var(--border); display: flex; gap: 10px; box-sizing: border-box; }
-        .btn-pdf { background: #000; color: #fff; border: none; flex: 1; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        
+        /* Pie de página y Reporte */
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); }
+        .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
+
         .hidden { display: none; }
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-<div id="overlay" class="hidden">
-    <div style="font-size: 2rem;">🔍</div>
-    <div class="loading-text">Analizando Packing List...</div>
-    <div id="progress" style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">0%</div>
-</div>
-
 <div class="header">
-    <h1>INBOUND VISION PRO</h1>
-    <p>Revisión: J. Angelo Nuñez Durand - Asist. Inventario</p>
+    <h1>INBOUND BOX-CONTROL</h1>
+    <p>Revisión Autorizada: J. Angelo Nuñez Durand</p>
 </div>
 
 <div class="container">
-    <div id="step-1">
-        <div class="upload-card" onclick="document.getElementById('input-file').click()">
-            <div style="font-size: 2.5rem; margin-bottom: 10px;">📸</div>
-            <p style="font-weight: 600;">Subir o Tomar Foto del Packing</p>
-            <span style="font-size: 0.7rem; color: #94a3b8;">La app extraerá los productos automáticamente</span>
-            <input type="file" id="input-file" class="hidden" accept="image/*" onchange="procesarImagen(this)">
-        </div>
+    <div class="sync-card" id="sync-zone">
+        <h3>1. PEGAR CÓDIGO DEL PACKING (JSON)</h3>
+        <textarea id="data-input" class="sync-input" rows="4" placeholder="Pega el código generado por la IA aquí..."></textarea>
+        <button onclick="cargarData()" style="background:var(--primary); color:white; border:none; width:100%; padding:14px; border-radius:10px; font-weight:800; cursor:pointer;">INICIAR CONTEO DE CONTENEDOR</button>
     </div>
 
-    <div id="step-2" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 1rem; margin: 0;">Items Detectados</h2>
-            <button onclick="location.reload()" style="font-size: 0.7rem; border: none; background: none; color: var(--accent); font-weight: bold;">CAMBIAR FOTO</button>
-        </div>
-        <div id="lista-conteo"></div>
-        <div style="height: 100px;"></div>
+    <div id="lista-items">
+        <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 50px;">
+            Sube la foto del packing al chat, copia el código y pégalo arriba para empezar.
+        </p>
     </div>
+    
+    <div style="height: 120px;"></div>
 </div>
 
 <div class="footer hidden" id="footer-actions">
-    <button class="btn-pdf" onclick="generarReporte()">GENERAR REPORTE & CIERRE</button>
+    <button class="btn-report" onclick="generarReporte()">FINALIZAR Y CREAR REPORTE PDF</button>
 </div>
 
 <script>
     let items = [];
 
-    async function procesarImagen(input) {
-        if (!input.files || !input.files[0]) return;
-        
-        const overlay = document.getElementById('overlay');
-        const progressTxt = document.getElementById('progress');
-        overlay.classList.remove('hidden');
-
+    // Función para cargar los datos procesados por la IA
+    function cargarData() {
+        const input = document.getElementById('data-input').value;
         try {
-            const worker = await Tesseract.createWorker({
-                logger: m => {
-                    if(m.status === 'recognizing text') {
-                        progressTxt.innerText = Math.round(m.progress * 100) + "%";
-                    }
-                }
-            });
-
-            await worker.loadLanguage('spa');
-            await worker.initialize('spa');
-            
-            const { data: { text } } = await worker.recognize(input.files[0]);
-            await worker.terminate();
-
-            // Lógica de extracción (Busca patrones de SKU y Cantidad)
-            interpretarTexto(text);
-            
-        } catch (e) {
-            alert("Error al leer la imagen. Intenta con una foto más clara.");
-            console.error(e);
-        } finally {
-            overlay.classList.add('hidden');
-        }
-    }
-
-    function interpretarTexto(text) {
-        // Buscamos líneas que parezcan SKU y Cantidad
-        const lineas = text.split('\n');
-        items = [];
-
-        lineas.forEach(linea => {
-            // Ejemplo de búsqueda simple: Texto seguido de números
-            const match = linea.match(/([A-Z0-9-]{4,})\s+(\d+)/);
-            if (match) {
-                items.push({
-                    sku: match[1],
-                    desc: "Detectado en Packing",
-                    pck: parseInt(match[2]),
-                    fisico: 0
-                });
-            }
-        });
-
-        if (items.length === 0) {
-            alert("No se detectaron productos claros. Intenta tomar la foto más de cerca.");
-            location.reload();
-        } else {
-            document.getElementById('step-1').classList.add('hidden');
-            document.getElementById('step-2').classList.remove('hidden');
+            items = JSON.parse(input);
+            document.getElementById('sync-zone').classList.add('hidden');
             document.getElementById('footer-actions').classList.remove('hidden');
             render();
+        } catch (e) {
+            alert("Error: El código no es válido. Asegúrate de copiar todo el bloque JSON.");
         }
     }
 
+    // Función para sumar por cajas
+    function sumar(index) {
+        const item = items[index];
+        const cantCajas = prompt(`¿Cuántas CAJAS de ${item.sku} ingresan?\n(Capacidad: ${item.u_por_caja} und/caja)`, "1");
+        
+        if (cantCajas !== null && cantCajas !== "") {
+            const bultos = parseFloat(cantCajas);
+            if (!isNaN(bultos)) {
+                items[index].fisico += (bultos * item.u_por_caja);
+                render();
+            }
+        }
+    }
+
+    // Renderizado de la lista
     function render() {
-        const container = document.getElementById('lista-conteo');
+        const container = document.getElementById('lista-items');
         container.innerHTML = "";
+        
         items.forEach((item, index) => {
             const esExacto = item.fisico === item.pck;
+            const cajasFisicas = item.fisico / item.u_por_caja;
+            const faltanteCajas = (item.pck - item.fisico) / item.u_por_caja;
+            
             container.innerHTML += `
                 <div class="item-card ${esExacto ? 'exacto' : ''}">
-                    <div style="flex:1">
-                        <span class="sku-text">${item.sku} ${esExacto ? '✅' : ''}</span>
-                        <span class="desc-text">${item.desc}</span>
+                    <div class="sku-info">
+                        <span class="sku-title">${item.sku}</span>
+                        <span class="sku-status" style="color:${esExacto ? 'var(--success)' : '#f59e0b'}">
+                            ${esExacto ? '✓ EXACTO' : `Faltan ${faltanteCajas.toFixed(1)} cajas`}
+                        </span>
                     </div>
-                    <div class="counter-zone">
+                    <div class="counter">
                         <div class="qty-box">
-                            <span class="qty-label">PACKING</span>
-                            <div class="qty-num" style="color:#94a3b8">${item.pck}</div>
+                            <span class="qty-label">CJ PCK</span>
+                            <div class="qty-num" style="color:#94a3b8">${item.cajas_pck}</div>
                         </div>
                         <div class="qty-box">
-                            <span class="qty-label">CONTEO</span>
-                            <div class="qty-num">${item.fisico}</div>
+                            <span class="qty-label">CJ FIS</span>
+                            <div class="qty-num">${cajasFisicas}</div>
                         </div>
-                        <button class="btn-inc" onclick="modificar(${index}, 1)">+</button>
-                        <button class="btn-inc" onclick="modificar(${index}, -1)" style="font-size:0.8rem">-</button>
+                        <button class="btn-plus" onclick="sumar(${index})">+</button>
                     </div>
                 </div>
             `;
         });
     }
 
-    function modificar(index, val) {
-        if(val === 1) {
-            const num = prompt("Cantidad a sumar:", "1");
-            if(num) items[index].fisico += parseInt(num);
-        } else {
-            items[index].fisico -= 1;
-        }
-        if(items[index].fisico < 0) items[index].fisico = 0;
-        render();
-    }
-
+    // Generación del Reporte PDF
     function generarReporte() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        doc.setFontSize(18).text("REPORTE DE INVENTARIO LOGÍSTICO", 105, 20, {align:'center'});
+        // Encabezado del PDF
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20).setFont(undefined, 'bold').text("REPORTE DE INBOUND", 15, 25);
         
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10).setFont(undefined, 'normal').text(`Fecha de Emisión: ${new Date().toLocaleString()}`, 15, 50);
+
         const tableData = items.map(i => [
             i.sku, 
+            i.u_por_caja,
             i.pck, 
             i.fisico, 
-            i.fisico === i.pck ? "SÍ" : "NO"
+            i.fisico === i.pck ? "EXACTO" : (i.fisico - i.pck)
         ]);
 
         doc.autoTable({
-            startY: 35,
-            head: [['SKU', 'PACKING', 'CONTEO', 'EXACTO']],
+            startY: 55,
+            head: [['SKU', 'UND/CJ', 'TOT. PACKING', 'TOT. CONTEO', 'ESTADO/DIF']],
             body: tableData,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 0, 0] }
+            theme: 'grid',
+            headStyles: { fillColor: [0, 0, 0], fontSize: 9 },
+            styles: { fontSize: 8 },
+            columnStyles: { 4: { fontStyle: 'bold' } }
         });
 
-        const finalY = doc.lastAutoTable.finalY + 30;
-        doc.text("Revisión autorizada por:", 20, finalY);
-        doc.setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 20, finalY + 7);
-        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 20, finalY + 12);
+        const finalY = doc.lastAutoTable.finalY + 35;
+        
+        // Firma Autorizada
+        doc.line(15, finalY, 80, finalY);
+        doc.setFontSize(10).setFont(undefined, 'bold').text("J. Angelo Nuñez Durand", 15, finalY + 7);
+        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico", 15, finalY + 12);
+        
+        doc.text("Revisión autorizada y conforme.", 15, finalY + 22);
 
-        doc.save("Reporte_Inbound.pdf");
+        doc.save(`Inbound_Angelo_${new Date().getTime()}.pdf`);
     }
 </script>
 </body>
 </html>
-
