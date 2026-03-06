@@ -3,83 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS LOGISTICS - ANGELO</title>
+    <title>SISTEMA TWINS - J. ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #000; --bg: #fff; --border: #e2e2e2; }
-        * { box-sizing: border-box; font-family: sans-serif; }
-        body { background: var(--bg); margin: 0; padding-bottom: 120px; color: #000; }
-        .header { background: #000; color: #fff; padding: 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 0.9rem; margin: 0; letter-spacing: 1px; }
-        .dashboard { display: flex; justify-content: space-around; background: #f9f9f9; padding: 12px; border-bottom: 1px solid var(--border); }
-        .dash-val { display: block; font-size: 1.1rem; font-weight: 700; }
-        .dash-lbl { font-size: 0.55rem; color: #666; text-transform: uppercase; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .item-card { border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; border-radius: 4px; }
-        .sku-id { font-weight: 800; font-size: 0.85rem; background: #000; color: #fff; padding: 2px 6px; }
-        .input-row { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
-        input[type="number"] { flex: 1; border: 1px solid var(--border); padding: 10px; font-size: 1rem; font-weight: 700; outline: none; }
-        .footer-action { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 15px; border-top: 1px solid var(--border); z-index: 100; }
-        .btn-black { background: #000; color: #fff; border: none; padding: 15px; width: 100%; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        :root { --main: #000000; --accent: #ffffff; --border: #cccccc; --bg: #f4f4f4; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg); margin: 0; padding-bottom: 120px; }
+        
+        .header { background: var(--main); color: var(--accent); padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #333; }
+        .header h1 { font-size: 0.9rem; margin: 0; letter-spacing: 1px; font-weight: 800; }
+        
+        .dash { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-bottom: 1px solid var(--border); padding: 15px; }
+        .dash-col { text-align: center; border-right: 1px solid #eee; }
+        .dash-val { display: block; font-size: 1.2rem; font-weight: 900; }
+        .dash-lbl { font-size: 0.6rem; color: #777; text-transform: uppercase; }
+
+        .container { padding: 12px; max-width: 600px; margin: auto; }
+        .card { background: #fff; border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; position: relative; }
+        .sku-tag { background: #000; color: #fff; font-size: 0.75rem; padding: 3px 8px; font-weight: bold; }
+        .sku-desc { font-size: 0.8rem; margin: 10px 0; color: #333; font-weight: 500; }
+        
+        .input-box { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        input[type="number"] { flex: 1; border: 2px solid #000; padding: 12px; font-size: 1.2rem; font-weight: 900; outline: none; border-radius: 4px; }
+        .plan-val { font-size: 0.8rem; font-weight: bold; color: #666; }
+
+        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 20px; border-top: 1px solid var(--border); z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .btn { background: #000; color: #fff; border: none; padding: 18px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .status-bar { text-align: center; font-size: 0.65rem; padding: 5px; background: #eee; font-weight: bold; }
         .hidden { display: none !important; }
-        #status-msg { font-size: 0.6rem; color: #f00; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>TWINS LOGISTICS</h1>
-    <span id="status-msg"></span>
+    <h1>REVISIÓN LOGÍSTICA TWINS</h1>
 </div>
 
-<div id="dash-panel" class="dashboard hidden">
-    <div class="dash-item"><span class="dash-val" id="total-cajas">0</span><span class="dash-lbl">Recibido</span></div>
-    <div class="dash-item"><span class="dash-val" id="total-progreso">0%</span><span class="dash-lbl">Progreso</span></div>
+<div class="status-bar" id="status">SISTEMA LISTO</div>
+
+<div id="dash-panel" class="dash hidden">
+    <div class="dash-col"><span class="dash-val" id="total-fis">0</span><span class="dash-lbl">CJ INGRESADAS</span></div>
+    <div class="dash-col" style="border:0"><span class="dash-val" id="total-per">0%</span><span class="dash-lbl">AVANCE</span></div>
 </div>
 
 <div class="container">
     <div id="setup">
-        <textarea id="json-input" rows="5" style="width:100%; margin-bottom:10px;" placeholder="Pega el JSON aquí..."></textarea>
-        <button class="btn-black" onclick="initApp()">Cargar Datos</button>
+        <textarea id="json-input" rows="8" style="width:100%; padding:15px; margin-bottom:10px; border:1px solid #ccc" placeholder="PEGA EL JSON AQUÍ..."></textarea>
+        <button class="btn" onclick="initApp()">CARGAR CONTENEDOR</button>
     </div>
     <div id="list"></div>
 </div>
 
-<div class="footer-action hidden" id="footer">
-    <button class="btn-black" onclick="makePDF()" id="pdf-btn">Generar Reporte PDF</button>
+<div class="footer hidden" id="footer-ui">
+    <button class="btn" onclick="makePDF()">GENERAR REPORTE OFICIAL</button>
 </div>
 
 <script>
     let items = [];
-    // Tu firma optimizada para carga rápida sin internet pesado
-    const firmaAngelo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+    const FIRMA_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+
+    function log(m) { document.getElementById('status').innerText = m; }
 
     function initApp() {
+        const raw = document.getElementById('json-input').value;
         try {
-            items = JSON.parse(document.getElementById('json-input').value).map(i => ({...i, fisico: 0, obs: ""}));
+            items = JSON.parse(raw).map(i => ({...i, fisico: 0}));
             document.getElementById('setup').classList.add('hidden');
             document.getElementById('dash-panel').classList.remove('hidden');
-            document.getElementById('footer').classList.remove('hidden');
+            document.getElementById('footer-ui').classList.remove('hidden');
+            log("CONTENEDOR CARGADO CON ÉXITO");
             draw();
-        } catch(e) { alert("Pega el JSON correctamente"); }
+        } catch(e) { alert("ERROR: JSON NO VÁLIDO"); }
     }
 
     function draw() {
         const list = document.getElementById('list');
         list.innerHTML = "";
-        let tFis = 0, tExp = 0;
+        let fTotal = 0, eTotal = 0;
+
         items.forEach((item, i) => {
             const boxes = item.fisico / item.u_por_caja;
-            tFis += boxes; tExp += item.cajas_pck;
+            fTotal += boxes; eTotal += item.cajas_pck;
             list.innerHTML += `
-                <div class="item-card">
-                    <span class="sku-id">${item.sku}</span>
-                    <div style="font-size:0.75rem; margin:8px 0;">${item.desc}</div>
-                    <div class="input-row">
-                        <input type="number" value="${boxes || ''}" placeholder="Cantidad..." 
-                               oninput="items[${i}].fisico = (parseFloat(this.value)||0)*${item.u_por_caja}; updateDash();">
-                        <span style="font-size:0.8rem; font-weight:bold;">/ ${item.cajas_pck} CJ</span>
+                <div class="card">
+                    <span class="sku-tag">${item.sku}</span>
+                    <div class="sku-desc">${item.desc}</div>
+                    <div class="input-box">
+                        <input type="number" value="${boxes || ''}" placeholder="0" 
+                               oninput="items[${i}].fisico = (parseFloat(this.value)||0)*${item.u_por_caja}; updateDash();" 
+                               inputmode="numeric">
+                        <span class="plan-val">/ ${item.cajas_pck} CJ</span>
                     </div>
                 </div>`;
         });
@@ -89,45 +104,59 @@
     function updateDash() {
         let f = 0, e = 0;
         items.forEach(i => { f += (i.fisico/i.u_por_caja); e += i.cajas_pck; });
-        document.getElementById('total-cajas').innerText = Math.round(f);
-        document.getElementById('total-progreso').innerText = Math.round((f/e)*100) + "%";
+        document.getElementById('total-fis').innerText = Math.round(f);
+        document.getElementById('total-per').innerText = e > 0 ? Math.round((f/e)*100) + "%" : "0%";
     }
 
     function makePDF() {
-        // Validación de librería para evitar el error de "internet"
         if (typeof jspdf === 'undefined') {
-            document.getElementById('status-msg').innerText = "ERROR: LIBRERÍA NO CARGADA. REINTENTA.";
+            alert("ERROR: No hay conexión a Internet para cargar el motor PDF. Intenta de nuevo.");
             return;
         }
-
-        document.getElementById('status-msg').innerText = "GENERANDO...";
+        log("GENERANDO ARCHIVO...");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
+        // Header Negro Industrial
         doc.setFillColor(0,0,0);
-        doc.rect(0, 0, 210, 25, 'F');
+        doc.rect(0, 0, 210, 30, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.text("REPORTE DE INVENTARIO - TWINS", 105, 15, {align:'center'});
+        doc.setFontSize(14).setFont(undefined, 'bold').text("REPORTE DE INVENTARIO - TWINS", 105, 18, {align:'center'});
         
-        const rows = items.map(i => [i.sku, i.cajas_pck, (i.fisico/i.u_por_caja).toFixed(0), (i.fisico/i.u_por_caja >= i.cajas_pck ? "OK" : "FALTA")]);
+        doc.setTextColor(0,0,0);
+        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleDateString()} | REVISOR: J. ANGELO NUÑEZ D.`, 15, 40);
+
+        const rows = items.map(i => [
+            i.sku, 
+            i.desc.substring(0,45), 
+            i.cajas_pck, 
+            (i.fisico/i.u_por_caja).toFixed(0),
+            (i.fisico/i.u_por_caja >= i.cajas_pck ? "CONFORME" : "FALTANTE")
+        ]);
 
         doc.autoTable({
-            startY: 35,
-            head: [['SKU', 'PLAN', 'REAL', 'ESTADO']],
+            startY: 45,
+            head: [['SKU', 'PRODUCTO', 'PLAN', 'REAL', 'ESTADO']],
             body: rows,
-            headStyles: { fillColor: [0, 0, 0] }
+            headStyles: { fillColor: [0, 0, 0] },
+            styles: { fontSize: 7 }
         });
 
         const y = doc.lastAutoTable.finalY + 10;
-        doc.addImage(firmaAngelo, 'PNG', 85, y, 40, 20);
-        doc.setTextColor(0,0,0);
-        doc.setFontSize(10).text("J. ANGELO NUÑEZ DURAND", 105, y + 25, {align:'center'});
-        doc.setFontSize(8).text("Asistente Inventario Logístico", 105, y + 30, {align:'center'});
+        
+        // Firma y Pie de página exacto
+        try {
+            doc.addImage(FIRMA_B64, 'PNG', 80, y, 50, 25);
+        } catch(e) { console.log("Firma omitida por error de render."); }
+        
+        doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 30, {align:'center'});
+        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, y + 35, {align:'center'});
+        doc.setFontSize(7).text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, y + 42, {align:'center'});
 
-        doc.save("Reporte_Twins.pdf");
-        document.getElementById('status-msg').innerText = "PDF DESCARGADO";
+        doc.save(`Twins_Reporte_${new Date().getTime()}.pdf`);
+        log("DESCARGA COMPLETADA");
+        setTimeout(() => log("SISTEMA LISTO"), 3000);
     }
 </script>
 </body>
 </html>
-
