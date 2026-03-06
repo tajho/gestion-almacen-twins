@@ -3,178 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS LOGISTICS PRO | J. ANGELO NUÑEZ</title>
+    <title>TWINS LOGISTICS SYSTEM | ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --black: #000000; --white: #ffffff; --gray-1: #f8f9fa; --gray-2: #e9ecef; --gray-3: #dee2e6; }
-        * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background-color: var(--white); color: var(--black); margin: 0; padding-bottom: 120px; line-height: 1.5; }
-        
-        /* Navigation & Dashboard */
-        .nav-header { background: var(--black); color: var(--white); padding: 30px 20px; text-align: center; }
-        .nav-header h1 { margin: 0; font-size: 0.8rem; letter-spacing: 4px; font-weight: 900; text-transform: uppercase; }
-        
-        .kpi-container { display: flex; border-bottom: 1px solid var(--black); background: var(--white); }
-        .kpi-box { flex: 1; padding: 20px; text-align: center; border-right: 1px solid var(--gray-2); }
-        .kpi-val { display: block; font-size: 1.5rem; font-weight: 900; color: var(--black); }
-        .kpi-lbl { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+        :root { --black: #000000; --white: #ffffff; --gray: #f2f2f2; --text: #1a1a1a; }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background-color: var(--white); color: var(--text); margin: 0; padding-bottom: 140px; }
 
-        .container { padding: 20px; max-width: 650px; margin: auto; }
-        
-        /* Professional Item Card */
-        .card { border: 1px solid var(--black); margin-bottom: 15px; padding: 20px; transition: all 0.2s ease; }
-        .card:hover { background: var(--gray-1); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .sku-badge { border: 1.5px solid var(--black); padding: 4px 10px; font-size: 0.75rem; font-weight: 900; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-3); }
-        .complete .status-dot { background: var(--black); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        
-        .item-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
-        
-        /* Pro Inputs */
-        .input-wrapper { display: flex; align-items: center; border-bottom: 2px solid var(--black); padding: 5px 0; }
-        .input-wrapper label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; margin-right: 15px; }
-        input[type="number"] { border: none; font-size: 1.3rem; font-weight: 900; width: 100px; outline: none; background: transparent; }
-        .plan-info { margin-left: auto; font-size: 0.75rem; font-weight: 700; color: #555; }
+        /* Header Industrial */
+        header { background: var(--black); color: var(--white); padding: 40px 20px; text-align: left; position: relative; overflow: hidden; }
+        header h1 { margin: 0; font-size: 1.1rem; letter-spacing: 5px; font-weight: 900; text-transform: uppercase; }
+        header p { margin: 5px 0 0; font-size: 0.65rem; opacity: 0.6; letter-spacing: 2px; }
 
-        /* Action Bar */
-        .action-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); border-top: 1px solid var(--black); padding: 25px 20px; z-index: 1000; }
-        .btn-black { background: var(--black); color: var(--white); border: none; width: 100%; padding: 20px; font-size: 0.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
-        .btn-black:active { opacity: 0.8; }
+        /* Dashboard de Eficiencia */
+        .dash { display: flex; border-bottom: 1px solid var(--black); background: var(--white); }
+        .dash-item { flex: 1; padding: 25px; border-right: 1px solid var(--gray); text-align: center; }
+        .dash-item:last-child { border-right: none; }
+        .dash-val { display: block; font-size: 1.8rem; font-weight: 900; line-height: 1; }
+        .dash-lbl { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #888; margin-top: 5px; letter-spacing: 1px; }
 
-        /* Setup View */
-        textarea { width: 100%; border: 1px solid var(--black); padding: 20px; font-size: 0.8rem; min-height: 150px; outline: none; margin-bottom: 15px; }
+        .container { padding: 20px; max-width: 700px; margin: auto; }
+
+        /* Tarjetas de Producto Pro */
+        .card { border: 1px solid var(--gray); margin-bottom: 15px; padding: 25px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #fff; }
+        .card:hover { border-color: var(--black); }
+        .sku-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .sku-label { font-size: 0.7rem; font-weight: 900; background: var(--black); color: #fff; padding: 4px 10px; letter-spacing: 1px; }
+        .status-badge { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: #ccc; }
+        .card.complete { border-left: 5px solid var(--black); }
+        .card.complete .status-badge { color: var(--black); }
+
+        .desc { font-size: 0.95rem; font-weight: 600; margin-bottom: 20px; line-height: 1.4; color: #333; }
+
+        /* Inputs de Alta Precisión */
+        .input-group { display: flex; align-items: flex-end; gap: 20px; border-bottom: 2px solid var(--gray); padding-bottom: 10px; transition: 0.3s; }
+        .input-group:focus-within { border-bottom-color: var(--black); }
+        .field { flex: 1; }
+        .field label { display: block; font-size: 0.55rem; font-weight: 800; color: #aaa; text-transform: uppercase; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; border: none; outline: none; font-size: 1.6rem; font-weight: 900; background: transparent; padding: 0; }
+        .target-info { font-size: 0.8rem; font-weight: 700; color: #666; white-space: nowrap; }
+
+        /* Barra de Acción */
+        .action-area { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid var(--gray); padding: 30px 20px; z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
+        .btn-black { background: var(--black); color: var(--white); border: none; width: 100%; padding: 22px; font-size: 0.85rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .btn-black:hover { opacity: 0.9; }
+
+        .setup-box { background: #fafafa; border: 1px dashed #ccc; padding: 30px; text-align: center; }
+        textarea { width: 100%; height: 150px; border: 1px solid #ddd; padding: 15px; font-size: 0.8rem; margin-bottom: 20px; outline: none; border-radius: 0; }
         .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            .dash-val { font-size: 1.4rem; }
+            input[type="number"] { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="nav-header">
-    <h1>Logistics Intelligence Twins</h1>
-</div>
+<header>
+    <h1>TWINS MANAGEMENT SYSTEM</h1>
+    <p>LOGISTICS AUDIT | J. ANGELO NUÑEZ</p>
+</header>
 
-<div id="dashboard" class="kpi-container hidden">
-    <div class="kpi-box"><span class="kpi-val" id="total-received">0</span><span class="kpi-lbl">Recibido</span></div>
-    <div class="kpi-box" style="border:none;"><span class="kpi-val" id="total-progress">0%</span><span class="kpi-lbl">Eficiencia</span></div>
+<div id="dashboard" class="dash hidden">
+    <div class="dash-item"><span class="dash-val" id="kpi-rec">0</span><span class="dash-lbl">CJ FISICO</span></div>
+    <div class="dash-item"><span class="dash-val" id="kpi-eff">0%</span><span class="dash-lbl">EFICIENCIA</span></div>
 </div>
 
 <div class="container">
-    <div id="setup-view">
-        <p style="font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Importar datos de contenedor (JSON):</p>
-        <textarea id="json-input" placeholder="Pegue la estructura de datos aquí..."></textarea>
-        <button class="btn-black" onclick="initializeSystem()">Inicializar Sistema</button>
+    <div id="setup-view" class="setup-box">
+        <p style="font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;">Importar Manifiesto de Carga (JSON)</p>
+        <textarea id="json-input" placeholder="Pegue los datos aquí..."></textarea>
+        <button class="btn-black" onclick="startAudit()">Iniciar Auditoría</button>
     </div>
-    <div id="inventory-list"></div>
+    <div id="main-list"></div>
 </div>
 
-<div class="action-bar hidden" id="action-bar">
-    <button class="btn-black" onclick="generateProfessionalPDF()">Finalizar y Exportar Reporte</button>
+<div class="action-area hidden" id="action-bar">
+    <button class="btn-black" onclick="exportReport()">Finalizar y Generar PDF</button>
 </div>
 
 <script>
-    let inventoryData = [];
+    let auditItems = [];
     
-    // Firma caligráfica generada por código (Vectorial elegante)
-    const signatureAsset = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEchJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+    // Firma Estilizada Generada (Simulación de trazo profesional)
+    const signatureImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEehJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
 
-    function initializeSystem() {
+    function startAudit() {
         const input = document.getElementById('json-input').value;
         try {
-            inventoryData = JSON.parse(input).map(i => ({...i, current: 0}));
+            auditItems = JSON.parse(input).map(i => ({...i, current: 0}));
             document.getElementById('setup-view').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('action-bar').classList.remove('hidden');
-            renderInventory();
-        } catch(e) { alert("Error en estructura JSON. Por favor verifique."); }
+            renderList();
+        } catch(e) { alert("ERROR DE ESTRUCTURA: Verifique el JSON de entrada."); }
     }
 
-    function renderInventory() {
-        const list = document.getElementById('inventory-list');
+    function renderList() {
+        const list = document.getElementById('main-list');
         list.innerHTML = "";
-        inventoryData.forEach((item, index) => {
+        auditItems.forEach((item, index) => {
             const boxes = item.current / item.u_por_caja;
-            const isComplete = boxes >= item.cajas_pck;
+            const complete = boxes >= item.cajas_pck;
             
             list.innerHTML += `
-                <div class="card ${isComplete ? 'complete' : ''}">
-                    <div class="card-header">
-                        <span class="sku-badge">${item.sku}</span>
-                        <div class="status-dot"></div>
+                <div class="card ${complete ? 'complete' : ''}">
+                    <div class="sku-header">
+                        <span class="sku-label">${item.sku}</span>
+                        <span class="status-badge">${complete ? '✓ CONFORME' : 'EN PROCESO'}</span>
                     </div>
-                    <div class="item-name">${item.desc}</div>
-                    <div class="input-wrapper">
-                        <label>Ingreso Físico</label>
-                        <input type="number" value="${boxes || ''}" placeholder="0" 
-                               oninput="updateItem(${index}, this.value)" inputmode="numeric">
-                        <span class="plan-info">PLAN: ${item.cajas_pck} CJ</span>
+                    <div class="desc">${item.desc}</div>
+                    <div class="input-group">
+                        <div class="field">
+                            <label>Cajas Recibidas</label>
+                            <input type="number" value="${boxes || ''}" placeholder="0" 
+                                   oninput="updateVal(${index}, this.value)" inputmode="numeric">
+                        </div>
+                        <div class="target-info">META: ${item.cajas_pck} CJ</div>
                     </div>
                 </div>`;
         });
-        updateDashboard();
+        updateStats();
     }
 
-    function updateItem(index, val) {
-        const num = parseFloat(val) || 0;
-        inventoryData[index].current = num * inventoryData[index].u_por_caja;
-        updateDashboard();
+    function updateVal(idx, val) {
+        const n = parseFloat(val) || 0;
+        auditItems[idx].current = n * auditItems[idx].u_por_caja;
+        updateStats();
     }
 
-    function updateDashboard() {
-        let rec = 0, exp = 0;
-        inventoryData.forEach(i => {
-            rec += (i.current / i.u_por_caja);
-            exp += i.cajas_pck;
+    function updateStats() {
+        let r = 0, t = 0;
+        auditItems.forEach(i => {
+            r += (i.current / i.u_por_caja);
+            t += i.cajas_pck;
         });
-        document.getElementById('total-received').innerText = Math.round(rec);
-        document.getElementById('total-progress').innerText = exp > 0 ? Math.round((rec/exp)*100) + "%" : "0%";
+        document.getElementById('kpi-rec').innerText = Math.round(r);
+        document.getElementById('kpi-eff').innerText = t > 0 ? Math.round((r/t)*100) + "%" : "0%";
     }
 
-    function generateProfessionalPDF() {
+    function exportReport() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
-        // Estilo Corporativo Blanco y Negro
+        const timestamp = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
+
+        // Estética Corporativa Minimalista
         doc.setFillColor(0,0,0);
-        doc.rect(0, 0, 210, 40, 'F');
+        doc.rect(0, 0, 210, 45, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(18).setFont(undefined, 'bold').text("INVENTORY DISPATCH REPORT", 105, 18, {align:'center'});
-        doc.setFontSize(8).setFont(undefined, 'normal').text("TWINS MANAGEMENT SYSTEM | LOGISTICS DIVISION", 105, 28, {align:'center'});
+        doc.setFontSize(20).setFont(undefined, 'bold').text("INVENTORY AUDIT REPORT", 105, 22, {align:'center'});
+        doc.setFontSize(9).setFont(undefined, 'normal').text("LOGISTICS DEPARTMENT | TWINS OPERATIONS", 105, 32, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(10).setFont(undefined, 'bold').text(`AUDIT DATE: ${new Date().toLocaleDateString()}`, 15, 50);
-        doc.text(`REVISOR: J. ANGELO NUÑEZ DURAND`, 15, 56);
+        doc.setFontSize(10).setFont(undefined, 'bold').text(`AUDITOR: J. ANGELO NUÑEZ DURAND`, 15, 60);
+        doc.setFontSize(8).setFont(undefined, 'normal').text(`DATE: ${timestamp}`, 15, 66);
 
-        const rows = inventoryData.map(i => [
+        const tableBody = auditItems.map(i => [
             i.sku, 
-            i.desc.substring(0,45), 
+            i.desc.substring(0,50), 
             i.cajas_pck, 
             (i.current/i.u_por_caja).toFixed(0),
-            (i.current/i.u_por_caja >= i.cajas_pck ? "VERIFIED" : "INCOMPLETE")
+            (i.current/i.u_por_caja >= i.cajas_pck ? "VERIFIED" : "SHORTAGE")
         ]);
 
         doc.autoTable({
-            startY: 65,
-            head: [['SKU', 'PRODUCT DESCRIPTION', 'TARGET', 'ACTUAL', 'STATUS']],
-            body: rows,
+            startY: 75,
+            head: [['SKU CODE', 'PRODUCT DESCRIPTION', 'PLAN', 'ACTUAL', 'REMARK']],
+            body: tableBody,
             headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontSize: 8 },
-            styles: { fontSize: 7, lineColor: [220, 220, 220], lineWidth: 0.1 }
+            styles: { fontSize: 7, cellPadding: 3, lineColor: [230, 230, 230], lineWidth: 0.1 },
+            columnStyles: { 0: { fontStyle: 'bold' }, 4: { fontStyle: 'bold' } }
         });
 
-        const finalY = doc.lastAutoTable.finalY + 20;
+        const finalY = doc.lastAutoTable.finalY + 25;
         
-        // Firma Caligráfica Generada
-        doc.addImage(signatureAsset, 'PNG', 75, finalY, 60, 25);
-        doc.setLineWidth(0.5).line(70, finalY + 22, 140, finalY + 22);
+        // Firma y Bloque de Autorización
+        if(finalY > 250) doc.addPage();
         
-        doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
-        doc.setFontSize(7).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, finalY + 33, {align:'center'});
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 40, {align:'center'});
+        // Firma arriba del nombre
+        doc.addImage(signatureImg, 'PNG', 80, finalY - 20, 50, 20);
+        doc.setLineWidth(0.8).line(70, finalY, 140, finalY);
+        
+        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 8, {align:'center'});
+        doc.setFontSize(8).setFont(undefined, 'normal').text("ASISTENTE DE LOGÍSTICA", 105, finalY + 14, {align:'center'});
+        
+        doc.setFontSize(7).setTextColor(100).text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 25, {align:'center'});
 
-        doc.save(`Twins_Report_${new Date().getTime()}.pdf`);
+        doc.save(`TWINS_AUDIT_${new Date().getTime()}.pdf`);
     }
 </script>
 </body>
 </html>
-
-
