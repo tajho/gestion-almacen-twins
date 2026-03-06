@@ -3,160 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TWINS LOGISTICS PRO | J. ANGELO NUÑEZ</title>
+    <title>TWINS PRO | J. ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --black: #000; --white: #fff; --gray: #f4f4f4; --accent: #1a1a1a; }
+        :root { --black: #000; --white: #fff; --gray: #f4f4f4; --success: #d4edda; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
         body { background: var(--white); margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        header { background: var(--black); color: var(--white); padding: 40px 20px 20px; border-radius: 0 0 20px 20px; flex-shrink: 0; }
-        header h1 { font-size: 1rem; margin: 0; letter-spacing: 2px; font-weight: 900; }
-        header p { font-size: 0.6rem; margin: 5px 0 0; opacity: 0.7; text-transform: uppercase; }
+        header { background: var(--black); color: var(--white); padding: 45px 20px 20px; border-radius: 0 0 25px 25px; flex-shrink: 0; z-index: 10; }
+        header h1 { font-size: 0.9rem; margin: 0; letter-spacing: 3px; font-weight: 900; }
+        header p { font-size: 0.6rem; margin: 5px 0 0; opacity: 0.8; letter-spacing: 1px; }
 
-        #main-scroll { flex: 1; overflow-y: auto; padding: 15px 15px 150px; }
-        .card { border: 1px solid #ddd; border-radius: 15px; padding: 20px; margin-bottom: 12px; transition: 0.3s; }
-        .card.complete { background: #000; color: #fff; border-color: #000; }
+        #main-scroll { flex: 1; overflow-y: auto; padding: 20px 15px 160px; scroll-behavior: smooth; }
+        .card { border: 2px solid #eee; border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; transition: 0.3s; }
+        .card.complete { background: var(--black); color: var(--white); border-color: var(--black); }
         
-        .sku-tag { font-size: 0.7rem; font-weight: 900; border: 1px solid #000; padding: 2px 8px; margin-bottom: 10px; display: inline-block; }
-        .card.complete .sku-tag { border-color: #fff; }
+        .sku-tag { font-size: 0.65rem; font-weight: 900; background: #000; color: #fff; padding: 4px 10px; border-radius: 5px; margin-bottom: 10px; display: inline-block; }
+        .card.complete .sku-tag { background: #fff; color: #000; }
 
-        .desc { font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; line-height: 1.2; }
+        .desc { font-size: 0.9rem; font-weight: 700; margin-bottom: 15px; line-height: 1.3; }
 
-        /* Lógica de Suma Acumulativa */
-        .accumulate-box { display: flex; gap: 10px; align-items: center; }
-        input[type="number"] { flex: 1; padding: 15px; border: 2px solid #eee; border-radius: 10px; font-size: 1.2rem; font-weight: 800; outline: none; }
-        .btn-add { background: var(--black); color: #fff; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 1.2rem; cursor: pointer; }
-        .card.complete .btn-add { background: #fff; color: #000; }
+        /* Controles de Suma */
+        .sum-engine { display: flex; gap: 10px; }
+        input[type="number"] { flex: 1; background: #f9f9f9; border: 2px solid #ddd; border-radius: 12px; padding: 15px; font-size: 1.4rem; font-weight: 900; outline: none; }
+        .card.complete input { background: #333; border-color: #444; color: #fff; }
+        
+        .btn-plus { background: var(--black); color: #fff; border: none; width: 60px; height: 60px; border-radius: 12px; font-size: 1.8rem; font-weight: 900; cursor: pointer; }
+        .card.complete .btn-plus { background: var(--white); color: var(--black); }
 
-        .total-info { margin-top: 10px; font-size: 0.75rem; font-weight: 800; display: flex; justify-content: space-between; }
-        .total-info b { font-size: 1.1rem; }
+        .status-info { margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .counter { font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; }
+        .card.complete .counter { color: #aaa; }
+        .count-val { display: block; font-size: 1.3rem; color: var(--black); }
+        .card.complete .count-val { color: var(--white); }
 
-        /* Barra de Acción */
-        .action-bar { position: fixed; bottom: 0; width: 100%; padding: 20px; background: #fff; border-top: 1px solid #eee; z-index: 100; }
-        .btn-report { background: var(--black); color: #white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900; font-size: 0.9rem; letter-spacing: 1px; color: #fff; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-
-        .setup-screen { position: fixed; inset: 0; background: #fff; z-index: 200; padding: 40px; display: flex; flex-direction: column; }
-        textarea { flex: 1; margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 0.8rem; }
+        /* Footer Fijo con Botón de Reporte */
+        footer { position: fixed; bottom: 0; width: 100%; background: var(--white); padding: 25px; border-top: 1px solid #eee; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .btn-report { background: var(--black); color: var(--white); border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: 900; letter-spacing: 1px; font-size: 0.85rem; cursor: pointer; }
+        
+        .loader { position: fixed; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        textarea { width: 100%; height: 200px; border-radius: 15px; border: 2px solid #eee; padding: 15px; margin-bottom: 20px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="setup" class="setup-screen">
-    <h2 style="font-weight:900; margin:0;">CONFIGURACIÓN</h2>
-    <p style="font-size:0.7rem; color:#666;">PEGA EL JSON DEL CONTENEDOR</p>
-    <textarea id="json-data" placeholder='[{"sku":"...", "cajas_pck": 10, "u_por_caja": 12, "desc":"..."}]'></textarea>
-    <button class="btn-report" onclick="initApp()">CARGAR INVENTARIO</button>
+<div id="setup" class="loader">
+    <h2 style="font-weight: 900; margin-bottom: 5px;">INICIAR SISTEMA</h2>
+    <p style="font-size: 0.7rem; color: #888; margin-bottom: 25px;">PEGA EL MANIFIESTO (JSON)</p>
+    <textarea id="json-input" placeholder="[{...}, {...}]"></textarea>
+    <button class="btn-report" onclick="loadSystem()">CARGAR DATOS DEL CONTENEDOR</button>
 </div>
 
 <header>
     <h1>J. ANGELO NUÑEZ DURAND</h1>
-    <p>ASISTENTE DE LOGÍSTICA | SISTEMA DE SUMA ACUMULADA</p>
+    <p>ASISTENTE DE LOGÍSTICA | AUDITORÍA TWINS</p>
 </header>
 
 <div id="main-scroll" class="hidden">
-    <div id="list"></div>
+    <div id="list-container"></div>
 </div>
 
-<div class="action-bar hidden" id="action-bar">
-    <button id="pdf-btn" class="btn-report" onclick="safeGeneratePDF()">DESCARGAR REPORTE OFICIAL PDF</button>
-</div>
+<footer class="hidden" id="footer-ui">
+    <button id="main-pdf-btn" class="btn-report" onclick="generateOfficialPDF()">DESCARGAR REPORTE PDF INFALIBLE</button>
+</footer>
 
 <script>
-    let db = [];
-    const firmaAngelo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEchJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+    let inventory = [];
+    // Firma estilizada en alta calidad
+    const FIRMA_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEchJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
 
-    function initApp() {
+    function loadSystem() {
+        const raw = document.getElementById('json-input').value;
         try {
-            const raw = document.getElementById('json-data').value;
-            db = JSON.parse(raw).map(i => ({...i, fisico_acumulado: 0}));
+            inventory = JSON.parse(raw).map(i => ({...i, total_contado: 0}));
             document.getElementById('setup').classList.add('hidden');
             document.getElementById('main-scroll').classList.remove('hidden');
-            document.getElementById('action-bar').classList.remove('hidden');
-            render();
-        } catch(e) { alert("ERROR: El formato del JSON es incorrecto."); }
+            document.getElementById('footer-ui').classList.remove('hidden');
+            renderCards();
+        } catch(e) { alert("ERROR: El JSON no es válido. Revisa los corchetes y comas."); }
     }
 
-    function render() {
-        const container = document.getElementById('list');
+    function renderCards() {
+        const container = document.getElementById('list-container');
         container.innerHTML = "";
-        db.forEach((item, idx) => {
-            const cajasContadas = item.fisico_acumulado / item.u_por_caja;
-            const isComplete = cajasContadas >= item.cajas_pck;
-            
+        inventory.forEach((item, idx) => {
+            const cajasActuales = item.total_contado / item.u_por_caja;
+            const metaCajas = item.cajas_pck;
+            const complete = cajasActuales >= metaCajas;
+
             container.innerHTML += `
-                <div class="card ${isComplete ? 'complete' : ''}">
+                <div class="card ${complete ? 'complete' : ''}" id="card-${idx}">
                     <span class="sku-tag">${item.sku}</span>
                     <div class="desc">${item.desc}</div>
-                    <div class="accumulate-box">
-                        <input type="number" id="input-${idx}" placeholder="Cajas a sumar..." inputmode="numeric">
-                        <button class="btn-add" onclick="addBoxes(${idx})">+</button>
+                    <div class="sum-engine">
+                        <input type="number" id="input-${idx}" placeholder="Suma..." inputmode="numeric">
+                        <button class="btn-plus" onclick="sumar(${idx})">+</button>
                     </div>
-                    <div class="total-info">
-                        <span>TOTAL CONTADO:</span>
-                        <span><b>${cajasContadas.toFixed(0)}</b> / ${item.cajas_pck} CJ</span>
+                    <div class="status-info">
+                        <span class="counter">Contado Actual:</span>
+                        <span class="count-val"><b>${cajasActuales.toFixed(0)}</b> / ${metaCajas} CJ</span>
                     </div>
                 </div>`;
         });
     }
 
-    function addBoxes(idx) {
+    function sumar(idx) {
         const input = document.getElementById(`input-${idx}`);
         const val = parseFloat(input.value) || 0;
-        if(val === 0) return;
+        if (val === 0) return;
+
+        // SUMA ACUMULADA: No borra, suma al total
+        inventory[idx].total_contado += (val * inventory[idx].u_por_caja);
+        input.value = ""; // Limpiar input
+        renderCards();
         
-        // Sumar a lo que ya existe (Acumulativo)
-        db[idx].fisico_acumulado += (val * db[idx].u_por_caja);
-        input.value = ""; // Limpiar para la siguiente suma
-        render();
+        // Efecto visual de confirmación
+        const card = document.getElementById(`card-${idx}`);
+        card.style.transform = "scale(1.02)";
+        setTimeout(() => card.style.transform = "scale(1)", 200);
     }
 
-    function safeGeneratePDF() {
-        const btn = document.getElementById('pdf-btn');
+    async function generateOfficialPDF() {
+        const btn = document.getElementById('main-pdf-btn');
+        btn.innerText = "PROCESANDO ARCHIVO...";
+        btn.style.background = "#555";
+
+        // Verificar si la librería cargó
         if (typeof window.jspdf === 'undefined') {
-            btn.innerText = "ESPERANDO LIBRERÍA...";
-            btn.style.background = "red";
+            alert("Error: La librería de PDF no ha cargado. Revisa tu conexión a internet y refresca la página.");
+            btn.innerText = "ERROR DE LIBRERÍA";
             return;
         }
-        
+
         try {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Header
-            doc.setFillColor(0,0,0);
+
+            // Encabezado Negro Profesional
+            doc.setFillColor(0, 0, 0);
             doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16).text("REPORTE DE INVENTARIO ACUMULADO", 105, 20, {align:'center'});
-            doc.setFontSize(8).text("TWINS LOGISTICS PRO SYSTEM", 105, 30, {align:'center'});
+            doc.setFontSize(18).setFont(undefined, 'bold').text("REPORTE DE AUDITORÍA LOGÍSTICA", 105, 20, {align: 'center'});
+            doc.setFontSize(9).setFont(undefined, 'normal').text("SISTEMA DE GESTIÓN DE INVENTARIOS TWINS", 105, 30, {align: 'center'});
 
-            const body = db.map(i => [
-                i.sku, 
-                i.desc.substring(0,40), 
-                i.cajas_pck, 
-                (i.fisico_acumulado/i.u_por_caja).toFixed(0),
-                (i.fisico_acumulado/i.u_por_caja >= i.cajas_pck ? "OK" : "PENDIENTE")
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10).setFont(undefined, 'bold').text(`AUDITOR: J. ANGELO NUÑEZ DURAND`, 15, 55);
+            doc.setFontSize(8).setFont(undefined, 'normal').text(`FECHA DE EMISIÓN: ${new Date().toLocaleString()}`, 15, 62);
+
+            const tableData = inventory.map(i => [
+                i.sku,
+                i.desc.substring(0, 45),
+                i.cajas_pck,
+                (i.total_contado / i.u_por_caja).toFixed(0),
+                (i.total_contado / i.u_por_caja >= i.cajas_pck ? "OK" : "PENDIENTE")
             ]);
 
             doc.autoTable({
-                startY: 50,
-                head: [['SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']],
-                body: body,
-                headStyles: { fillColor: [0, 0, 0] }
+                startY: 70,
+                head: [['SKU', 'PRODUCTO', 'PLAN', 'REAL', 'ESTADO']],
+                body: tableData,
+                headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
+                styles: { fontSize: 7, cellPadding: 4 },
+                columnStyles: { 4: { fontStyle: 'bold' } }
             });
 
-            const y = doc.lastAutoTable.finalY + 30;
-            doc.addImage(firmaAngelo, 'PNG', 80, y - 20, 50, 20);
-            doc.setDrawColor(0).line(70, y, 140, y);
-            doc.setTextColor(0).setFontSize(10).text("J. ANGELO NUÑEZ DURAND", 105, y + 8, {align:'center'});
-            doc.setFontSize(8).text("ASISTENTE DE LOGÍSTICA", 105, y + 14, {align:'center'});
-            doc.setFontSize(7).text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, y + 25, {align:'center'});
+            const finalY = doc.lastAutoTable.finalY + 30;
+            if (finalY > 260) doc.addPage();
 
-            doc.save(`Reporte_Angelo_${new Date().getTime()}.pdf`);
-        } catch(e) {
-            alert("Error al generar PDF: " + e.message);
+            // Bloque de Firma Oficial
+            doc.addImage(FIRMA_B64, 'PNG', 80, finalY - 20, 50, 20);
+            doc.setLineWidth(0.5).line(70, finalY, 140, finalY);
+            doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 8, {align: 'center'});
+            doc.setFontSize(8).setFont(undefined, 'normal').text("ASISTENTE DE LOGÍSTICA", 105, finalY + 14, {align: 'center'});
+            doc.setFontSize(7).setTextColor(100).text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 105, finalY + 25, {align: 'center'});
+
+            doc.save(`TWINS_AUDIT_${new Date().getTime()}.pdf`);
+            btn.innerText = "PDF DESCARGADO ✓";
+            btn.style.background = "#28a745";
+            setTimeout(() => { 
+                btn.innerText = "DESCARGAR REPORTE PDF INFALIBLE"; 
+                btn.style.background = "#000";
+            }, 3000);
+
+        } catch (err) {
+            alert("Error crítico al generar PDF: " + err.message);
+            btn.innerText = "ERROR AL GENERAR";
         }
     }
 </script>
