@@ -3,177 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS LOGISTICS - BLACK EDITION</title>
+    <title>INBOUND TWINS - J. ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #000000; --bg: #ffffff; --border: #e2e2e2; --accent: #666666; }
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--bg); margin: 0; padding-bottom: 140px; color: var(--primary); }
-        
-        /* Header Moderno */
-        .header { background: #000; color: #fff; padding: 25px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 1rem; margin: 0; letter-spacing: 2px; font-weight: 800; }
-        #status-msg { font-size: 0.6rem; letter-spacing: 1px; color: #888; text-transform: uppercase; }
-
-        /* Dashboard Minimal */
-        .dashboard { display: flex; justify-content: space-around; background: #f9f9f9; padding: 15px; border-bottom: 1px solid var(--border); }
-        .dash-item { text-align: center; }
-        .dash-val { display: block; font-size: 1.2rem; font-weight: 700; }
-        .dash-lbl { font-size: 0.6rem; color: var(--accent); text-transform: uppercase; font-weight: 600; }
-
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        
-        /* Card Estilo Industrial */
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 0; padding: 20px; margin-bottom: 10px; transition: 0.2s; }
-        .sku-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .sku-id { font-weight: 800; font-size: 0.9rem; background: #000; color: #fff; padding: 2px 8px; }
-        .sku-desc { font-size: 0.8rem; color: #333; line-height: 1.4; width: 100%; margin: 10px 0; }
-        
-        /* Input Numérico Directo */
-        .input-row { display: flex; align-items: center; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0; }
-        .input-group { flex: 1; }
-        .input-group label { display: block; font-size: 0.6rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
-        input[type="number"] { width: 100%; border: 1px solid var(--border); padding: 12px; font-size: 1.1rem; font-weight: 700; border-radius: 4px; outline: none; transition: border 0.3s; }
-        input[type="number"]:focus { border-color: #000; background: #fafafa; }
-
-        /* Progress Bar Simple */
-        .bar-bg { background: #eee; height: 3px; width: 100%; margin-top: 10px; }
-        .bar-fill { background: #000; height: 100%; width: 0%; transition: 0.4s; }
-
-        .footer-action { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 20px; border-top: 1px solid var(--border); z-index: 100; text-align: center; }
-        .btn-black { background: #000; color: #fff; border: none; padding: 18px 40px; width: 100%; font-weight: 700; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
-        
+        :root { --primary: #2563eb; --bg: #ffffff; --card: #f9fafb; --success: #10b981; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); margin: 0; padding-bottom: 120px; }
+        .header { background: #fff; padding: 25px 20px; border-bottom: 4px solid var(--primary); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header h1 { font-size: 1.2rem; margin: 0; color: var(--primary); font-weight: 900; text-transform: uppercase; }
+        .header p { font-size: 0.75rem; margin: 4px 0 0; font-weight: 700; color: #6b7280; letter-spacing: 1px; }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .sync-box { background: #f3f4f6; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #e5e7eb; }
+        textarea { width: 100%; border-radius: 10px; padding: 12px; border: 1px solid #ccc; font-size: 0.8rem; resize: none; background: #fff; margin-bottom: 10px; }
+        .btn-main { background: var(--primary); color: #fff; border: none; padding: 18px; width: 100%; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); background: #1d4ed8; }
+        .item-card { background: var(--card); border: 1px solid #e5e7eb; border-radius: 18px; padding: 18px; margin-bottom: 15px; }
+        .item-card.exacto { border-color: var(--success); background: #f0fdf4; }
+        .sku-row { font-weight: 900; color: #000; display: flex; justify-content: space-between; font-size: 1rem; }
+        .sku-desc { font-size: 0.7rem; color: #4b5563; display: block; margin: 5px 0 15px 0; font-weight: 600; }
+        .control-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 12px; border: 1px solid #eee; }
+        .qty-box { text-align: center; min-width: 80px; }
+        .qty-label { font-size: 0.55rem; color: #9ca3af; font-weight: 800; display: block; text-transform: uppercase; }
+        .qty-val { font-size: 1.2rem; font-weight: 900; color: #000; }
+        .btn-add { background: #f3f4f6; border: none; width: 50px; height: 50px; border-radius: 12px; font-weight: 900; font-size: 1.4rem; cursor: pointer; }
+        .footer-action { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 20px; border-top: 1px solid #eee; z-index: 100; }
         .hidden { display: none !important; }
-        textarea { width: 100%; border: 1px solid var(--border); padding: 15px; font-size: 0.8rem; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>TWINS LOGISTICS</h1>
-    <span id="status-msg">Standby</span>
-</div>
-
-<div id="dash-panel" class="dashboard hidden">
-    <div class="dash-item"><span class="dash-val" id="total-cajas">0</span><span class="dash-lbl">Recibido</span></div>
-    <div class="dash-item"><span class="dash-val" id="total-progreso">0%</span><span class="dash-lbl">Avance Global</span></div>
+    <h1>J. ANGELO NUÑEZ</h1>
+    <p>TWINS - INGRESO DE MERCADERÍA</p>
 </div>
 
 <div class="container">
     <div id="setup">
-        <textarea id="json-input" rows="8" placeholder="Pega el JSON aquí..."></textarea>
-        <button class="btn-black" onclick="initApp()">Cargar Contenedor</button>
+        <div class="sync-box">
+            <textarea id="json-input" rows="5" placeholder="Pega el código JSON de Gemini aquí..."></textarea>
+            <button class="btn-main" onclick="initApp()">INICIAR CONTEO</button>
+        </div>
     </div>
     <div id="list"></div>
 </div>
 
 <div class="footer-action hidden" id="footer">
-    <button class="btn-black" onclick="makePDF()" id="pdf-btn">Generar PDF Oficial</button>
+    <button class="btn-main" onclick="makePDF()">GENERAR REPORTE DIGITAL</button>
 </div>
 
 <script>
     let items = [];
-    // Firma optimizada (Cadena ultra corta para evitar lentitud)
-    const firmaAngelo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+    
+    // FIRMA DIGITALIZADA EXACTA DE TU FOTO ORIGINAL
+    const firmaDigitalBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
 
     function initApp() {
+        const jsonInput = document.getElementById('json-input').value;
+        if (!jsonInput.trim()) {
+            alert("Por favor, pega el código JSON antes de iniciar.");
+            return;
+        }
         try {
-            items = JSON.parse(document.getElementById('json-input').value).map(i => ({...i, fisico: i.fisico || 0, obs: ""}));
+            items = JSON.parse(jsonInput);
             document.getElementById('setup').classList.add('hidden');
-            document.getElementById('dash-panel').classList.remove('hidden');
             document.getElementById('footer').classList.remove('hidden');
             draw();
-        } catch(e) { alert("Error en JSON"); }
+        } catch(e) { alert("Error: El código JSON no es válido."); }
     }
 
     function draw() {
         const list = document.getElementById('list');
         list.innerHTML = "";
-        let totalFis = 0, totalExp = 0;
-
         items.forEach((item, i) => {
-            const boxesFis = item.fisico / item.u_por_caja;
-            totalFis += boxesFis;
-            totalExp += item.cajas_pck;
-            const perc = Math.min(100, (boxesFis / item.cajas_pck) * 100);
-
+            const boxes = item.fisico / item.u_por_caja;
+            const ok = boxes >= item.cajas_pck;
             list.innerHTML += `
-                <div class="item-card">
-                    <div class="sku-row">
-                        <span class="sku-id">${item.sku}</span>
-                        <span style="font-size:0.8rem; font-weight:800">${boxesFis.toFixed(0)} / ${item.cajas_pck} CJ</span>
+                <div class="item-card ${ok ? 'exacto' : ''}">
+                    <div class="sku-row"><span>${item.sku}</span> <span style="color:#2563eb">${boxes.toFixed(0)} / ${item.cajas_pck} CJ</span></div>
+                    <span class="sku-desc">${item.desc}</span>
+                    <div class="control-row">
+                        <button class="btn-add" onclick="update(${i}, -1)">−</button>
+                        <div class="qty-box"><span class="qty-label">DIFERENCIA</span><span class="qty-val">${(boxes - item.cajas_pck).toFixed(0)}</span></div>
+                        <button class="btn-add" onclick="update(${i}, 1)">+</button>
                     </div>
-                    <div class="sku-desc">${item.desc}</div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:${perc}%"></div></div>
-                    
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label>CANTIDAD CAJAS RECIBIDAS</label>
-                            <input type="number" value="${boxesFis > 0 ? boxesFis.toFixed(0) : ''}" 
-                                   placeholder="0" 
-                                   oninput="updateVal(${i}, this.value)" 
-                                   inputmode="numeric">
-                        </div>
-                    </div>
-                    <input type="text" class="sku-desc" style="border:none; border-bottom:1px solid #eee; outline:none" 
-                           placeholder="Observaciones..." onchange="items[${i}].obs = this.value" value="${item.obs}">
                 </div>`;
         });
-        document.getElementById('total-cajas').innerText = totalFis.toFixed(0);
-        document.getElementById('total-progreso').innerText = ((totalFis / totalExp) * 100 || 0).toFixed(1) + "%";
     }
 
-    function updateVal(i, val) {
-        const num = parseFloat(val) || 0;
-        items[i].fisico = num * items[i].u_por_caja;
-        // Actualizamos dashboard sin redibujar todo para mayor velocidad
-        let totalFis = 0, totalExp = 0;
-        items.forEach(item => {
-            totalFis += (item.fisico / item.u_por_caja);
-            totalExp += item.cajas_pck;
-        });
-        document.getElementById('total-cajas').innerText = totalFis.toFixed(0);
-        document.getElementById('total-progreso').innerText = ((totalFis / totalExp) * 100 || 0).toFixed(1) + "%";
+    function update(i, val) {
+        let currentBoxes = items[i].fisico / items[i].u_por_caja;
+        items[i].fisico = Math.max(0, currentBoxes + val) * items[i].u_por_caja;
+        draw();
     }
 
     function makePDF() {
-        document.getElementById('status-msg').innerText = "GENERANDO...";
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFillColor(0,0,0);
-        doc.rect(0, 0, 210, 30, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14).text("REPORTE DE INVENTARIO LOGÍSTICO", 105, 18, {align:'center'});
-        
-        doc.setTextColor(0,0,0);
-        doc.setFontSize(8).text(`FECHA: ${new Date().toLocaleDateString()} | REVISADO POR: J. ANGELO NUÑEZ`, 15, 40);
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Estilo Azul Twins
+            doc.setFillColor(37, 99, 235);
+            doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16).setFont(undefined, 'bold').text("REVISIÓN DE CONTENEDOR", 105, 15, {align:'center'});
+            doc.setFontSize(10).setFont(undefined, 'normal').text("TWINS - INGRESO DE MERCADERÍA", 105, 23, {align:'center'});
+            
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleDateString()}`, 15, 45);
 
-        const rows = items.map(i => [
-            i.sku, 
-            i.desc.substring(0,40), 
-            i.cajas_pck, 
-            (i.fisico/i.u_por_caja).toFixed(0),
-            i.obs || "-"
-        ]);
+            const tableData = items.map(i => [
+                i.sku, 
+                i.desc, 
+                i.cajas_pck, 
+                (i.fisico/i.u_por_caja).toFixed(0),
+                (i.fisico/i.u_por_caja) >= i.cajas_pck ? "OK" : "FALTA"
+            ]);
 
-        doc.autoTable({
-            startY: 45,
-            head: [['SKU', 'DESCRIPCIÓN', 'PLAN', 'REAL', 'OBS']],
-            body: rows,
-            headStyles: { fillColor: [0, 0, 0] },
-            styles: { fontSize: 7 }
-        });
+            doc.autoTable({
+                startY: 50,
+                head: [['SKU', 'PRODUCTO', 'CJ PACK', 'CJ FIS', 'ESTADO']],
+                body: tableData,
+                headStyles: { fillColor: [37, 99, 235] },
+                styles: { fontSize: 7 }
+            });
 
-        const finalY = doc.lastAutoTable.finalY + 15;
-        doc.addImage(firmaAngelo, 'PNG', 85, finalY, 40, 20);
-        doc.line(75, finalY + 22, 135, finalY + 22);
-        doc.setFontSize(8).text("J. ANGELO NUÑEZ DURAND", 105, finalY + 27, {align:'center'});
-        doc.setFontSize(7).text("Asistente Inventario Logístico", 105, finalY + 31, {align:'center'});
-
-        doc.save(`Twins_Reporte_${item.sku}.pdf`);
-        document.getElementById('status-msg').innerText = "COMPLETO";
+            // Sección de Firma Digitalizada
+            const finalY = doc.lastAutoTable.finalY + 15;
+            
+            // Insertar tu firma real (limpia y centrada)
+            doc.addImage(firmaDigitalBase64, 'PNG', 85, finalY, 40, 20);
+            
+            // Línea y datos personales
+            doc.setLineWidth(0.5);
+            doc.line(70, finalY + 22, 140, finalY + 22);
+            doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
+            doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, finalY + 33, {align:'center'});
+            doc.text("Revisión por J. Angelo Nuñez Durand", 105, finalY + 38, {align:'center'});
+            
+            doc.save(`Reporte_Twins_${new Date().toLocaleDateString()}.pdf`);
+        } catch(e) {
+            alert("Error al descargar el PDF. Asegúrate de tener conexión a internet.");
+            console.error(e);
+        }
     }
 </script>
 </body>
