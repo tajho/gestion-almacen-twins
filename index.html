@@ -10,49 +10,48 @@
     <style>
         :root { --primary: #000000; --accent: #2563eb; --success: #10b981; --border: #e5e7eb; --bg: #ffffff; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #111827; margin: 0; padding: 0; overflow-x: hidden; }
+        body { background: var(--bg); color: #111827; margin: 0; padding: 0; }
         
-        .header { padding: 30px 20px; border-bottom: 2px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
+        .header { padding: 30px 20px; border-bottom: 3px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
         .header h1 { font-size: 1.4rem; margin: 0; font-weight: 900; letter-spacing: -1px; }
         .header p { font-size: 0.7rem; color: #6b7280; margin: 5px 0 0; font-weight: 700; text-transform: uppercase; }
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
         .sync-box { background: #fafafa; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; text-align: center; }
-        .sync-box textarea { width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 12px; font-family: monospace; font-size: 0.75rem; box-sizing: border-box; resize: none; background: #fff; }
+        .sync-box textarea { width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 12px; font-family: monospace; font-size: 0.75rem; box-sizing: border-box; resize: none; }
         .btn-load { width: 100%; margin-top: 15px; padding: 16px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; transition: 0.3s; }
+        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; transition: 0.3s; }
         .item-card.exacto { border-color: var(--success); background: #f0fdf4; }
         
-        .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-        .sku-name { font-weight: 900; font-size: 1.1rem; color: #000; display: block; }
-        .sku-desc { font-size: 0.65rem; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-top: 2px; display: block; }
-        .sku-status { font-size: 0.6rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #f3f4f6; }
-        .item-card.exacto .sku-status { background: var(--success); color: white; }
+        .card-header { display: flex; align-items: flex-start; justify-content: space-between; }
+        .sku-name { font-weight: 900; font-size: 1.1rem; color: #000; }
+        .sku-desc { font-size: 0.65rem; color: #6b7280; font-weight: 600; text-transform: uppercase; display: block; margin-top: 2px; }
 
-        .card-body { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+        .card-body { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
         .qty-info { display: flex; gap: 20px; }
-        .qty-col { text-align: center; }
+        .qty-col { text-align: center; cursor: pointer; }
         .qty-label { font-size: 0.55rem; color: #9ca3af; font-weight: 800; display: block; text-transform: uppercase; }
         .qty-num { font-size: 1.2rem; font-weight: 900; }
 
-        .btn-plus { background: #f3f4f6; color: #000; border: none; width: 55px; height: 55px; border-radius: 16px; font-size: 1.5rem; font-weight: 900; cursor: pointer; }
-        .item-card.exacto .btn-plus { background: transparent; color: var(--success); font-size: 1.8rem; }
+        .btn-group { display: flex; gap: 8px; }
+        .btn-plus { background: #f3f4f6; color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
+        .btn-clear { background: #fee2e2; color: #ef4444; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 1rem; font-weight: 800; cursor: pointer; }
 
         .progress-container { width: 100%; height: 8px; background: #f3f4f6; border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .item-card.exacto .progress-bar { background: var(--success); width: 100% !important; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+        .item-card.exacto .progress-bar { background: var(--success); }
 
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--border); backdrop-filter: blur(10px); }
         .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; }
         
-        /* Panel Numérico Táctil */
-        #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
-        .calc-pad { background: #fff; width: 100%; max-width: 450px; border-radius: 30px 30px 0 0; padding: 25px; }
-        .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2.5rem; font-weight: 900; text-align: right; margin-bottom: 20px; color: #000; }
-        .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.6rem; font-weight: 800; border-radius: 15px; text-align: center; }
+        /* Panel Numérico */
+        #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; }
+        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
+        .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2.2rem; font-weight: 900; text-align: right; margin-bottom: 15px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; }
         .calc-btn.action { background: #000; color: #fff; }
 
         .hidden { display: none !important; }
@@ -62,7 +61,7 @@
 
 <div id="calc-overlay" class="hidden" onclick="cerrarCalc(event)">
     <div class="calc-pad" onclick="event.stopPropagation()">
-        <div style="text-align:center; font-size:0.7rem; color:#9ca3af; margin-bottom:10px; font-weight:800;">INGRESAR CAJAS RECIBIDAS</div>
+        <div id="calc-title" style="text-align:center; font-size:0.7rem; color:#9ca3af; margin-bottom:10px; font-weight:800;">INGRESAR CAJAS</div>
         <div class="calc-display" id="calc-display">0</div>
         <div class="calc-grid">
             <div class="calc-btn" onclick="pressN(1)">1</div><div class="calc-btn" onclick="pressN(2)">2</div><div class="calc-btn" onclick="pressN(3)">3</div>
@@ -74,23 +73,22 @@
 </div>
 
 <div class="header">
-    <p>Asist. Inventario Logístico</p>
+    <p>Inbound Vision Pro</p>
     <h1>J. ANGELO NUÑEZ</h1>
 </div>
 
 <div class="container">
     <div class="sync-box" id="sync-ui">
-        <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; color:#000;">PEGAR CÓDIGO DEL PACKING (JSON)</p>
-        <textarea id="json-input" rows="4" placeholder="Copia el código de Gemini y pégalo aquí..."></textarea>
-        <button class="btn-load" onclick="cargarPacking()">INICIAR CONTEO</button>
+        <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 12px;">PEGAR CÓDIGO JSON DEL PACKING</p>
+        <textarea id="json-input" rows="4" placeholder="Pega aquí..."></textarea>
+        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN</button>
     </div>
-
     <div id="lista-conteo"></div>
     <div style="height: 120px;"></div>
 </div>
 
 <div class="footer hidden" id="footer-ui">
-    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE AUTORIZADO</button>
+    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE PROFESIONAL</button>
 </div>
 
 <script>
@@ -104,15 +102,15 @@
             document.getElementById('sync-ui').classList.add('hidden');
             document.getElementById('footer-ui').classList.remove('hidden');
             render();
-        } catch(e) { alert("Error: El código no es válido."); }
+        } catch(e) { alert("Error de formato JSON."); }
     }
 
     function render() {
         const container = document.getElementById('lista-conteo');
         container.innerHTML = "";
         db.forEach((item, i) => {
-            const ok = item.fisico === item.pck;
-            const cjFis = (item.fisico / item.u_por_caja);
+            const ok = item.fisico >= item.pck;
+            const cjFis = item.fisico / item.u_por_caja;
             const porc = Math.min((item.fisico / item.pck) * 100, 100);
             
             container.innerHTML += `
@@ -122,78 +120,80 @@
                             <span class="sku-name">${item.sku}</span>
                             <span class="sku-desc">${item.desc}</span>
                         </div>
-                        <span class="sku-status">${ok ? 'RECIBIDO' : 'PENDIENTE'}</span>
                     </div>
                     <div class="card-body">
                         <div class="qty-info">
                             <div class="qty-col">
-                                <span class="qty-label">CJ PCK</span>
+                                <span class="qty-label">CJ PACK</span>
                                 <div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div>
                             </div>
-                            <div class="qty-col">
+                            <div class="qty-col" onclick="borrarFisico(${i})">
                                 <span class="qty-label">CJ FIS</span>
-                                <div class="qty-num">${cjFis.toFixed(ok ? 0 : 1)}</div>
+                                <div class="qty-num">${cjFis.toFixed(1)}</div>
                             </div>
                         </div>
-                        <button class="btn-plus" onclick="abrirCalc(${i})">${ok ? '✓' : '+'}</button>
+                        <div class="btn-group">
+                            <button class="btn-clear" onclick="borrarFisico(${i})">DEL</button>
+                            <button class="btn-plus" onclick="abrirCalc(${i})">+</button>
+                        </div>
                     </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${porc}%"></div>
-                    </div>
-                </div>
-            `;
+                    <div class="progress-container"><div class="progress-bar" style="width: ${porc}%"></div></div>
+                </div>`;
         });
     }
 
-    function abrirCalc(i) {
-        if(db[i].fisico === db[i].pck) return;
-        curIdx = i; curVal = ""; actualizarDisplay();
-        document.getElementById('calc-overlay').classList.remove('hidden');
-    }
-
+    function abrirCalc(i) { curIdx = i; curVal = ""; actualizarDisplay(); document.getElementById('calc-overlay').classList.remove('hidden'); }
     function cerrarCalc() { document.getElementById('calc-overlay').classList.add('hidden'); }
     function pressN(n) { curVal += n; actualizarDisplay(); }
     function clearCalc() { curVal = ""; actualizarDisplay(); }
     function actualizarDisplay() { document.getElementById('calc-display').innerText = curVal || "0"; }
 
     function confirmarCalc() {
-        if(!curVal || curIdx === null) return;
-        const item = db[curIdx];
-        db[curIdx].fisico += (parseFloat(curVal) * item.u_por_caja);
+        if(!curVal) return;
+        db[curIdx].fisico += (parseFloat(curVal) * db[curIdx].u_por_caja);
         cerrarCalc(); render();
+    }
+
+    function borrarFisico(i) {
+        if(confirm("¿Deseas resetear el conteo de " + db[i].sku + "?")) {
+            db[i].fisico = 0;
+            render();
+        }
     }
 
     function generarReporte() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header PDF
+        // Header
         doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, 210, 40, 'F');
+        doc.rect(0, 0, 210, 45, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold").setFontSize(22).text("REPORTE DE INBOUND", 15, 25);
+        doc.setFontSize(22).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 25, {align:'center'});
+        doc.setFontSize(10).text("REPORTE OFICIAL DE INVENTARIO Y LOGÍSTICA", 105, 33, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(9).setFont("helvetica", "normal").text(`Emitido: ${new Date().toLocaleString()}`, 15, 48);
+        doc.setFontSize(9).text(`FECHA DE OPERACIÓN: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 15, 55);
 
-        const rows = db.map(i => [i.sku, i.desc, i.pck, i.fisico, i.fisico === i.pck ? "SÍ" : (i.fisico - i.pck)]);
+        const rows = db.map(i => [i.sku, i.desc, i.pck, i.fisico, i.fisico >= i.pck ? "CONFORME" : (i.fisico - i.pck)]);
 
         doc.autoTable({
-            startY: 55,
-            head: [['SKU', 'DESCRIPCIÓN', 'TOTAL PCK', 'TOTAL FIS', 'EXACTO']],
+            startY: 60,
+            head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'FISICO', 'ESTADO']],
             body: rows,
             theme: 'grid',
             headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
             styles: { fontSize: 7 }
         });
 
-        const y = doc.lastAutoTable.finalY + 30;
-        doc.line(15, y, 80, y);
-        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 15, y + 7);
-        doc.setFont(undefined, 'normal').text("Asist. Inventario Logístico Logística", 15, y + 12);
-        doc.text("Revisión autorizada por el área de inventarios.", 15, y + 20);
+        const y = doc.lastAutoTable.finalY + 40;
+        doc.setLineWidth(0.5);
+        doc.line(65, y, 145, y);
+        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 7, {align:'center'});
+        doc.setFontSize(9).setFont(undefined, 'normal').text("Asistente Logístico.", 105, y + 12, {align:'center'});
+        doc.setFontSize(8).text("Firma Autorizada - Control de Inventarios", 105, y + 18, {align:'center'});
         
-        doc.save(`Inbound_Angelo_${Date.now()}.pdf`);
+        doc.save(`Reporte_Contenedor_Angelo.pdf`);
     }
 </script>
 </body>
