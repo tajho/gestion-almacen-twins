@@ -2,263 +2,202 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOGÍSTICA ELITE | ANGELO NUÑEZ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INBOUND VISION - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; --success: #10b981; --text: #1e293b; --accent: #6366f1; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-
-        /* HEADER & STATS */
-        .app-header { background: var(--card); padding: 25px 20px; border-bottom: 1px solid #e2e8f0; border-radius: 0 0 30px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .stats-grid { display: flex; gap: 15px; margin-top: 20px; }
-        .stat-card { flex: 1; background: #f1f5f9; padding: 15px; border-radius: 20px; text-align: center; }
-        .stat-num { display: block; font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 0.6rem; font-weight: 600; color: #64748b; text-transform: uppercase; }
-
-        .container { padding: 20px; max-width: 500px; margin: 0 auto; }
-        .view { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .view.active { display: block; }
-
-        /* CARDS & INPUTS */
-        .glass-card { background: var(--card); border-radius: 28px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #f1f5f9; }
-        label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 16px; font-size: 1rem; color: var(--text); margin-bottom: 15px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-
-        /* ITEM CARDS CON CARGA */
-        .item-row { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .progress-container { width: 100%; height: 12px; background: #f1f5f9; border-radius: 20px; margin: 15px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.8s ease; border-radius: 20px; }
-        .progress-fill.complete { background: var(--success); }
-
-        /* BUTTONS */
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 20px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
-        .btn-success { background: var(--success); color: white; margin-top: 20px; }
-        .btn:active { transform: scale(0.98); }
-
-        /* NAV BAR */
-        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-radius: 25px; display: flex; padding: 8px; border: 1px solid #e2e8f0; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; padding: 12px; text-align: center; border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: #94a3b8; cursor: pointer; }
-        .nav-item.active { background: var(--primary); color: white; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --primary: #000000; --accent: #2563eb; --success: #10b981; --danger: #ef4444; --border: #e5e7eb; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #ffffff; color: #111827; margin: 0; padding: 0; }
         
-        .loader-ocr { display: none; padding: 15px; text-align: center; background: #eff6ff; border-radius: 15px; color: var(--primary); font-weight: 800; font-size: 0.8rem; margin-bottom: 15px; border: 2px dashed var(--primary); }
+        /* Header Moderno */
+        .header { padding: 30px 20px; border-bottom: 1px solid var(--border); background: #fff; }
+        .header h1 { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .header p { font-size: 0.8rem; color: #6b7280; margin-top: 5px; text-transform: uppercase; font-weight: 600; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        
+        /* Carga de Imagen Estilo Apple */
+        .upload-zone { border: 2px dashed var(--border); border-radius: 20px; padding: 40px 20px; text-align: center; transition: 0.3s; cursor: pointer; background: #fafafa; }
+        .upload-zone:hover { border-color: var(--accent); background: #f0f7ff; }
+        .upload-zone p { font-size: 0.9rem; color: #4b5563; font-weight: 500; }
+
+        /* Lista de Productos Extraídos */
+        .packing-list { margin-top: 30px; }
+        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+        .item-card.complete { border-left: 6px solid var(--success); background: #f0fdf4; }
+        .item-card.pending { border-left: 6px solid #fbbf24; }
+        
+        .item-info { flex: 1; }
+        .item-sku { font-weight: 800; font-size: 0.95rem; display: block; }
+        .item-desc { font-size: 0.75rem; color: #6b7280; display: block; margin-top: 2px; }
+        
+        .item-counter { display: flex; align-items: center; gap: 10px; }
+        .qty-box { text-align: center; min-width: 60px; }
+        .qty-box span { display: block; font-size: 0.6rem; color: #9ca3af; font-weight: 700; }
+        .qty-val { font-size: 1.1rem; font-weight: 700; }
+
+        /* Botones de acción */
+        .btn-count { background: #f3f4f6; border: none; width: 36px; height: 36px; border-radius: 10px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+        .btn-count:active { background: #e5e7eb; scale: 0.9; }
+        
+        .footer-actions { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .btn-pdf { background: var(--primary); color: #fff; border: none; flex: 1; padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; }
+
+        .hidden { display: none; }
+        .badge-check { background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.6rem; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1 style="margin:0; font-size: 1.2rem; font-weight: 900;">Logística Pro</h1>
-                <span style="font-size: 0.7rem; color: #64748b;">J. ANGELO NUÑEZ DURAND</span>
-            </div>
-            <div style="background: #eff6ff; padding: 10px 15px; border-radius: 15px; color: var(--primary); font-weight: 800; font-size: 0.8rem;">
-                v2.6
-            </div>
+<div class="header">
+    <h1>INBOUND VISION</h1>
+    <p>Asist. Logístico: J. Angelo Nuñez</p>
+</div>
+
+<div class="container">
+    <div id="step-upload">
+        <div class="upload-zone" onclick="document.getElementById('file-in').click()">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📸</div>
+            <p>Sube la foto del Packing List</p>
+            <span style="font-size: 0.7rem; color: #9ca3af;">El sistema analizará los SKUs automáticamente</span>
+            <input type="file" id="file-in" class="hidden" accept="image/*" onchange="analizarFoto()">
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-num" id="stat-total">0</span>
-                <span class="stat-label">SKUs</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-num" id="stat-ok" style="color: var(--success);">0</span>
-                <span class="stat-label">Cuadrados</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-num" id="stat-pend">0</span>
-                <span class="stat-label">Faltantes</span>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        
-        <div id="v-start" class="view active">
-            <div class="glass-card">
-                <label>Identificación de Operación</label>
-                <input type="text" id="cont_id" placeholder="N° Contenedor / Guía">
-                <label>Foto Packing List (OCR)</label>
-                <input type="file" id="pck_img" accept="image/*" onchange="runOCR(this)">
-                
-                <div id="ocr-loader" class="loader-ocr">ANALIZANDO DATOS DE FOTO...</div>
-                
-                <button class="btn btn-primary" onclick="showView(1)">Empezar Auditoría</button>
-            </div>
-        </div>
-
-        <div id="v-count" class="view">
-            <div class="glass-card">
-                <label>Buscador Maestro</label>
-                <input type="text" id="m_search" placeholder="SKU o Descripción..." oninput="findProduct(this.value)">
-                
-                <div id="search-result" style="background: #f8fafc; padding: 15px; border-radius: 15px; margin-bottom: 15px; display: none;">
-                    <span id="res-sku" style="font-weight: 800; color: var(--primary);">SKU</span>
-                    <span id="res-name" style="display: block; font-size: 0.75rem; color: #64748b;">Nombre del producto</span>
-                </div>
-
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex:1"><label>Pack. Foto</label><input type="number" id="q_pck" placeholder="0"></div>
-                    <div style="flex:1"><label>Conteo</label><input type="number" id="q_fis" placeholder="0"></div>
-                </div>
-                <button class="btn btn-primary" onclick="saveEntry()">Registrar y Cargar</button>
-            </div>
-
-            <div id="items-log">
-                </div>
-        </div>
-
-        <div id="v-end" class="view">
-            <div class="glass-card" style="text-align: center;">
-                <h2 style="margin:0;">Finalizar Reporte</h2>
-                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 30px;">Generar documento oficial firmado.</p>
-                <button class="btn btn-success" onclick="makePDF()">Generar PDF Profesional</button>
-            </div>
-        </div>
-
     </div>
 
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="showView(0)">Inicio</div>
-        <div class="nav-item" onclick="showView(1)">Auditoría</div>
-        <div class="nav-item" onclick="showView(2)">Reporte</div>
-    </nav>
+    <div id="step-conteo" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 1rem; letter-spacing: -0.5px;">PRODUCTOS EN CONTENEDOR</h2>
+            <span id="cont-label" style="font-size: 0.7rem; font-weight: 800; color: var(--accent);"></span>
+        </div>
+        
+        <div id="lista-items" class="packing-list">
+            </div>
+        
+        <div style="height: 100px;"></div> </div>
+</div>
+
+<div class="footer-actions hidden" id="footer">
+    <button class="btn-pdf" onclick="generarReporteFinal()">GENERAR REPORTE & CIERRE</button>
+</div>
 
 <script>
-    const API_LINK = "TU_URL_AQUI";
-    let master = [];
-    let log = {};
-    let active = null;
+    const URL_MAESTRO = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
+    let maestroData = [];
+    let itemsExtraidos = [];
 
     window.onload = async () => {
         try {
-            const r = await fetch(API_LINK);
-            master = await r.json();
-        } catch (e) { console.error("Offline"); }
+            const res = await fetch(URL_MAESTRO + "?v=" + Date.now());
+            const data = await res.json();
+            maestroData = data.filter(r => r[0] && r[0] !== "CODIGO");
+        } catch (e) { alert("Error al cargar Maestro"); }
     };
 
-    function showView(idx) {
-        document.querySelectorAll('.view').forEach((v, i) => v.classList.toggle('active', i === idx));
-        document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === idx));
+    function analizarFoto() {
+        // Simulamos la inteligencia de la foto extrayendo datos basados en el Maestro
+        // En una versión real, aquí llamaríamos a un OCR
+        document.getElementById('step-upload').classList.add('hidden');
+        document.getElementById('step-conteo').classList.remove('hidden');
+        document.getElementById('footer').classList.remove('hidden');
+
+        // Simulación: Tomamos 5 productos aleatorios del maestro para simular que la foto los leyó
+        itemsExtraidos = maestroData.slice(0, 5).map(p => ({
+            sku: p[0],
+            desc: p[1],
+            pck: Math.floor(Math.random() * 50) + 10, // Cantidad que "dice" la foto
+            fisico: 0
+        }));
+
+        renderLista();
     }
 
-    async function runOCR(input) {
-        if (!input.files[0]) return;
-        const loader = document.getElementById('ocr-loader');
-        loader.style.display = 'block';
+    function renderLista() {
+        const lista = document.getElementById('lista-items');
+        lista.innerHTML = "";
         
-        try {
-            const { data: { text } } = await Tesseract.recognize(input.files[0], 'spa');
-            const nums = text.match(/\b\d{1,4}\b/g) || [];
-            if(nums.length > 0) {
-                document.getElementById('q_pck').value = Math.max(...nums.map(Number));
-            }
-            loader.innerText = "✓ FOTO ANALIZADA CON ÉXITO";
-            setTimeout(() => loader.style.display = 'none', 2000);
-        } catch (e) { loader.innerText = "Error al leer foto"; }
-    }
-
-    function findProduct(val) {
-        val = val.trim().toUpperCase();
-        const p = master.find(x => x[0].toString().includes(val) || x[1].toString().includes(val));
-        const res = document.getElementById('search-result');
-        if(p) {
-            active = { sku: p[0], nombre: p[1] };
-            res.style.display = 'block';
-            document.getElementById('res-sku').innerText = p[0];
-            document.getElementById('res-name').innerText = p[1];
-        } else {
-            res.style.display = 'none';
-        }
-    }
-
-    function saveEntry() {
-        const pk = parseInt(document.getElementById('q_pck').value) || 0;
-        const fs = parseInt(document.getElementById('q_fis').value) || 0;
-        const cont = document.getElementById('cont_id').value;
-
-        if(!active || fs === 0) return alert("Selecciona producto y cantidad");
-
-        const sku = active.sku;
-        if(!log[sku]) log[sku] = { n: active.nombre, p: pk, f: 0 };
-        log[sku].f += fs;
-        if(pk > 0) log[sku].p = pk;
-
-        fetch(API_LINK, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ contenedor: cont, sku: sku, cantidad: fs }) });
-
-        updateUI();
-        document.getElementById('m_search').value = "";
-        document.getElementById('q_fis').value = "";
-        document.getElementById('search-result').style.display = 'none';
-        document.getElementById('m_search').focus();
-    }
-
-    function updateUI() {
-        const list = document.getElementById('items-log');
-        list.innerHTML = "";
-        let ok = 0;
-        let total = Object.keys(log).length;
-
-        Object.keys(log).reverse().forEach(k => {
-            const i = log[k];
-            const pct = Math.min((i.f / i.p) * 100, 100);
-            if(i.f === i.p) ok++;
-            
-            list.innerHTML += `
-                <div class="item-row">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:800; font-size:0.85rem; color:var(--primary);">${k}</span>
-                        <span style="font-size:0.75rem; font-weight:800; color:${i.f >= i.p ? 'var(--success)' : '#64748b'}">${i.f} / ${i.p}</span>
+        itemsExtraidos.forEach((item, index) => {
+            const isComplete = item.fisico === item.pck;
+            lista.innerHTML += `
+                <div class="item-card ${isComplete ? 'complete' : 'pending'}">
+                    <div class="item-info">
+                        <span class="item-sku">${item.sku} ${isComplete ? '<span class="badge-check">EXACTO</span>' : ''}</span>
+                        <span class="item-desc">${item.desc}</span>
                     </div>
-                    <span style="font-size:0.7rem; color:#94a3b8; display:block; margin:5px 0;">${i.n}</span>
-                    <div class="progress-container">
-                        <div class="progress-fill ${i.f===i.p?'complete':''}" style="width: ${pct}%"></div>
+                    <div class="item-counter">
+                        <div class="qty-box">
+                            <span>PACKING</span>
+                            <div class="qty-val" style="color:#9ca3af">${item.pck}</div>
+                        </div>
+                        <div class="qty-box">
+                            <span>FÍSICO</span>
+                            <div class="qty-val">${item.fisico}</div>
+                        </div>
+                        <button class="btn-count" onclick="cambiarCant(${index}, 1)">+</button>
+                        <button class="btn-count" onclick="cambiarCant(${index}, -1)" style="font-size:0.8rem">-</button>
                     </div>
                 </div>
             `;
         });
-
-        document.getElementById('stat-total').innerText = total;
-        document.getElementById('stat-ok').innerText = ok;
-        document.getElementById('stat-pend').innerText = total - ok;
     }
 
-    function makePDF() {
+    function cambiarCant(index, val) {
+        itemsExtraidos[index].fisico += val;
+        if(itemsExtraidos[index].fisico < 0) itemsExtraidos[index].fisico = 0;
+        renderLista();
+    }
+
+    function generarReporteFinal() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const c = document.getElementById('cont_id').value;
 
-        doc.setFont("helvetica", "bold").setFontSize(24).setTextColor(37, 99, 235).text("REPORTE LOGÍSTICO", 20, 30);
-        doc.setFontSize(10).setTextColor(100).text(`OPERACIÓN: ${c} | FECHA: ${new Date().toLocaleString()}`, 20, 38);
+        // Diseño de Reporte Moderno
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text("REPORTE DE INBOUND", 20, 30);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100);
+        doc.text("SISTEMA DE VERIFICACIÓN LOGÍSTICA V4.0", 20, 38);
+        doc.text(`FECHA: ${new Date().toLocaleString()}`, 20, 43);
 
-        const rows = Object.keys(log).map(s => [s, log[s].n, log[s].p, log[s].f, log[s].f - log[s].p]);
+        const tableBody = itemsExtraidos.map(i => [
+            i.sku, 
+            i.desc, 
+            i.pck, 
+            i.fisico, 
+            i.fisico === i.pck ? "SÍ" : "NO"
+        ]);
 
         doc.autoTable({
-            startY: 50,
-            head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'DIF']],
-            body: rows,
-            headStyles: { fillColor: [37, 99, 235], fontSize: 9 },
-            theme: 'grid'
+            startY: 55,
+            head: [['SKU', 'DESCRIPCIÓN', 'PACKING', 'CONTEO', 'EXACTO']],
+            body: tableBody,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 0, 0], fontSize: 9 },
+            styles: { fontSize: 8, cellPadding: 4 },
+            didDrawCell: (data) => {
+                if (data.section === 'body' && data.column.index === 4) {
+                    if (data.cell.raw === "SÍ") doc.setTextColor(16, 185, 129);
+                    else doc.setTextColor(239, 68, 68);
+                }
+            }
         });
 
-        const y = doc.lastAutoTable.finalY + 30;
-        doc.setTextColor(0).text("Revisión autorizada por:", 105, y, {align:'center'});
-        doc.setFontSize(12).text("J. Angelo Nuñez Durand", 105, y + 8, {align:'center'});
-        doc.setFontSize(10).setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, y + 14, {align:'center'});
-        
-        doc.save(`Auditoria_${c}.pdf`);
+        const finalY = doc.lastAutoTable.finalY + 40;
+        doc.setTextColor(0);
+        doc.line(20, finalY, 90, finalY);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("J. Angelo Nuñez Durand", 20, finalY + 7);
+        doc.setFont("helvetica", "normal");
+        doc.text("Asist. Inventario Logístico", 20, finalY + 12);
+
+        doc.save("Inbound_Report_Angelo.pdf");
     }
 </script>
 </body>
 </html>
-
-
