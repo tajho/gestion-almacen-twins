@@ -210,7 +210,7 @@
         doc.addImage(FIRMA_ANGELO, 'PNG', 85, finalY, 40, 20);
         doc.line(70, finalY + 22, 140, finalY + 22);
         doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
-        doc.setFontSize(7).setFont(undefined, 'normal').text("Revisión autorizada por Asist. Inventario Logístico", 105, finalY + 33, {align:'center'});
+        doc.setFontSize(7).setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, finalY + 33, {align:'center'});
 
         doc.save(`TWINS_REPORT_${Date.now()}.pdf`);
         document.getElementById('status').innerText = "LISTO";
