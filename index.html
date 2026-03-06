@@ -63,7 +63,7 @@
 
 <div class="container">
     <div class="sync-box" id="sync-ui">
-        <textarea id="json-input" rows="4" placeholder="Pega el código JSON de los SKUs aquí..."></textarea>
+        <textarea id="json-input" rows="4" placeholder="Pega el código JSON aquí..."></textarea>
         <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN</button>
     </div>
     <div id="lista-conteo"></div>
@@ -79,13 +79,16 @@
     let curIdx = null;
     let curVal = "";
 
+    // Tu firma real procesada
+    const firmaAngelo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxXTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
+
     function cargarPacking() {
         try {
             db = JSON.parse(document.getElementById('json-input').value);
             document.getElementById('sync-ui').classList.add('hidden');
             document.getElementById('footer-ui').classList.remove('hidden');
             render();
-        } catch(e) { alert("Error en el formato del JSON."); }
+        } catch(e) { alert("Error: JSON no válido."); }
     }
 
     function render() {
@@ -122,14 +125,14 @@
         db[curIdx].fisico += (parseFloat(curVal) * db[curIdx].u_por_caja);
         cerrarCalc(); render();
     }
-    function borrarFisico(i) { if(confirm("¿Resetear cajas?")) { db[i].fisico = 0; render(); } }
+    function borrarFisico(i) { if(confirm("¿Resetear?")) { db[i].fisico = 0; render(); } }
 
     function generarReporte() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
         // Encabezado Azul
-        doc.setFillColor(37, 99, 235); // Azul #2563eb
+        doc.setFillColor(37, 99, 235);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(18).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 18, {align:'center'});
@@ -154,13 +157,18 @@
             styles: { fontSize: 7 }
         });
 
-        // Firma Final
-        const y = doc.lastAutoTable.finalY + 35;
+        // Firma Real Angelo al final
+        const y = doc.lastAutoTable.finalY + 15;
+        
+        // Insertar imagen de firma (limpia)
+        doc.addImage(firmaAngelo, 'PNG', 85, y, 40, 20);
+        
+        // Línea y nombre
         doc.setLineWidth(0.5);
-        doc.line(70, y, 140, y);
-        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 7, {align:'center'});
-        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, y + 12, {align:'center'});
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 105, y + 18, {align:'center'});
+        doc.line(70, y + 22, 140, y + 22);
+        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 28, {align:'center'});
+        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, y + 33, {align:'center'});
+        doc.text("Revisión por J. Angelo Nuñez Durand", 105, y + 38, {align:'center'});
         
         doc.save("Reporte_Twins_Angelo.pdf");
     }
