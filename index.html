@@ -3,172 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INBOUND TWINS - J. ANGELO NUÑEZ</title>
+    <title>INBOUND TWINS - ANGELO NUÑEZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --accent: #1d4ed8; --success: #10b981; --border: #e5e7eb; --bg: #ffffff; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #111827; margin: 0; padding: 0; }
-        .header { padding: 30px 20px; border-bottom: 3px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
-        .header h1 { font-size: 1.3rem; margin: 0; font-weight: 900; letter-spacing: -1px; color: var(--primary); }
-        .header p { font-size: 0.7rem; color: #6b7280; margin: 5px 0 0; font-weight: 700; text-transform: uppercase; }
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .sync-box { background: #fafafa; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; text-align: center; }
-        .sync-box textarea { width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 12px; font-family: monospace; font-size: 0.75rem; box-sizing: border-box; resize: none; background: #fff; }
-        .btn-load { width: 100%; margin-top: 15px; padding: 16px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .item-card.exacto { border-color: var(--success); background: #f0fdf4; }
-        .sku-name { font-weight: 900; font-size: 1.1rem; color: #000; }
-        .sku-desc { font-size: 0.65rem; color: #6b7280; font-weight: 600; text-transform: uppercase; display: block; margin-top: 2px; }
-        .card-body { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
-        .qty-info { display: flex; gap: 20px; }
-        .qty-col { text-align: center; }
-        .qty-label { font-size: 0.55rem; color: #9ca3af; font-weight: 800; display: block; }
-        .qty-num { font-size: 1.2rem; font-weight: 900; }
-        .btn-group { display: flex; gap: 8px; }
-        .btn-plus { background: #f3f4f6; color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
-        .btn-clear { background: #fee2e2; color: #ef4444; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 50; }
-        .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; }
-        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
-        .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2.2rem; font-weight: 900; text-align: right; margin-bottom: 15px; border: 1px solid var(--border); }
-        .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; }
-        .calc-btn.action { background: var(--primary); color: #fff; }
-        .hidden { display: none !important; }
+        :root { --primary: #2563eb; --bg: #ffffff; --card: #f9fafb; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); margin: 0; padding-bottom: 100px; }
+        .header { background: #fff; padding: 25px 20px; border-bottom: 4px solid var(--primary); sticky; top: 0; z-index: 10; }
+        .header h1 { font-size: 1.2rem; margin: 0; color: var(--primary); font-weight: 900; }
+        .header p { font-size: 0.75rem; margin: 4px 0 0; font-weight: 700; color: #6b7280; }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .sync-box { background: #f3f4f6; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        textarea { width: 100%; border-radius: 10px; padding: 10px; border: 1px solid #ccc; font-size: 0.8rem; }
+        .btn-main { background: var(--primary); color: #fff; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .item-card { background: var(--card); border: 1px solid #e5e7eb; border-radius: 15px; padding: 15px; margin-bottom: 12px; }
+        .sku-row { font-weight: 900; color: #000; display: flex; justify-content: space-between; }
+        .sku-desc { font-size: 0.7rem; color: #4b5563; display: block; margin-bottom: 10px; }
+        .control-row { display: flex; justify-content: space-between; align-items: center; }
+        .qty-box { text-align: center; }
+        .qty-label { font-size: 0.6rem; color: #9ca3af; font-weight: 800; display: block; }
+        .qty-val { font-size: 1.1rem; font-weight: 900; }
+        .btn-add { background: #fff; border: 2px solid #e5e7eb; width: 45px; height: 45px; border-radius: 10px; font-weight: 900; font-size: 1.2rem; }
+        .footer-action { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 20px; border-top: 1px solid #eee; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div id="calc-overlay" class="hidden" onclick="cerrarCalc(event)">
-    <div class="calc-pad" onclick="event.stopPropagation()">
-        <div style="text-align:center; font-size:0.7rem; color:#9ca3af; margin-bottom:10px; font-weight:800;">INGRESAR CAJAS FÍSICAS</div>
-        <div class="calc-display" id="calc-display">0</div>
-        <div class="calc-grid">
-            <div class="calc-btn" onclick="pressN(1)">1</div><div class="calc-btn" onclick="pressN(2)">2</div><div class="calc-btn" onclick="pressN(3)">3</div>
-            <div class="calc-btn" onclick="pressN(4)">4</div><div class="calc-btn" onclick="pressN(5)">5</div><div class="calc-btn" onclick="pressN(6)">6</div>
-            <div class="calc-btn" onclick="pressN(7)">7</div><div class="calc-btn" onclick="pressN(8)">8</div><div class="calc-btn" onclick="pressN(9)">9</div>
-            <div class="calc-btn action" onclick="clearCalc()">C</div><div class="calc-btn" onclick="pressN(0)">0</div><div class="calc-btn action" onclick="confirmarCalc()">OK</div>
-        </div>
-    </div>
-</div>
-
 <div class="header">
-    <p>TWINS - INGRESO DE MERCADERÍA</p>
     <h1>J. ANGELO NUÑEZ</h1>
+    <p>TWINS - INGRESO DE MERCADERÍA</p>
 </div>
 
 <div class="container">
-    <div class="sync-box" id="sync-ui">
-        <textarea id="json-input" rows="4" placeholder="Pega el código JSON aquí..."></textarea>
-        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN</button>
+    <div id="setup">
+        <div class="sync-box">
+            <textarea id="json-input" rows="4" placeholder="Pega el código JSON de Gemini aquí..."></textarea>
+            <button class="btn-main" onclick="initApp()">CARGAR DATOS</button>
+        </div>
     </div>
-    <div id="lista-conteo"></div>
-    <div style="height: 140px;"></div>
+    <div id="list"></div>
 </div>
 
-<div class="footer hidden" id="footer-ui">
-    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE AZUL</button>
+<div class="footer-action hidden" id="footer">
+    <button class="btn-main" onclick="makePDF()" id="pdf-btn">GENERAR REPORTE AZUL</button>
 </div>
 
 <script>
-    let db = [];
-    let curIdx = null;
-    let curVal = "";
+    let items = [];
+    const firmaData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgetfirmaficticia... (Firma Angelo)";
 
-    // Tu firma real procesada
-    const firmaAngelo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxXTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
-
-    function cargarPacking() {
+    function initApp() {
         try {
-            db = JSON.parse(document.getElementById('json-input').value);
-            document.getElementById('sync-ui').classList.add('hidden');
-            document.getElementById('footer-ui').classList.remove('hidden');
-            render();
-        } catch(e) { alert("Error: JSON no válido."); }
+            items = JSON.parse(document.getElementById('json-input').value);
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('footer').classList.remove('hidden');
+            draw();
+        } catch(e) { alert("Error en JSON"); }
     }
 
-    function render() {
-        const container = document.getElementById('lista-conteo');
-        container.innerHTML = "";
-        db.forEach((item, i) => {
-            const cjFis = item.fisico / item.u_por_caja;
-            const ok = cjFis >= item.cajas_pck;
-            container.innerHTML += `
-                <div class="item-card ${ok ? 'exacto' : ''}">
-                    <span class="sku-name">${item.sku}</span>
+    function draw() {
+        const list = document.getElementById('list');
+        list.innerHTML = "";
+        items.forEach((item, i) => {
+            const boxes = item.fisico / item.u_por_caja;
+            list.innerHTML += `
+                <div class="item-card">
+                    <div class="sku-row"><span>${item.sku}</span> <span style="color:#2563eb">${boxes.toFixed(0)} / ${item.cajas_pck} CJ</span></div>
                     <span class="sku-desc">${item.desc}</span>
-                    <div class="card-body">
-                        <div class="qty-info">
-                            <div class="qty-col"><span class="qty-label">CJ PACK</span><div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div></div>
-                            <div class="qty-col"><span class="qty-label">CJ FIS</span><div class="qty-num">${cjFis.toFixed(0)}</div></div>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn-clear" onclick="borrarFisico(${i})">BORRAR</button>
-                            <button class="btn-plus" onclick="abrirCalc(${i})">+</button>
-                        </div>
+                    <div class="control-row">
+                        <button class="btn-add" onclick="update(${i}, -1)">-</button>
+                        <div class="qty-box"><span class="qty-label">DIFERENCIA</span><span class="qty-val">${(boxes - item.cajas_pck).toFixed(0)}</span></div>
+                        <button class="btn-add" onclick="update(${i}, 1)">+</button>
                     </div>
                 </div>`;
         });
     }
 
-    function abrirCalc(i) { curIdx = i; curVal = ""; actualizarDisplay(); document.getElementById('calc-overlay').classList.remove('hidden'); }
-    function cerrarCalc() { document.getElementById('calc-overlay').classList.add('hidden'); }
-    function pressN(n) { curVal += n; actualizarDisplay(); }
-    function clearCalc() { curVal = ""; actualizarDisplay(); }
-    function actualizarDisplay() { document.getElementById('calc-display').innerText = curVal || "0"; }
-    function confirmarCalc() {
-        if(!curVal) return;
-        db[curIdx].fisico += (parseFloat(curVal) * db[curIdx].u_por_caja);
-        cerrarCalc(); render();
+    function update(i, val) {
+        let currentBoxes = items[i].fisico / items[i].u_por_caja;
+        let newBoxes = Math.max(0, currentBoxes + val);
+        items[i].fisico = newBoxes * items[i].u_por_caja;
+        draw();
     }
-    function borrarFisico(i) { if(confirm("¿Resetear?")) { db[i].fisico = 0; render(); } }
 
-    function generarReporte() {
+    function makePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Encabezado Azul
+        // Estilo Azul Twins
         doc.setFillColor(37, 99, 235);
-        doc.rect(0, 0, 210, 40, 'F');
+        doc.rect(0, 0, 210, 35, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(18).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 18, {align:'center'});
-        doc.setFontSize(11).setFont("helvetica", "normal").text("TWINS - INGRESO DE MERCADERÍA", 105, 28, {align:'center'});
+        doc.setFontSize(16).setFont(undefined, 'bold').text("REVISIÓN DE CONTENEDOR", 105, 15, {align:'center'});
+        doc.setFontSize(10).setFont(undefined, 'normal').text("TWINS - INGRESO DE MERCADERÍA", 105, 23, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleDateString()}`, 15, 50);
+        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleDateString()}`, 15, 45);
 
-        const rows = db.map(i => [
+        const tableData = items.map(i => [
             i.sku, 
             i.desc, 
             i.cajas_pck, 
-            (i.fisico/i.u_por_caja).toFixed(0), 
-            (i.fisico/i.u_por_caja) >= i.cajas_pck ? "CONFORME" : "FALTA"
+            (i.fisico/i.u_por_caja).toFixed(0),
+            (i.fisico/i.u_por_caja) >= i.cajas_pck ? "OK" : "FALTA"
         ]);
 
         doc.autoTable({
-            startY: 55,
-            head: [['SKU', 'DESCRIPCIÓN', 'CJ PACK', 'CJ FIS', 'ESTADO']],
-            body: rows,
+            startY: 50,
+            head: [['SKU', 'PRODUCTO', 'CJ PACK', 'CJ FIS', 'ESTADO']],
+            body: tableData,
             headStyles: { fillColor: [37, 99, 235] },
             styles: { fontSize: 7 }
         });
 
-        // Firma Real Angelo al final
-        const y = doc.lastAutoTable.finalY + 15;
+        // Firma Final
+        const finalY = doc.lastAutoTable.finalY + 15;
+        try {
+            doc.addImage(firmaData, 'PNG', 80, finalY, 50, 20);
+        } catch(e) {}
         
-        // Insertar imagen de firma (limpia)
-        doc.addImage(firmaAngelo, 'PNG', 85, y, 40, 20);
-        
-        // Línea y nombre
         doc.setLineWidth(0.5);
-        doc.line(70, y + 22, 140, y + 22);
-        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 28, {align:'center'});
-        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, y + 33, {align:'center'});
-        doc.text("Revisión por J. Angelo Nuñez Durand", 105, y + 38, {align:'center'});
+        doc.line(70, finalY + 22, 140, finalY + 22);
+        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
+        doc.setFontSize(8).setFont(undefined, 'normal').text("Asistente Inventario Logístico", 105, finalY + 33, {align:'center'});
+        doc.text("Revisión por J. Angelo Nuñez Durand", 105, finalY + 38, {align:'center'});
         
         doc.save("Reporte_Twins_Angelo.pdf");
     }
