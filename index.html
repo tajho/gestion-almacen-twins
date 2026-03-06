@@ -10,48 +10,33 @@
     <style>
         :root { --primary: #000000; --accent: #2563eb; --success: #10b981; --border: #e5e7eb; --bg: #ffffff; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #111827; margin: 0; padding: 0; overflow-x: hidden; }
-        
+        body { background: var(--bg); color: #111827; margin: 0; padding: 0; }
         .header { padding: 30px 20px; border-bottom: 3px solid var(--primary); background: #fff; position: sticky; top: 0; z-index: 100; }
         .header h1 { font-size: 1.3rem; margin: 0; font-weight: 900; letter-spacing: -1px; }
         .header p { font-size: 0.7rem; color: #6b7280; margin: 5px 0 0; font-weight: 700; text-transform: uppercase; }
-        
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        
         .sync-box { background: #fafafa; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; text-align: center; }
         .sync-box textarea { width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 12px; font-family: monospace; font-size: 0.75rem; box-sizing: border-box; resize: none; background: #fff; }
         .btn-load { width: 100%; margin-top: 15px; padding: 16px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-
-        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; transition: 0.3s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .item-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .item-card.exacto { border-color: var(--success); background: #f0fdf4; }
-        
-        .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
         .sku-name { font-weight: 900; font-size: 1.1rem; color: #000; }
-        .sku-desc { font-size: 0.65rem; color: #6b7280; font-weight: 600; text-transform: uppercase; display: block; margin-top: 2px; line-height: 1.2; }
-
+        .sku-desc { font-size: 0.65rem; color: #6b7280; font-weight: 600; text-transform: uppercase; display: block; margin-top: 2px; }
         .card-body { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
         .qty-info { display: flex; gap: 20px; }
         .qty-col { text-align: center; }
-        .qty-label { font-size: 0.55rem; color: #9ca3af; font-weight: 800; display: block; text-transform: uppercase; }
+        .qty-label { font-size: 0.55rem; color: #9ca3af; font-weight: 800; display: block; }
         .qty-num { font-size: 1.2rem; font-weight: 900; }
-
         .btn-group { display: flex; gap: 8px; }
         .btn-plus { background: #f3f4f6; color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
-        .btn-clear { background: #fee2e2; color: #ef4444; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
-        .item-card.exacto .btn-plus { background: var(--success); color: white; }
-
-        .progress-container { width: 100%; height: 8px; background: #f3f4f6; border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
-        .item-card.exacto .progress-bar { background: var(--success); }
-
+        .btn-clear { background: #fee2e2; color: #ef4444; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 50; }
         .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        
         #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; }
-        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
+        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
         .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2.2rem; font-weight: 900; text-align: right; margin-bottom: 15px; border: 1px solid var(--border); }
         .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; cursor: pointer; }
+        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; }
         .calc-btn.action { background: #000; color: #fff; }
         .hidden { display: none !important; }
     </style>
@@ -78,16 +63,15 @@
 
 <div class="container">
     <div class="sync-box" id="sync-ui">
-        <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; color: var(--accent);">PEGAR CÓDIGO JSON DE GEMINI</p>
-        <textarea id="json-input" rows="4" placeholder="Copia el código JSON generado por la IA aquí..."></textarea>
-        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN DE CONTENEDOR</button>
+        <textarea id="json-input" rows="4" placeholder="Pega el código JSON de los SKUs aquí..."></textarea>
+        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN</button>
     </div>
     <div id="lista-conteo"></div>
     <div style="height: 140px;"></div>
 </div>
 
 <div class="footer hidden" id="footer-ui">
-    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE PDF OFICIAL</button>
+    <button class="btn-report" onclick="generarReporte()">DESCARGAR REPORTE PDF</button>
 </div>
 
 <script>
@@ -95,16 +79,13 @@
     let curIdx = null;
     let curVal = "";
 
-    // Firma limpiada digitalmente (formato base64, fondo transparente)
-    const firmaAngeloBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgetfirmaficticia... (sustitúyela por la real)";
-
     function cargarPacking() {
         try {
             db = JSON.parse(document.getElementById('json-input').value);
             document.getElementById('sync-ui').classList.add('hidden');
             document.getElementById('footer-ui').classList.remove('hidden');
             render();
-        } catch(e) { alert("Error: El código JSON no es válido."); }
+        } catch(e) { alert("Error en el formato del JSON."); }
     }
 
     function render() {
@@ -113,33 +94,20 @@
         db.forEach((item, i) => {
             const cjFis = item.fisico / item.u_por_caja;
             const ok = cjFis >= item.cajas_pck;
-            const porc = Math.min((cjFis / item.cajas_pck) * 100, 100);
-            
             container.innerHTML += `
                 <div class="item-card ${ok ? 'exacto' : ''}">
-                    <div class="card-header">
-                        <div>
-                            <span class="sku-name">${item.sku}</span>
-                            <span class="sku-desc">${item.desc}</span>
-                        </div>
-                    </div>
+                    <span class="sku-name">${item.sku}</span>
+                    <span class="sku-desc">${item.desc}</span>
                     <div class="card-body">
                         <div class="qty-info">
-                            <div class="qty-col">
-                                <span class="qty-label">CAJAS PACK</span>
-                                <div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div>
-                            </div>
-                            <div class="qty-col">
-                                <span class="qty-label">CAJAS FIS</span>
-                                <div class="qty-num">${cjFis.toFixed(1)}</div>
-                            </div>
+                            <div class="qty-col"><span class="qty-label">CJ PACK</span><div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div></div>
+                            <div class="qty-col"><span class="qty-label">CJ FIS</span><div class="qty-num">${cjFis.toFixed(0)}</div></div>
                         </div>
                         <div class="btn-group">
                             <button class="btn-clear" onclick="borrarFisico(${i})">BORRAR</button>
-                            <button class="btn-plus" onclick="abrirCalc(${i})">${ok ? '✓' : '+'}</button>
+                            <button class="btn-plus" onclick="abrirCalc(${i})">+</button>
                         </div>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" style="width: ${porc}%"></div></div>
                 </div>`;
         });
     }
@@ -149,70 +117,42 @@
     function pressN(n) { curVal += n; actualizarDisplay(); }
     function clearCalc() { curVal = ""; actualizarDisplay(); }
     function actualizarDisplay() { document.getElementById('calc-display').innerText = curVal || "0"; }
-
     function confirmarCalc() {
         if(!curVal) return;
         db[curIdx].fisico += (parseFloat(curVal) * db[curIdx].u_por_caja);
         cerrarCalc(); render();
     }
+    function borrarFisico(i) { if(confirm("¿Resetear cajas?")) { db[i].fisico = 0; render(); } }
 
-    function borrarFisico(i) {
-        if(confirm(`¿Deseas resetear el conteo de ${db[i].sku}?`)) {
-            db[i].fisico = 0;
-            render();
-        }
-    }
-
-    function generarReporte() {
+    async function generarReporte() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header Negro Profesional
         doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, 210, 45, 'F');
+        doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 25, {align:'center'});
-        doc.setFontSize(10).setFont("helvetica", "normal").text("REPORTE OFICIAL DE CONTROL DE INVENTARIOS Y LOGÍSTICA", 105, 33, {align:'center'});
+        doc.setFontSize(18).text("REVISIÓN DE CONTENEDOR", 105, 20, {align:'center'});
+        doc.setFontSize(10).text("CONTROL DE INVENTARIO LOGÍSTICO", 105, 28, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(9).text(`FECHA DE EMISIÓN: ${new Date().toLocaleString()}`, 15, 55);
+        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleString()}`, 15, 50);
 
-        // Datos mapeados para mostrar CAJAS
-        const rows = db.map(i => {
-            const cjFis = i.fisico / i.u_por_caja;
-            return [
-                i.sku, 
-                i.desc, 
-                i.cajas_pck, 
-                cjFis.toFixed(1), 
-                cjFis >= i.cajas_pck ? "CONFORME" : (cjFis - i.cajas_pck).toFixed(1)
-            ];
-        });
+        const rows = db.map(i => [i.sku, i.desc, i.cajas_pck, (i.fisico/i.u_por_caja).toFixed(0), (i.fisico/i.u_por_caja) >= i.cajas_pck ? "OK" : "FALTA"]);
 
         doc.autoTable({
-            startY: 60,
-            head: [['SKU', 'DESCRIPCIÓN', 'CAJAS PACKING', 'CAJAS FISICO', 'DIFERENCIA']],
+            startY: 55,
+            head: [['SKU', 'DESCRIPCIÓN', 'CJ PACK', 'CJ FIS', 'ESTADO']],
             body: rows,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
-            styles: { fontSize: 7, valign: 'middle' },
-            columnStyles: { 1: { cellWidth: 70 } }
+            headStyles: { fillColor: [0, 0, 0] },
+            styles: { fontSize: 7 }
         });
 
-        // Sección de firma con imagen limpia
         const y = doc.lastAutoTable.finalY + 30;
+        doc.line(70, y, 140, y);
+        doc.setFontSize(10).text("J. ANGELO NUÑEZ DURAND", 105, y + 7, {align:'center'});
+        doc.setFontSize(8).text("Asistente Logístico", 105, y + 12, {align:'center'});
         
-        // Carga la imagen base64 de tu firma
-        doc.addImage(firmaAngeloBase64, 'PNG', 75, y, 60, 25);
-        
-        // Línea y textos de firma
-        doc.setLineWidth(0.5);
-        doc.line(65, y + 25, 145, y + 25);
-        doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 32, {align:'center'});
-        doc.setFontSize(9).setFont(undefined, 'normal').text("Asistente Logístico.", 105, y + 37, {align:'center'});
-        doc.setFontSize(8).text("Firma Autorizada y Conforme.", 105, y + 43, {align:'center'});
-        
-        doc.save(`Inbound_Angelo_Oficial_${Date.now()}.pdf`);
+        doc.save("Reporte_Contenedor_Angelo.pdf");
     }
 </script>
 </body>
