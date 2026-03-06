@@ -38,7 +38,6 @@
         .btn-group { display: flex; gap: 8px; }
         .btn-plus { background: #f3f4f6; color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
         .btn-clear { background: #fee2e2; color: #ef4444; border: none; width: 50px; height: 50px; border-radius: 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
-        .item-card.exacto .btn-plus { background: var(--success); color: white; }
 
         .progress-container { width: 100%; height: 8px; background: #f3f4f6; border-radius: 10px; margin-top: 15px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
@@ -47,12 +46,11 @@
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 50; }
         .btn-report { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; }
         
-        /* Panel Numérico */
         #calc-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-end; }
-        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
+        .calc-pad { background: #fff; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
         .calc-display { background: #f3f4f6; padding: 20px; border-radius: 15px; font-size: 2.2rem; font-weight: 900; text-align: right; margin-bottom: 15px; border: 1px solid var(--border); }
         .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; cursor: pointer; }
+        .calc-btn { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; font-size: 1.5rem; font-weight: 800; border-radius: 15px; text-align: center; }
         .calc-btn.action { background: #000; color: #fff; }
         .hidden { display: none !important; }
     </style>
@@ -61,7 +59,7 @@
 
 <div id="calc-overlay" class="hidden" onclick="cerrarCalc(event)">
     <div class="calc-pad" onclick="event.stopPropagation()">
-        <div style="text-align:center; font-size:0.7rem; color:#9ca3af; margin-bottom:10px; font-weight:800;">INGRESAR CANTIDAD DE CAJAS</div>
+        <div style="text-align:center; font-size:0.7rem; color:#9ca3af; margin-bottom:10px; font-weight:800;">INGRESAR CAJAS RECIBIDAS</div>
         <div class="calc-display" id="calc-display">0</div>
         <div class="calc-grid">
             <div class="calc-btn" onclick="pressN(1)">1</div><div class="calc-btn" onclick="pressN(2)">2</div><div class="calc-btn" onclick="pressN(3)">3</div>
@@ -73,22 +71,22 @@
 </div>
 
 <div class="header">
-    <p>Operaciones Logísticas</p>
-    <h1>J. ANGELO NUÑEZ</h1>
+    <p>Revisión de contenedor</p>
+    <h1>J. ANGELO NUÑEZ DURAND</h1>
 </div>
 
 <div class="container">
     <div class="sync-box" id="sync-ui">
-        <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; color: var(--accent);">PEGAR CÓDIGO JSON AQUÍ</p>
-        <textarea id="json-input" rows="4" placeholder="Pega el código generado..."></textarea>
-        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN DE CONTENEDOR</button>
+        <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 12px;">PEGAR CÓDIGO JSON</p>
+        <textarea id="json-input" rows="4"></textarea>
+        <button class="btn-load" onclick="cargarPacking()">INICIAR REVISIÓN</button>
     </div>
     <div id="lista-conteo"></div>
     <div style="height: 140px;"></div>
 </div>
 
 <div class="footer hidden" id="footer-ui">
-    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE PROFESIONAL</button>
+    <button class="btn-report" onclick="generarReporte()">GENERAR REPORTE PDF</button>
 </div>
 
 <script>
@@ -102,16 +100,16 @@
             document.getElementById('sync-ui').classList.add('hidden');
             document.getElementById('footer-ui').classList.remove('hidden');
             render();
-        } catch(e) { alert("Error: El código JSON no es válido."); }
+        } catch(e) { alert("Error en JSON"); }
     }
 
     function render() {
         const container = document.getElementById('lista-conteo');
         container.innerHTML = "";
         db.forEach((item, i) => {
-            const ok = item.fisico >= item.pck;
             const cjFis = item.fisico / item.u_por_caja;
-            const porc = Math.min((item.fisico / item.pck) * 100, 100);
+            const ok = cjFis >= item.cajas_pck;
+            const porc = Math.min((cjFis / item.cajas_pck) * 100, 100);
             
             container.innerHTML += `
                 <div class="item-card ${ok ? 'exacto' : ''}">
@@ -124,17 +122,17 @@
                     <div class="card-body">
                         <div class="qty-info">
                             <div class="qty-col">
-                                <span class="qty-label">CJ PACK</span>
+                                <span class="qty-label">CAJAS PACK</span>
                                 <div class="qty-num" style="color:#9ca3af">${item.cajas_pck}</div>
                             </div>
                             <div class="qty-col">
-                                <span class="qty-label">CJ FIS</span>
+                                <span class="qty-label">CAJAS FIS</span>
                                 <div class="qty-num">${cjFis.toFixed(1)}</div>
                             </div>
                         </div>
                         <div class="btn-group">
                             <button class="btn-clear" onclick="borrarFisico(${i})">BORRAR</button>
-                            <button class="btn-plus" onclick="abrirCalc(${i})">${ok ? '✓' : '+'}</button>
+                            <button class="btn-plus" onclick="abrirCalc(${i})">+</button>
                         </div>
                     </div>
                     <div class="progress-container"><div class="progress-bar" style="width: ${porc}%"></div></div>
@@ -155,7 +153,7 @@
     }
 
     function borrarFisico(i) {
-        if(confirm(`¿Deseas resetear el conteo de ${db[i].sku}?`)) {
+        if(confirm("¿Resetear cajas físicas de este producto?")) {
             db[i].fisico = 0;
             render();
         }
@@ -165,45 +163,43 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Encabezado Negro Profesional
         doc.setFillColor(0, 0, 0);
         doc.rect(0, 0, 210, 45, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 22, {align:'center'});
-        doc.setFontSize(9).setFont("helvetica", "normal").text("REPORTE OFICIAL DE CONTROL DE INVENTARIOS", 105, 30, {align:'center'});
+        doc.setFontSize(20).setFont("helvetica", "bold").text("REVISIÓN DE CONTENEDOR", 105, 25, {align:'center'});
+        doc.setFontSize(9).text("REPORTE OFICIAL DE INVENTARIO", 105, 33, {align:'center'});
         
         doc.setTextColor(0,0,0);
-        doc.setFontSize(9).text(`FECHA DE EMISIÓN: ${new Date().toLocaleString()}`, 15, 55);
+        doc.setFontSize(9).text(`FECHA: ${new Date().toLocaleString()}`, 15, 55);
 
-        const rows = db.map(i => [
-            i.sku, 
-            i.desc, 
-            i.pck, 
-            i.fisico, 
-            i.fisico >= i.pck ? "CONFORME" : (i.fisico - i.pck)
-        ]);
+        const rows = db.map(i => {
+            const cjFis = i.fisico / i.u_por_caja;
+            return [
+                i.sku, 
+                i.desc, 
+                i.cajas_pck, 
+                cjFis.toFixed(1), 
+                cjFis >= i.cajas_pck ? "CONFORME" : (cjFis - i.cajas_pck).toFixed(1)
+            ];
+        });
 
         doc.autoTable({
             startY: 60,
-            head: [['SKU', 'DESCRIPCIÓN', 'PCS PACKING', 'PCS FISICO', 'DIFERENCIA']],
+            head: [['SKU', 'DESCRIPCIÓN', 'CAJAS PACK', 'CAJAS FIS', 'DIF. CAJAS']],
             body: rows,
             theme: 'grid',
             headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
-            styles: { fontSize: 7, valign: 'middle' },
-            columnStyles: { 1: { cellWidth: 70 } }
+            styles: { fontSize: 7 },
+            columnStyles: { 1: { cellWidth: 75 } }
         });
 
         const y = doc.lastAutoTable.finalY + 40;
-        doc.setLineWidth(0.5);
         doc.line(65, y, 145, y);
         doc.setFontSize(10).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, y + 7, {align:'center'});
         doc.setFontSize(9).setFont(undefined, 'normal').text("Asistente Logístico.", 105, y + 12, {align:'center'});
-        doc.setFontSize(8).text("Revisión de contenedor autorizada.", 105, y + 20, {align:'center'});
         
-        doc.save(`Reporte_Angelo_Logistica.pdf`);
+        doc.save(`Reporte_Cajas_Angelo.pdf`);
     }
 </script>
 </body>
 </html>
-
-
