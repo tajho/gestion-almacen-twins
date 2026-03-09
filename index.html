@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v32</title>
+    <title>TAJHO.OS v34 - Smart Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -48,21 +48,26 @@
     </div>
 
     <header class="h-16 px-6 flex justify-between items-center bg-white sticky top-0 z-50">
-        <button onclick="location.reload()" class="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+        <button onclick="location.reload()" class="p-2 text-slate-400">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
         <div class="text-center">
-            <p class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">CLOUD SYNC</p>
+            <p class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">SMART LOGISTICS</p>
             <h3 class="text-xs font-black tracking-widest italic">TAJHO<span class="text-blue-600">.OS</span></h3>
         </div>
-        <div class="w-10"></div> </header>
+        <div class="w-10"></div> 
+    </header>
 
     <main class="p-6 pb-24">
         <div id="view-contenedor" class="tab-panel active space-y-6">
             <div id="setup-card" class="card-modern p-8 space-y-5">
                 <div class="space-y-4">
-                    <input type="text" id="s-sku" oninput="autoLookup()" class="input-clean w-full text-lg uppercase" placeholder="CÓDIGO SKU">
-                    <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic" placeholder="Descripción desde Sheets..." readonly>
+                    <div class="relative">
+                        <input type="text" id="s-sku" oninput="smartSearch()" class="input-clean w-full text-lg uppercase" placeholder="CÓDIGO SKU" autocomplete="off">
+                        <div id="search-results" class="hidden absolute z-10 w-full bg-white mt-2 rounded-2xl shadow-2xl border border-slate-100 max-h-48 overflow-y-auto"></div>
+                    </div>
+                    
+                    <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic" placeholder="Descripción automática..." readonly>
                     <input type="number" id="s-meta" class="input-clean w-full text-base" placeholder="CANTIDAD META">
                 </div>
                 <button onclick="addMani()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">Vincular a Operación</button>
@@ -72,7 +77,7 @@
 
             <div id="ops-card" class="hidden card-modern p-10 space-y-8 text-center">
                 <div class="space-y-2">
-                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent outline-none text-slate-900 appearance-none text-center italic"></select>
+                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent outline-none text-slate-900 appearance-none text-center italic w-full"></select>
                     <p id="live-desc" class="text-[11px] font-black text-blue-600 uppercase tracking-widest"></p>
                 </div>
                 <div class="flex flex-col items-center gap-6">
@@ -97,28 +102,58 @@
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec"; 
+        let raw_data = []; // Datos crudos para búsqueda flexible
         let db_tajho = {}; 
         let manifest = [];
 
-        // Sincronización en segundo plano (Invisible)
         async function initCloud() {
             try {
                 const res = await fetch(CLOUD_URL);
-                const data = await res.json();
-                data.forEach(r => {
+                raw_data = await res.json();
+                // Preparar base indexada para acceso rápido
+                raw_data.forEach(r => {
                     const cod = String(r.CODIGO || "").toUpperCase().trim();
-                    if(cod) db_tajho[cod] = { desc: r.DESCRIPCION || "SIN NOMBRE", um: r.UM || "UND" };
+                    if(cod) db_tajho[cod] = { desc: r.DESCRIPCION || "SIN NOMBRE" };
                 });
-            } catch (e) { console.warn("Modo offline o error de red"); }
+                console.log("Nube sincronizada en segundo plano.");
+            } catch (e) { console.warn("Error de conexión silencioso."); }
         }
 
-        // Buscador ultra rápido
-        function autoLookup() {
-            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
+        // --- LÓGICA DE BUSCADOR INTELIGENTE ---
+        function smartSearch() {
+            const input = document.getElementById('s-sku').value.toUpperCase().trim();
+            const resultsDiv = document.getElementById('search-results');
             const descField = document.getElementById('s-desc');
-            if(db_tajho[sku]) {
-                descField.value = db_tajho[sku].desc;
-            } else { descField.value = ""; }
+            
+            if (input.length < 2) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            // Filtrar coincidencias
+            const matches = raw_data.filter(item => 
+                String(item.CODIGO).toUpperCase().includes(input) || 
+                String(item.DESCRIPCION).toUpperCase().includes(input)
+            ).slice(0, 5); // Mostrar top 5
+
+            if (matches.length > 0) {
+                resultsDiv.innerHTML = matches.map(m => `
+                    <div onclick="selectProduct('${m.CODIGO}', '${m.DESCRIPCION}')" class="p-4 border-b border-slate-50 active:bg-blue-50">
+                        <p class="text-[10px] font-black text-blue-600">${m.CODIGO}</p>
+                        <p class="text-[11px] font-bold text-slate-500 truncate">${m.DESCRIPCION}</p>
+                    </div>
+                `).join('');
+                resultsDiv.classList.remove('hidden');
+            } else {
+                resultsDiv.classList.add('hidden');
+            }
+        }
+
+        function selectProduct(sku, desc) {
+            document.getElementById('s-sku').value = sku;
+            document.getElementById('s-desc').value = desc;
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('s-meta').focus();
         }
 
         function navTo(t) {
@@ -129,9 +164,13 @@
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
             const meta = parseInt(document.getElementById('s-meta').value);
-            if(!db_tajho[sku] || !meta) return;
+            // Validar que el SKU exista en la base de datos
+            if(!db_tajho[sku] || !meta) {
+                alert("Código no válido o falta cantidad meta");
+                return;
+            }
 
-            manifest.push({ sku, desc: db_tajho[sku].desc, um: "CJ", meta, real: 0 });
+            manifest.push({ sku, desc: db_tajho[sku].desc, meta, real: 0 });
             renderList();
             
             document.getElementById('btn-start').classList.remove('hidden');
@@ -173,7 +212,6 @@
             syncItem();
             document.getElementById('qty-in').value = '';
 
-            // Envío invisible a Google Sheets
             fetch(CLOUD_URL, {
                 method: 'POST',
                 mode: 'no-cors',
