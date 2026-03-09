@@ -3,193 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LogiMaster Pro</title>
+    <title>LogiMaster Pro - Warehouse Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        .input-field { @apply w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: #0f172a; }
+        .card-pro { @apply bg-white rounded-[2rem] shadow-sm border border-slate-200/60 p-5; }
+        .input-pro { @apply w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all text-sm font-semibold; }
+        .btn-main { @apply bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2; }
         .hidden { display: none !important; }
-        .active-tab { @apply text-blue-600 bg-blue-50 rounded-2xl; }
-        /* Optimización para móviles */
-        input, select { font-size: 16px !important; } 
+        .active-nav { @apply text-blue-600 bg-blue-50/50 rounded-2xl; }
     </style>
 </head>
-<body class="pb-32">
+<body class="pb-36">
 
-    <header class="bg-white/80 backdrop-blur-md p-4 sticky top-0 z-50 border-b border-slate-100 flex justify-between items-center shadow-sm">
+    <header class="bg-white/70 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-200/50 p-5 flex justify-between items-center">
         <div>
-            <h1 class="text-xl font-black text-slate-800 tracking-tighter">LOGIMASTER<span class="text-blue-600">PRO</span></h1>
+            <h1 class="text-xl font-extrabold tracking-tighter">LOGIMASTER<span class="text-blue-600 italic">PRO</span></h1>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Inventory Systems</p>
         </div>
-        <div id="status-cloud" class="text-[9px] font-bold text-green-500 bg-green-50 px-2 py-1 rounded-full uppercase">Memoria Local OK</div>
+        <div class="px-3 py-1 bg-slate-100 rounded-full border border-slate-200">
+            <span class="text-[10px] font-black text-slate-600">v3.0 OP</span>
+        </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-6">
+    <main class="max-w-md mx-auto p-4 space-y-8">
 
-        <section id="vista-ingreso" class="space-y-4">
-            <h2 class="text-lg font-black text-slate-800 px-1 italic">🚢 Registro de Contenedor</h2>
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-3">
-                <input type="text" id="cont_id" placeholder="N° Contenedor (Ej: ABCU123)" class="input-field font-bold uppercase">
-                <input type="date" id="cont_fecha" class="input-field">
-            </div>
-            
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div id="lista-ingreso" class="divide-y divide-slate-50">
-                    </div>
-                <button onclick="agregarFila('lista-ingreso')" class="w-full p-4 text-blue-600 text-xs font-bold bg-slate-50">+ AÑADIR PRODUCTO</button>
-            </div>
-            <button onclick="guardarRegistro('CONTENEDOR')" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-transform uppercase text-sm tracking-widest">Finalizar y Guardar</button>
-        </section>
+        <section id="vista-ingreso" class="space-y-6">
+            <header class="px-2">
+                <h2 class="text-2xl font-extrabold tracking-tight">Ingreso de Contenedor</h2>
+                <p class="text-xs text-slate-500">Contabilización de carga por pallet/bulto</p>
+            </header>
 
-        <section id="vista-devolucion" class="space-y-4 hidden">
-            <h2 class="text-lg font-black text-slate-800 px-1 italic">📦 Registro de Devolución</h2>
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-3">
-                <input type="text" id="dev_cliente" placeholder="Nombre del Cliente" class="input-field font-bold">
-                <input type="text" id="dev_vendedor" placeholder="Nombre del Vendedor" class="input-field">
-            </div>
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div id="lista-devolucion" class="divide-y divide-slate-50"></div>
-                <button onclick="agregarFila('lista-devolucion')" class="w-full p-4 text-orange-600 text-xs font-bold bg-slate-50">+ AÑADIR PRODUCTO</button>
-            </div>
-            <button onclick="guardarRegistro('DEVOLUCION')" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-transform uppercase text-sm tracking-widest">Registrar Devolución</button>
-        </section>
-
-        <section id="vista-historial" class="space-y-4 hidden">
-            <h2 class="text-lg font-black text-slate-800 px-1 italic">🔍 Buscador e Historial</h2>
-            <input type="text" id="input-busqueda" onkeyup="renderizarHistorial()" placeholder="Buscar por código, cliente o contenedor..." class="input-field shadow-sm border-none">
-            
-            <div id="contenedor-historial" class="space-y-3">
+            <div class="card-pro space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">ID del Contenedor</label>
+                    <input type="text" id="cont_id" placeholder="EJ: MCU-99201" class="input-pro mt-1 uppercase">
                 </div>
+            </div>
+
+            <div id="lista-pallets" class="space-y-4">
+                </div>
+
+            <button onclick="agregarPallet()" class="w-full py-4 border-2 border-dashed border-slate-300 rounded-3xl text-slate-400 font-bold text-xs hover:bg-slate-50 transition-colors">
+                + REGISTRAR NUEVO PALLET / CARGA
+            </button>
+
+            <button onclick="guardarYGenerarPDF('CONTENEDOR')" class="btn-main w-full bg-blue-600 shadow-blue-200">
+                <span>📄</span> GENERAR REPORTE OFICIAL
+            </button>
+        </section>
+
+        <section id="vista-devolucion" class="space-y-6 hidden">
+            <header class="px-2">
+                <h2 class="text-2xl font-extrabold tracking-tight">Devoluciones</h2>
+                <p class="text-xs text-slate-500">Recepción y revisión de mercadería</p>
+            </header>
+
+            <div class="card-pro space-y-4">
+                <input type="text" id="dev_cliente" placeholder="Nombre del Cliente" class="input-pro">
+                <input type="text" id="dev_vendedor" placeholder="Vendedor Responsable" class="input-pro">
+            </div>
+
+            <div id="lista-devolucion" class="space-y-4"></div>
+            
+            <button onclick="agregarFilaDev()" class="w-full py-4 border-2 border-dashed border-orange-200 rounded-3xl text-orange-400 font-bold text-xs">
+                + AÑADIR PRODUCTO DEVUELTO
+            </button>
+            <button onclick="guardarYGenerarPDF('DEVOLUCION')" class="btn-main bg-slate-800">
+                REGISTRAR Y CREAR PDF
+            </button>
+        </section>
+
+        <section id="vista-historial" class="space-y-6 hidden">
+            <header class="px-2">
+                <h2 class="text-2xl font-extrabold tracking-tight">Historial</h2>
+                <input type="text" onkeyup="renderHistorial()" id="busqueda" placeholder="Buscar registros..." class="input-pro mt-4 shadow-sm border-none">
+            </header>
+            <div id="historial-lista" class="space-y-3"></div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-slate-100 p-2 pb-6 flex justify-around items-center">
-        <button onclick="cambiarVista('vista-ingreso', this)" class="active-tab p-3 flex flex-col items-center flex-1">
-            <span class="text-xl">🚢</span>
-            <span class="text-[9px] font-bold uppercase mt-1">Ingreso</span>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-white shadow-2xl rounded-[2.5rem] p-2 flex border border-slate-100">
+        <button onclick="navegar('vista-ingreso', this)" class="active-nav flex-1 py-4 flex flex-col items-center">
+            <span class="text-lg">⚓</span>
+            <span class="text-[8px] font-black uppercase mt-1">Carga</span>
         </button>
-        <button onclick="cambiarVista('vista-devolucion', this)" class="p-3 flex flex-col items-center flex-1 text-slate-400">
-            <span class="text-xl">📦</span>
-            <span class="text-[9px] font-bold uppercase mt-1">Devolución</span>
+        <button onclick="navegar('vista-devolucion', this)" class="flex-1 py-4 flex flex-col items-center text-slate-400">
+            <span class="text-lg">🔄</span>
+            <span class="text-[8px] font-black uppercase mt-1">Devolución</span>
         </button>
-        <button onclick="cambiarVista('vista-historial', this)" class="p-3 flex flex-col items-center flex-1 text-slate-400">
-            <span class="text-xl">📋</span>
-            <span class="text-[9px] font-bold uppercase mt-1">Historial</span>
+        <button onclick="navegar('vista-historial', this)" class="flex-1 py-4 flex flex-col items-center text-slate-400">
+            <span class="text-lg">📁</span>
+            <span class="text-[8px] font-black uppercase mt-1">Historial</span>
         </button>
     </nav>
 
     <script>
-        // 1. BASE DE DATOS MAESTRA (Conocimiento de productos)
+        const { jsPDF } = window.jspdf;
+
+        // Base de Datos Maestra
         const maestra = [
-            { cod: "ZAP-01", desc: "Zapatilla Deportiva X", pack: "12 und" },
-            { cod: "PAN-05", desc: "Pantalon Jean Premium", pack: "20 und" },
-            { cod: "GOR-09", desc: "Gorra Trucker Azul", pack: "50 und" }
+            { cod: "1010", desc: "ZAPATILLA SPORT TR-X", pack: "12x1" },
+            { cod: "2020", desc: "BOXER ALGODÓN TAJHO", pack: "24x1" },
+            { cod: "3030", desc: "GORRA URBAN PRO", pack: "50x1" }
         ];
 
-        // 2. SISTEMA DE PERSISTENCIA (LocalStorage)
-        let baseDeDatos = JSON.parse(localStorage.getItem('logi_records')) || [
-            { id: "CONT-778", tipo: "CONTENEDOR", fecha: "2026-03-07", detalle: "Zapatilla Deportiva X (45 und)", estado: "COMPLETO" },
-            { id: "DEV-102", tipo: "DEVOLUCION", fecha: "2026-03-08", detalle: "Cliente: Juan Perez - Pantalon Jean (2 und)", estado: "FALLA" }
-        ];
+        let registros = JSON.parse(localStorage.getItem('logi_db')) || [];
 
-        function cambiarVista(id, btn) {
+        function navegar(id, btn) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab', 'text-blue-600'));
-            btn.classList.add('active-tab', 'text-blue-600');
-            if(id === 'vista-historial') renderizarHistorial();
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav', 'text-blue-600'));
+            btn.classList.add('active-nav', 'text-blue-600');
+            if(id === 'vista-historial') renderHistorial();
         }
 
-        function agregarFila(contenedorId) {
-            const div = document.getElementById(contenedorId);
-            const fila = document.createElement('div');
-            fila.className = "p-4 space-y-2 relative";
-            fila.innerHTML = `
-                <div class="flex gap-2">
-                    <input type="text" placeholder="CÓDIGO" oninput="validarCod(this)" class="w-1/3 p-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold uppercase outline-none">
-                    <div class="w-2/3 p-2 text-[10px] text-slate-500 italic bg-slate-50 rounded-lg flex items-center desc-text">Esperando código...</div>
+        function agregarPallet() {
+            const cont = document.getElementById('lista-pallets');
+            const div = document.createElement('div');
+            div.className = "card-pro border-l-4 border-blue-500 animate-in fade-in duration-300";
+            div.innerHTML = `
+                <div class="flex justify-between mb-3 border-b border-slate-50 pb-2">
+                    <span class="text-[10px] font-black text-blue-600 uppercase italic">Pallet / Bulto</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 text-xs">Eliminar</button>
                 </div>
-                <div class="flex gap-2">
-                    <input type="number" placeholder="CANT" class="w-1/2 p-2 bg-blue-50 border-none rounded-lg text-center font-bold text-blue-700 outline-none">
-                    <select class="w-1/2 p-2 bg-slate-100 border-none rounded-lg text-[10px] font-bold outline-none">
-                        <option>ÓPTIMO</option>
-                        <option>DAÑADO</option>
-                        <option>FALLA</option>
-                        <option>NO VENTA</option>
-                    </select>
+                <div class="space-y-3">
+                    <input type="text" oninput="buscarProd(this)" placeholder="Código del Producto" class="input-pro text-xs uppercase">
+                    <div class="p-3 bg-blue-50 rounded-xl text-[10px] font-bold text-blue-800 desc-p italic">Esperando código...</div>
+                    <div class="flex gap-2">
+                        <input type="number" placeholder="Cantidad" class="w-1/2 p-3 bg-white border border-slate-200 rounded-xl text-center font-bold text-blue-600 q-val">
+                        <select class="w-1/2 p-3 bg-white border border-slate-200 rounded-xl text-[10px] font-bold status-val">
+                            <option>BUENO</option>
+                            <option>DAÑADO</option>
+                        </select>
+                    </div>
                 </div>
             `;
-            div.appendChild(fila);
+            cont.appendChild(div);
         }
 
-        function validarCod(input) {
-            const val = input.value.toUpperCase();
-            const descDiv = input.nextElementSibling;
-            const producto = maestra.find(p => p.cod === val);
-            if(producto) {
-                descDiv.innerText = producto.desc;
-                descDiv.classList.add('text-blue-600', 'font-bold', 'not-italic');
+        function buscarProd(input) {
+            const match = maestra.find(p => p.cod === input.value.toUpperCase());
+            const label = input.nextElementSibling;
+            if(match) {
+                label.innerText = match.desc + " | PACK: " + match.pack;
+                label.classList.replace('text-slate-500', 'text-blue-800');
             } else {
-                descDiv.innerText = "No encontrado";
-                descDiv.classList.remove('text-blue-600', 'font-bold', 'not-italic');
+                label.innerText = "Producto no registrado";
+                label.classList.replace('text-blue-800', 'text-slate-500');
             }
         }
 
-        function guardarRegistro(tipo) {
-            const idDoc = tipo === 'CONTENEDOR' ? document.getElementById('cont_id').value : document.getElementById('dev_cliente').value;
-            const fecha = tipo === 'CONTENEDOR' ? document.getElementById('cont_fecha').value : new Date().toISOString().split('T')[0];
+        function guardarYGenerarPDF(tipo) {
+            const docId = tipo === 'CONTENEDOR' ? document.getElementById('cont_id').value : document.getElementById('dev_cliente').value;
+            if(!docId) return alert("Falta el identificador (Contenedor o Cliente)");
 
-            if(!idDoc) return alert("Por favor completa los datos principales");
+            // Capturar datos para el PDF
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text("REPORTE LOGÍSTICO PROFESIONAL", 14, 22);
+            doc.setFontSize(10);
+            doc.text(`Tipo: ${tipo} | ID: ${docId}`, 14, 30);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 35);
 
-            const nuevo = {
-                id: idDoc.toUpperCase(),
-                tipo: tipo,
-                fecha: fecha,
-                detalle: "Registro nuevo generado en app",
-                estado: "REGISTRADO"
-            };
+            // Simulación de tabla en PDF
+            const headers = [["Código", "Producto", "Cant", "Estado"]];
+            const data = [["Ejemplo", "Producto Revisado", "100", "Óptimo"]];
 
-            baseDeDatos.unshift(nuevo);
-            localStorage.setItem('logi_records', JSON.stringify(baseDeDatos));
-            alert("¡Registro guardado con éxito!\nRevisión autorizada por J. Angelo Nuñez Durand.");
-            location.reload(); 
-        }
-
-        function renderizarHistorial() {
-            const query = document.getElementById('input-busqueda').value.toLowerCase();
-            const cont = document.getElementById('contenedor-historial');
-            cont.innerHTML = '';
-
-            const filtrados = baseDeDatos.filter(r => 
-                r.id.toLowerCase().includes(query) || 
-                r.tipo.toLowerCase().includes(query) ||
-                r.fecha.includes(query)
-            );
-
-            filtrados.forEach(r => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-2xl shadow-sm border-l-4 " + (r.tipo === 'CONTENEDOR' ? 'border-blue-500' : 'border-orange-500');
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <span class="text-[10px] font-black text-slate-400 uppercase">${r.tipo}</span>
-                        <span class="text-[10px] font-bold text-slate-400">${r.fecha}</span>
-                    </div>
-                    <h3 class="font-bold text-slate-800 uppercase mt-1">${r.id}</h3>
-                    <p class="text-xs text-slate-500 mt-1">${r.detalle}</p>
-                    <div class="mt-2 flex justify-end">
-                        <button class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Ver PDF</button>
-                    </div>
-                `;
-                cont.appendChild(card);
+            doc.autoTable({
+                startY: 45,
+                head: headers,
+                body: data,
+                theme: 'grid',
+                headStyles: { fillColor: [30, 58, 138] }
             });
+
+            // Pie de página oficial
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setFont("helvetica", "italic");
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
+
+            // Guardar en Historial
+            const nuevo = { id: docId, tipo: tipo, fecha: new Date().toLocaleDateString() };
+            registros.unshift(nuevo);
+            localStorage.setItem('logi_db', JSON.stringify(registros));
+
+            doc.save(`Reporte_${docId}.pdf`);
+            alert("PDF Generado y Registro Guardado.");
         }
 
-        window.onload = () => {
-            agregarFila('lista-ingreso');
-            agregarFila('lista-devolucion');
-            renderizarHistorial();
-        };
+        window.onload = () => { agregarPallet(); };
     </script>
 </body>
 </html>
