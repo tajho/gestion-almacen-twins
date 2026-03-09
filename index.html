@@ -3,159 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v43 MASTER</title>
+    <title>TAJHO.OS v44 SMART</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
-        .card-modern { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
-        .input-tajho { background: #f1f5f9; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; padding: 1rem; transition: 0.2s; width: 100%; text-align: center; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
+        .card-menu { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card-menu:active { transform: scale(0.95); background: #f8fafc; }
+        .input-tajho { background: #f1f5f9; border-radius: 1.5rem; border: 2px solid transparent; font-weight: 700; padding: 1.2rem; transition: 0.2s; width: 100%; text-align: center; font-size: 1.25rem; }
         .input-tajho:focus { border-color: var(--blue); background: white; outline: none; }
         .view { position: fixed; inset: 0; background: white; padding: 2rem; display: flex; flex-direction: column; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
         .hidden-view { transform: translateX(100%); opacity: 0; pointer-events: none; }
-        .progress-bar { height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--blue); transition: 0.5s ease-out; width: 0%; }
+        .suggestion-box { max-height: 200px; overflow-y: auto; background: white; border-radius: 1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-top: 5px; position: absolute; width: 100%; z-index: 50; }
+        /* Menu lateral */
+        #side-menu { position: fixed; left: -100%; top: 0; bottom: 0; width: 280px; background: #0f172a; z-index: 100; transition: 0.4s ease; padding: 2rem; color: white; }
+        #side-menu.open { left: 0; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
     </style>
 </head>
 <body>
 
+    <div id="overlay" class="menu-overlay" onclick="toggleMenu()"></div>
+    <nav id="side-menu">
+        <h2 class="text-2xl font-black mb-10 text-blue-400">TAJHO.OS</h2>
+        <div class="space-y-6">
+            <button onclick="navTo('view-1')" class="flex items-center gap-4 font-bold text-sm">🏠 INICIO</button>
+            <button onclick="navTo('view-2')" class="flex items-center gap-4 font-bold text-sm">📦 CONTENEDOR</button>
+            <button onclick="navTo('view-historial')" class="flex items-center gap-4 font-bold text-sm">📜 HISTORIAL</button>
+            <button onclick="navTo('view-devoluciones')" class="flex items-center gap-4 font-bold text-sm">↩️ DEVOLUCIONES</button>
+        </div>
+        <p class="absolute bottom-10 text-[10px] text-slate-500 font-bold uppercase tracking-widest">v44 Smart Engine</p>
+    </nav>
+
     <div id="view-1" class="view">
-        <header class="mt-20 mb-12 text-center">
-            <h1 class="text-5xl font-[800] tracking-tighter leading-tight">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
+        <header class="flex justify-between items-center mb-10 mt-10">
+            <button onclick="toggleMenu()" class="w-12 h-12 flex items-center justify-center bg-slate-50 rounded-2xl">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <h1 class="text-xl font-black italic">TAJHO<span class="text-blue-600">.OS</span></h1>
+            <div class="w-12"></div>
         </header>
+        
+        <h2 class="text-4xl font-[800] tracking-tighter leading-tight mb-8">¿Qué gestionamos<br>hoy, Tajho?</h2>
+        
         <div class="space-y-4">
-            <button onclick="irAPlanificacion()" class="card-modern w-full p-6 flex items-center gap-5 active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 font-bold text-xl">📦</div>
-                <div class="text-left">
-                    <p class="text-xs font-black uppercase text-slate-400">Logística</p>
-                    <p class="text-sm font-bold text-slate-800">CREAR CONTENEDOR</p>
-                </div>
+            <button onclick="prepararModo('CARGA')" class="card-menu w-full p-6 flex items-center gap-4">
+                <div class="text-2xl">📦</div>
+                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Logística</p><p class="font-bold">CONTENEDOR</p></div>
+            </button>
+            <button onclick="navTo('view-historial')" class="card-menu w-full p-6 flex items-center gap-4">
+                <div class="text-2xl">📜</div>
+                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Reportes</p><p class="font-bold">HISTORIAL</p></div>
+            </button>
+            <button onclick="prepararModo('RETORNO')" class="card-menu w-full p-6 flex items-center gap-4">
+                <div class="text-2xl">↩️</div>
+                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Clientes</p><p class="font-bold">DEVOLUCIONES</p></div>
             </button>
         </div>
     </div>
 
     <div id="view-2" class="view hidden-view">
         <h2 class="text-2xl font-black mb-6 mt-10">Armar Manifiesto</h2>
-        <div class="card-modern p-6 space-y-4">
-            <input type="text" id="p-sku" oninput="buscarItem(this, 'p-info')" class="input-tajho" placeholder="SKU">
-            <p id="p-info" class="text-[10px] font-bold text-blue-500 text-center uppercase"></p>
-            <input type="number" id="p-qty" class="input-tajho text-2xl" placeholder="CANT. TOTAL" inputmode="numeric">
-            <button onclick="agregarAlManifiesto()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Añadir Item</button>
+        <div class="relative space-y-4">
+            <input type="text" id="p-sku" oninput="sugerirItem(this)" class="input-tajho" placeholder="Código o Nombre">
+            <div id="sug-box" class="suggestion-box hidden"></div>
+            
+            <input type="number" id="p-qty" class="input-tajho" placeholder="CANT. ESPERADA" inputmode="numeric">
+            <button onclick="agregarManifiesto()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase">Añadir al Plan</button>
         </div>
-        <div id="manifiesto-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
-        <button onclick="confirmarContenedor()" class="mt-4 w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase shadow-xl">CREAR CONTENEDOR</button>
+        <div id="mani-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
+        <button onclick="confirmarMani()" class="w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase shadow-xl mt-4">CREAR Y CONTINUAR</button>
     </div>
 
     <div id="view-3" class="view hidden-view justify-center items-center text-center">
-        <div class="mb-10">
-            <p class="text-blue-600 font-black tracking-widest text-xs uppercase">Listo para procesar</p>
-            <h2 id="final-ref" class="text-4xl font-black tracking-tighter mt-2 italic">CONT-2026</h2>
-        </div>
-        <button onclick="irAOperacion()" class="w-64 h-64 bg-blue-600 text-white rounded-full font-black text-xl shadow-2xl shadow-blue-200 active:scale-90 transition-all">
-            INICIAR<br>DESCARGA
-        </button>
+        <h2 id="ref-name" class="text-4xl font-black italic mb-10">CONT-01</h2>
+        <button onclick="navTo('view-4')" class="w-64 h-64 bg-blue-600 text-white rounded-full font-black text-xl shadow-2xl active:scale-95 transition-all">INICIAR<br>DESCARGA</button>
     </div>
 
     <div id="view-4" class="view hidden-view">
-        <header class="flex justify-between items-center mb-6">
-            <h3 class="text-xs font-black text-slate-400 uppercase">Descarga en curso</h3>
-            <span id="perc-txt" class="text-xs font-black text-blue-600 italic">0%</span>
-        </header>
-        <div class="progress-bar mb-8"><div id="progress-ui" class="progress-fill"></div></div>
-
-        <div class="card-modern p-6 space-y-4">
-            <input type="text" id="o-sku" oninput="buscarItem(this, 'o-info')" class="input-tajho" placeholder="SKU">
-            <p id="o-info" class="text-[10px] font-bold text-blue-500 text-center uppercase"></p>
+        <header class="mb-4"><p id="prog-txt" class="text-right text-[10px] font-black text-blue-600">0%</p></header>
+        <div class="h-2 bg-slate-100 rounded-full overflow-hidden mb-6"><div id="prog-bar" class="h-full bg-blue-600 transition-all w-0"></div></div>
+        
+        <div class="relative space-y-4">
+            <input type="text" id="o-sku" oninput="sugerirItem(this)" class="input-tajho" placeholder="Pistear Código">
+            <div id="sug-box-op" class="suggestion-box hidden"></div>
             <div class="flex gap-4">
                 <input type="number" id="o-qty" class="input-tajho flex-1 text-3xl" placeholder="0" inputmode="numeric">
-                <button onclick="registrarConteo()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
+                <button onclick="saveConteo()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center font-bold text-3xl">+</button>
             </div>
         </div>
-        <div id="conteo-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
+        <div id="op-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
     </div>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
-        let db_tajho = JSON.parse(localStorage.getItem('db_tajho') || '{}');
-        let manifiesto = [];
-        let totalEsperado = 0;
+        let db = JSON.parse(localStorage.getItem('db_tajho') || '{}');
+        let mani = [];
+        let modoActual = 'CARGA';
+        let totalMeta = 0;
         let totalReal = 0;
 
-        // Búsqueda instantánea
-        function buscarItem(input, outputId) {
-            const sku = input.value.toUpperCase().trim();
-            const out = document.getElementById(outputId);
-            if(db_tajho[sku]) { out.innerText = db_tajho[sku].d + " (" + db_tajho[sku].u + ")"; } 
-            else { out.innerText = ""; }
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('open');
+            overlay.style.display = menu.classList.contains('open') ? 'block' : 'none';
         }
 
-        function irAPlanificacion() { moverView('view-1', 'view-2'); }
+        function navTo(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden-view'));
+            document.getElementById(id).classList.remove('hidden-view');
+            if(document.getElementById('side-menu').classList.contains('open')) toggleMenu();
+        }
 
-        function agregarAlManifiesto() {
+        function sugerirItem(el) {
+            const val = el.value.toUpperCase();
+            const box = el.nextElementSibling;
+            box.innerHTML = '';
+            if(val.length < 1) { box.classList.add('hidden'); return; }
+
+            const matches = Object.keys(db).filter(k => k.includes(val) || db[k].d.toUpperCase().includes(val)).slice(0,5);
+            
+            if(matches.length > 0) {
+                box.classList.remove('hidden');
+                matches.forEach(m => {
+                    const d = document.createElement('div');
+                    d.className = "p-4 border-b border-slate-50 text-xs font-bold active:bg-blue-50";
+                    d.innerHTML = `<span class="text-blue-600">${m}</span> - ${db[m].d}`;
+                    d.onclick = () => { el.value = m; box.classList.add('hidden'); };
+                    box.appendChild(d);
+                });
+            } else { box.classList.add('hidden'); }
+        }
+
+        function prepararModo(m) {
+            modoActual = m;
+            navTo('view-2');
+        }
+
+        function agregarManifiesto() {
             const sku = document.getElementById('p-sku').value.toUpperCase().trim();
             const qty = parseInt(document.getElementById('p-qty').value);
-            if(!db_tajho[sku] || !qty) return;
+            if(!db[sku] || !qty) return alert("Selecciona un producto válido");
 
-            manifiesto.push({ sku, desc: db_tajho[sku].d, esperado: qty, real: 0 });
-            totalEsperado += qty;
-            
-            const list = document.getElementById('manifiesto-list');
-            list.innerHTML += `<div class="p-4 bg-slate-50 rounded-xl flex justify-between"><span class="text-xs font-bold">${sku}</span><span class="text-xs font-black">${qty}</span></div>`;
-            
-            document.getElementById('p-sku').value = ""; document.getElementById('p-qty').value = "";
+            mani.push({ sku, d: db[sku].d, m: qty, r: 0 });
+            totalMeta += qty;
+            document.getElementById('mani-list').innerHTML += `<div class="p-4 bg-slate-50 rounded-xl flex justify-between text-xs font-bold"><span>${sku}</span><span>${qty} UN</span></div>`;
+            document.getElementById('p-sku').value = ''; document.getElementById('p-qty').value = '';
         }
 
-        function confirmarContenedor() {
-            if(manifiesto.length === 0) return;
-            const ref = prompt("Nombre del Contenedor:", "CONT-" + new Date().getDate());
-            document.getElementById('final-ref').innerText = ref;
-            moverView('view-2', 'view-3');
+        function confirmarMani() {
+            if(mani.length === 0) return;
+            const ref = prompt("Nombre Referencia:", "CONT-" + new Date().getDate());
+            document.getElementById('ref-name').innerText = ref;
+            navTo('view-3');
         }
 
-        function irAOperacion() { moverView('view-3', 'view-4'); document.getElementById('o-sku').focus(); }
-
-        function registrarConteo() {
+        function saveConteo() {
             const sku = document.getElementById('o-sku').value.toUpperCase().trim();
             const qty = parseInt(document.getElementById('o-qty').value);
             if(!qty) return;
 
             totalReal += qty;
-            const item = manifiesto.find(i => i.sku === sku) || {desc: "Item extra"};
-            
-            // Actualizar barra
-            const perc = Math.min((totalReal / totalEsperado) * 100, 100).toFixed(0);
-            document.getElementById('progress-ui').style.width = perc + "%";
-            document.getElementById('perc-txt').innerText = perc + "%";
+            const perc = Math.min((totalReal/totalMeta)*100, 100).toFixed(0);
+            document.getElementById('prog-bar').style.width = perc + "%";
+            document.getElementById('prog-txt').innerText = perc + "%";
 
-            // Enviar a la nube invisiblemente
-            fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: 'CARGA', datos: [new Date().toLocaleString(), document.getElementById('final-ref').innerText, sku, item.desc, qty, "CJ"] }) });
+            // Registro invisible
+            fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: modoActual, datos: [new Date().toLocaleString(), document.getElementById('ref-name').innerText, sku, db[sku]?.d || 'EXTRA', qty, modoActual === 'CARGA' ? 'CJ' : (db[sku]?.u || 'UND')] }) });
 
-            const log = document.getElementById('conteo-list');
-            log.innerHTML = `<div class="p-4 bg-blue-50 border border-blue-100 rounded-xl flex justify-between animate-pulse"><span class="text-xs font-bold">${sku}</span><span class="text-xs font-black text-blue-600">+${qty}</span></div>` + log.innerHTML;
-
-            document.getElementById('o-sku').value = ""; document.getElementById('o-qty').value = "";
-            document.getElementById('o-sku').focus();
-            navigator.vibrate(40);
+            document.getElementById('op-list').innerHTML = `<div class="p-4 bg-blue-50 rounded-xl flex justify-between font-bold text-xs"><span>${sku}</span><span class="text-blue-600">+${qty}</span></div>` + document.getElementById('op-list').innerHTML;
+            document.getElementById('o-sku').value = ''; document.getElementById('o-qty').value = '';
+            navigator.vibrate(30);
         }
 
-        function moverView(idOld, idNew) {
-            document.getElementById(idOld).classList.add('hidden-view');
-            document.getElementById(idNew).classList.remove('hidden-view');
-        }
-
-        async function init() {
+        window.onload = async () => {
             try {
                 const res = await fetch(CLOUD_URL);
                 const data = await res.json();
-                data.forEach(r => db_tajho[String(r.CODIGO).toUpperCase().trim()] = { d: r.DESCRIPCION, u: r.UM });
-                localStorage.setItem('db_tajho', JSON.stringify(db_tajho));
+                data.forEach(r => db[String(r.CODIGO).toUpperCase().trim()] = { d: r.DESCRIPCION, u: r.UM });
+                localStorage.setItem('db_tajho', JSON.stringify(db));
             } catch (e) {}
-        }
-
-        window.onload = init;
+        };
     </script>
 </body>
 </html>
