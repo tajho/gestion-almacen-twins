@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v20 - Space Precision</title>
+    <title>TWINS Logística By Tajho v21</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,206 +11,198 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; padding-bottom: 120px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; padding-bottom: 100px; }
         
-        /* Inputs compactos y modernos */
-        .input-smart { background: #f1f5f9; border-radius: 1rem; border: 2px solid transparent; transition: all 0.2s; font-weight: 700; }
-        .input-smart:focus { border-color: var(--accent); background: #ffffff; outline: none; }
+        /* Barra de progreso fija y fina */
+        .sticky-stats { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #f1f5f9; transition: all 0.3s; }
+        
+        .input-smart { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; transition: all 0.2s; font-weight: 700; }
+        .input-smart:focus { border-color: var(--accent); background: #ffffff; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
-        /* Tarjetas de items ultra delgadas */
-        .item-row { background: #ffffff; border-radius: 1.2rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .item-card { background: #ffffff; border-radius: 1rem; border: 1px solid #f1f5f9; transition: transform 0.1s; }
+        .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .progress-bar { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Animación para el título que se oculta */
+        .header-main { transition: opacity 0.3s, transform 0.3s; }
     </style>
 </head>
 <body>
 
-    <header class="px-6 py-4 flex justify-between items-center sticky top-0 bg-white/90 backdrop-blur-md z-50 border-b border-slate-50">
-        <div>
-            <h1 class="text-xl font-[800] tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></h1>
-            <p id="db-status" class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Sin Excel</p>
-        </div>
-        <div class="flex gap-2">
-            <input type="file" id="excel-load" class="hidden" accept=".xlsx, .xls" onchange="loadExcel(event)">
-            <button onclick="document.getElementById('excel-load').click()" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase border border-blue-100">Cargar DB</button>
+    <header class="header-main px-6 pt-8 pb-4 bg-white">
+        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-tight">TWINS Logística<br><span class="text-blue-600 text-sm font-bold tracking-widest uppercase">By Tajho</span></h1>
+        <div class="flex items-center gap-2 mt-2">
+            <input type="file" id="xl-input" class="hidden" accept=".xlsx, .xls" onchange="readExcel(event)">
+            <button onclick="document.getElementById('xl-input').click()" class="text-[9px] font-black uppercase text-slate-400 hover:text-blue-600">📥 Vincular Excel Base</button>
+            <span id="db-led" class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
         </div>
     </header>
 
-    <main class="px-6">
+    <div id="sticky-bar" class="hidden sticky-stats px-6 py-3">
+        <div class="flex justify-between items-center mb-1.5">
+            <div class="flex items-baseline gap-2">
+                <span id="g-perc" class="text-xl font-black italic text-blue-600">0%</span>
+                <span id="g-count" class="text-[8px] font-bold text-slate-400 uppercase">0/0 UNIDADES</span>
+            </div>
+            <span id="timer" class="text-[10px] font-mono font-black bg-slate-100 px-2 py-1 rounded-md text-slate-600">00:00:00</span>
+        </div>
+        <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+            <div id="g-bar" class="progress-fill h-full bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <main class="px-6 pt-4">
         
-        <div id="dash" class="hidden mt-4">
-            <div class="bg-slate-900 rounded-[1.5rem] p-5 text-white flex justify-between items-center">
-                <div>
-                    <h2 id="g-perc" class="text-3xl font-black italic text-blue-400">0%</h2>
-                    <p id="g-count" class="text-[8px] font-bold opacity-50 uppercase tracking-widest">0 / 0 Unidades</p>
-                </div>
-                <div class="text-right">
-                    <span id="clock" class="text-xs font-mono font-bold block">00:00:00</span>
-                    <div class="h-1 w-24 bg-slate-800 rounded-full mt-2 overflow-hidden">
-                        <div id="g-bar" class="progress-bar h-full bg-blue-500" style="width: 0%"></div>
+        <section id="setup" class="space-y-4">
+            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 shadow-sm">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="text-[8px] font-black text-slate-400 ml-2 uppercase">SKU</label>
+                        <input type="text" id="sku-in" class="input-smart w-full p-4 text-xs uppercase" placeholder="---">
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-black text-slate-400 ml-2 uppercase">Meta</label>
+                        <input type="number" id="qty-in" class="input-smart w-full p-4 text-xs" placeholder="0">
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <section id="setup" class="mt-4 space-y-4">
-            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100">
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <input type="text" id="sku-in" placeholder="SKU" class="input-smart p-4 text-xs uppercase">
-                    <input type="number" id="qty-in" placeholder="META" class="input-smart p-4 text-xs">
-                </div>
-                <button onclick="addToList()" class="w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-[9px] uppercase tracking-widest border border-slate-200 shadow-sm">Añadir SKU</button>
+                <button onclick="addItem()" class="w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-slate-200 shadow-sm active:scale-95 transition-transform">Agregar al Manifiesto</button>
             </div>
 
-            <div id="manifest" class="space-y-2"></div>
+            <div id="pre-list" class="space-y-2"></div>
 
-            <button id="start-btn" onclick="startOps()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-100">Iniciar Carga</button>
+            <button id="start-btn" onclick="run()" class="hidden w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] shadow-xl">Abrir Despacho</button>
         </section>
 
-        <section id="ops" class="hidden mt-4 space-y-4">
-            <div class="bg-white border-2 border-slate-100 rounded-[2rem] p-5 shadow-xl shadow-slate-100">
+        <section id="ops" class="hidden space-y-4">
+            <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-lg shadow-slate-100 mb-6">
                 <div class="flex items-center gap-3">
                     <div class="flex-1 min-w-0">
-                        <select id="sku-sel" onchange="updateDesc()" class="w-full bg-transparent font-black text-lg text-slate-900 outline-none truncate"></select>
-                        <p id="sku-desc-live" class="text-[8px] font-bold text-blue-500 uppercase truncate">Seleccione producto</p>
+                        <select id="sku-sel" onchange="syncDesc()" class="w-full bg-transparent font-black text-lg text-slate-900 outline-none truncate"></select>
+                        <p id="sku-desc-ui" class="text-[9px] font-bold text-blue-500 uppercase truncate">Seleccione producto</p>
                     </div>
                     <div class="w-20">
-                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-full p-4 text-xl text-blue-600">
+                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-full p-4 text-xl text-blue-600 text-center">
                     </div>
-                    <button onclick="pushQty()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg active:scale-90 transition-transform">✓</button>
+                    <button onclick="count()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-200 active:scale-90 transition-transform">✓</button>
                 </div>
             </div>
 
-            <div id="ops-list" class="space-y-2"></div>
+            <div id="final-list" class="space-y-2"></div>
 
-            <button onclick="saveAndClose()" class="w-full py-8 text-slate-300 font-bold text-[8px] uppercase tracking-[0.4em]">Finalizar y Generar PDF</button>
+            <button onclick="finish()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.5em]">Finalizar y Firmar Reporte</button>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 w-full h-20 bg-white border-t border-slate-100 flex justify-around items-center z-50">
-        <button onclick="location.reload()" class="flex flex-col items-center">
-            <span class="text-xl mb-1">📦</span>
-            <span class="text-[8px] font-black uppercase text-blue-600">Carga</span>
-        </button>
-        <button class="opacity-20 flex flex-col items-center">
-            <span class="text-xl mb-1">📂</span>
-            <span class="text-[8px] font-black uppercase">Archivo</span>
-        </button>
-    </nav>
-
     <script>
         const { jsPDF } = window.jspdf;
-        let db = {}; 
-        let items = [];
-        let timerSec = 0, clockInt;
+        let excelDB = {}; 
+        let store = [];
+        let time = 0, clock;
 
-        function loadExcel(e) {
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const data = new Uint8Array(evt.target.result);
-                const wb = XLSX.read(data, {type: 'array'});
+        function readExcel(e) {
+            const r = new FileReader();
+            r.onload = (x) => {
+                const d = new Uint8Array(x.target.result);
+                const wb = XLSX.read(d, {type: 'array'});
                 const ws = wb.Sheets[wb.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(ws);
-                rows.forEach(r => {
-                    const code = String(r.CODIGO || r.codigo || "").toUpperCase().trim();
-                    db[code] = r.DESCRIPCION || r.descripcion || "Sin Descripción";
+                XLSX.utils.sheet_to_json(ws).forEach(row => {
+                    const c = String(row.CODIGO || row.codigo || "").toUpperCase().trim();
+                    excelDB[c] = row.DESCRIPCION || row.descripcion || "Descripción No Registrada";
                 });
-                document.getElementById('db-status').innerText = "Excel Activo (" + Object.keys(db).length + ")";
-                document.getElementById('db-status').classList.replace('text-slate-400', 'text-green-500');
+                document.getElementById('db-led').classList.replace('bg-slate-300', 'bg-green-500');
             };
-            reader.readAsArrayBuffer(e.target.files[0]);
+            r.readAsArrayBuffer(e.target.files[0]);
         }
 
-        function addToList() {
+        function addItem() {
             const s = document.getElementById('sku-in').value.toUpperCase().trim();
             const q = parseInt(document.getElementById('qty-in').value);
             if(!s || !q) return;
-            
-            const d = db[s] || "NUEVO PRODUCTO (SIN EXCEL)";
-            items.push({ sku: s, desc: d, meta: q, real: 0 });
-            
-            renderManifest();
+            const d = excelDB[s] || "ITEM MANUAL";
+            store.push({ sku: s, desc: d, meta: q, real: 0 });
+            renderPre();
             document.getElementById('sku-in').value = "";
             document.getElementById('qty-in').value = "";
             document.getElementById('start-btn').classList.remove('hidden');
         }
 
-        function renderManifest() {
-            const list = document.getElementById('manifest');
-            list.innerHTML = items.map(i => `
-                <div class="item-row p-4 flex justify-between items-center border-l-4 border-l-slate-200">
-                    <div class="min-w-0 flex-1 pr-4">
-                        <p class="text-[10px] font-black truncate">${i.sku}</p>
-                        <p class="text-[7px] font-bold text-slate-400 uppercase truncate">${i.desc}</p>
+        function renderPre() {
+            document.getElementById('pre-list').innerHTML = store.map(i => `
+                <div class="item-card p-4 flex justify-between items-center bg-slate-50/50">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-800">${i.sku}</p>
+                        <p class="text-[7px] font-bold text-slate-400 uppercase">${i.desc}</p>
                     </div>
-                    <span class="text-xs font-black text-slate-900">${i.meta}</span>
+                    <span class="text-xs font-black text-slate-700">${i.meta}</span>
                 </div>
             `).join('');
         }
 
-        function startOps() {
+        function run() {
             document.getElementById('setup').classList.add('hidden');
-            document.getElementById('dash').classList.remove('hidden');
+            document.getElementById('sticky-bar').classList.remove('hidden');
             document.getElementById('ops').classList.remove('hidden');
             const sel = document.getElementById('sku-sel');
-            sel.innerHTML = items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            updateDesc();
-            clockInt = setInterval(() => {
-                timerSec++;
-                const h = Math.floor(timerSec/3600).toString().padStart(2,'0');
-                const m = Math.floor((timerSec%3600)/60).toString().padStart(2,'0');
-                const s = (timerSec%60).toString().padStart(2,'0');
-                document.getElementById('clock').innerText = `${h}:${m}:${s}`;
+            sel.innerHTML = store.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            syncDesc();
+            clock = setInterval(() => {
+                time++;
+                const h = Math.floor(time/3600).toString().padStart(2,'0');
+                const m = Math.floor((time%3600)/60).toString().padStart(2,'0');
+                const s = (time%60).toString().padStart(2,'0');
+                document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             }, 1000);
-            refreshUI();
+            draw();
         }
 
-        function updateDesc() {
-            const val = document.getElementById('sku-sel').value;
-            const i = items.find(x => x.sku === val);
-            document.getElementById('sku-desc-live').innerText = i.desc;
+        function syncDesc() {
+            const v = document.getElementById('sku-sel').value;
+            const i = store.find(x => x.sku === v);
+            document.getElementById('sku-desc-ui').innerText = i.desc;
         }
 
-        function pushQty() {
-            const sku = document.getElementById('sku-sel').value;
-            const val = parseInt(document.getElementById('qty-op').value);
-            if(!val) return;
-            items.find(i => i.sku === sku).real += val;
+        function count() {
+            const s = document.getElementById('sku-sel').value;
+            const v = parseInt(document.getElementById('qty-op').value);
+            if(!v) return;
+            store.find(i => i.sku === s).real += v;
             document.getElementById('qty-op').value = "";
-            refreshUI();
-            navigator.vibrate(30);
+            draw();
+            navigator.vibrate(40);
         }
 
-        function refreshUI() {
-            const tPlan = items.reduce((a,b) => a + b.meta, 0);
-            const tReal = items.reduce((a,b) => a + b.real, 0);
-            const p = Math.round((tReal / tPlan) * 100) || 0;
+        function draw() {
+            const plan = store.reduce((a,b) => a + b.meta, 0);
+            const real = store.reduce((a,b) => a + b.real, 0);
+            const p = Math.round((real / plan) * 100) || 0;
             
             document.getElementById('g-perc').innerText = p + "%";
             document.getElementById('g-bar').style.width = Math.min(p, 100) + "%";
-            document.getElementById('g-count').innerText = `${tReal} / ${tPlan} Unidades`;
+            document.getElementById('g-count').innerText = `${real} / ${plan} UNIDADES`;
             
-            document.getElementById('ops-list').innerHTML = items.map(i => `
-                <div class="item-row p-4 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
+            document.getElementById('final-list').innerHTML = store.map(i => `
+                <div class="item-card p-4 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
                     <div class="flex justify-between items-center">
                         <div class="min-w-0 flex-1">
-                            <h4 class="text-[10px] font-black truncate">${i.sku}</h4>
-                            <p class="text-[7px] font-bold text-slate-400 uppercase truncate">${i.desc}</p>
+                            <h4 class="text-[11px] font-[800] text-slate-900 truncate">${i.sku}</h4>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase truncate">${i.desc}</p>
                         </div>
-                        <span class="text-[10px] font-black text-blue-600 ml-4">${i.real} / ${i.meta}</span>
+                        <div class="text-right ml-4">
+                            <span class="text-[11px] font-black text-blue-600 font-mono">${i.real}/${i.meta}</span>
+                            <div class="text-[7px] font-bold text-slate-300 uppercase">${i.real >= i.meta ? 'COMPLETADO' : 'PENDIENTE'}</div>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function saveAndClose() {
+        function finish() {
             const doc = new jsPDF();
-            doc.setFontSize(22); doc.text("TAJHO.OS - REPORTE DE CARGA", 14, 25);
-            doc.autoTable({ startY: 35, head: [['SKU', 'DESCRIPCIÓN', 'PLAN', 'REAL', 'ESTADO']], body: items.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'FALTANTE']) });
-            doc.setFontSize(10);
+            doc.setFontSize(22); doc.text("REPORTE TWINS LOGÍSTICA", 14, 25);
+            doc.setFontSize(10); doc.text(`Generado por: J. Angelo Nuñez Durand | Duración: ${document.getElementById('timer').innerText}`, 14, 32);
+            doc.autoTable({ startY: 40, head: [['SKU', 'DESCRIPCIÓN', 'PLAN', 'REAL', 'ST']], body: store.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'INC']) });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`Tajho_v20_${new Date().getTime()}.pdf`);
+            doc.save(`Twins_Report_${new Date().getTime()}.pdf`);
             location.reload();
         }
     </script>
