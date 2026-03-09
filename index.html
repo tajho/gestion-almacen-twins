@@ -2,62 +2,106 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TAJHO.OS v41 SPEED</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TAJHO.OS v42</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; }
-        .btn-mode { border-radius: 1rem; padding: 12px; font-size: 10px; font-weight: 800; transition: 0.2s; border: 2px solid #f1f5f9; }
-        .active-mode { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
-        .input-box { background: #f8fafc; border-radius: 1.5rem; padding: 20px; border: 2px solid transparent; font-size: 24px; font-weight: 800; text-align: center; width: 100%; transition: 0.2s; }
-        .input-box:focus { background: white; border-color: #2563eb; outline: none; box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.2); }
+        :root { --blue: #2563eb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
+        
+        /* Animaciones Rápidas */
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .card-modern { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
+        .input-tajho { background: #f1f5f9; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; padding: 1rem; transition: 0.2s; width: 100%; text-align: center; }
+        .input-tajho:focus { border-color: var(--blue); background: white; outline: none; }
+
+        #landing { position: fixed; inset: 0; z-index: 100; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.5s ease-in-out; }
+        .hidden-view { display: none !important; }
+        .fade-out { opacity: 0; pointer-events: none; transform: scale(0.95); }
     </style>
 </head>
-<body class="p-6">
+<body>
 
-    <header class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900">TAJHO<span class="text-blue-600">.OS</span></h1>
-        <button onclick="syncCloud()" id="btn-sync" class="text-[10px] font-black text-slate-400 uppercase border px-3 py-2 rounded-xl">Sincronizar</button>
-    </header>
-
-    <div class="grid grid-cols-2 gap-3 mb-8">
-        <button id="mode-carga" onclick="setMode('CARGA')" class="btn-mode active-mode">📦 CONTENEDOR (CJ)</button>
-        <button id="mode-ret" onclick="setMode('RETORNO')" class="btn-mode">↩️ DEVOLUCIÓN (UM)</button>
-    </div>
-
-    <main class="space-y-6">
-        <div class="relative">
-            <input type="text" id="sku-in" oninput="quickSearch()" class="input-box" placeholder="CÓDIGO SKU">
-            <div id="loader" class="hidden absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-
-        <div id="info-box" class="hidden text-center space-y-1 py-2">
-            <p id="p-desc" class="text-sm font-bold text-slate-800 uppercase italic"></p>
-            <p id="p-um" class="text-[10px] font-black text-blue-500 uppercase tracking-widest"></p>
-        </div>
-
-        <div class="flex gap-4">
-            <input type="number" id="qty-in" class="input-box flex-1" placeholder="CANT" inputmode="numeric">
-            <button onclick="registrar()" class="w-20 h-20 bg-blue-600 text-white rounded-[1.8rem] flex items-center justify-center shadow-xl active:scale-90 transition-all">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+    <div id="landing">
+        <header class="mb-12">
+            <h1 class="text-5xl font-[800] tracking-tighter leading-tight">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
+        </header>
+        <div class="space-y-4">
+            <button onclick="prepararOperacion('CARGA')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl active:scale-95 transition-all">
+                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
+                </div>
+                <div class="text-left">
+                    <p class="text-sm font-black uppercase tracking-widest text-slate-400">Contenedor</p>
+                    <p class="text-xs font-bold text-slate-800 italic">CARGA DE BULTOS</p>
+                </div>
+            </button>
+            <button onclick="prepararOperacion('RETORNO')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl active:scale-95 transition-all">
+                <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
+                </div>
+                <div class="text-left">
+                    <p class="text-sm font-black uppercase tracking-widest text-slate-400">Devoluciones</p>
+                    <p class="text-xs font-bold text-slate-800 italic">RETORNO DE CLIENTE</p>
+                </div>
             </button>
         </div>
-    </main>
+    </div>
 
-    <section class="mt-8 space-y-3" id="log-list">
-        <h3 class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Registros de hoy</h3>
-    </section>
+    <div id="step-setup" class="hidden-view fixed inset-0 bg-white p-8 flex flex-col justify-center items-center slide-up z-50">
+        <h2 id="setup-title" class="text-2xl font-black mb-6 text-center">NUEVO CONTENEDOR</h2>
+        <input type="text" id="main-ref" class="input-tajho text-2xl mb-6" placeholder="NOMBRE O CÓDIGO">
+        <button onclick="iniciarDescarga()" class="w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-blue-200">
+            INICIAR DESCARGA
+        </button>
+        <button onclick="cancelar()" class="mt-6 text-xs font-bold text-slate-300 uppercase tracking-widest">Regresar</button>
+    </div>
+
+    <div id="step-work" class="hidden-view fixed inset-0 bg-white overflow-y-auto">
+        <header class="p-6 flex justify-between items-center bg-white/80 backdrop-blur sticky top-0 border-b border-slate-50">
+            <button onclick="location.reload()" class="p-2 text-slate-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </button>
+            <div class="text-center">
+                <p id="op-ref-display" class="text-[9px] font-black text-blue-600 uppercase tracking-widest"></p>
+                <h3 class="text-xs font-black italic text-slate-900">TAJHO.OS</h3>
+            </div>
+            <div class="w-10"></div>
+        </header>
+
+        <main class="p-6 space-y-6">
+            <div class="card-modern p-6 space-y-4">
+                <input type="text" id="sku-in" oninput="buscarRapido()" class="input-tajho text-xl" placeholder="CÓDIGO SKU">
+                
+                <div id="info-box" class="hidden py-4 text-center border-y border-slate-50">
+                    <p id="p-desc" class="text-sm font-bold text-slate-800 uppercase italic"></p>
+                    <p id="p-um" class="text-[10px] font-black text-blue-400 mt-1 uppercase"></p>
+                </div>
+
+                <div class="flex gap-4">
+                    <input type="number" id="qty-in" class="input-tajho flex-1 text-3xl" placeholder="0" inputmode="numeric">
+                    <button onclick="registrarData()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="log-list" class="space-y-3">
+                <h4 class="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">Detalles del conteo</h4>
+            </div>
+        </main>
+    </div>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
         let db_tajho = JSON.parse(localStorage.getItem('db_tajho') || '{}');
-        let currentMode = 'CARGA';
+        let currentMode = '';
 
-        // 1. Sincronización en segundo plano (No traba la app)
-        async function syncCloud() {
-            const btn = document.getElementById('btn-sync');
-            btn.innerText = "Cargando...";
+        // SINCRONIZACIÓN INVISIBLE (Segundo Plano)
+        async function silentSync() {
             try {
                 const res = await fetch(CLOUD_URL);
                 const data = await res.json();
@@ -68,70 +112,84 @@
                 });
                 db_tajho = tempDb;
                 localStorage.setItem('db_tajho', JSON.stringify(db_tajho));
-                btn.innerText = "✅ Al día";
-                setTimeout(() => btn.innerText = "Sincronizar", 2000);
-            } catch (e) {
-                btn.innerText = "❌ Error";
-            }
+                console.log("Sync invisible exitoso.");
+            } catch (e) { console.log("Sync falló, usando cache."); }
         }
 
-        function setMode(m) {
+        function prepararOperacion(m) {
             currentMode = m;
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode'));
-            document.getElementById('mode-' + (m === 'CARGA' ? 'carga' : 'ret')).classList.add('active-mode');
-            quickSearch(); // Actualiza visual si hay algo escrito
+            document.getElementById('setup-title').innerText = m === 'CARGA' ? "NUEVO CONTENEDOR" : "NUEVA DEVOLUCIÓN";
+            document.getElementById('main-ref').placeholder = m === 'CARGA' ? "EJ: CONT-001" : "EJ: CLIENTE / VENDEDOR";
+            document.getElementById('landing').classList.add('fade-out');
+            setTimeout(() => {
+                document.getElementById('landing').classList.add('hidden-view');
+                document.getElementById('step-setup').classList.remove('hidden-view');
+            }, 400);
         }
 
-        function quickSearch() {
+        function iniciarDescarga() {
+            const ref = document.getElementById('main-ref').value.trim();
+            if(!ref) return alert("Tajho, pon una referencia primero");
+            
+            document.getElementById('op-ref-display').innerText = ref;
+            document.getElementById('step-setup').classList.add('fade-out');
+            setTimeout(() => {
+                document.getElementById('step-setup').classList.add('hidden-view');
+                document.getElementById('step-work').classList.remove('hidden-view');
+                document.getElementById('sku-in').focus();
+            }, 400);
+        }
+
+        function buscarRapido() {
             const sku = document.getElementById('sku-in').value.toUpperCase().trim();
             const box = document.getElementById('info-box');
             if(db_tajho[sku]) {
                 document.getElementById('p-desc').innerText = db_tajho[sku].d;
-                // Si es carga, forzamos CJ, si es retorno, usamos UM del excel
-                document.getElementById('p-um').innerText = "UM: " + (currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u);
+                document.getElementById('p-um').innerText = "UNIDAD: " + (currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u);
                 box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
+            } else { box.classList.add('hidden'); }
         }
 
-        async function registrar() {
+        async function registrarData() {
             const sku = document.getElementById('sku-in').value.toUpperCase().trim();
             const qty = document.getElementById('qty-in').value;
             if(!db_tajho[sku] || !qty) return;
 
-            const umActual = currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u;
-            const dataRow = [new Date().toLocaleString(), sku, db_tajho[sku].d, qty, umActual];
+            const um = currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u;
+            const ref = document.getElementById('main-ref').value.toUpperCase();
+            
+            // Render instantáneo para no esperar a la nube
+            renderItem(sku, qty, um);
 
-            // Renderizado instantáneo en lista
-            renderLog(sku, qty, umActual);
-
-            // Enviar a nube en silencio (sin bloquear la app)
+            const row = [new Date().toLocaleString(), ref, sku, db_tajho[sku].d, qty, um];
+            
+            // Envío invisible a la nube
             fetch(CLOUD_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify({ tipo: currentMode, datos: dataRow })
+                body: JSON.stringify({ tipo: currentMode, datos: row })
             });
 
-            // Limpiar rápido
+            // Limpieza rápida
             document.getElementById('sku-in').value = "";
             document.getElementById('qty-in').value = "";
             document.getElementById('info-box').classList.add('hidden');
             document.getElementById('sku-in').focus();
-            navigator.vibrate(40);
+            navigator.vibrate(30);
         }
 
-        function renderLog(sku, qty, um) {
-            const log = document.getElementById('log-list');
+        function renderItem(sku, qty, um) {
+            const list = document.getElementById('log-list');
             const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100";
-            div.innerHTML = `<div><p class="text-[10px] font-black text-slate-400">${sku}</p><p class="text-xs font-bold text-slate-800">${db_tajho[sku].d}</p></div>
-                             <div class="text-right"><p class="text-lg font-black text-blue-600">${qty}</p><p class="text-[8px] font-bold text-slate-300 uppercase">${um}</p></div>`;
-            log.prepend(div);
+            div.className = "flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100 slide-up";
+            div.innerHTML = `<div><p class="text-[9px] font-black text-slate-400 uppercase">${sku}</p><p class="text-xs font-bold text-slate-800">${db_tajho[sku].d}</p></div>
+                             <div class="text-right"><p class="text-xl font-black text-blue-600 leading-none">${qty}</p><p class="text-[8px] font-bold text-slate-300 uppercase">${um}</p></div>`;
+            list.prepend(div);
         }
 
-        // Ejecutar sync al iniciar pero no bloquear
-        window.onload = () => { if(Object.keys(db_tajho).length === 0) syncCloud(); };
+        function cancelar() { location.reload(); }
+
+        window.onload = silentSync;
     </script>
 </body>
 </html>
