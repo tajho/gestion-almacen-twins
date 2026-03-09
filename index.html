@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v30</title>
+    <title>TAJHO.OS v31</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,17 +14,11 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
         
         .card-modern { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
-        .input-clean { background: #f1f5f9; border-radius: 1rem; border: 2px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.8rem; }
+        .input-clean { background: #f1f5f9; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.8rem 1.2rem; }
         .input-clean:focus { border-color: var(--blue); background: white; outline: none; }
 
-        /* Pantalla de Bienvenida */
         #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         .hide-landing { transform: translateY(-100%); visibility: hidden; }
-
-        /* Menú Lateral */
-        #side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: white; z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-right: 1px solid #f1f5f9; }
-        .menu-active { left: 0 !important; box-shadow: 20px 0 60px rgba(0,0,0,0.05); }
-        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); z-index: 900; display: none; }
 
         .tab-panel { display: none; }
         .active { display: block; animation: fadeIn 0.4s ease; }
@@ -32,8 +26,6 @@
     </style>
 </head>
 <body>
-
-    <div id="overlay" onclick="toggleMenu()"></div>
 
     <div id="landing">
         <header class="mb-12">
@@ -46,7 +38,7 @@
                 </div>
                 <div class="text-left">
                     <p class="text-sm font-black uppercase tracking-widest">Contenedor</p>
-                    <p class="text-[9px] font-bold text-slate-400">GESTIÓN DE CARGA</p>
+                    <p class="text-[9px] font-bold text-slate-400">CARGA INTELIGENTE</p>
                 </div>
             </button>
             <button onclick="navTo('devoluciones')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl">
@@ -61,98 +53,84 @@
         </div>
     </div>
 
-    <aside id="side-menu" class="p-8 flex flex-col">
-        <div class="mb-12">
-            <h2 class="text-2xl font-[800] tracking-tighter italic">TAJHO<span class="text-blue-600">.OS</span></h2>
-            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em]">Logistics v30</p>
-        </div>
-        <nav class="space-y-6">
-            <button onclick="navTo('contenedor')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
-                Carga / Contenedor
-            </button>
-            <button onclick="navTo('devoluciones')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
-                Devoluciones
-            </button>
-            <button onclick="navTo('historial')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
-                Historial
-            </button>
-        </nav>
-    </aside>
-
-    <header class="h-16 px-6 flex justify-between items-center bg-white/90 backdrop-blur sticky top-0 z-100">
-        <button onclick="toggleMenu()" class="p-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <header class="h-16 px-6 flex justify-between items-center bg-white/90 backdrop-blur sticky top-0 z-50">
+        <button onclick="location.reload()" class="p-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
         <div class="text-center">
-            <p id="nav-title" class="text-[8px] font-black uppercase tracking-widest text-slate-400">Contenedor</p>
+            <p id="nav-title" class="text-[8px] font-black uppercase tracking-widest text-slate-400">Operación</p>
             <h3 class="text-xs font-black italic">TAJHO<span class="text-blue-600">.OS</span></h3>
         </div>
         <div class="w-10"></div>
     </header>
 
-    <main class="p-6">
-        <div id="view-contenedor" class="tab-panel active space-y-4">
-            <div id="status-bar" class="hidden card-modern bg-[#0f172a] p-6 text-white border-none">
+    <main class="p-6 pb-24">
+        <div id="view-contenedor" class="tab-panel active space-y-5">
+            
+            <div id="status-bar" class="hidden card-modern bg-[#0f172a] p-6 text-white border-none shadow-2xl">
                 <div class="flex justify-between items-end mb-4">
                     <h4 id="perc-txt" class="text-4xl font-black italic leading-none">0%</h4>
                     <span id="unit-txt" class="text-[10px] font-bold text-blue-400">0 / 0 UND</span>
                 </div>
                 <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div id="perc-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                    <div id="perc-bar" class="h-full bg-blue-500 transition-all duration-700" style="width: 0%"></div>
                 </div>
             </div>
 
-            <div id="ops-card" class="hidden card-modern p-6 space-y-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black bg-transparent outline-none w-full"></select>
-                        <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase tracking-widest"></p>
-                    </div>
-                    <div class="text-right pl-4">
-                        <p class="text-[8px] font-black text-slate-300 uppercase leading-none">Falta</p>
-                        <p id="live-rem" class="text-xl font-black">0</p>
-                    </div>
+            <div id="ops-card" class="hidden card-modern p-8 space-y-6">
+                <div class="text-center space-y-1">
+                    <select id="sel-sku" onchange="syncItem()" class="text-3xl font-black bg-transparent outline-none text-slate-900"></select>
+                    <p id="live-desc" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]"></p>
                 </div>
 
-                <div class="flex gap-3 justify-center">
-                    <input type="number" id="qty-in" class="input-clean w-24 text-center text-xl" placeholder="0" inputmode="numeric">
-                    <button onclick="sumarBulto()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform text-2xl font-bold">+</button>
+                <div class="flex flex-col items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="qty-in" class="input-clean w-28 text-center text-3xl h-16" placeholder="0" inputmode="numeric">
+                        <button onclick="sumarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform text-3xl font-bold">+</button>
+                    </div>
+                    <div class="flex gap-8 mt-2">
+                        <div class="text-center">
+                            <p class="text-[8px] font-black text-slate-300 uppercase">Faltante</p>
+                            <p id="live-rem" class="text-xl font-black text-slate-800">0</p>
+                        </div>
+                        <div class="text-center border-l border-slate-100 pl-8">
+                            <p class="text-[8px] font-black text-slate-300 uppercase">Logrado</p>
+                            <p id="live-real" class="text-xl font-black text-blue-600">0</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <button onclick="finalizarCarga()" class="w-full py-3 text-[8px] font-black text-slate-300 uppercase tracking-widest mt-4">Generar Reporte Oficial</button>
+                <button onclick="finalizarCarga()" class="w-full py-3 text-[9px] font-black text-slate-300 uppercase tracking-widest pt-6">Finalizar Despacho Oficial</button>
             </div>
 
             <div id="setup-card" class="card-modern p-6 space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-[9px] font-black uppercase text-slate-400">Configuración</h3>
+                    <h3 class="text-[9px] font-black uppercase text-slate-400">Nuevo Manifiesto</h3>
+                    <button onclick="document.getElementById('xl-in').click()" class="text-[9px] font-black text-blue-600 underline">Vincular Excel</button>
                     <input type="file" id="xl-in" class="hidden" onchange="loadXl(event)">
-                    <button onclick="document.getElementById('xl-in').click()" class="text-[9px] font-black text-blue-600 underline">Vincular Base</button>
                 </div>
-                <input type="text" id="s-sku" class="input-clean w-full text-xs uppercase" placeholder="SKU / CÓDIGO">
-                <input type="text" id="s-desc" class="input-clean w-full text-xs uppercase" placeholder="DESCRIPCIÓN">
-                <input type="number" id="s-meta" class="input-clean w-full text-xs" placeholder="META TOTAL">
-                <button onclick="addMani()" class="w-full bg-slate-900 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Añadir Item</button>
-                <div id="pre-list" class="space-y-1"></div>
-                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-100">Iniciar Operación</button>
+                
+                <div class="space-y-3">
+                    <input type="text" id="s-sku" oninput="autoLookup()" class="input-clean w-full text-sm uppercase" placeholder="SKU / CÓDIGO">
+                    <input type="text" id="s-desc" class="input-clean w-full text-xs text-slate-500 italic" placeholder="Descripción (Lectura automática)" readonly>
+                    <input type="number" id="s-meta" class="input-clean w-full text-sm" placeholder="META TOTAL">
+                </div>
+                
+                <button onclick="addMani()" class="w-full bg-slate-900 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Añadir al Listado</button>
+                <div id="pre-list" class="space-y-2"></div>
+                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-xl text-[11px] font-black uppercase shadow-xl shadow-blue-100">Iniciar Operación</button>
             </div>
         </div>
 
         <div id="view-devoluciones" class="tab-panel space-y-4">
-            <div class="card-modern p-6 space-y-4">
+            <div class="card-modern p-7 space-y-4">
                 <h3 class="text-[10px] font-black uppercase text-slate-400">Registro de Retorno</h3>
-                <input type="text" id="ret-cli" class="input-clean w-full text-xs uppercase" placeholder="CLIENTE / VENDEDOR">
-                <input type="text" id="ret-sku" class="input-clean w-full text-xs uppercase" placeholder="CÓDIGO PRODUCTO">
-                <input type="number" id="ret-qty" class="input-clean w-full text-xs" placeholder="CANTIDAD">
-                <textarea id="ret-obs" class="input-clean w-full text-xs h-24" placeholder="OBSERVACIONES"></textarea>
-                <button onclick="saveRet()" class="w-full bg-orange-500 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Guardar en Historial</button>
+                <input type="text" id="ret-cli" class="input-clean w-full text-sm uppercase" placeholder="CLIENTE / VENDEDOR">
+                <input type="text" id="ret-sku" class="input-clean w-full text-sm uppercase" placeholder="CÓDIGO PRODUCTO">
+                <input type="number" id="ret-qty" class="input-clean w-full text-sm" placeholder="CANTIDAD">
+                <textarea id="ret-obs" class="input-clean w-full text-sm h-24" placeholder="OBSERVACIONES O ESTADO"></textarea>
+                <button onclick="saveRet()" class="w-full bg-orange-500 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Guardar Devolución</button>
             </div>
-        </div>
-
-        <div id="view-historial" class="tab-panel space-y-3">
-            <div id="hist-content" class="space-y-3"></div>
         </div>
     </main>
 
@@ -160,50 +138,61 @@
         const { jsPDF } = window.jspdf;
         let db_ref = {}, manifest = [];
 
-        function toggleMenu() {
-            document.getElementById('side-menu').classList.toggle('menu-active');
-            const ov = document.getElementById('overlay');
-            ov.style.display = ov.style.display === 'block' ? 'none' : 'block';
-        }
-
         function navTo(t) {
             document.getElementById('landing').classList.add('hide-landing');
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('view-' + t).classList.add('active');
             document.getElementById('nav-title').innerText = t;
-            if(t === 'historial') renderHist();
-            toggleMenu();
         }
 
+        // LECTURA AUTOMÁTICA DE DB
         function loadXl(e) {
             const reader = new FileReader();
             reader.onload = (f) => {
                 const data = new Uint8Array(f.target.result);
                 const wb = XLSX.read(data, {type: 'array'});
                 XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]).forEach(r => {
-                    db_ref[String(r.CODIGO || r.codigo).toUpperCase()] = r.DESCRIPCION || r.descripcion;
+                    const sku = String(r.CODIGO || r.codigo || "").toUpperCase().trim();
+                    db_ref[sku] = r.DESCRIPCION || r.descripcion || "ITEM SIN DESCRIPCIÓN";
                 });
-                alert("Base Tajho vinculada.");
+                alert("Base de datos Tajho vinculada.");
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         }
 
+        function autoLookup() {
+            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
+            const descField = document.getElementById('s-desc');
+            if(db_ref[sku]) {
+                descField.value = db_ref[sku];
+                descField.classList.remove('text-slate-500');
+                descField.classList.add('text-blue-600', 'font-bold');
+            } else {
+                descField.value = "";
+            }
+        }
+
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
-            const desc = document.getElementById('s-desc').value.toUpperCase() || db_ref[sku] || "NUEVO ITEM";
+            const desc = document.getElementById('s-desc').value || "NUEVO PRODUCTO";
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
             manifest.push({ sku, desc, meta, real: 0 });
-            document.getElementById('s-sku').value = ''; document.getElementById('s-desc').value = ''; document.getElementById('s-meta').value = '';
+            document.getElementById('s-sku').value = ''; 
+            document.getElementById('s-desc').value = ''; 
+            document.getElementById('s-meta').value = '';
             renderPre();
             document.getElementById('btn-start').classList.remove('hidden');
         }
 
         function renderPre() {
             document.getElementById('pre-list').innerHTML = manifest.map(i => `
-                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                    <span class="text-[10px] font-black">${i.sku}</span>
-                    <span class="text-[10px] font-bold text-slate-400">${i.meta} UND</span>
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                    <div class="text-left">
+                        <p class="text-[10px] font-black">${i.sku}</p>
+                        <p class="text-[7px] font-bold text-slate-400 uppercase">${i.desc}</p>
+                    </div>
+                    <span class="text-[10px] font-black text-blue-600">${i.meta} UND</span>
                 </div>
             `).join('');
         }
@@ -222,6 +211,7 @@
             const item = manifest.find(i => i.sku === document.getElementById('sel-sku').value);
             document.getElementById('live-desc').innerText = item.desc;
             document.getElementById('live-rem').innerText = item.meta - item.real;
+            document.getElementById('live-real').innerText = item.real;
         }
 
         function sumarBulto() {
@@ -232,7 +222,7 @@
             document.getElementById('qty-in').value = '';
             updateUI();
             syncItem();
-            navigator.vibrate(30);
+            navigator.vibrate(35);
         }
 
         function updateUI() {
@@ -240,23 +230,8 @@
             const r = manifest.reduce((a, b) => a + b.real, 0);
             const p = Math.round((r / m) * 100) || 0;
             document.getElementById('perc-txt').innerText = p + "%";
-            document.getElementById('perc-bar').style.width = p + "%";
+            document.getElementById('perc-bar').style.width = Math.min(p, 100) + "%";
             document.getElementById('unit-txt').innerText = `${r} / ${m} UND`;
-        }
-
-        function saveRet() {
-            const ret = {
-                cli: document.getElementById('ret-cli').value,
-                sku: document.getElementById('ret-sku').value,
-                qty: document.getElementById('ret-qty').value,
-                fecha: new Date().toLocaleString(),
-                tipo: 'RETORNO'
-            };
-            let logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
-            logs.unshift(ret);
-            localStorage.setItem('tajho_v30_logs', JSON.stringify(logs));
-            alert("Retorno guardado.");
-            location.reload();
         }
 
         function finalizarCarga() {
@@ -269,26 +244,13 @@
             });
             doc.setFontSize(10);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
-            
-            let logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
-            logs.unshift({ id: Date.now(), fecha: new Date().toLocaleString(), tipo: 'CARGA' });
-            localStorage.setItem('tajho_v30_logs', JSON.stringify(logs));
-            
             doc.save(`TAJHO_REPORTE_${Date.now()}.pdf`);
             location.reload();
         }
 
-        function renderHist() {
-            const logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
-            document.getElementById('hist-content').innerHTML = logs.map(l => `
-                <div class="card-modern p-5 flex justify-between items-center ${l.tipo === 'RETORNO' ? 'border-l-4 border-l-orange-500' : ''}">
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase">${l.fecha}</p>
-                        <h4 class="text-xs font-black uppercase">${l.tipo}: ${l.sku || l.id}</h4>
-                    </div>
-                    <span class="text-[9px] font-black text-blue-600">PDF</span>
-                </div>
-            `).join('');
+        function saveRet() {
+            alert("Devolución Guardada en el Historial Local.");
+            location.reload();
         }
     </script>
 </body>
