@@ -3,184 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v44 SMART</title>
+    <title>TAJHO.OS v45</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
-        .card-menu { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .card-menu:active { transform: scale(0.95); background: #f8fafc; }
-        .input-tajho { background: #f1f5f9; border-radius: 1.5rem; border: 2px solid transparent; font-weight: 700; padding: 1.2rem; transition: 0.2s; width: 100%; text-align: center; font-size: 1.25rem; }
-        .input-tajho:focus { border-color: var(--blue); background: white; outline: none; }
-        .view { position: fixed; inset: 0; background: white; padding: 2rem; display: flex; flex-direction: column; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
-        .hidden-view { transform: translateX(100%); opacity: 0; pointer-events: none; }
-        .suggestion-box { max-height: 200px; overflow-y: auto; background: white; border-radius: 1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-top: 5px; position: absolute; width: 100%; z-index: 50; }
-        /* Menu lateral */
-        #side-menu { position: fixed; left: -100%; top: 0; bottom: 0; width: 280px; background: #0f172a; z-index: 100; transition: 0.4s ease; padding: 2rem; color: white; }
-        #side-menu.open { left: 0; }
-        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
+        .card-tajho { background: white; border-radius: 2.5rem; border: 1px solid #f1f5f9; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05); transition: 0.3s; }
+        .input-tajho { background: #f1f5f9; border-radius: 1.5rem; border: 3px solid transparent; font-weight: 800; padding: 1.2rem; width: 100%; text-align: center; font-size: 1.5rem; transition: 0.3s; }
+        .input-tajho:focus { border-color: #2563eb; background: white; outline: none; }
+        .btn-blue { background: #2563eb; color: white; font-weight: 800; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); }
+        
+        /* Navegación */
+        .view { position: fixed; inset: 0; background: white; padding: 2rem; display: flex; flex-direction: column; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
+        .hidden-view { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        
+        /* Sugerencias Inteligentes */
+        .sug-box { background: white; border-radius: 1.2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: absolute; width: 100%; z-index: 50; margin-top: 5px; max-height: 200px; overflow-y: auto; }
+        .sug-item { padding: 1rem; border-bottom: 1px solid #f8fafc; font-size: 0.8rem; font-weight: 700; }
+        .sug-item:active { background: #eff6ff; color: #2563eb; }
+
+        /* Menú Lateral */
+        #menu { position: fixed; left: -100%; top: 0; bottom: 0; width: 80%; background: #0f172a; z-index: 100; transition: 0.4s; padding: 3rem 2rem; color: white; }
+        #menu.open { left: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="overlay" class="menu-overlay" onclick="toggleMenu()"></div>
-    <nav id="side-menu">
-        <h2 class="text-2xl font-black mb-10 text-blue-400">TAJHO.OS</h2>
-        <div class="space-y-6">
-            <button onclick="navTo('view-1')" class="flex items-center gap-4 font-bold text-sm">🏠 INICIO</button>
-            <button onclick="navTo('view-2')" class="flex items-center gap-4 font-bold text-sm">📦 CONTENEDOR</button>
-            <button onclick="navTo('view-historial')" class="flex items-center gap-4 font-bold text-sm">📜 HISTORIAL</button>
-            <button onclick="navTo('view-devoluciones')" class="flex items-center gap-4 font-bold text-sm">↩️ DEVOLUCIONES</button>
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+    
+    <nav id="menu">
+        <h2 class="text-3xl font-black mb-12 text-blue-500">TAJHO.OS</h2>
+        <div class="space-y-8 text-lg font-bold">
+            <button onclick="nav('v-home')" class="block">🏠 INICIO</button>
+            <button onclick="nav('v-plan')" class="block">📦 CONTENEDOR</button>
+            <button onclick="alert('Historial en construcción')" class="block">📜 HISTORIAL</button>
+            <button onclick="alert('Devoluciones en construcción')" class="block">↩️ DEVOLUCIONES</button>
         </div>
-        <p class="absolute bottom-10 text-[10px] text-slate-500 font-bold uppercase tracking-widest">v44 Smart Engine</p>
     </nav>
 
-    <div id="view-1" class="view">
-        <header class="flex justify-between items-center mb-10 mt-10">
-            <button onclick="toggleMenu()" class="w-12 h-12 flex items-center justify-center bg-slate-50 rounded-2xl">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <div id="v-home" class="view">
+        <header class="flex justify-between items-center mb-16 pt-10">
+            <button onclick="toggleMenu()" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <h1 class="text-xl font-black italic">TAJHO<span class="text-blue-600">.OS</span></h1>
-            <div class="w-12"></div>
+            <span class="font-black text-xs tracking-widest italic">TAJHO.OS</span>
+        </header>
+        <h1 class="text-5xl font-[800] tracking-tighter leading-tight mb-12">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
+        <div class="space-y-5">
+            <button onclick="nav('v-plan')" class="card-tajho w-full p-8 flex items-center gap-6 border-none text-left">
+                <span class="text-4xl">📦</span>
+                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Logística</p><p class="text-lg font-bold">CONTENEDOR</p></div>
+            </button>
+            <button onclick="alert('Historial')" class="card-tajho w-full p-8 flex items-center gap-6 border-none text-left">
+                <span class="text-4xl">📜</span>
+                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Reportes</p><p class="text-lg font-bold">HISTORIAL</p></div>
+            </button>
+        </div>
+    </div>
+
+    <div id="v-plan" class="view hidden-view">
+        <h2 class="text-3xl font-black mb-8 mt-10 tracking-tighter">Armar Contenedor</h2>
+        <div class="relative mb-6">
+            <input type="text" id="p-sku" oninput="showSug(this, 'p-sugs')" class="input-tajho" placeholder="SKU o NOMBRE">
+            <div id="p-sugs" class="sug-box hidden"></div>
+        </div>
+        <input type="number" id="p-qty" class="input-tajho mb-6" placeholder="CANT. TOTAL" inputmode="numeric">
+        <button onclick="addMani()" class="btn-blue w-full py-5 mb-8">AÑADIR ITEM</button>
+        
+        <div id="mani-list" class="flex-1 overflow-y-auto space-y-3 mb-6"></div>
+        
+        <button onclick="createCont()" class="btn-blue w-full py-6 bg-slate-900 shadow-none text-sm uppercase tracking-widest">CREAR CONTENEDOR</button>
+        <button onclick="nav('v-home')" class="mt-4 text-[10px] font-black text-slate-300 uppercase">Cancelar</button>
+    </div>
+
+    <div id="v-action" class="view hidden-view justify-center items-center text-center">
+        <h2 id="cont-name" class="text-5xl font-black italic mb-12 text-blue-600">CONT-01</h2>
+        <button onclick="nav('v-work')" class="w-64 h-64 bg-blue-600 text-white rounded-full font-black text-2xl shadow-2xl active:scale-90 transition-all">INICIAR<br>DESCARGA</button>
+    </div>
+
+    <div id="v-work" class="view hidden-view">
+        <header class="flex justify-between items-center mb-8">
+            <span id="prog-txt" class="text-2xl font-black text-blue-600">0%</span>
+            <div class="w-2/3 h-3 bg-slate-100 rounded-full overflow-hidden"><div id="prog-bar" class="h-full bg-blue-600 transition-all w-0"></div></div>
         </header>
         
-        <h2 class="text-4xl font-[800] tracking-tighter leading-tight mb-8">¿Qué gestionamos<br>hoy, Tajho?</h2>
-        
-        <div class="space-y-4">
-            <button onclick="prepararModo('CARGA')" class="card-menu w-full p-6 flex items-center gap-4">
-                <div class="text-2xl">📦</div>
-                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Logística</p><p class="font-bold">CONTENEDOR</p></div>
-            </button>
-            <button onclick="navTo('view-historial')" class="card-menu w-full p-6 flex items-center gap-4">
-                <div class="text-2xl">📜</div>
-                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Reportes</p><p class="font-bold">HISTORIAL</p></div>
-            </button>
-            <button onclick="prepararModo('RETORNO')" class="card-menu w-full p-6 flex items-center gap-4">
-                <div class="text-2xl">↩️</div>
-                <div class="text-left"><p class="text-[10px] font-black text-slate-400 uppercase">Clientes</p><p class="font-bold">DEVOLUCIONES</p></div>
-            </button>
+        <div class="relative mb-6">
+            <input type="text" id="o-sku" oninput="showSug(this, 'o-sugs')" class="input-tajho" placeholder="ESCANEAR SKU">
+            <div id="o-sugs" class="sug-box hidden"></div>
         </div>
-    </div>
 
-    <div id="view-2" class="view hidden-view">
-        <h2 class="text-2xl font-black mb-6 mt-10">Armar Manifiesto</h2>
-        <div class="relative space-y-4">
-            <input type="text" id="p-sku" oninput="sugerirItem(this)" class="input-tajho" placeholder="Código o Nombre">
-            <div id="sug-box" class="suggestion-box hidden"></div>
-            
-            <input type="number" id="p-qty" class="input-tajho" placeholder="CANT. ESPERADA" inputmode="numeric">
-            <button onclick="agregarManifiesto()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase">Añadir al Plan</button>
+        <div class="flex gap-4 mb-8">
+            <input type="number" id="o-qty" class="input-tajho flex-1 text-4xl" placeholder="0" inputmode="numeric">
+            <button onclick="saveItem()" class="btn-blue w-24 h-24 text-4xl shadow-blue-200">+</button>
         </div>
-        <div id="mani-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
-        <button onclick="confirmarMani()" class="w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase shadow-xl mt-4">CREAR Y CONTINUAR</button>
-    </div>
 
-    <div id="view-3" class="view hidden-view justify-center items-center text-center">
-        <h2 id="ref-name" class="text-4xl font-black italic mb-10">CONT-01</h2>
-        <button onclick="navTo('view-4')" class="w-64 h-64 bg-blue-600 text-white rounded-full font-black text-xl shadow-2xl active:scale-95 transition-all">INICIAR<br>DESCARGA</button>
-    </div>
-
-    <div id="view-4" class="view hidden-view">
-        <header class="mb-4"><p id="prog-txt" class="text-right text-[10px] font-black text-blue-600">0%</p></header>
-        <div class="h-2 bg-slate-100 rounded-full overflow-hidden mb-6"><div id="prog-bar" class="h-full bg-blue-600 transition-all w-0"></div></div>
-        
-        <div class="relative space-y-4">
-            <input type="text" id="o-sku" oninput="sugerirItem(this)" class="input-tajho" placeholder="Pistear Código">
-            <div id="sug-box-op" class="suggestion-box hidden"></div>
-            <div class="flex gap-4">
-                <input type="number" id="o-qty" class="input-tajho flex-1 text-3xl" placeholder="0" inputmode="numeric">
-                <button onclick="saveConteo()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center font-bold text-3xl">+</button>
-            </div>
-        </div>
-        <div id="op-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
+        <div id="work-list" class="flex-1 overflow-y-auto space-y-3"></div>
     </div>
 
     <script>
-        const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
+        const CLOUD = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
         let db = JSON.parse(localStorage.getItem('db_tajho') || '{}');
         let mani = [];
-        let modoActual = 'CARGA';
-        let totalMeta = 0;
-        let totalReal = 0;
+        let totalM = 0, totalR = 0;
 
         function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            menu.classList.toggle('open');
-            overlay.style.display = menu.classList.contains('open') ? 'block' : 'none';
+            document.getElementById('menu').classList.toggle('open');
+            document.getElementById('overlay').style.display = document.getElementById('menu').classList.contains('open') ? 'block' : 'none';
         }
 
-        function navTo(id) {
+        function nav(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden-view'));
             document.getElementById(id).classList.remove('hidden-view');
-            if(document.getElementById('side-menu').classList.contains('open')) toggleMenu();
+            if(document.getElementById('menu').classList.contains('open')) toggleMenu();
         }
 
-        function sugerirItem(el) {
+        function showSug(el, boxId) {
             const val = el.value.toUpperCase();
-            const box = el.nextElementSibling;
+            const box = document.getElementById(boxId);
             box.innerHTML = '';
             if(val.length < 1) { box.classList.add('hidden'); return; }
 
             const matches = Object.keys(db).filter(k => k.includes(val) || db[k].d.toUpperCase().includes(val)).slice(0,5);
-            
             if(matches.length > 0) {
                 box.classList.remove('hidden');
                 matches.forEach(m => {
-                    const d = document.createElement('div');
-                    d.className = "p-4 border-b border-slate-50 text-xs font-bold active:bg-blue-50";
-                    d.innerHTML = `<span class="text-blue-600">${m}</span> - ${db[m].d}`;
-                    d.onclick = () => { el.value = m; box.classList.add('hidden'); };
-                    box.appendChild(d);
+                    const div = document.createElement('div');
+                    div.className = "sug-item";
+                    div.innerHTML = `<span class="text-blue-600">${m}</span> - ${db[m].d}`;
+                    div.onclick = () => { el.value = m; box.classList.add('hidden'); el.focus(); };
+                    box.appendChild(div);
                 });
             } else { box.classList.add('hidden'); }
         }
 
-        function prepararModo(m) {
-            modoActual = m;
-            navTo('view-2');
-        }
-
-        function agregarManifiesto() {
+        function addMani() {
             const sku = document.getElementById('p-sku').value.toUpperCase().trim();
             const qty = parseInt(document.getElementById('p-qty').value);
-            if(!db[sku] || !qty) return alert("Selecciona un producto válido");
+            if(!db[sku] || !qty) return;
 
-            mani.push({ sku, d: db[sku].d, m: qty, r: 0 });
-            totalMeta += qty;
-            document.getElementById('mani-list').innerHTML += `<div class="p-4 bg-slate-50 rounded-xl flex justify-between text-xs font-bold"><span>${sku}</span><span>${qty} UN</span></div>`;
+            mani.push({sku, d: db[sku].d, m: qty, r: 0});
+            totalM += qty;
+            document.getElementById('mani-list').innerHTML += `<div class="card-tajho p-5 flex justify-between font-bold border-none"><span>${sku}</span><span class="text-blue-600">${qty} UN</span></div>`;
             document.getElementById('p-sku').value = ''; document.getElementById('p-qty').value = '';
         }
 
-        function confirmarMani() {
+        function createCont() {
             if(mani.length === 0) return;
-            const ref = prompt("Nombre Referencia:", "CONT-" + new Date().getDate());
-            document.getElementById('ref-name').innerText = ref;
-            navTo('view-3');
+            const res = prompt("Nombre:", "CONT-" + new Date().getDate());
+            document.getElementById('cont-name').innerText = res;
+            nav('v-action');
         }
 
-        function saveConteo() {
+        function saveItem() {
             const sku = document.getElementById('o-sku').value.toUpperCase().trim();
             const qty = parseInt(document.getElementById('o-qty').value);
             if(!qty) return;
 
-            totalReal += qty;
-            const perc = Math.min((totalReal/totalMeta)*100, 100).toFixed(0);
-            document.getElementById('prog-bar').style.width = perc + "%";
-            document.getElementById('prog-txt').innerText = perc + "%";
+            totalR += qty;
+            const p = Math.min((totalR/totalM)*100, 100).toFixed(0);
+            document.getElementById('prog-bar').style.width = p + "%";
+            document.getElementById('prog-txt').innerText = p + "%";
 
             // Registro invisible
-            fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: modoActual, datos: [new Date().toLocaleString(), document.getElementById('ref-name').innerText, sku, db[sku]?.d || 'EXTRA', qty, modoActual === 'CARGA' ? 'CJ' : (db[sku]?.u || 'UND')] }) });
+            fetch(CLOUD, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: 'CARGA', datos: [new Date().toLocaleString(), document.getElementById('cont-name').innerText, sku, db[sku]?.d || 'EXTRA', qty, 'CJ'] }) });
 
-            document.getElementById('op-list').innerHTML = `<div class="p-4 bg-blue-50 rounded-xl flex justify-between font-bold text-xs"><span>${sku}</span><span class="text-blue-600">+${qty}</span></div>` + document.getElementById('op-list').innerHTML;
+            document.getElementById('work-list').innerHTML = `<div class="card-tajho p-6 flex justify-between items-center border-none animate-pulse"><div><p class="text-[10px] font-black text-slate-400">${sku}</p><p class="font-bold">${db[sku]?.d || 'EXTRA'}</p></div><p class="text-2xl font-black text-blue-600">+${qty}</p></div>` + document.getElementById('work-list').innerHTML;
+            
             document.getElementById('o-sku').value = ''; document.getElementById('o-qty').value = '';
-            navigator.vibrate(30);
+            navigator.vibrate(40);
         }
 
         window.onload = async () => {
             try {
-                const res = await fetch(CLOUD_URL);
+                const res = await fetch(CLOUD);
                 const data = await res.json();
                 data.forEach(r => db[String(r.CODIGO).toUpperCase().trim()] = { d: r.DESCRIPCION, u: r.UM });
                 localStorage.setItem('db_tajho', JSON.stringify(db));
