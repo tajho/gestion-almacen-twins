@@ -3,23 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v34 - Smart Search</title>
+    <title>TAJHO.OS v35 - Native Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
+        
         .card-modern { background: white; border-radius: 2.2rem; border: 1px solid #f1f5f9; box-shadow: 0 15px 35px -12px rgba(0,0,0,0.06); }
-        .input-clean { background: #f1f5f9; border-radius: 1.25rem; border: 2.5px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.9rem 1.3rem; }
-        .input-clean:focus { border-color: var(--blue); background: white; outline: none; }
+        .input-clean { background: #f8fafc; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.9rem 1.3rem; }
+        .input-clean:focus { border-color: var(--blue); background: white; outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.05); }
+        
+        /* Menú Hamburguesa Nativo */
+        #side-menu { position: fixed; inset: 0; z-index: 1000; visibility: hidden; pointer-events: none; }
+        #menu-content { width: 80%; max-width: 300px; height: 100%; background: white; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+        #menu-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.4); opacity: 0; transition: 0.4s; backdrop-filter: blur(4px); }
+        #side-menu.open { visibility: visible; pointer-events: auto; }
+        #side-menu.open #menu-content { transform: translateX(0); }
+        #side-menu.open #menu-overlay { opacity: 1; }
+
         #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
-        .hide-landing { transform: translateY(-100%); visibility: hidden; }
-        .tab-panel { display: none; }
+        .hide-landing { transform: scale(1.1); opacity: 0; visibility: hidden; }
+        
+        .tab-panel { display: none; height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 100px; }
         .active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+    <div id="side-menu">
+        <div id="menu-overlay" onclick="toggleMenu()"></div>
+        <div id="menu-content" class="p-8 flex flex-col">
+            <div class="mb-10">
+                <h3 class="text-xs font-black tracking-widest italic text-slate-400">TAJHO<span class="text-blue-600">.OS</span></h3>
+                <p class="text-[10px] font-bold text-slate-300 uppercase">Gestión de Inventario</p>
+            </div>
+            <nav class="space-y-2 flex-1">
+                <button onclick="navTo('contenedor')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-600 active:bg-blue-50 active:text-blue-600 transition-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
+                    <span class="text-sm font-bold uppercase tracking-wider">Contenedor</span>
+                </button>
+                <button onclick="navTo('devoluciones')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-600 active:bg-blue-50 active:text-blue-600 transition-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
+                    <span class="text-sm font-bold uppercase tracking-wider">Devoluciones</span>
+                </button>
+            </nav>
+            <div class="pt-6 border-t border-slate-100">
+                <button onclick="location.reload()" class="w-full flex items-center gap-4 p-4 text-red-400 font-bold text-xs uppercase tracking-widest">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="landing">
         <header class="mb-12">
@@ -47,51 +83,52 @@
         </div>
     </div>
 
-    <header class="h-16 px-6 flex justify-between items-center bg-white sticky top-0 z-50">
-        <button onclick="location.reload()" class="p-2 text-slate-400">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <header class="h-20 px-6 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <button onclick="toggleMenu()" class="p-3 bg-slate-50 rounded-2xl text-slate-900 active:scale-90 transition-all">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div class="text-center">
-            <p class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">SMART LOGISTICS</p>
+            <p id="header-subtitle" class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">CONTENEDOR</p>
             <h3 class="text-xs font-black tracking-widest italic">TAJHO<span class="text-blue-600">.OS</span></h3>
         </div>
-        <div class="w-10"></div> 
+        <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-lg shadow-blue-200">
+            J
+        </div>
     </header>
 
-    <main class="p-6 pb-24">
+    <main class="p-6">
         <div id="view-contenedor" class="tab-panel active space-y-6">
             <div id="setup-card" class="card-modern p-8 space-y-5">
                 <div class="space-y-4">
                     <div class="relative">
-                        <input type="text" id="s-sku" oninput="smartSearch()" class="input-clean w-full text-lg uppercase" placeholder="CÓDIGO SKU" autocomplete="off">
-                        <div id="search-results" class="hidden absolute z-10 w-full bg-white mt-2 rounded-2xl shadow-2xl border border-slate-100 max-h-48 overflow-y-auto"></div>
+                        <input type="text" id="s-sku" oninput="smartSearch()" class="input-clean w-full text-lg uppercase" placeholder="BUSCAR SKU..." autocomplete="off">
+                        <div id="search-results" class="hidden absolute z-10 w-full bg-white mt-2 rounded-3xl shadow-2xl border border-slate-100 max-h-60 overflow-y-auto"></div>
                     </div>
-                    
                     <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic" placeholder="Descripción automática..." readonly>
                     <input type="number" id="s-meta" class="input-clean w-full text-base" placeholder="CANTIDAD META">
                 </div>
-                <button onclick="addMani()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">Vincular a Operación</button>
+                <button onclick="addMani()" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all">Vincular Item</button>
                 <div id="pre-list" class="space-y-3"></div>
-                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-2xl text-[11px] font-black uppercase shadow-xl">Iniciar Operación</button>
+                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-5 rounded-2xl text-[11px] font-black uppercase shadow-xl">Iniciar Carga</button>
             </div>
 
             <div id="ops-card" class="hidden card-modern p-10 space-y-8 text-center">
                 <div class="space-y-2">
-                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent outline-none text-slate-900 appearance-none text-center italic w-full"></select>
+                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent outline-none text-slate-900 text-center italic w-full"></select>
                     <p id="live-desc" class="text-[11px] font-black text-blue-600 uppercase tracking-widest"></p>
                 </div>
                 <div class="flex flex-col items-center gap-6">
                     <div class="flex items-center gap-4">
-                        <input type="number" id="qty-in" class="input-clean w-32 text-center text-4xl h-20" placeholder="0">
-                        <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl text-4xl font-bold">+</button>
+                        <input type="number" id="qty-in" class="input-clean w-32 text-center text-4xl h-20 shadow-inner" placeholder="0">
+                        <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl text-4xl font-bold active:scale-90 transition-all">+</button>
                     </div>
                     <div class="flex gap-10 mt-4">
                         <div class="text-center">
-                            <p class="text-[9px] font-black text-slate-300 uppercase italic">Pendiente</p>
+                            <p class="text-[9px] font-black text-slate-300 uppercase italic">Faltante</p>
                             <p id="live-rem" class="text-2xl font-black text-slate-800">0</p>
                         </div>
                         <div class="text-center border-l border-slate-100 pl-10">
-                            <p class="text-[9px] font-black text-slate-300 uppercase italic">Registrado</p>
+                            <p class="text-[9px] font-black text-slate-300 uppercase italic">Cargado</p>
                             <p id="live-real" class="text-2xl font-black text-blue-600">0</p>
                         </div>
                     </div>
@@ -102,7 +139,7 @@
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec"; 
-        let raw_data = []; // Datos crudos para búsqueda flexible
+        let raw_data = []; 
         let db_tajho = {}; 
         let manifest = [];
 
@@ -110,43 +147,36 @@
             try {
                 const res = await fetch(CLOUD_URL);
                 raw_data = await res.json();
-                // Preparar base indexada para acceso rápido
                 raw_data.forEach(r => {
                     const cod = String(r.CODIGO || "").toUpperCase().trim();
                     if(cod) db_tajho[cod] = { desc: r.DESCRIPCION || "SIN NOMBRE" };
                 });
-                console.log("Nube sincronizada en segundo plano.");
-            } catch (e) { console.warn("Error de conexión silencioso."); }
+            } catch (e) { console.warn("Modo Offline"); }
         }
 
-        // --- LÓGICA DE BUSCADOR INTELIGENTE ---
+        function toggleMenu() {
+            document.getElementById('side-menu').classList.toggle('open');
+        }
+
         function smartSearch() {
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resultsDiv = document.getElementById('search-results');
-            const descField = document.getElementById('s-desc');
-            
-            if (input.length < 2) {
-                resultsDiv.classList.add('hidden');
-                return;
-            }
+            if (input.length < 1) { resultsDiv.classList.add('hidden'); return; }
 
-            // Filtrar coincidencias
             const matches = raw_data.filter(item => 
                 String(item.CODIGO).toUpperCase().includes(input) || 
                 String(item.DESCRIPCION).toUpperCase().includes(input)
-            ).slice(0, 5); // Mostrar top 5
+            ).slice(0, 6);
 
             if (matches.length > 0) {
                 resultsDiv.innerHTML = matches.map(m => `
-                    <div onclick="selectProduct('${m.CODIGO}', '${m.DESCRIPCION}')" class="p-4 border-b border-slate-50 active:bg-blue-50">
-                        <p class="text-[10px] font-black text-blue-600">${m.CODIGO}</p>
-                        <p class="text-[11px] font-bold text-slate-500 truncate">${m.DESCRIPCION}</p>
+                    <div onclick="selectProduct('${m.CODIGO}', '${m.DESCRIPCION}')" class="p-5 border-b border-slate-50 active:bg-blue-50 transition-colors">
+                        <p class="text-[10px] font-black text-blue-600 tracking-widest">${m.CODIGO}</p>
+                        <p class="text-xs font-bold text-slate-600 truncate uppercase">${m.DESCRIPCION}</p>
                     </div>
                 `).join('');
                 resultsDiv.classList.remove('hidden');
-            } else {
-                resultsDiv.classList.add('hidden');
-            }
+            } else { resultsDiv.classList.add('hidden'); }
         }
 
         function selectProduct(sku, desc) {
@@ -158,31 +188,26 @@
 
         function navTo(t) {
             document.getElementById('landing').classList.add('hide-landing');
+            document.getElementById('header-subtitle').innerText = t.toUpperCase();
+            if(document.getElementById('side-menu').classList.contains('open')) toggleMenu();
             initCloud();
         }
 
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
             const meta = parseInt(document.getElementById('s-meta').value);
-            // Validar que el SKU exista en la base de datos
-            if(!db_tajho[sku] || !meta) {
-                alert("Código no válido o falta cantidad meta");
-                return;
-            }
+            if(!db_tajho[sku] || !meta) return;
 
             manifest.push({ sku, desc: db_tajho[sku].desc, meta, real: 0 });
             renderList();
-            
             document.getElementById('btn-start').classList.remove('hidden');
-            document.getElementById('s-sku').value = ''; 
-            document.getElementById('s-desc').value = ''; 
-            document.getElementById('s-meta').value = '';
+            document.getElementById('s-sku').value = ''; document.getElementById('s-desc').value = ''; document.getElementById('s-meta').value = '';
         }
 
         function renderList() {
             document.getElementById('pre-list').innerHTML = manifest.map(i => `
-                <div class="flex justify-between items-center p-4 bg-blue-50/50 rounded-2xl border border-blue-100/30">
-                    <p class="text-[10px] font-black italic uppercase">${i.sku} <span class="text-blue-600">/ ${i.meta} CJ</span></p>
+                <div class="flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100 animate-fadeIn">
+                    <p class="text-[10px] font-black italic uppercase">${i.sku} <span class="text-blue-600 ml-2">→ ${i.meta} CJ</span></p>
                 </div>
             `).join('');
         }
@@ -211,14 +236,12 @@
             item.real += qty;
             syncItem();
             document.getElementById('qty-in').value = '';
+            navigator.vibrate(50);
 
             fetch(CLOUD_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify({
-                    tipo: 'CARGA',
-                    datos: [new Date().toLocaleString(), sku, item.desc, qty, "CJ"]
-                })
+                body: JSON.stringify({ tipo: 'CARGA', datos: [new Date().toLocaleString(), sku, item.desc, qty, "CJ"] })
             });
         }
     </script>
