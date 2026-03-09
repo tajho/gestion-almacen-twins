@@ -10,143 +10,172 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .input-field { @apply w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all; }
         .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95; }
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .tab-active { @apply border-b-2 border-blue-600 text-blue-600; }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
     <header class="bg-white p-6 sticky top-0 z-50 border-b border-slate-100 shadow-sm">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div>
-                <p class="text-blue-600 text-[10px] font-black uppercase tracking-[3px] mb-1">Logística Profesional</p>
+                <p class="text-blue-600 text-[10px] font-black uppercase tracking-[3px] mb-1">Control de Inventario</p>
                 <h1 class="text-2xl font-extrabold tracking-tighter text-slate-800">LOGIMASTER<span class="text-slate-400 font-light">PRO</span></h1>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="text-right hidden sm:block">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Estado</p>
-                    <p class="text-xs font-bold text-green-500">CONECTADO A CLOUD</p>
-                </div>
-                <div class="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200">📦</div>
-            </div>
+            <div class="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 shadow-inner">📦</div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
 
-        <section id="modulo-ingreso" class="space-y-4">
+        <div class="relative group">
+            <input type="text" id="buscador-global" onkeyup="buscarRegistro()" placeholder="Buscar producto, contenedor o cliente..." 
+                   class="w-full p-4 pl-12 rounded-2xl bg-white shadow-sm border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            <span class="absolute left-4 top-4 grayscale opacity-50 group-focus-within:opacity-100">🔍</span>
+        </div>
+
+        <section id="vista-ingreso" class="space-y-4">
             <div class="flex items-center justify-between px-2">
-                <h2 class="text-xl font-extrabold text-slate-800">Ingreso de Contenedor</h2>
-                <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">NUEVO REGISTRO</span>
+                <h2 class="text-lg font-extrabold text-slate-800 uppercase tracking-tight">🚢 Ingreso de Contenedor</h2>
+                <span class="text-[10px] bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-black">MÓDULO A</span>
             </div>
 
             <div class="grid grid-cols-2 gap-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
                 <div class="col-span-2 sm:col-span-1">
-                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">N° de Contenedor</label>
-                    <input type="text" id="num_contenedor" placeholder="EJ: MCU123456" class="input-field mt-1 font-mono font-bold uppercase">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Contenedor / Documento</label>
+                    <input type="text" id="id_contenedor" placeholder="MCU123456" class="input-field mt-1 font-mono uppercase font-bold">
                 </div>
                 <div class="col-span-2 sm:col-span-1">
-                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Fecha de Ingreso</label>
-                    <input type="date" id="fecha_ingreso" class="input-field mt-1">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Fecha</label>
+                    <input type="date" id="fecha_cont" class="input-field mt-1">
                 </div>
             </div>
 
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">DETALLE DE MERCADERÍA</span>
-                    <button onclick="agregarFila()" class="text-blue-600 text-xs font-bold">+ AÑADIR PRODUCTO</button>
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase">
+                        <tr>
+                            <th class="p-4">Producto</th>
+                            <th class="p-4 w-20">Conteo</th>
+                            <th class="p-4 w-32">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ingreso-cuerpo"></tbody>
+                </table>
+                <button onclick="agregarFila('tabla-ingreso-cuerpo')" class="w-full p-4 text-blue-600 text-xs font-bold border-t border-slate-50">+ AÑADIR OTRO PRODUCTO</button>
+            </div>
+            <button onclick="generarReporte('CONTENEDOR')" class="btn-primary w-full uppercase tracking-widest text-sm">Cerrar Ingreso y Generar PDF</button>
+        </section>
+
+        <section id="vista-devolucion" class="space-y-4 hidden">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="text-lg font-extrabold text-slate-800 uppercase tracking-tight">📦 Gestión de Devoluciones</h2>
+                <span class="text-[10px] bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-black">MÓDULO B</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Nombre del Cliente</label>
+                    <input type="text" id="cliente_dev" placeholder="Nombre completo" class="input-field mt-1 font-bold">
                 </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="text-[10px] text-slate-400 uppercase border-b border-slate-50">
-                                <th class="p-4">Código / Producto</th>
-                                <th class="p-4">Packing</th>
-                                <th class="p-4">Conteo</th>
-                                <th class="p-4 text-center">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-conteo">
-                            </tbody>
-                    </table>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Vendedor Asignado</label>
+                    <input type="text" id="vendedor_dev" placeholder="Nombre del vendedor" class="input-field mt-1 font-bold">
                 </div>
             </div>
 
-            <button onclick="generarReporte()" class="btn-primary w-full">
-                GENERAR REPORTE PROFESIONAL PDF
-            </button>
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase">
+                        <tr>
+                            <th class="p-4">Producto</th>
+                            <th class="p-4 w-20">Conteo</th>
+                            <th class="p-4">Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-dev-cuerpo"></tbody>
+                </table>
+                <button onclick="agregarFila('tabla-dev-cuerpo')" class="w-full p-4 text-orange-600 text-xs font-bold border-t border-slate-50">+ AÑADIR PRODUCTO DEVUELTO</button>
+            </div>
+            <button onclick="generarReporte('DEVOLUCION')" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest text-sm">Registrar Devolución y PDF</button>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-slate-900/90 backdrop-blur-xl rounded-3xl p-2 flex justify-around items-center shadow-2xl border border-white/10">
-        <button class="p-3 text-white flex flex-col items-center">
-            <span class="text-xl italic">🏠</span>
-            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Inicio</span>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg bg-white shadow-2xl rounded-3xl p-2 flex justify-around items-center border border-slate-100">
+        <button onclick="cambiarVista('vista-ingreso')" id="btn-ingreso" class="flex-1 py-3 flex flex-col items-center text-blue-600">
+            <span class="text-xl">🚢</span>
+            <span class="text-[9px] font-black uppercase mt-1">Ingresos</span>
         </button>
-        <button class="p-3 text-slate-500 flex flex-col items-center">
-            <span class="text-xl">🔍</span>
-            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Buscador</span>
+        <button onclick="cambiarVista('vista-devolucion')" id="btn-devolucion" class="flex-1 py-3 flex flex-col items-center text-slate-400">
+            <span class="text-xl">📦</span>
+            <span class="text-[9px] font-black uppercase mt-1">Devoluciones</span>
         </button>
-        <button class="p-3 text-slate-500 flex flex-col items-center">
-            <span class="text-xl">📊</span>
-            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Reportes</span>
+        <button class="flex-1 py-3 flex flex-col items-center text-slate-400">
+            <span class="text-xl">📑</span>
+            <span class="text-[9px] font-black uppercase mt-1">Historial</span>
         </button>
     </nav>
 
     <script>
-        // Memoria de la App: Conocimiento de Productos
-        const baseDeDatosProductos = [
-            { codigo: "A100", nombre: "Zapatillas Running Tajho", packing: "12 unidades" },
-            { codigo: "B200", nombre: "Boxer Algodón Premium", packing: "24 unidades" },
-            { codigo: "C300", nombre: "Gorra Deportiva Pro", packing: "50 unidades" }
+        // Cerebro de la App: Base de Datos Maestra
+        const maestraProductos = [
+            { cod: "101", name: "PRODUCTO EJEMPLO A", pack: "12x1" },
+            { cod: "102", name: "PRODUCTO EJEMPLO B", pack: "24x1" }
         ];
 
-        function agregarFila() {
-            const tbody = document.getElementById('tabla-conteo');
+        function cambiarVista(id) {
+            document.getElementById('vista-ingreso').classList.add('hidden');
+            document.getElementById('vista-devolucion').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Actualizar colores de botones
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.replace('text-blue-600', 'text-slate-400'));
+            event.currentTarget.classList.replace('text-slate-400', 'text-blue-600');
+        }
+
+        function agregarFila(tablaId) {
+            const tbody = document.getElementById(tablaId);
             const row = document.createElement('tr');
-            row.className = "border-b border-slate-50 hover:bg-slate-50/50 transition-colors";
+            row.className = "border-b border-slate-50 transition-all";
+            
+            let extraCol = tablaId === 'tabla-ingreso-cuerpo' 
+                ? `<td><select class="text-[10px] font-bold bg-slate-100 p-2 rounded-lg outline-none"><option>BUENO</option><option>DAÑADO</option></select></td>`
+                : `<td><select class="text-[10px] font-bold bg-orange-50 text-orange-700 p-2 rounded-lg outline-none"><option>FALLA</option><option>NO VENTA</option><option>OTRO</option></select></td>`;
+
             row.innerHTML = `
                 <td class="p-4">
-                    <input type="text" oninput="autocompletar(this)" placeholder="Código..." class="bg-transparent font-bold text-sm outline-none w-full uppercase">
-                    <p class="text-[10px] text-slate-400 italic producto-nombre">Esperando código...</p>
+                    <input type="text" oninput="autocompletar(this)" placeholder="Código" class="text-sm font-bold w-full uppercase outline-none bg-transparent">
+                    <p class="text-[9px] text-slate-400 nombre-p">Ingresar código...</p>
                 </td>
                 <td class="p-4">
-                    <input type="text" placeholder="Cant/Caja" class="bg-transparent text-sm outline-none w-16 text-slate-500 packing-val">
+                    <input type="number" class="w-16 p-2 bg-slate-50 rounded-lg text-center font-bold outline-none border border-slate-100">
                 </td>
-                <td class="p-4 text-center">
-                    <input type="number" placeholder="0" class="w-16 p-2 bg-slate-100 rounded-lg text-center font-bold text-blue-600 outline-none">
-                </td>
-                <td class="p-4 text-center">
-                    <select class="text-[10px] font-bold p-2 rounded-lg bg-green-50 text-green-600 outline-none border-none">
-                        <option value="bueno">✅ ÓPTIMO</option>
-                        <option value="falla">❌ FALLA</option>
-                        <option value="empaque">📦 EMPAQUE</option>
-                    </select>
-                </td>
+                ${extraCol}
             `;
             tbody.appendChild(row);
         }
 
         function autocompletar(input) {
-            const valor = input.value.toUpperCase();
-            const fila = input.closest('tr');
-            const nombreLabel = fila.querySelector('.producto-nombre');
-            const packingInput = fila.querySelector('.packing-val');
-
-            const producto = baseDeDatosProductos.find(p => p.codigo === valor);
-            if (producto) {
-                nombreLabel.innerText = producto.nombre;
-                nombreLabel.classList.add('text-blue-600', 'not-italic');
-                packingInput.value = producto.packing;
+            const val = input.value.toUpperCase();
+            const label = input.nextElementSibling;
+            const match = maestraProductos.find(p => p.cod === val);
+            if(match) {
+                label.innerText = match.name + " (" + match.pack + ")";
+                label.classList.replace('text-slate-400', 'text-blue-600');
             } else {
-                nombreLabel.innerText = "Producto no encontrado";
-                nombreLabel.classList.remove('text-blue-600');
+                label.innerText = "No encontrado";
+                label.classList.replace('text-blue-600', 'text-slate-400');
             }
         }
 
-        // Agregar una fila inicial al cargar
-        window.onload = agregarFila;
+        function generarReporte(tipo) {
+            // Aquí irá la lógica de PDF y Google Sheets
+            alert("Generando Reporte Profesional de " + tipo + "...\nRevisión autorizada por J. Angelo Nuñez Durand.");
+        }
+
+        // Cargar filas iniciales
+        window.onload = () => { agregarFila('tabla-ingreso-cuerpo'); agregarFila('tabla-dev-cuerpo'); };
     </script>
 </body>
 </html>
