@@ -3,193 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v42</title>
+    <title>TAJHO.OS v43 MASTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
-        
-        /* Animaciones Rápidas */
-        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
         .card-modern { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
         .input-tajho { background: #f1f5f9; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; padding: 1rem; transition: 0.2s; width: 100%; text-align: center; }
         .input-tajho:focus { border-color: var(--blue); background: white; outline: none; }
-
-        #landing { position: fixed; inset: 0; z-index: 100; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.5s ease-in-out; }
-        .hidden-view { display: none !important; }
-        .fade-out { opacity: 0; pointer-events: none; transform: scale(0.95); }
+        .view { position: fixed; inset: 0; background: white; padding: 2rem; display: flex; flex-direction: column; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
+        .hidden-view { transform: translateX(100%); opacity: 0; pointer-events: none; }
+        .progress-bar { height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--blue); transition: 0.5s ease-out; width: 0%; }
     </style>
 </head>
 <body>
 
-    <div id="landing">
-        <header class="mb-12">
+    <div id="view-1" class="view">
+        <header class="mt-20 mb-12 text-center">
             <h1 class="text-5xl font-[800] tracking-tighter leading-tight">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
         </header>
         <div class="space-y-4">
-            <button onclick="prepararOperacion('CARGA')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
-                </div>
+            <button onclick="irAPlanificacion()" class="card-modern w-full p-6 flex items-center gap-5 active:scale-95 transition-all">
+                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 font-bold text-xl">📦</div>
                 <div class="text-left">
-                    <p class="text-sm font-black uppercase tracking-widest text-slate-400">Contenedor</p>
-                    <p class="text-xs font-bold text-slate-800 italic">CARGA DE BULTOS</p>
-                </div>
-            </button>
-            <button onclick="prepararOperacion('RETORNO')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
-                </div>
-                <div class="text-left">
-                    <p class="text-sm font-black uppercase tracking-widest text-slate-400">Devoluciones</p>
-                    <p class="text-xs font-bold text-slate-800 italic">RETORNO DE CLIENTE</p>
+                    <p class="text-xs font-black uppercase text-slate-400">Logística</p>
+                    <p class="text-sm font-bold text-slate-800">CREAR CONTENEDOR</p>
                 </div>
             </button>
         </div>
     </div>
 
-    <div id="step-setup" class="hidden-view fixed inset-0 bg-white p-8 flex flex-col justify-center items-center slide-up z-50">
-        <h2 id="setup-title" class="text-2xl font-black mb-6 text-center">NUEVO CONTENEDOR</h2>
-        <input type="text" id="main-ref" class="input-tajho text-2xl mb-6" placeholder="NOMBRE O CÓDIGO">
-        <button onclick="iniciarDescarga()" class="w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-blue-200">
-            INICIAR DESCARGA
-        </button>
-        <button onclick="cancelar()" class="mt-6 text-xs font-bold text-slate-300 uppercase tracking-widest">Regresar</button>
+    <div id="view-2" class="view hidden-view">
+        <h2 class="text-2xl font-black mb-6 mt-10">Armar Manifiesto</h2>
+        <div class="card-modern p-6 space-y-4">
+            <input type="text" id="p-sku" oninput="buscarItem(this, 'p-info')" class="input-tajho" placeholder="SKU">
+            <p id="p-info" class="text-[10px] font-bold text-blue-500 text-center uppercase"></p>
+            <input type="number" id="p-qty" class="input-tajho text-2xl" placeholder="CANT. TOTAL" inputmode="numeric">
+            <button onclick="agregarAlManifiesto()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Añadir Item</button>
+        </div>
+        <div id="manifiesto-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
+        <button onclick="confirmarContenedor()" class="mt-4 w-full bg-blue-600 text-white py-5 rounded-3xl font-black text-sm uppercase shadow-xl">CREAR CONTENEDOR</button>
     </div>
 
-    <div id="step-work" class="hidden-view fixed inset-0 bg-white overflow-y-auto">
-        <header class="p-6 flex justify-between items-center bg-white/80 backdrop-blur sticky top-0 border-b border-slate-50">
-            <button onclick="location.reload()" class="p-2 text-slate-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            </button>
-            <div class="text-center">
-                <p id="op-ref-display" class="text-[9px] font-black text-blue-600 uppercase tracking-widest"></p>
-                <h3 class="text-xs font-black italic text-slate-900">TAJHO.OS</h3>
-            </div>
-            <div class="w-10"></div>
+    <div id="view-3" class="view hidden-view justify-center items-center text-center">
+        <div class="mb-10">
+            <p class="text-blue-600 font-black tracking-widest text-xs uppercase">Listo para procesar</p>
+            <h2 id="final-ref" class="text-4xl font-black tracking-tighter mt-2 italic">CONT-2026</h2>
+        </div>
+        <button onclick="irAOperacion()" class="w-64 h-64 bg-blue-600 text-white rounded-full font-black text-xl shadow-2xl shadow-blue-200 active:scale-90 transition-all">
+            INICIAR<br>DESCARGA
+        </button>
+    </div>
+
+    <div id="view-4" class="view hidden-view">
+        <header class="flex justify-between items-center mb-6">
+            <h3 class="text-xs font-black text-slate-400 uppercase">Descarga en curso</h3>
+            <span id="perc-txt" class="text-xs font-black text-blue-600 italic">0%</span>
         </header>
+        <div class="progress-bar mb-8"><div id="progress-ui" class="progress-fill"></div></div>
 
-        <main class="p-6 space-y-6">
-            <div class="card-modern p-6 space-y-4">
-                <input type="text" id="sku-in" oninput="buscarRapido()" class="input-tajho text-xl" placeholder="CÓDIGO SKU">
-                
-                <div id="info-box" class="hidden py-4 text-center border-y border-slate-50">
-                    <p id="p-desc" class="text-sm font-bold text-slate-800 uppercase italic"></p>
-                    <p id="p-um" class="text-[10px] font-black text-blue-400 mt-1 uppercase"></p>
-                </div>
-
-                <div class="flex gap-4">
-                    <input type="number" id="qty-in" class="input-tajho flex-1 text-3xl" placeholder="0" inputmode="numeric">
-                    <button onclick="registrarData()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
-                    </button>
-                </div>
+        <div class="card-modern p-6 space-y-4">
+            <input type="text" id="o-sku" oninput="buscarItem(this, 'o-info')" class="input-tajho" placeholder="SKU">
+            <p id="o-info" class="text-[10px] font-bold text-blue-500 text-center uppercase"></p>
+            <div class="flex gap-4">
+                <input type="number" id="o-qty" class="input-tajho flex-1 text-3xl" placeholder="0" inputmode="numeric">
+                <button onclick="registrarConteo()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
             </div>
-
-            <div id="log-list" class="space-y-3">
-                <h4 class="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">Detalles del conteo</h4>
-            </div>
-        </main>
+        </div>
+        <div id="conteo-list" class="flex-1 overflow-y-auto mt-6 space-y-2"></div>
     </div>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
         let db_tajho = JSON.parse(localStorage.getItem('db_tajho') || '{}');
-        let currentMode = '';
+        let manifiesto = [];
+        let totalEsperado = 0;
+        let totalReal = 0;
 
-        // SINCRONIZACIÓN INVISIBLE (Segundo Plano)
-        async function silentSync() {
+        // Búsqueda instantánea
+        function buscarItem(input, outputId) {
+            const sku = input.value.toUpperCase().trim();
+            const out = document.getElementById(outputId);
+            if(db_tajho[sku]) { out.innerText = db_tajho[sku].d + " (" + db_tajho[sku].u + ")"; } 
+            else { out.innerText = ""; }
+        }
+
+        function irAPlanificacion() { moverView('view-1', 'view-2'); }
+
+        function agregarAlManifiesto() {
+            const sku = document.getElementById('p-sku').value.toUpperCase().trim();
+            const qty = parseInt(document.getElementById('p-qty').value);
+            if(!db_tajho[sku] || !qty) return;
+
+            manifiesto.push({ sku, desc: db_tajho[sku].d, esperado: qty, real: 0 });
+            totalEsperado += qty;
+            
+            const list = document.getElementById('manifiesto-list');
+            list.innerHTML += `<div class="p-4 bg-slate-50 rounded-xl flex justify-between"><span class="text-xs font-bold">${sku}</span><span class="text-xs font-black">${qty}</span></div>`;
+            
+            document.getElementById('p-sku').value = ""; document.getElementById('p-qty').value = "";
+        }
+
+        function confirmarContenedor() {
+            if(manifiesto.length === 0) return;
+            const ref = prompt("Nombre del Contenedor:", "CONT-" + new Date().getDate());
+            document.getElementById('final-ref').innerText = ref;
+            moverView('view-2', 'view-3');
+        }
+
+        function irAOperacion() { moverView('view-3', 'view-4'); document.getElementById('o-sku').focus(); }
+
+        function registrarConteo() {
+            const sku = document.getElementById('o-sku').value.toUpperCase().trim();
+            const qty = parseInt(document.getElementById('o-qty').value);
+            if(!qty) return;
+
+            totalReal += qty;
+            const item = manifiesto.find(i => i.sku === sku) || {desc: "Item extra"};
+            
+            // Actualizar barra
+            const perc = Math.min((totalReal / totalEsperado) * 100, 100).toFixed(0);
+            document.getElementById('progress-ui').style.width = perc + "%";
+            document.getElementById('perc-txt').innerText = perc + "%";
+
+            // Enviar a la nube invisiblemente
+            fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: 'CARGA', datos: [new Date().toLocaleString(), document.getElementById('final-ref').innerText, sku, item.desc, qty, "CJ"] }) });
+
+            const log = document.getElementById('conteo-list');
+            log.innerHTML = `<div class="p-4 bg-blue-50 border border-blue-100 rounded-xl flex justify-between animate-pulse"><span class="text-xs font-bold">${sku}</span><span class="text-xs font-black text-blue-600">+${qty}</span></div>` + log.innerHTML;
+
+            document.getElementById('o-sku').value = ""; document.getElementById('o-qty').value = "";
+            document.getElementById('o-sku').focus();
+            navigator.vibrate(40);
+        }
+
+        function moverView(idOld, idNew) {
+            document.getElementById(idOld).classList.add('hidden-view');
+            document.getElementById(idNew).classList.remove('hidden-view');
+        }
+
+        async function init() {
             try {
                 const res = await fetch(CLOUD_URL);
                 const data = await res.json();
-                const tempDb = {};
-                data.forEach(r => {
-                    const cod = String(r.CODIGO).toUpperCase().trim();
-                    tempDb[cod] = { d: r.DESCRIPCION, u: r.UM || "UND" };
-                });
-                db_tajho = tempDb;
+                data.forEach(r => db_tajho[String(r.CODIGO).toUpperCase().trim()] = { d: r.DESCRIPCION, u: r.UM });
                 localStorage.setItem('db_tajho', JSON.stringify(db_tajho));
-                console.log("Sync invisible exitoso.");
-            } catch (e) { console.log("Sync falló, usando cache."); }
+            } catch (e) {}
         }
 
-        function prepararOperacion(m) {
-            currentMode = m;
-            document.getElementById('setup-title').innerText = m === 'CARGA' ? "NUEVO CONTENEDOR" : "NUEVA DEVOLUCIÓN";
-            document.getElementById('main-ref').placeholder = m === 'CARGA' ? "EJ: CONT-001" : "EJ: CLIENTE / VENDEDOR";
-            document.getElementById('landing').classList.add('fade-out');
-            setTimeout(() => {
-                document.getElementById('landing').classList.add('hidden-view');
-                document.getElementById('step-setup').classList.remove('hidden-view');
-            }, 400);
-        }
-
-        function iniciarDescarga() {
-            const ref = document.getElementById('main-ref').value.trim();
-            if(!ref) return alert("Tajho, pon una referencia primero");
-            
-            document.getElementById('op-ref-display').innerText = ref;
-            document.getElementById('step-setup').classList.add('fade-out');
-            setTimeout(() => {
-                document.getElementById('step-setup').classList.add('hidden-view');
-                document.getElementById('step-work').classList.remove('hidden-view');
-                document.getElementById('sku-in').focus();
-            }, 400);
-        }
-
-        function buscarRapido() {
-            const sku = document.getElementById('sku-in').value.toUpperCase().trim();
-            const box = document.getElementById('info-box');
-            if(db_tajho[sku]) {
-                document.getElementById('p-desc').innerText = db_tajho[sku].d;
-                document.getElementById('p-um').innerText = "UNIDAD: " + (currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u);
-                box.classList.remove('hidden');
-            } else { box.classList.add('hidden'); }
-        }
-
-        async function registrarData() {
-            const sku = document.getElementById('sku-in').value.toUpperCase().trim();
-            const qty = document.getElementById('qty-in').value;
-            if(!db_tajho[sku] || !qty) return;
-
-            const um = currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u;
-            const ref = document.getElementById('main-ref').value.toUpperCase();
-            
-            // Render instantáneo para no esperar a la nube
-            renderItem(sku, qty, um);
-
-            const row = [new Date().toLocaleString(), ref, sku, db_tajho[sku].d, qty, um];
-            
-            // Envío invisible a la nube
-            fetch(CLOUD_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ tipo: currentMode, datos: row })
-            });
-
-            // Limpieza rápida
-            document.getElementById('sku-in').value = "";
-            document.getElementById('qty-in').value = "";
-            document.getElementById('info-box').classList.add('hidden');
-            document.getElementById('sku-in').focus();
-            navigator.vibrate(30);
-        }
-
-        function renderItem(sku, qty, um) {
-            const list = document.getElementById('log-list');
-            const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100 slide-up";
-            div.innerHTML = `<div><p class="text-[9px] font-black text-slate-400 uppercase">${sku}</p><p class="text-xs font-bold text-slate-800">${db_tajho[sku].d}</p></div>
-                             <div class="text-right"><p class="text-xl font-black text-blue-600 leading-none">${qty}</p><p class="text-[8px] font-bold text-slate-300 uppercase">${um}</p></div>`;
-            list.prepend(div);
-        }
-
-        function cancelar() { location.reload(); }
-
-        window.onload = silentSync;
+        window.onload = init;
     </script>
 </body>
 </html>
