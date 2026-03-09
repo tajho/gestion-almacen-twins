@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TWINS Logística v22</title>
+    <title>TWINS Logística v23</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,204 +11,204 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; padding-bottom: 110px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; }
         
-        .sticky-stats { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #f1f5f9; }
-        
-        .nav-active { color: var(--accent) !important; transform: translateY(-3px); }
-        .nav-active span { font-weight: 800; }
+        .btn-nav { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-nav.active { background: #0f172a; color: white; border-color: #0f172a; transform: scale(0.95); }
         
         .card-twins { background: #ffffff; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.03); }
-        
-        .input-smart { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; font-weight: 700; transition: all 0.2s; }
-        .input-smart:focus { border-color: var(--accent); background: #ffffff; outline: none; }
+        .input-smart { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; font-weight: 700; outline: none; transition: all 0.2s; }
+        .input-smart:focus { border-color: var(--accent); background: white; }
 
-        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-panel { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-panel.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sticky-progress { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
-<body>
+<body class="p-0">
 
-    <header class="px-6 pt-8 pb-4 bg-white">
-        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-tight">TWINS Logística<br><span class="text-blue-600 text-sm font-bold tracking-widest uppercase italic">By Tajho</span></h1>
-        <div class="flex items-center gap-3 mt-3">
-            <input type="file" id="xl-file" class="hidden" accept=".xlsx, .xls" onchange="loadDatabase(event)">
-            <button onclick="document.getElementById('xl-file').click()" class="text-[9px] font-black uppercase text-slate-400 border border-slate-100 px-3 py-1.5 rounded-lg hover:bg-slate-50">📁 Vincular Base Excel</button>
-            <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-200"></div>
+    <header class="px-6 pt-10 pb-6">
+        <div id="welcome-msg">
+            <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mb-1">Twins Logística</p>
+            <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-tight">¿Qué hacemos hoy?</h1>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-2 mt-6">
+            <button onclick="switchMode('contenedor', this)" class="btn-nav p-4 flex flex-col items-center justify-center gap-1 active">
+                <span class="text-xl">📦</span>
+                <span class="text-[7px] font-black uppercase tracking-tighter">Contenedor</span>
+            </button>
+            <button onclick="switchMode('historial', this)" class="btn-nav p-4 flex flex-col items-center justify-center gap-1">
+                <span class="text-xl">📂</span>
+                <span class="text-[7px] font-black uppercase tracking-tighter">Historial</span>
+            </button>
+            <button onclick="switchMode('devoluciones', this)" class="btn-nav p-4 flex flex-col items-center justify-center gap-1">
+                <span class="text-xl">🔄</span>
+                <span class="text-[7px] font-black uppercase tracking-tighter">Retornos</span>
+            </button>
         </div>
     </header>
 
-    <div id="global-progress" class="hidden sticky-stats px-6 py-3">
+    <div id="container-stats" class="hidden sticky-progress px-6 py-3">
         <div class="flex justify-between items-center mb-1">
             <div class="flex items-baseline gap-2">
                 <span id="p-perc" class="text-lg font-black italic text-blue-600">0%</span>
-                <span id="p-count" class="text-[8px] font-bold text-slate-400 uppercase">0/0 Unidades</span>
+                <span id="p-count" class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">0 / 0 Unidades</span>
             </div>
-            <span id="p-timer" class="text-[10px] font-mono font-bold text-slate-500">00:00:00</span>
+            <span id="p-timer" class="text-[10px] font-mono font-black text-slate-600 bg-slate-100 px-2 py-1 rounded-md">00:00:00</span>
         </div>
         <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div id="p-bar" class="h-full bg-blue-600 transition-all duration-700" style="width: 0%"></div>
+            <div id="p-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
         </div>
     </div>
 
-    <main class="px-6 pt-4">
+    <main class="px-6 pb-20">
 
-        <section id="tab-contenedor" class="tab-content active">
-            <div id="setup-form" class="card-twins p-6 space-y-4 mb-6">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Configuración de Manifiesto</p>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="in-sku" class="input-smart w-full p-4 text-xs uppercase" placeholder="SKU">
-                    <input type="number" id="in-qty" class="input-smart w-full p-4 text-xs" placeholder="META">
+        <section id="panel-contenedor" class="tab-panel active">
+            <div id="setup-view" class="card-twins p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-50 pb-3">
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Configurar Carga</p>
+                    <button onclick="document.getElementById('xl-file').click()" class="text-[8px] font-black text-blue-500 uppercase">Vincular Excel</button>
+                    <input type="file" id="xl-file" class="hidden" accept=".xlsx, .xls" onchange="handleExcel(event)">
                 </div>
-                <button onclick="addToManifest()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar SKU</button>
-                <div id="mini-manifest" class="space-y-2"></div>
-                <button id="btn-start" onclick="startLoading()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-200">Iniciar Despacho</button>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="sku-in" class="input-smart w-full p-4 text-xs uppercase" placeholder="SKU">
+                    <input type="number" id="qty-in" class="input-smart w-full p-4 text-xs" placeholder="META">
+                </div>
+                <button onclick="addSku()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-slate-200">Añadir al Manifiesto</button>
+                <div id="mini-list" class="space-y-2"></div>
+                <button id="start-ops" onclick="initOps()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-blue-100">Abrir Operación</button>
             </div>
 
-            <div id="ops-area" class="hidden space-y-4">
-                <div class="card-twins p-5 border-2 border-blue-50">
+            <div id="ops-view" class="hidden space-y-4 pt-4">
+                <div class="card-twins p-4 border-2 border-blue-50">
                     <div class="flex items-center gap-3">
-                        <div class="flex-1 min-w-0 text-center">
-                            <select id="sku-sel" onchange="updateDesc()" class="w-full bg-transparent font-black text-xl outline-none truncate"></select>
-                            <p id="sku-desc" class="text-[9px] font-bold text-blue-500 uppercase italic">---</p>
+                        <div class="flex-1 min-w-0">
+                            <select id="sku-sel" onchange="syncDesc()" class="w-full bg-transparent font-black text-lg outline-none truncate"></select>
+                            <p id="sku-desc" class="text-[8px] font-bold text-blue-500 uppercase truncate italic">---</p>
                         </div>
-                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-20 p-4 text-2xl text-center text-blue-600">
-                        <button onclick="registerQty()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-100">✓</button>
+                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-16 p-4 text-xl text-center text-blue-600">
+                        <button onclick="commitQty()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl shadow-lg">✓</button>
                     </div>
                 </div>
                 <div id="ops-grid" class="space-y-2"></div>
-                <button onclick="finishAndSave()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.5em]">Cerrar Reporte de Inventario</button>
+                <button onclick="finalizeReport()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.4em]">Finalizar y Firmar Reporte</button>
             </div>
         </section>
 
-        <section id="tab-historial" class="tab-content">
-            <div class="flex flex-col items-center justify-center py-20 text-slate-300" id="hist-empty">
-                <span class="text-4xl mb-4">📂</span>
-                <p class="text-[10px] font-black uppercase tracking-widest">No hay reportes guardados</p>
-            </div>
-            <div id="hist-list" class="space-y-3"></div>
-        </section>
-
-        <section id="tab-devoluciones" class="tab-content">
-            <div class="card-twins p-6 space-y-4">
-                <div class="text-center">
-                    <span class="text-2xl">🔄</span>
-                    <h3 class="text-xs font-black uppercase tracking-widest mt-2">Gestión de Devoluciones</h3>
+        <section id="panel-historial" class="tab-panel">
+            <div id="hist-list" class="space-y-3">
+                <div class="py-20 text-center opacity-30">
+                    <span class="text-4xl">📂</span>
+                    <p class="text-[10px] font-black uppercase mt-4 tracking-widest">Sin registros locales</p>
                 </div>
+            </div>
+        </section>
+
+        <section id="panel-devoluciones" class="tab-panel">
+            <div class="card-twins p-6 space-y-5">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Registro de Devolución</p>
                 <div class="space-y-3">
-                    <input type="text" placeholder="MOTIVO DE DEVOLUCIÓN" class="input-smart w-full p-4 text-[10px] uppercase">
                     <input type="text" placeholder="CLIENTE / VENDEDOR" class="input-smart w-full p-4 text-[10px] uppercase">
+                    <input type="text" placeholder="SKU DEVUELTO" class="input-smart w-full p-4 text-[10px] uppercase">
                     <textarea placeholder="OBSERVACIONES DEL ESTADO" class="input-smart w-full p-4 text-[10px] uppercase h-24 resize-none"></textarea>
                 </div>
-                <button class="w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest">Registrar Devolución</button>
+                <button class="w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest">Confirmar Retorno</button>
             </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 w-full h-24 bg-white border-t border-slate-100 flex justify-around items-center px-6 z-[200]">
-        <button onclick="switchTab('tab-contenedor', this)" class="nav-btn nav-active flex flex-col items-center flex-1 text-slate-300">
-            <span class="text-xl mb-1">📦</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Contenedor</span>
-        </button>
-        <button onclick="switchTab('tab-historial', this)" class="nav-btn flex flex-col items-center flex-1 text-slate-300">
-            <span class="text-xl mb-1">📂</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Historial</span>
-        </button>
-        <button onclick="switchTab('tab-devoluciones', this)" class="nav-btn flex flex-col items-center flex-1 text-slate-300">
-            <span class="text-xl mb-1">🔄</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Devoluciones</span>
-        </button>
-    </nav>
-
     <script>
         const { jsPDF } = window.jspdf;
-        let db = {}; let manifest = []; let seconds = 0; let clock;
+        let db = {}; let items = []; let sec = 0, timer;
 
-        function loadDatabase(e) {
-            const r = new FileReader();
-            r.onload = (x) => {
-                const data = new Uint8Array(x.target.result);
+        function handleExcel(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const data = new Uint8Array(ev.target.result);
                 const wb = XLSX.read(data, {type: 'array'});
-                const ws = wb.Sheets[wb.SheetNames[0]];
-                XLSX.utils.sheet_to_json(ws).forEach(row => {
-                    const c = String(row.CODIGO || row.codigo || "").toUpperCase().trim();
-                    db[c] = row.DESCRIPCION || row.descripcion || "Sin descripción";
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                rows.forEach(r => {
+                    const c = String(r.CODIGO || r.codigo || "").toUpperCase().trim();
+                    db[c] = r.DESCRIPCION || r.descripcion || "Descripción No Registrada";
                 });
-                document.getElementById('status-dot').classList.replace('bg-slate-200', 'bg-green-500');
+                alert("Base de datos vinculada con éxito.");
             };
-            r.readAsArrayBuffer(e.target.files[0]);
+            reader.readAsArrayBuffer(e.target.files[0]);
         }
 
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-            document.getElementById(tabId).classList.add('active');
-            el.classList.add('nav-active');
-            if(tabId === 'tab-historial') renderHistory();
+        function switchMode(mode, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + mode).classList.add('active');
+            btn.classList.add('active');
+            // Ocultar saludo al navegar
+            document.getElementById('welcome-msg').style.display = 'none';
         }
 
-        function addToManifest() {
-            const s = document.getElementById('in-sku').value.toUpperCase().trim();
-            const q = parseInt(document.getElementById('in-qty').value);
+        function addSku() {
+            const s = document.getElementById('sku-in').value.toUpperCase().trim();
+            const q = parseInt(document.getElementById('qty-in').value);
             if(!s || !q) return;
-            manifest.push({ sku: s, desc: db[s] || "ITEM MANUAL", meta: q, real: 0 });
-            document.getElementById('in-sku').value = ""; document.getElementById('in-qty').value = "";
+            items.push({ sku: s, desc: db[s] || "ITEM MANUAL", meta: q, real: 0 });
+            document.getElementById('sku-in').value = ""; document.getElementById('qty-in').value = "";
             renderMini();
-            document.getElementById('btn-start').classList.remove('hidden');
+            document.getElementById('start-ops').classList.remove('hidden');
         }
 
         function renderMini() {
-            document.getElementById('mini-manifest').innerHTML = manifest.map(i => `
+            document.getElementById('mini-list').innerHTML = items.map(i => `
                 <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-white">
                     <div><p class="text-[10px] font-bold">${i.sku}</p><p class="text-[7px] text-slate-400 uppercase">${i.desc}</p></div>
-                    <span class="text-xs font-black text-slate-700">${i.meta}</span>
+                    <span class="text-xs font-black">${i.meta}</span>
                 </div>
             `).join('');
         }
 
-        function startLoading() {
-            document.getElementById('setup-form').classList.add('hidden');
-            document.getElementById('global-progress').classList.remove('hidden');
-            document.getElementById('ops-area').classList.remove('hidden');
+        function initOps() {
+            document.getElementById('setup-view').classList.add('hidden');
+            document.getElementById('container-stats').classList.remove('hidden');
+            document.getElementById('ops-view').classList.remove('hidden');
             const sel = document.getElementById('sku-sel');
-            sel.innerHTML = manifest.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            updateDesc();
-            clock = setInterval(() => {
-                seconds++;
-                const h = Math.floor(seconds/3600).toString().padStart(2,'0');
-                const m = Math.floor((seconds%3600)/60).toString().padStart(2,'0');
-                const s = (seconds%60).toString().padStart(2,'0');
+            sel.innerHTML = items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            syncDesc();
+            timer = setInterval(() => {
+                sec++;
+                const h = Math.floor(sec/3600).toString().padStart(2,'0');
+                const m = Math.floor((sec%3600)/60).toString().padStart(2,'0');
+                const s = (sec%60).toString().padStart(2,'0');
                 document.getElementById('p-timer').innerText = `${h}:${m}:${s}`;
             }, 1000);
-            updateOpsUI();
+            drawUI();
         }
 
-        function updateDesc() {
+        function syncDesc() {
             const v = document.getElementById('sku-sel').value;
-            document.getElementById('sku-desc').innerText = manifest.find(i => i.sku === v).desc;
+            document.getElementById('sku-desc').innerText = items.find(i => i.sku === v).desc;
         }
 
-        function registerQty() {
+        function commitQty() {
             const s = document.getElementById('sku-sel').value;
             const v = parseInt(document.getElementById('qty-op').value);
             if(!v) return;
-            manifest.find(i => i.sku === s).real += v;
+            items.find(i => i.sku === s).real += v;
             document.getElementById('qty-op').value = "";
-            updateOpsUI();
-            navigator.vibrate(40);
+            drawUI();
+            navigator.vibrate(30);
         }
 
-        function updateOpsUI() {
-            const plan = manifest.reduce((a,b) => a + b.meta, 0);
-            const real = manifest.reduce((a,b) => a + b.real, 0);
+        function drawUI() {
+            const plan = items.reduce((a,b) => a + b.meta, 0);
+            const real = items.reduce((a,b) => a + b.real, 0);
             const p = Math.round((real / plan) * 100) || 0;
             document.getElementById('p-perc').innerText = p + "%";
             document.getElementById('p-bar').style.width = p + "%";
-            document.getElementById('p-count').innerText = `${real} / ${plan} UNIDADES`;
+            document.getElementById('p-count').innerText = `${real} / ${plan} Unidades`;
             
-            document.getElementById('ops-grid').innerHTML = manifest.map(i => `
+            document.getElementById('ops-grid').innerHTML = items.map(i => `
                 <div class="card-twins p-4 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
                     <div class="flex justify-between items-center">
                         <div class="flex-1 min-w-0 pr-4">
@@ -221,32 +221,18 @@
             `).join('');
         }
 
-        function finishAndSave() {
+        function finalizeReport() {
             const doc = new jsPDF();
             doc.setFontSize(22); doc.text("REPORTE TWINS LOGÍSTICA", 14, 25);
-            doc.autoTable({ startY: 35, head: [['SKU', 'DESC', 'PLAN', 'REAL', 'ST']], body: manifest.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
+            doc.autoTable({ startY: 35, head: [['SKU', 'DESC', 'PLAN', 'REAL', 'ST']], body: items.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
             
             const storage = JSON.parse(localStorage.getItem('twins_history') || '[]');
-            storage.unshift({ id: 'REP-' + new Date().getTime(), fecha: new Date().toLocaleString(), data: [...manifest] });
+            storage.unshift({ id: 'REP-' + new Date().getTime(), fecha: new Date().toLocaleString(), data: [...items] });
             localStorage.setItem('twins_history', JSON.stringify(storage));
             
             doc.save(`Twins_Report_${new Date().getTime()}.pdf`);
             location.reload();
-        }
-
-        function renderHistory() {
-            const hist = JSON.parse(localStorage.getItem('twins_history') || '[]');
-            if(hist.length > 0) document.getElementById('hist-empty').classList.add('hidden');
-            document.getElementById('hist-list').innerHTML = hist.map(h => `
-                <div class="card-twins p-5 flex justify-between items-center">
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${h.fecha}</p>
-                        <h4 class="text-sm font-black text-slate-900">${h.id}</h4>
-                    </div>
-                    <span class="text-blue-600 text-xs font-bold">PDF</span>
-                </div>
-            `).join('');
         }
     </script>
 </body>
