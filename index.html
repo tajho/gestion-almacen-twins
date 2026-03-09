@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TWINS Logística By Tajho v21</title>
+    <title>TWINS Logística v22</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,199 +11,242 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; padding-bottom: 100px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; padding-bottom: 110px; }
         
-        /* Barra de progreso fija y fina */
-        .sticky-stats { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #f1f5f9; transition: all 0.3s; }
+        .sticky-stats { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #f1f5f9; }
         
-        .input-smart { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; transition: all 0.2s; font-weight: 700; }
-        .input-smart:focus { border-color: var(--accent); background: #ffffff; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .nav-active { color: var(--accent) !important; transform: translateY(-3px); }
+        .nav-active span { font-weight: 800; }
+        
+        .card-twins { background: #ffffff; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.03); }
+        
+        .input-smart { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; font-weight: 700; transition: all 0.2s; }
+        .input-smart:focus { border-color: var(--accent); background: #ffffff; outline: none; }
 
-        .item-card { background: #ffffff; border-radius: 1rem; border: 1px solid #f1f5f9; transition: transform 0.1s; }
-        .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* Animación para el título que se oculta */
-        .header-main { transition: opacity 0.3s, transform 0.3s; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="header-main px-6 pt-8 pb-4 bg-white">
-        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-tight">TWINS Logística<br><span class="text-blue-600 text-sm font-bold tracking-widest uppercase">By Tajho</span></h1>
-        <div class="flex items-center gap-2 mt-2">
-            <input type="file" id="xl-input" class="hidden" accept=".xlsx, .xls" onchange="readExcel(event)">
-            <button onclick="document.getElementById('xl-input').click()" class="text-[9px] font-black uppercase text-slate-400 hover:text-blue-600">📥 Vincular Excel Base</button>
-            <span id="db-led" class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+    <header class="px-6 pt-8 pb-4 bg-white">
+        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-tight">TWINS Logística<br><span class="text-blue-600 text-sm font-bold tracking-widest uppercase italic">By Tajho</span></h1>
+        <div class="flex items-center gap-3 mt-3">
+            <input type="file" id="xl-file" class="hidden" accept=".xlsx, .xls" onchange="loadDatabase(event)">
+            <button onclick="document.getElementById('xl-file').click()" class="text-[9px] font-black uppercase text-slate-400 border border-slate-100 px-3 py-1.5 rounded-lg hover:bg-slate-50">📁 Vincular Base Excel</button>
+            <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-200"></div>
         </div>
     </header>
 
-    <div id="sticky-bar" class="hidden sticky-stats px-6 py-3">
-        <div class="flex justify-between items-center mb-1.5">
+    <div id="global-progress" class="hidden sticky-stats px-6 py-3">
+        <div class="flex justify-between items-center mb-1">
             <div class="flex items-baseline gap-2">
-                <span id="g-perc" class="text-xl font-black italic text-blue-600">0%</span>
-                <span id="g-count" class="text-[8px] font-bold text-slate-400 uppercase">0/0 UNIDADES</span>
+                <span id="p-perc" class="text-lg font-black italic text-blue-600">0%</span>
+                <span id="p-count" class="text-[8px] font-bold text-slate-400 uppercase">0/0 Unidades</span>
             </div>
-            <span id="timer" class="text-[10px] font-mono font-black bg-slate-100 px-2 py-1 rounded-md text-slate-600">00:00:00</span>
+            <span id="p-timer" class="text-[10px] font-mono font-bold text-slate-500">00:00:00</span>
         </div>
         <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div id="g-bar" class="progress-fill h-full bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]" style="width: 0%"></div>
+            <div id="p-bar" class="h-full bg-blue-600 transition-all duration-700" style="width: 0%"></div>
         </div>
     </div>
 
     <main class="px-6 pt-4">
-        
-        <section id="setup" class="space-y-4">
-            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 shadow-sm">
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label class="text-[8px] font-black text-slate-400 ml-2 uppercase">SKU</label>
-                        <input type="text" id="sku-in" class="input-smart w-full p-4 text-xs uppercase" placeholder="---">
-                    </div>
-                    <div>
-                        <label class="text-[8px] font-black text-slate-400 ml-2 uppercase">Meta</label>
-                        <input type="number" id="qty-in" class="input-smart w-full p-4 text-xs" placeholder="0">
-                    </div>
+
+        <section id="tab-contenedor" class="tab-content active">
+            <div id="setup-form" class="card-twins p-6 space-y-4 mb-6">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Configuración de Manifiesto</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="in-sku" class="input-smart w-full p-4 text-xs uppercase" placeholder="SKU">
+                    <input type="number" id="in-qty" class="input-smart w-full p-4 text-xs" placeholder="META">
                 </div>
-                <button onclick="addItem()" class="w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-slate-200 shadow-sm active:scale-95 transition-transform">Agregar al Manifiesto</button>
+                <button onclick="addToManifest()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar SKU</button>
+                <div id="mini-manifest" class="space-y-2"></div>
+                <button id="btn-start" onclick="startLoading()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-200">Iniciar Despacho</button>
             </div>
 
-            <div id="pre-list" class="space-y-2"></div>
-
-            <button id="start-btn" onclick="run()" class="hidden w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] shadow-xl">Abrir Despacho</button>
+            <div id="ops-area" class="hidden space-y-4">
+                <div class="card-twins p-5 border-2 border-blue-50">
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 min-w-0 text-center">
+                            <select id="sku-sel" onchange="updateDesc()" class="w-full bg-transparent font-black text-xl outline-none truncate"></select>
+                            <p id="sku-desc" class="text-[9px] font-bold text-blue-500 uppercase italic">---</p>
+                        </div>
+                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-20 p-4 text-2xl text-center text-blue-600">
+                        <button onclick="registerQty()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-100">✓</button>
+                    </div>
+                </div>
+                <div id="ops-grid" class="space-y-2"></div>
+                <button onclick="finishAndSave()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.5em]">Cerrar Reporte de Inventario</button>
+            </div>
         </section>
 
-        <section id="ops" class="hidden space-y-4">
-            <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-lg shadow-slate-100 mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="flex-1 min-w-0">
-                        <select id="sku-sel" onchange="syncDesc()" class="w-full bg-transparent font-black text-lg text-slate-900 outline-none truncate"></select>
-                        <p id="sku-desc-ui" class="text-[9px] font-bold text-blue-500 uppercase truncate">Seleccione producto</p>
-                    </div>
-                    <div class="w-20">
-                        <input type="number" id="qty-op" placeholder="0" class="input-smart w-full p-4 text-xl text-blue-600 text-center">
-                    </div>
-                    <button onclick="count()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-200 active:scale-90 transition-transform">✓</button>
-                </div>
+        <section id="tab-historial" class="tab-content">
+            <div class="flex flex-col items-center justify-center py-20 text-slate-300" id="hist-empty">
+                <span class="text-4xl mb-4">📂</span>
+                <p class="text-[10px] font-black uppercase tracking-widest">No hay reportes guardados</p>
             </div>
+            <div id="hist-list" class="space-y-3"></div>
+        </section>
 
-            <div id="final-list" class="space-y-2"></div>
-
-            <button onclick="finish()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.5em]">Finalizar y Firmar Reporte</button>
+        <section id="tab-devoluciones" class="tab-content">
+            <div class="card-twins p-6 space-y-4">
+                <div class="text-center">
+                    <span class="text-2xl">🔄</span>
+                    <h3 class="text-xs font-black uppercase tracking-widest mt-2">Gestión de Devoluciones</h3>
+                </div>
+                <div class="space-y-3">
+                    <input type="text" placeholder="MOTIVO DE DEVOLUCIÓN" class="input-smart w-full p-4 text-[10px] uppercase">
+                    <input type="text" placeholder="CLIENTE / VENDEDOR" class="input-smart w-full p-4 text-[10px] uppercase">
+                    <textarea placeholder="OBSERVACIONES DEL ESTADO" class="input-smart w-full p-4 text-[10px] uppercase h-24 resize-none"></textarea>
+                </div>
+                <button class="w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest">Registrar Devolución</button>
+            </div>
         </section>
 
     </main>
 
+    <nav class="fixed bottom-0 left-0 w-full h-24 bg-white border-t border-slate-100 flex justify-around items-center px-6 z-[200]">
+        <button onclick="switchTab('tab-contenedor', this)" class="nav-btn nav-active flex flex-col items-center flex-1 text-slate-300">
+            <span class="text-xl mb-1">📦</span>
+            <span class="text-[8px] font-black uppercase tracking-tighter">Contenedor</span>
+        </button>
+        <button onclick="switchTab('tab-historial', this)" class="nav-btn flex flex-col items-center flex-1 text-slate-300">
+            <span class="text-xl mb-1">📂</span>
+            <span class="text-[8px] font-black uppercase tracking-tighter">Historial</span>
+        </button>
+        <button onclick="switchTab('tab-devoluciones', this)" class="nav-btn flex flex-col items-center flex-1 text-slate-300">
+            <span class="text-xl mb-1">🔄</span>
+            <span class="text-[8px] font-black uppercase tracking-tighter">Devoluciones</span>
+        </button>
+    </nav>
+
     <script>
         const { jsPDF } = window.jspdf;
-        let excelDB = {}; 
-        let store = [];
-        let time = 0, clock;
+        let db = {}; let manifest = []; let seconds = 0; let clock;
 
-        function readExcel(e) {
+        function loadDatabase(e) {
             const r = new FileReader();
             r.onload = (x) => {
-                const d = new Uint8Array(x.target.result);
-                const wb = XLSX.read(d, {type: 'array'});
+                const data = new Uint8Array(x.target.result);
+                const wb = XLSX.read(data, {type: 'array'});
                 const ws = wb.Sheets[wb.SheetNames[0]];
                 XLSX.utils.sheet_to_json(ws).forEach(row => {
                     const c = String(row.CODIGO || row.codigo || "").toUpperCase().trim();
-                    excelDB[c] = row.DESCRIPCION || row.descripcion || "Descripción No Registrada";
+                    db[c] = row.DESCRIPCION || row.descripcion || "Sin descripción";
                 });
-                document.getElementById('db-led').classList.replace('bg-slate-300', 'bg-green-500');
+                document.getElementById('status-dot').classList.replace('bg-slate-200', 'bg-green-500');
             };
             r.readAsArrayBuffer(e.target.files[0]);
         }
 
-        function addItem() {
-            const s = document.getElementById('sku-in').value.toUpperCase().trim();
-            const q = parseInt(document.getElementById('qty-in').value);
-            if(!s || !q) return;
-            const d = excelDB[s] || "ITEM MANUAL";
-            store.push({ sku: s, desc: d, meta: q, real: 0 });
-            renderPre();
-            document.getElementById('sku-in').value = "";
-            document.getElementById('qty-in').value = "";
-            document.getElementById('start-btn').classList.remove('hidden');
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('nav-active');
+            if(tabId === 'tab-historial') renderHistory();
         }
 
-        function renderPre() {
-            document.getElementById('pre-list').innerHTML = store.map(i => `
-                <div class="item-card p-4 flex justify-between items-center bg-slate-50/50">
-                    <div>
-                        <p class="text-[10px] font-black text-slate-800">${i.sku}</p>
-                        <p class="text-[7px] font-bold text-slate-400 uppercase">${i.desc}</p>
-                    </div>
+        function addToManifest() {
+            const s = document.getElementById('in-sku').value.toUpperCase().trim();
+            const q = parseInt(document.getElementById('in-qty').value);
+            if(!s || !q) return;
+            manifest.push({ sku: s, desc: db[s] || "ITEM MANUAL", meta: q, real: 0 });
+            document.getElementById('in-sku').value = ""; document.getElementById('in-qty').value = "";
+            renderMini();
+            document.getElementById('btn-start').classList.remove('hidden');
+        }
+
+        function renderMini() {
+            document.getElementById('mini-manifest').innerHTML = manifest.map(i => `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-white">
+                    <div><p class="text-[10px] font-bold">${i.sku}</p><p class="text-[7px] text-slate-400 uppercase">${i.desc}</p></div>
                     <span class="text-xs font-black text-slate-700">${i.meta}</span>
                 </div>
             `).join('');
         }
 
-        function run() {
-            document.getElementById('setup').classList.add('hidden');
-            document.getElementById('sticky-bar').classList.remove('hidden');
-            document.getElementById('ops').classList.remove('hidden');
+        function startLoading() {
+            document.getElementById('setup-form').classList.add('hidden');
+            document.getElementById('global-progress').classList.remove('hidden');
+            document.getElementById('ops-area').classList.remove('hidden');
             const sel = document.getElementById('sku-sel');
-            sel.innerHTML = store.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            syncDesc();
+            sel.innerHTML = manifest.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            updateDesc();
             clock = setInterval(() => {
-                time++;
-                const h = Math.floor(time/3600).toString().padStart(2,'0');
-                const m = Math.floor((time%3600)/60).toString().padStart(2,'0');
-                const s = (time%60).toString().padStart(2,'0');
-                document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+                seconds++;
+                const h = Math.floor(seconds/3600).toString().padStart(2,'0');
+                const m = Math.floor((seconds%3600)/60).toString().padStart(2,'0');
+                const s = (seconds%60).toString().padStart(2,'0');
+                document.getElementById('p-timer').innerText = `${h}:${m}:${s}`;
             }, 1000);
-            draw();
+            updateOpsUI();
         }
 
-        function syncDesc() {
+        function updateDesc() {
             const v = document.getElementById('sku-sel').value;
-            const i = store.find(x => x.sku === v);
-            document.getElementById('sku-desc-ui').innerText = i.desc;
+            document.getElementById('sku-desc').innerText = manifest.find(i => i.sku === v).desc;
         }
 
-        function count() {
+        function registerQty() {
             const s = document.getElementById('sku-sel').value;
             const v = parseInt(document.getElementById('qty-op').value);
             if(!v) return;
-            store.find(i => i.sku === s).real += v;
+            manifest.find(i => i.sku === s).real += v;
             document.getElementById('qty-op').value = "";
-            draw();
+            updateOpsUI();
             navigator.vibrate(40);
         }
 
-        function draw() {
-            const plan = store.reduce((a,b) => a + b.meta, 0);
-            const real = store.reduce((a,b) => a + b.real, 0);
+        function updateOpsUI() {
+            const plan = manifest.reduce((a,b) => a + b.meta, 0);
+            const real = manifest.reduce((a,b) => a + b.real, 0);
             const p = Math.round((real / plan) * 100) || 0;
+            document.getElementById('p-perc').innerText = p + "%";
+            document.getElementById('p-bar').style.width = p + "%";
+            document.getElementById('p-count').innerText = `${real} / ${plan} UNIDADES`;
             
-            document.getElementById('g-perc').innerText = p + "%";
-            document.getElementById('g-bar').style.width = Math.min(p, 100) + "%";
-            document.getElementById('g-count').innerText = `${real} / ${plan} UNIDADES`;
-            
-            document.getElementById('final-list').innerHTML = store.map(i => `
-                <div class="item-card p-4 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
+            document.getElementById('ops-grid').innerHTML = manifest.map(i => `
+                <div class="card-twins p-4 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
                     <div class="flex justify-between items-center">
-                        <div class="min-w-0 flex-1">
-                            <h4 class="text-[11px] font-[800] text-slate-900 truncate">${i.sku}</h4>
+                        <div class="flex-1 min-w-0 pr-4">
+                            <h4 class="text-[11px] font-black truncate">${i.sku}</h4>
                             <p class="text-[8px] font-bold text-slate-400 uppercase truncate">${i.desc}</p>
                         </div>
-                        <div class="text-right ml-4">
-                            <span class="text-[11px] font-black text-blue-600 font-mono">${i.real}/${i.meta}</span>
-                            <div class="text-[7px] font-bold text-slate-300 uppercase">${i.real >= i.meta ? 'COMPLETADO' : 'PENDIENTE'}</div>
-                        </div>
+                        <span class="text-[11px] font-black text-blue-600 font-mono">${i.real}/${i.meta}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function finish() {
+        function finishAndSave() {
             const doc = new jsPDF();
             doc.setFontSize(22); doc.text("REPORTE TWINS LOGÍSTICA", 14, 25);
-            doc.setFontSize(10); doc.text(`Generado por: J. Angelo Nuñez Durand | Duración: ${document.getElementById('timer').innerText}`, 14, 32);
-            doc.autoTable({ startY: 40, head: [['SKU', 'DESCRIPCIÓN', 'PLAN', 'REAL', 'ST']], body: store.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'INC']) });
+            doc.autoTable({ startY: 35, head: [['SKU', 'DESC', 'PLAN', 'REAL', 'ST']], body: manifest.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
+            
+            const storage = JSON.parse(localStorage.getItem('twins_history') || '[]');
+            storage.unshift({ id: 'REP-' + new Date().getTime(), fecha: new Date().toLocaleString(), data: [...manifest] });
+            localStorage.setItem('twins_history', JSON.stringify(storage));
+            
             doc.save(`Twins_Report_${new Date().getTime()}.pdf`);
             location.reload();
+        }
+
+        function renderHistory() {
+            const hist = JSON.parse(localStorage.getItem('twins_history') || '[]');
+            if(hist.length > 0) document.getElementById('hist-empty').classList.add('hidden');
+            document.getElementById('hist-list').innerHTML = hist.map(h => `
+                <div class="card-twins p-5 flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${h.fecha}</p>
+                        <h4 class="text-sm font-black text-slate-900">${h.id}</h4>
+                    </div>
+                    <span class="text-blue-600 text-xs font-bold">PDF</span>
+                </div>
+            `).join('');
         }
     </script>
 </body>
