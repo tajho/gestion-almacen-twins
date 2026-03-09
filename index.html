@@ -3,98 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tajho OS - Elite Logistics</title>
+    <title>Tajho OS v10 - Ascension</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
-        .card-premium { @apply bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 transition-all duration-300; }
-        .input-pro { @apply w-full p-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-600 focus:bg-white font-bold transition-all text-sm; }
-        .btn-black { @apply py-5 bg-slate-900 text-white rounded-3xl font-bold text-xs uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all; }
-        .hidden { display: none !important; }
-        .progress-fill { transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        :root { --primary: #2563eb; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--dark); overflow-x: hidden; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-glass { background: white; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02); }
+        .nav-blur { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(0,0,0,0.05); }
+        .btn-primary { @apply py-4 px-6 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-100 active:scale-95 transition-all; }
+        .input-log { @apply w-full p-4 bg-slate-50 border-2 border-transparent rounded-xl outline-none focus:border-blue-600 font-bold text-sm transition-all; }
+        .progress-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="pb-36">
+<body class="pb-32">
 
-    <header class="p-8 pt-12 flex justify-between items-start">
+    <header class="p-6 pt-10 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tighter leading-none text-slate-900 uppercase">Tajho<span class="text-blue-600 italic">.OS</span></h1>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Inventory Intelligence</p>
+            <h1 class="text-2xl font-extrabold tracking-tighter text-slate-900 uppercase">Tajho<span class="text-blue-600 italic">.OS</span></h1>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Inventory Management v10</p>
         </div>
-        <div class="h-12 w-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-xl">📦</div>
+        <div id="timer" class="text-right">
+            <p class="text-[8px] font-black text-slate-400 uppercase">Tiempo Transcurrido</p>
+            <p id="timer-display" class="font-mono font-bold text-blue-600">00:00:00</p>
+        </div>
     </header>
 
-    <main class="max-w-md mx-auto px-6 space-y-8">
+    <main class="max-w-md mx-auto px-5">
 
-        <section id="fase-setup" class="space-y-6">
-            <div class="px-2">
-                <h2 class="text-xl font-[800] italic text-slate-800 uppercase tracking-tighter">Planificación</h2>
-                <p class="text-xs text-slate-400 font-medium">Cargue los datos oficiales del Packing List antes de iniciar.</p>
-            </div>
-
-            <div class="card-premium space-y-4">
-                <div class="grid grid-cols-3 gap-3">
-                    <input type="text" id="setup-cod" placeholder="CÓDIGO" class="input-pro col-span-2 uppercase">
-                    <input type="number" id="setup-meta" placeholder="TOTAL" class="input-pro text-center">
-                </div>
-                <input type="text" id="setup-desc" placeholder="DESCRIPCIÓN BREVE" class="input-pro">
-                <button onclick="registrarEnManifiesto()" class="w-full py-4 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-100">+ Añadir al Manifiesto</button>
-            </div>
-
-            <div id="lista-manifiesto" class="space-y-2">
-                </div>
-
-            <button id="btn-iniciar-conteo" onclick="iniciarConteoReal()" class="btn-black w-full hidden">
-                Confirmar Plan y Abrir Contenedor
-            </button>
-        </section>
-
-        <section id="fase-operacion" class="hidden space-y-6">
-            <div class="px-2 flex justify-between items-center">
-                <h2 class="text-xl font-[800] italic text-slate-800 uppercase tracking-tighter">Descarga Activa</h2>
-                <span class="animate-pulse bg-green-100 text-green-600 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Live Audit</span>
-            </div>
-
-            <div class="card-premium p-10 text-center space-y-6 border-2 border-blue-50 shadow-blue-50/50">
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Seleccionar Producto</p>
-                    <select id="select-item" class="input-pro text-center appearance-none cursor-pointer">
-                        </select>
-                </div>
-                
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ingresar Cantidad de Bultos</p>
-                    <div class="flex gap-4">
-                        <input type="number" id="input-cantidad" placeholder="0" class="w-full text-5xl font-black text-center text-slate-900 bg-transparent outline-none">
+        <section id="mod-contenedor" class="tab-content tab-active space-y-6">
+            <div id="analytics-panel" class="hidden animate-in">
+                <div class="bg-slate-900 rounded-[2.5rem] p-7 text-white space-y-5 relative overflow-hidden shadow-2xl">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-[9px] font-black text-blue-400 uppercase">Progreso Global</p>
+                            <h3 id="global-perc" class="text-4xl font-black italic">0%</h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-black text-blue-400 uppercase">Unidades</p>
+                            <p id="global-count" class="text-xl font-bold">0 / 0</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden relative z-10">
+                        <div id="global-bar" class="progress-bar h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]" style="width: 0%"></div>
                     </div>
                 </div>
-
-                <button onclick="sumarBultos()" class="w-full py-5 bg-blue-600 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-blue-200">
-                    Registrar Ingreso
-                </button>
             </div>
 
-            <div id="status-update" class="text-center h-4"></div>
-
-            <div id="progreso-items" class="space-y-4">
+            <div id="setup-container" class="card-glass p-6 space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Nuevo Packing List</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="p-cod" placeholder="CÓDIGO" class="input-log uppercase">
+                    <input type="number" id="p-meta" placeholder="CANTIDAD" class="input-log">
                 </div>
+                <button onclick="addItemPacking()" class="w-full py-4 bg-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase">+ Añadir al Manifiesto</button>
+                <div id="pre-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                <button id="btn-open-cont" onclick="startContainer()" class="hidden w-full btn-primary bg-slate-900 mt-2">Iniciar Descarga</button>
+            </div>
 
-            <button onclick="cerrarYReportar()" class="btn-black w-full bg-slate-900 mt-10">
-                Cerrar Contenedor & Generar Reporte
-            </button>
+            <div id="ops-container" class="hidden space-y-4">
+                <div class="card-glass p-8 text-center space-y-5 border-2 border-blue-50">
+                    <select id="sel-prod" class="input-log text-center bg-white shadow-sm"></select>
+                    <input type="number" id="input-add" placeholder="0" class="w-full text-6xl font-black text-center outline-none bg-transparent py-2">
+                    <button onclick="processAdd()" class="w-full btn-primary h-16 text-sm">Registrar Bulto</button>
+                </div>
+                <div id="items-grid" class="space-y-3"></div>
+                <button onclick="finishAndSave('RECEP')" class="w-full btn-primary bg-slate-900">Finalizar y Reportar</button>
+            </div>
+        </section>
+
+        <section id="mod-devolucion" class="tab-content space-y-6">
+            <div class="card-glass p-7 space-y-4">
+                <h2 class="text-xl font-black italic">Gestión de Devolución</h2>
+                <p class="text-xs text-slate-400">Registre productos que retornan al almacén.</p>
+                <input type="text" id="dev-cliente" placeholder="Nombre del Cliente / Vendedor" class="input-log">
+                <input type="text" id="dev-cod" placeholder="Código de Producto" class="input-log uppercase">
+                <input type="number" id="dev-cant" placeholder="Cantidad Devuelta" class="input-log">
+                <textarea id="dev-motivo" placeholder="Motivo de la devolución..." class="input-log h-24"></textarea>
+                <button onclick="saveDevolucion()" class="w-full btn-primary bg-orange-500">Registrar Devolución</button>
+            </div>
+        </section>
+
+        <section id="mod-historial" class="tab-content space-y-6">
+            <h2 class="text-xl font-black italic px-2 uppercase">Historial de Operaciones</h2>
+            <div id="history-feed" class="space-y-4">
+                </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-2 flex border border-slate-100 shadow-2xl z-50">
-        <button onclick="location.reload()" class="flex-1 py-4 flex flex-col items-center text-slate-400">
-            <span class="text-xl">🔄</span>
-            <span class="text-[8px] font-black uppercase mt-1">Nuevo</span>
+    <nav class="fixed bottom-0 left-0 w-full nav-blur px-6 py-4 flex justify-between items-center z-50">
+        <button onclick="switchTab('mod-contenedor', this)" class="flex flex-col items-center text-blue-600 transition-all">
+            <span class="text-xl">📥</span>
+            <span class="text-[8px] font-black uppercase mt-1">Recepción</span>
         </button>
-        <button onclick="mostrarHistorial()" class="flex-1 py-4 flex flex-col items-center text-slate-400">
+        <button onclick="switchTab('mod-devolucion', this)" class="flex flex-col items-center text-slate-300 transition-all">
+            <span class="text-xl">📤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Devolución</span>
+        </button>
+        <button onclick="switchTab('mod-historial', this)" class="flex flex-col items-center text-slate-300 transition-all">
             <span class="text-xl">📁</span>
             <span class="text-[8px] font-black uppercase mt-1">Historial</span>
         </button>
@@ -102,129 +114,179 @@
 
     <script>
         const { jsPDF } = window.jspdf;
-        let packingPlan = [];
-        let historialLocal = JSON.parse(localStorage.getItem('tajho_audit_history')) || [];
+        let packing = [];
+        let timerInterval;
+        let seconds = 0;
 
-        function registrarEnManifiesto() {
-            const cod = document.getElementById('setup-cod').value.toUpperCase();
-            const meta = parseInt(document.getElementById('setup-meta').value);
-            const desc = document.getElementById('setup-desc').value || "Producto Tajho";
+        // --- LÓGICA DE NAVEGACIÓN ---
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
+            document.getElementById(tabId).classList.add('tab-active');
+            
+            // Estética de botones
+            const navBtns = btn.parentElement.querySelectorAll('button');
+            navBtns.forEach(b => {
+                b.classList.remove('text-blue-600');
+                b.classList.add('text-slate-300');
+            });
+            btn.classList.add('text-blue-600');
+            btn.classList.remove('text-slate-300');
 
+            if(tabId === 'mod-historial') renderHistory();
+        }
+
+        // --- LÓGICA DE CONTENEDOR (RECEPCIÓN) ---
+        function addItemPacking() {
+            const cod = document.getElementById('p-cod').value.toUpperCase();
+            const meta = parseInt(document.getElementById('p-meta').value);
             if(!cod || !meta) return;
 
-            packingPlan.push({ cod, meta, desc, real: 0 });
-            renderizarManifiesto();
-            
-            document.getElementById('setup-cod').value = "";
-            document.getElementById('setup-meta').value = "";
-            document.getElementById('setup-desc').value = "";
-            document.getElementById('btn-iniciar-conteo').classList.remove('hidden');
+            packing.push({ cod, meta, real: 0 });
+            renderPreList();
+            document.getElementById('p-cod').value = "";
+            document.getElementById('p-meta').value = "";
+            document.getElementById('btn-open-cont').classList.remove('hidden');
         }
 
-        function renderizarManifiesto() {
-            const cont = document.getElementById('lista-manifiesto');
-            cont.innerHTML = "";
-            packingPlan.forEach(p => {
-                cont.innerHTML += `
-                    <div class="card-premium p-4 flex justify-between items-center text-xs mb-2">
-                        <span class="font-black text-slate-900">${p.cod}</span>
-                        <span class="font-bold text-slate-400 uppercase tracking-tighter">${p.desc}</span>
-                        <span class="bg-slate-100 px-3 py-1 rounded-full font-black text-slate-600">${p.meta} UND</span>
-                    </div>`;
-            });
+        function renderPreList() {
+            const cont = document.getElementById('pre-list');
+            cont.innerHTML = packing.map(p => `
+                <div class="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-100 text-[10px] font-bold">
+                    <span>${p.cod}</span>
+                    <span class="text-slate-400">${p.meta} UNIDADES</span>
+                </div>
+            `).join('');
         }
 
-        function iniciarConteoReal() {
-            document.getElementById('fase-setup').classList.add('hidden');
-            document.getElementById('fase-operacion').classList.remove('hidden');
+        function startContainer() {
+            document.getElementById('setup-container').classList.add('hidden');
+            document.getElementById('analytics-panel').classList.remove('hidden');
+            document.getElementById('ops-container').classList.remove('hidden');
             
-            const select = document.getElementById('select-item');
-            select.innerHTML = packingPlan.map(p => `<option value="${p.cod}">${p.cod} - ${p.desc}</option>`).join('');
+            const sel = document.getElementById('sel-prod');
+            sel.innerHTML = packing.map(p => `<option value="${p.cod}">${p.cod}</option>`).join('');
             
-            actualizarUIProgreso();
+            // Iniciar Cronómetro
+            timerInterval = setInterval(() => {
+                seconds++;
+                const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+
+            updateUIMetrics();
         }
 
-        function sumarBultos() {
-            const cod = document.getElementById('select-item').value;
-            const cant = parseInt(document.getElementById('input-cantidad').value);
-            const updateDiv = document.getElementById('status-update');
-
+        function processAdd() {
+            const cod = document.getElementById('sel-prod').value;
+            const cant = parseInt(document.getElementById('input-add').value);
             if(!cant || cant <= 0) return;
 
-            const item = packingPlan.find(p => p.cod === cod);
+            const item = packing.find(p => p.cod === cod);
             item.real += cant;
-
-            updateDiv.innerHTML = `<p class="text-blue-600 font-black text-[10px] uppercase tracking-widest animate-fade">Ingreso: +${cant} unidades a ${cod}</p>`;
-            document.getElementById('input-cantidad').value = "";
+            document.getElementById('input-add').value = "";
             
-            actualizarUIProgreso();
-
-            if(item.real >= item.meta) {
-                navigator.vibrate([200, 100, 200]); // Vibración de alerta
-            }
+            updateUIMetrics();
+            if(item.real >= item.meta) navigator.vibrate([200, 100, 200]);
         }
 
-        function actualizarUIProgreso() {
-            const cont = document.getElementById('progreso-items');
-            cont.innerHTML = "";
-            packingPlan.forEach(p => {
-                const porc = Math.min((p.real / p.meta) * 100, 100);
-                const isDone = p.real >= p.meta;
-                
-                cont.innerHTML += `
-                    <div class="card-premium p-6 space-y-3 ${isDone ? 'border-green-200 bg-green-50/30' : ''}">
-                        <div class="flex justify-between items-end">
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase italic">${p.cod}</p>
-                                <p class="font-bold text-slate-800">${p.desc}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xl font-black ${isDone ? 'text-green-600' : 'text-blue-600'}">${p.real} <span class="text-slate-300 text-xs font-normal">/ ${p.meta}</span></p>
-                            </div>
-                        </div>
-                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="progress-fill h-full ${isDone ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${porc}%"></div>
-                        </div>
-                    </div>`;
-            });
+        function updateUIMetrics() {
+            const totalPlan = packing.reduce((acc, p) => acc + p.meta, 0);
+            const totalReal = packing.reduce((acc, p) => acc + p.real, 0);
+            const perc = Math.round((totalReal / totalPlan) * 100) || 0;
+
+            document.getElementById('global-perc').innerText = perc + "%";
+            document.getElementById('global-bar').style.width = Math.min(perc, 100) + "%";
+            document.getElementById('global-count').innerText = `${totalReal} / ${totalPlan}`;
+
+            const grid = document.getElementById('items-grid');
+            grid.innerHTML = packing.map(p => {
+                const pPerc = Math.min((p.real / p.meta) * 100, 100);
+                return `
+                <div class="card-glass p-5 space-y-2">
+                    <div class="flex justify-between font-black text-[11px] uppercase">
+                        <span>${p.cod}</span>
+                        <span class="${p.real >= p.meta ? 'text-green-500' : 'text-blue-600'}">${p.real} / ${p.meta}</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600 progress-bar" style="width: ${pPerc}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        function cerrarYReportar() {
-            const auditID = "TJ-" + Math.floor(1000 + Math.random() * 9000);
-            const report = {
-                id: auditID,
+        // --- LÓGICA DE HISTORIAL Y PDF ---
+        function finishAndSave(type) {
+            clearInterval(timerInterval);
+            const reportID = "TJ-" + Math.floor(1000 + Math.random() * 9000);
+            const history = JSON.parse(localStorage.getItem('tajho_history') || '[]');
+            
+            const newRecord = {
+                id: reportID,
+                tipo: type === 'RECEP' ? 'Recepción Contenedor' : 'Devolución',
                 fecha: new Date().toLocaleString(),
-                data: [...packingPlan]
+                duracion: document.getElementById('timer-display').innerText,
+                data: [...packing]
             };
+
+            history.unshift(newRecord);
+            localStorage.setItem('tajho_history', JSON.stringify(history));
             
-            historialLocal.unshift(report);
-            localStorage.setItem('tajho_audit_history', JSON.stringify(historialLocal));
+            // Generar Reporte PDF con firma
+            const doc = new jsPDF();
+            doc.setFontSize(22); doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
+            doc.setFontSize(10); doc.text(`Operación: ${newRecord.tipo} | ID: ${reportID}`, 14, 28);
+            doc.text(`Tiempo de descarga: ${newRecord.duracion} | Fecha: ${newRecord.fecha}`, 14, 34);
             
-            generarPDF(report);
-            setTimeout(() => location.reload(), 1500);
+            const rows = packing.map(i => [i.cod, i.meta, i.real, (i.real >= i.meta ? 'OK' : 'FALTANTE')]);
+            doc.autoTable({ startY: 40, head: [['COD', 'PLANEADO', 'REAL', 'ESTADO']], body: rows, theme: 'grid' });
+            
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
+            doc.save(`${reportID}_Tajho.pdf`);
+            
+            alert("Operación Cerrada. Reporte Generado.");
+            location.reload();
         }
 
-        function generarPDF(report) {
-            const doc = new jsPDF();
-            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("REPORTE OPERATIVO TAJHO", 14, 25);
-            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Folio: ${report.id} | Fecha: ${report.fecha}`, 14, 33);
+        function renderHistory() {
+            const feed = document.getElementById('history-feed');
+            const history = JSON.parse(localStorage.getItem('tajho_history') || '[]');
+            feed.innerHTML = history.length ? "" : "<p class='text-center text-slate-400 py-10'>No hay registros.</p>";
             
-            const rows = report.data.map(i => [
-                i.cod, i.desc, i.meta, i.real, (i.real >= i.meta ? 'COMPLETO' : 'FALTANTE')
-            ]);
-
-            doc.autoTable({
-                startY: 40,
-                head: [['CÓDIGO', 'DESCRIPCIÓN', 'PLAN', 'CONTADO', 'ESTADO']],
-                body: rows,
-                theme: 'grid',
-                headStyles: { fillColor: [15, 23, 42], halign: 'center' },
-                columnStyles: { 2: { halign: 'center' }, 3: { halign: 'center' } }
+            history.forEach(h => {
+                feed.innerHTML += `
+                    <div class="card-glass p-5 flex justify-between items-center">
+                        <div>
+                            <p class="text-[8px] font-black text-blue-600 uppercase italic">${h.tipo}</p>
+                            <h4 class="font-bold text-slate-800">${h.id}</h4>
+                            <p class="text-[9px] text-slate-400 font-medium">${h.fecha}</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-[10px] font-bold text-slate-900">${h.duracion}</p>
+                        </div>
+                    </div>
+                `;
             });
+        }
 
-            doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`${report.id}_Tajho.pdf`);
+        function saveDevolucion() {
+            const cliente = document.getElementById('dev-cliente').value;
+            const cod = document.getElementById('dev-cod').value;
+            const cant = document.getElementById('dev-cant').value;
+            if(!cliente || !cod || !cant) return alert("Complete los campos de devolución");
+
+            const history = JSON.parse(localStorage.getItem('tajho_history') || '[]');
+            history.unshift({
+                id: "DEV-" + Math.floor(1000 + Math.random() * 99),
+                tipo: 'Devolución',
+                fecha: new Date().toLocaleString(),
+                duracion: "N/A",
+                detalles: `Cliente: ${cliente} | Item: ${cod} | Cant: ${cant}`
+            });
+            localStorage.setItem('tajho_history', JSON.stringify(history));
+            alert("Devolución registrada.");
+            switchTab('mod-historial', document.querySelectorAll('nav button')[2]);
         }
     </script>
 </body>
