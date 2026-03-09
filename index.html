@@ -3,216 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v18 - Smart Data</title>
+    <title>TAJHO.OS v19 - Infinite Flow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #2563eb; --bg: #0f172a; } /* Modo Oscuro Profundo para Máxima Modernidad */
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f8fafc; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        :root { --accent: #2563eb; --bg: #ffffff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; padding-bottom: 100px; }
         
-        /* Neumorfismo Oscuro */
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 2rem; }
-        .input-dark { background: rgba(15, 23, 42, 0.8); border-radius: 1.2rem; border: 1px solid rgba(255,255,255,0.1); color: white; transition: all 0.3s; }
-        .input-dark:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); outline: none; }
+        /* Contenedor que permite el crecimiento natural */
+        .main-container { width: 100%; padding: 0 1.5rem; }
+        
+        /* Tarjetas con sombras suaves para profundidad */
+        .card-white { background: #ffffff; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); }
+        
+        /* Inputs elegantes */
+        .input-field { background: #f8fafc; border-radius: 1rem; border: 2px solid transparent; transition: all 0.3s; text-align: center; font-weight: 700; }
+        .input-field:focus { background: #ffffff; border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        .viewport { flex: 1; overflow-y: auto; padding: 1.5rem; padding-bottom: 120px; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        .progress-glow { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        .progress-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body>
 
-    <header class="px-6 pt-6 pb-2 flex justify-between items-center">
+    <header class="p-6 flex justify-between items-center bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-50">
         <div>
-            <h1 class="text-xl font-black tracking-tighter italic">TAJHO<span class="text-blue-500">.OS</span></h1>
-            <p id="status-db" class="text-[7px] font-bold text-red-500 uppercase tracking-[0.2em]">Offline Database</p>
+            <h1 class="text-xl font-[800] tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></h1>
+            <p id="db-indicator" class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Sin Base de Datos</p>
         </div>
-        <input type="file" id="excel-input" class="hidden" accept=".xlsx, .xls" onchange="loadDatabase(event)">
-        <button onclick="document.getElementById('excel-input').click()" class="bg-blue-600/10 text-blue-400 border border-blue-500/30 px-4 py-2 rounded-xl text-[9px] font-black uppercase">Cargar Excel</button>
+        <div class="flex gap-2">
+            <input type="file" id="excel-file" class="hidden" accept=".xlsx, .xls" onchange="processExcel(event)">
+            <button onclick="document.getElementById('excel-file').click()" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase border border-blue-100">Cargar Excel</button>
+        </div>
     </header>
 
-    <main class="viewport no-scrollbar space-y-4">
+    <div class="main-container">
         
-        <div id="stats-area" class="hidden">
-            <div class="glass-panel p-5 border-l-4 border-l-blue-500">
-                <div class="flex justify-between items-end mb-3">
-                    <h2 id="global-perc" class="text-4xl font-black leading-none">0%</h2>
+        <div id="dashboard" class="hidden mt-6">
+            <div class="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl shadow-slate-200">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Progreso de Carga</p>
+                        <h2 id="global-perc" class="text-4xl font-black italic mt-1 text-blue-400">0%</h2>
+                    </div>
                     <div class="text-right">
-                        <p id="timer-val" class="text-xs font-mono text-blue-400">00:00:00</p>
-                        <p id="global-counter" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">0 / 0 Unidades</p>
+                        <span id="timer" class="text-xs font-mono font-bold block mb-1">00:00:00</span>
+                        <span id="global-count" class="text-[9px] font-black opacity-60">0 / 0 UND</span>
                     </div>
                 </div>
                 <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div id="global-bar" class="h-full bg-blue-500 progress-glow duration-1000" style="width: 0%"></div>
+                    <div id="bar-fill" class="progress-bar h-full bg-blue-500" style="width: 0%"></div>
                 </div>
             </div>
         </div>
 
-        <section id="main-section" class="space-y-4">
-            
-            <div id="config-card" class="glass-panel p-6 space-y-4">
+        <section id="setup-section" class="mt-6 space-y-4">
+            <div class="card-white p-6 space-y-4">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Crear Nuevo Contenedor</p>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-500 ml-2 uppercase">Código SKU</label>
-                        <input type="text" id="in-cod" class="input-dark w-full p-4 text-xs text-center uppercase" placeholder="---">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-500 ml-2 uppercase">Cant. Plan</label>
-                        <input type="number" id="in-meta" class="input-dark w-full p-4 text-xs text-center" placeholder="0">
-                    </div>
+                    <input type="text" id="sku-in" placeholder="SKU" class="input-field p-4 text-xs uppercase">
+                    <input type="number" id="qty-in" placeholder="META" class="input-field p-4 text-xs">
                 </div>
-                <button onclick="addPackingItem()" class="w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest">Agregar al Plan</button>
-                <div id="mini-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar"></div>
-                <button id="btn-start" onclick="startOperations()" class="hidden w-full bg-blue-600 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-lg shadow-blue-900/40">Iniciar Operación</button>
+                <button onclick="addToManifest()" class="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Añadir al Listado</button>
             </div>
 
-            <div id="ops-panel" class="hidden space-y-3">
-                <div class="glass-panel p-6">
-                    <div class="flex flex-col items-center mb-4">
-                        <select id="op-select" onchange="syncDesc()" class="bg-transparent text-xl font-black outline-none text-center w-full mb-1"></select>
-                        <p id="op-desc" class="text-[9px] font-bold text-blue-400 text-center uppercase tracking-tight opacity-80">Esperando Selección...</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="number" id="op-input" class="input-dark flex-1 p-5 text-4xl font-black text-center" placeholder="0">
-                        <button onclick="submitCount()" class="bg-blue-600 h-16 w-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg active:scale-90 transition-transform">✓</button>
-                    </div>
-                </div>
-                <div id="items-grid" class="space-y-2"></div>
-            </div>
+            <div id="manifest-list" class="space-y-2"></div>
+
+            <button id="start-btn" onclick="initOps()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.8rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-lg shadow-blue-200">Iniciar Operación Logística</button>
         </section>
-    </main>
 
-    <nav class="fixed bottom-0 left-0 w-full h-24 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center px-10">
-        <button onclick="location.reload()" class="flex flex-col items-center opacity-100">
+        <section id="ops-section" class="hidden mt-6 space-y-4">
+            <div class="card-white p-6">
+                <div class="flex flex-col items-center mb-6">
+                    <select id="sku-select" onchange="syncDesc()" class="w-full bg-transparent text-center font-black text-2xl text-slate-900 outline-none mb-1"></select>
+                    <p id="sku-desc" class="text-[10px] font-bold text-blue-500 uppercase tracking-tight text-center">---</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="number" id="qty-op" placeholder="0" class="input-field flex-1 p-5 text-4xl font-black text-blue-600">
+                    <button onclick="registerEntry()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-3xl shadow-lg shadow-blue-100">✓</button>
+                </div>
+            </div>
+
+            <div id="ops-grid" class="space-y-3"></div>
+
+            <button onclick="finalize()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.4em]">Cerrar Reporte y Guardar</button>
+        </section>
+
+    </div>
+
+    <nav class="fixed bottom-0 left-0 w-full h-24 bg-white/90 backdrop-blur-xl border-t border-slate-100 flex justify-around items-center px-10">
+        <button onclick="location.reload()" class="flex flex-col items-center">
             <span class="text-2xl mb-1">📦</span>
-            <span class="text-[8px] font-black uppercase">Carga</span>
+            <span class="text-[8px] font-black uppercase text-blue-600">Carga</span>
         </button>
-        <button onclick="closeReport()" class="flex flex-col items-center opacity-40">
-            <span class="text-2xl mb-1">💾</span>
-            <span class="text-[8px] font-black uppercase">Guardar</span>
+        <button class="flex flex-col items-center opacity-30">
+            <span class="text-2xl mb-1">📂</span>
+            <span class="text-[8px] font-black uppercase">Archivo</span>
         </button>
     </nav>
 
     <script>
         const { jsPDF } = window.jspdf;
-        let db = {}; // Base de datos del Excel
-        let pList = [];
-        let sec = 0, timer;
+        let database = {}; 
+        let items = [];
+        let seconds = 0, clock;
 
-        function loadDatabase(e) {
+        function processExcel(e) {
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                const data = new Uint8Array(ev.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
-                
-                // Mapear el Excel: Buscamos columnas "CODIGO" y "DESCRIPCION"
-                json.forEach(row => {
-                    const code = String(row.CODIGO || row.codigo || row.Codigo).toUpperCase().trim();
-                    const desc = row.DESCRIPCION || row.descripcion || row.Descripcion || "SIN DESCRIPCIÓN";
-                    db[code] = desc;
+            reader.onload = (evt) => {
+                const data = new Uint8Array(evt.target.result);
+                const wb = XLSX.read(data, {type: 'array'});
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws);
+                rows.forEach(r => {
+                    const k = String(r.CODIGO || r.codigo || "").toUpperCase().trim();
+                    database[k] = r.DESCRIPCION || r.descripcion || "Descripción No Disponible";
                 });
-                document.getElementById('status-db').innerText = "Database Online";
-                document.getElementById('status-db').className = "text-[7px] font-bold text-green-500 uppercase tracking-[0.2em]";
-                alert("Excel Cargado: " + Object.keys(db).length + " productos vinculados.");
+                const indicator = document.getElementById('db-indicator');
+                indicator.innerText = "Base de Datos Cargada (" + Object.keys(database).length + ")";
+                indicator.classList.replace('text-slate-400', 'text-green-500');
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         }
 
-        function addPackingItem() {
-            const cod = document.getElementById('in-cod').value.toUpperCase().trim();
-            const meta = parseInt(document.getElementById('in-meta').value);
-            if(!cod || !meta) return;
+        function addToManifest() {
+            const s = document.getElementById('sku-in').value.toUpperCase().trim();
+            const q = parseInt(document.getElementById('qty-in').value);
+            if(!s || !q) return;
             
-            // Aquí entra la inteligencia: Busca en la DB si existe el código
-            const desc = db[cod] || "NUEVO PRODUCTO (Sin Excel)";
-            pList.push({ cod, desc, meta, real: 0 });
+            const d = database[s] || "NUEVO ITEM (SIN EXCEL)";
+            items.push({ sku: s, desc: d, meta: q, real: 0 });
             
-            renderMiniList();
-            document.getElementById('in-cod').value = "";
-            document.getElementById('in-meta').value = "";
-            document.getElementById('btn-start').classList.remove('hidden');
+            renderManifest();
+            document.getElementById('sku-in').value = "";
+            document.getElementById('qty-in').value = "";
+            document.getElementById('start-btn').classList.remove('hidden');
         }
 
-        function renderMiniList() {
-            const cont = document.getElementById('mini-list');
-            cont.innerHTML = pList.map(p => `
-                <div class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl border border-white/5">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-black text-white">${p.cod}</span>
-                        <span class="text-[7px] font-bold text-slate-500 uppercase">${p.desc.substring(0,35)}...</span>
+        function renderManifest() {
+            const list = document.getElementById('manifest-list');
+            // La lista simplemente se añade al DOM, permitiendo scroll natural de la página
+            list.innerHTML = items.map(i => `
+                <div class="card-white p-4 flex justify-between items-center border-l-4 border-l-slate-200">
+                    <div>
+                        <p class="text-[10px] font-black">${i.sku}</p>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase">${i.desc}</p>
                     </div>
-                    <span class="text-[10px] font-black text-blue-500">${p.meta}</span>
+                    <span class="text-xs font-black text-slate-900">${i.meta}</span>
                 </div>
             `).join('');
         }
 
-        function startOperations() {
-            document.getElementById('config-card').classList.add('hidden');
-            document.getElementById('stats-area').classList.remove('hidden');
-            document.getElementById('ops-panel').classList.remove('hidden');
-            const sel = document.getElementById('op-select');
-            sel.innerHTML = pList.map(p => `<option value="${p.cod}">${p.cod}</option>`).join('');
+        function initOps() {
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('ops-section').classList.remove('hidden');
+            const sel = document.getElementById('sku-select');
+            sel.innerHTML = items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncDesc();
-            timer = setInterval(() => {
-                sec++;
-                const h = Math.floor(sec/3600).toString().padStart(2,'0');
-                const m = Math.floor((sec%3600)/60).toString().padStart(2,'0');
-                const s = (sec%60).toString().padStart(2,'0');
-                document.getElementById('timer-val').innerText = `${h}:${m}:${s}`;
+            clock = setInterval(() => {
+                seconds++;
+                const h = Math.floor(seconds/3600).toString().padStart(2,'0');
+                const m = Math.floor((seconds%3600)/60).toString().padStart(2,'0');
+                const s = (seconds%60).toString().padStart(2,'0');
+                document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             }, 1000);
-            updateView();
+            updateUI();
         }
 
         function syncDesc() {
-            const cod = document.getElementById('op-select').value;
-            const item = pList.find(p => p.cod === cod);
-            document.getElementById('op-desc').innerText = item.desc;
+            const val = document.getElementById('sku-select').value;
+            const item = items.find(i => i.sku === val);
+            document.getElementById('sku-desc').innerText = item.desc;
         }
 
-        function submitCount() {
-            const cod = document.getElementById('op-select').value;
-            const val = parseInt(document.getElementById('op-input').value);
+        function registerEntry() {
+            const sku = document.getElementById('sku-select').value;
+            const val = parseInt(document.getElementById('qty-op').value);
             if(!val) return;
-            const item = pList.find(p => p.cod === cod);
-            item.real += val;
-            document.getElementById('op-input').value = "";
-            updateView();
-            navigator.vibrate(50);
+            items.find(i => i.sku === sku).real += val;
+            document.getElementById('qty-op').value = "";
+            updateUI();
+            navigator.vibrate(40);
         }
 
-        function updateView() {
-            const tPlan = pList.reduce((a,b) => a + b.meta, 0);
-            const tReal = pList.reduce((a,b) => a + b.real, 0);
-            const perc = Math.round((tReal / tPlan) * 100) || 0;
-            document.getElementById('global-perc').innerText = perc + "%";
-            document.getElementById('global-bar').style.width = Math.min(perc, 100) + "%";
-            document.getElementById('global-counter').innerText = `${tReal} / ${tPlan} Unidades`;
+        function updateUI() {
+            const totalPlan = items.reduce((a,b) => a + b.meta, 0);
+            const totalReal = items.reduce((a,b) => a + b.real, 0);
+            const p = Math.round((totalReal / totalPlan) * 100) || 0;
             
-            document.getElementById('items-grid').innerHTML = pList.map(p => `
-                <div class="glass-panel p-4 flex flex-col gap-2 border-l-2 ${p.real >= p.meta ? 'border-l-green-500' : 'border-l-blue-500'}">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black">${p.cod}</p>
-                            <p class="text-[7px] font-bold text-slate-500 uppercase leading-none">${p.desc}</p>
+            document.getElementById('global-perc').innerText = p + "%";
+            document.getElementById('bar-fill').style.width = Math.min(p, 100) + "%";
+            document.getElementById('global-count').innerText = `${totalReal} / ${totalPlan} UND`;
+            
+            document.getElementById('ops-grid').innerHTML = items.map(i => `
+                <div class="card-white p-5 border-l-4 ${i.real >= i.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="text-[11px] font-black">${i.sku}</h4>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase">${i.desc}</p>
                         </div>
-                        <p class="text-[10px] font-black text-blue-400 font-mono">${p.real}/${p.meta}</p>
+                        <span class="text-[10px] font-black text-blue-600 font-mono">${i.real} / ${i.meta}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function closeReport() {
+        function finalize() {
             const doc = new jsPDF();
-            doc.setFontSize(20); doc.text("REPORTE TAJHO.OS v18", 14, 20);
-            doc.autoTable({ startY: 30, head: [['COD', 'DESC', 'PLAN', 'REAL']], body: pList.map(i => [i.cod, i.desc, i.meta, i.real]) });
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Reporte_Tajho_${new Date().getTime()}.pdf`);
+            doc.setFontSize(22); doc.text("TAJHO.OS - INFORME LOGÍSTICO", 14, 25);
+            doc.autoTable({ startY: 35, head: [['SKU', 'DESCRIPCIÓN', 'PLAN', 'REAL', 'ST']], body: items.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
+            doc.setFontSize(10);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
+            doc.save(`Tajho_Report_${new Date().getTime()}.pdf`);
+            location.reload();
         }
     </script>
 </body>
