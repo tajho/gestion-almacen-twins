@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v31</title>
+    <title>TAJHO.OS v32</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
         .card-modern { background: white; border-radius: 2.2rem; border: 1px solid #f1f5f9; box-shadow: 0 15px 35px -12px rgba(0,0,0,0.06); }
         .input-clean { background: #f1f5f9; border-radius: 1.25rem; border: 2.5px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.9rem 1.3rem; }
         .input-clean:focus { border-color: var(--blue); background: white; outline: none; }
@@ -47,30 +47,27 @@
         </div>
     </div>
 
-    <header class="h-16 px-6 flex justify-between items-center bg-white/80 backdrop-blur-lg sticky top-0 z-50">
+    <header class="h-16 px-6 flex justify-between items-center bg-white sticky top-0 z-50">
         <button onclick="location.reload()" class="p-2 text-slate-400 hover:text-blue-600 transition-colors">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
         <div class="text-center">
-            <p id="nav-title" class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">CLOUD SYNC</p>
+            <p class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-600">CLOUD SYNC</p>
             <h3 class="text-xs font-black tracking-widest italic">TAJHO<span class="text-blue-600">.OS</span></h3>
         </div>
-        <div onclick="initCloud()" class="w-10 flex justify-end">
-            <span id="cloud-led" class="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span>
-        </div>
-    </header>
+        <div class="w-10"></div> </header>
 
     <main class="p-6 pb-24">
         <div id="view-contenedor" class="tab-panel active space-y-6">
-            <div id="setup-card" class="card-modern p-8 space-y-5 border-blue-50">
+            <div id="setup-card" class="card-modern p-8 space-y-5">
                 <div class="space-y-4">
                     <input type="text" id="s-sku" oninput="autoLookup()" class="input-clean w-full text-lg uppercase" placeholder="CÓDIGO SKU">
-                    <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic border-blue-100" placeholder="Descripción desde Sheets..." readonly>
+                    <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic" placeholder="Descripción desde Sheets..." readonly>
                     <input type="number" id="s-meta" class="input-clean w-full text-base" placeholder="CANTIDAD META">
                 </div>
-                <button onclick="addMani()" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all">Vincular a Operación</button>
+                <button onclick="addMani()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">Vincular a Operación</button>
                 <div id="pre-list" class="space-y-3"></div>
-                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-2xl text-[11px] font-black uppercase shadow-[0_10px_20px_rgba(37,99,235,0.2)]">Iniciar Carga Oficial</button>
+                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-2xl text-[11px] font-black uppercase shadow-xl">Iniciar Operación</button>
             </div>
 
             <div id="ops-card" class="hidden card-modern p-10 space-y-8 text-center">
@@ -81,7 +78,7 @@
                 <div class="flex flex-col items-center gap-6">
                     <div class="flex items-center gap-4">
                         <input type="number" id="qty-in" class="input-clean w-32 text-center text-4xl h-20" placeholder="0">
-                        <button id="add-btn" onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl active:scale-90 transition-all text-4xl font-bold">+</button>
+                        <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl text-4xl font-bold">+</button>
                     </div>
                     <div class="flex gap-10 mt-4">
                         <div class="text-center">
@@ -99,59 +96,48 @@
     </main>
 
     <script>
-    // 1. TU URL OFICIAL (No la cambies)
-    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec"; 
-    let db_tajho = {}; 
-    let manifest = [];
+        const CLOUD_URL = "Https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec esa es mi scrip"; 
+        let db_tajho = {}; 
+        let manifest = [];
 
-    // 2. CARGA SILENCIOSA (Se activa al entrar a la sección)
-    async function initCloud() {
-        try {
-            const res = await fetch(CLOUD_URL);
-            const data = await res.json();
-            // Mapeo ultra rápido para búsqueda inmediata
-            data.forEach(r => {
-                const cod = String(r.CODIGO || "").toUpperCase().trim();
-                if(cod) db_tajho[cod] = r.DESCRIPCION || "SIN NOMBRE";
-            });
-            console.log("Sincronización invisible completada");
-        } catch (e) {
-            console.warn("Error silencioso de red");
+        // Sincronización en segundo plano (Invisible)
+        async function initCloud() {
+            try {
+                const res = await fetch(CLOUD_URL);
+                const data = await res.json();
+                data.forEach(r => {
+                    const cod = String(r.CODIGO || "").toUpperCase().trim();
+                    if(cod) db_tajho[cod] = { desc: r.DESCRIPCION || "SIN NOMBRE", um: r.UM || "UND" };
+                });
+            } catch (e) { console.warn("Modo offline o error de red"); }
         }
-    }
 
-    // 3. BUSCADOR INSTANTÁNEO (Se activa mientras escribes)
-    function autoLookup() {
-        const skuInput = document.getElementById('s-sku'); // Tu ID de SKU
-        const descInput = document.getElementById('s-desc'); // Tu ID de Descripción
-        const sku = skuInput.value.toUpperCase().trim();
-        
-        if(db_tajho[sku]) {
-            descInput.value = db_tajho[sku];
-        } else {
-            descInput.value = ""; 
+        // Buscador ultra rápido
+        function autoLookup() {
+            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
+            const descField = document.getElementById('s-desc');
+            if(db_tajho[sku]) {
+                descField.value = db_tajho[sku].desc;
+            } else { descField.value = ""; }
         }
-    }
 
-    // 4. ESTO ACTIVA LA NUBE CUANDO TOCAS "CONTENEDOR"
-    function navTo(t) {
-        document.getElementById('landing').classList.add('hide-landing');
-        // Aquí llamamos a la nube sin mostrar señales en pantalla
-        initCloud(); 
-    }
-
-    // ... Aquí sigue el resto de tus funciones como addMani() o registrarBulto() ...
-</script>
-
+        function navTo(t) {
+            document.getElementById('landing').classList.add('hide-landing');
+            initCloud();
+        }
 
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!db_tajho[sku] || !meta) return;
+
             manifest.push({ sku, desc: db_tajho[sku].desc, um: "CJ", meta, real: 0 });
             renderList();
+            
             document.getElementById('btn-start').classList.remove('hidden');
-            document.getElementById('s-sku').value = ''; document.getElementById('s-desc').value = ''; document.getElementById('s-meta').value = '';
+            document.getElementById('s-sku').value = ''; 
+            document.getElementById('s-desc').value = ''; 
+            document.getElementById('s-meta').value = '';
         }
 
         function renderList() {
@@ -181,18 +167,13 @@
             const qty = parseInt(document.getElementById('qty-in').value);
             const sku = document.getElementById('sel-sku').value;
             const item = manifest.find(i => i.sku === sku);
-            const btn = document.getElementById('add-btn');
             if(!qty) return;
 
             item.real += qty;
             syncItem();
             document.getElementById('qty-in').value = '';
-            
-            // FEEDBACK VISUAL RÁPIDO
-            btn.classList.replace('bg-blue-600', 'bg-green-500');
-            setTimeout(() => btn.classList.replace('bg-green-500', 'bg-blue-600'), 400);
 
-            // ENVÍO A NUBE
+            // Envío invisible a Google Sheets
             fetch(CLOUD_URL, {
                 method: 'POST',
                 mode: 'no-cors',
