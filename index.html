@@ -3,214 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auditor Pro - Minimalist Edition</title>
+    <title>LogiMaster - NextGen Auditor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; color: #1a1a1a; }
-        .soft-card { @apply bg-[#fcfcfd] rounded-[2.5rem] p-8 border border-gray-100 transition-all duration-300; }
-        .input-minimal { @apply w-full py-5 bg-transparent border-b-2 border-gray-100 focus:border-blue-600 outline-none transition-all text-2xl font-bold text-center tracking-tight; }
-        .nav-btn { @apply flex-1 flex flex-col items-center py-4 text-gray-300 transition-all duration-300; }
-        .nav-btn.active { @apply text-blue-600 font-bold; }
+        body { font-family: 'Outfit', sans-serif; background: #fdfdfd; color: #1e293b; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .neo-card { border-radius: 3rem; background: #ffffff; box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff; }
+        .input-scan { border: none; background: transparent; text-align: center; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em; }
+        .btn-action { background: linear-gradient(145deg, #2563eb, #1d4ed8); box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3); }
         .hidden { display: none !important; }
-        /* Animaciones suaves */
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .active-nav { color: #2563eb; transform: translateY(-5px); }
+        .active-nav::after { content: ''; position: absolute; bottom: -8px; width: 5px; height: 5px; background: #2563eb; border-radius: 50%; }
     </style>
 </head>
-<body class="pb-36 overflow-x-hidden">
+<body class="pb-36 bg-[#f8fafc]">
 
-    <header class="px-8 py-10 flex justify-between items-start">
-        <div class="fade-in">
-            <h1 class="text-3xl font-extrabold tracking-tighter text-slate-900 leading-none">AUDITOR<span class="text-blue-600">PRO</span></h1>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[3px] mt-2">Logistics Excellence</p>
+    <header class="p-8 pb-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-[900] tracking-tighter text-slate-900 italic">LOGI<span class="text-blue-600">MASTER</span></h1>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Auditoría en Tiempo Real</p>
+            </div>
         </div>
-        <div class="text-right fade-in">
-            <p class="text-[10px] font-black text-gray-300 uppercase">Supervisor</p>
-            <p class="text-xs font-bold text-slate-800">J. Angelo N. D.</p>
-        </div>
+        <div class="w-12 h-12 neo-card flex items-center justify-center text-xl">👤</div>
     </header>
 
-    <main class="max-w-md mx-auto px-6 space-y-12">
+    <main class="max-w-md mx-auto p-6 space-y-10">
 
-        <section id="vista-auditor" class="space-y-8 fade-in">
-            <div class="text-center space-y-2">
-                <h2 class="text-sm font-black text-gray-400 uppercase tracking-widest">Escaneo de Carga</h2>
-                <input type="text" id="main-input" oninput="procesarEntrada(this)" placeholder="INGRESAR CÓDIGO" class="input-minimal uppercase">
+        <section id="vista-auditor" class="animate__animated animate__fadeIn space-y-8">
+            <div class="neo-card p-10 text-center space-y-6">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Escaneo de Carga</p>
+                <div class="relative">
+                    <input type="text" id="scan-input" oninput="auditarCarga(this)" placeholder="ESPERANDO CÓDIGO" class="input-scan w-full text-blue-600 placeholder:text-slate-200 uppercase">
+                    <div class="h-0.5 w-1/2 bg-blue-100 mx-auto mt-2"></div>
+                </div>
             </div>
 
-            <div id="status-card" class="soft-card min-h-[220px] flex flex-col justify-center items-center text-center space-y-4">
-                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-                    <span class="text-2xl">📦</span>
-                </div>
-                <p class="text-gray-400 font-medium text-sm">Esperando el primer bulto de mercadería...</p>
+            <div id="status-panel" class="glass rounded-[2.5rem] p-8 min-h-[220px] flex flex-col justify-center items-center text-center space-y-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/2312/2312733.png" class="w-20 opacity-20 grayscale" alt="espera">
+                <p class="text-slate-400 text-sm font-semibold italic">El sistema está listo. Comience a recibir bultos.</p>
             </div>
 
             <div class="space-y-4">
-                <div class="flex justify-between items-center px-2">
-                    <span class="text-[10px] font-black text-gray-400 uppercase">Detalle de Sesión</span>
-                    <span id="counter-badge" class="bg-blue-600 text-white text-[9px] px-3 py-1 rounded-full font-bold">0 ITEMS</span>
-                </div>
-                <div id="live-list" class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                <div id="live-ledger" class="space-y-3">
                     </div>
             </div>
 
-            <button onclick="finalizarYGuardar()" class="w-full py-6 bg-slate-900 text-white rounded-3xl font-bold shadow-2xl active:scale-95 transition-all text-sm tracking-widest uppercase">
-                Cerrar y Guardar Sesión
+            <button onclick="cerrarSesion()" class="btn-action w-full py-6 rounded-[2rem] text-white font-bold text-sm tracking-widest uppercase transition-all active:scale-90">
+                Finalizar Descarga
             </button>
         </section>
 
-        <section id="vista-devoluciones" class="space-y-8 hidden fade-in">
-            <h2 class="text-xl font-extrabold px-2">Gestión Devoluciones</h2>
-            <div class="space-y-4">
-                <input type="text" id="dev-cliente" placeholder="Cliente" class="w-full p-4 bg-gray-50 rounded-2xl border-none font-bold text-sm">
-                <input type="text" id="dev-vendedor" placeholder="Vendedor" class="w-full p-4 bg-gray-50 rounded-2xl border-none font-bold text-sm">
+        <section id="vista-devoluciones" class="hidden animate__animated animate__fadeIn space-y-6">
+            <div class="px-2">
+                <h2 class="text-2xl font-black italic">Devoluciones</h2>
+                <p class="text-xs text-slate-400">Registro de retornos y estado físico</p>
             </div>
-            <div id="list-dev" class="soft-card p-4 space-y-4">
-                </div>
-            <button onclick="addDevRow()" class="w-full py-4 border-2 border-dashed border-gray-100 rounded-3xl text-gray-300 font-bold text-[10px] uppercase tracking-widest">+ Añadir Producto</button>
-            <button onclick="guardarDevolucion()" class="w-full py-5 bg-orange-600 text-white rounded-3xl font-bold shadow-lg shadow-orange-100">REGISTRAR DEVOLUCIÓN</button>
+            <div class="space-y-4">
+                <input type="text" id="dev-cli" placeholder="Cliente" class="w-full p-5 neo-card border-none text-sm font-bold">
+                <input type="text" id="dev-ven" placeholder="Vendedor" class="w-full p-5 neo-card border-none text-sm font-bold text-blue-600">
+            </div>
+            <div id="dev-rows" class="space-y-4"></div>
+            <button onclick="addDevRow()" class="w-full py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">+ Agregar Producto</button>
+            <button onclick="saveDev()" class="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-bold uppercase text-xs tracking-widest shadow-2xl">Confirmar Devolución</button>
         </section>
 
-        <section id="vista-historial" class="space-y-8 hidden fade-in">
-            <h2 class="text-xl font-extrabold px-2">Historial Logístico</h2>
-            <div id="history-container" class="space-y-4">
+        <section id="vista-historial" class="hidden animate__animated animate__fadeIn space-y-6">
+            <h2 class="text-2xl font-black italic px-2">Historial</h2>
+            <div id="history-feed" class="space-y-4">
                 </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[85%] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-2 flex border border-gray-50 z-[100]">
-        <button onclick="switchView('vista-auditor', this)" class="nav-btn active">
-            <span class="text-lg">⚓</span>
-            <span class="text-[8px] uppercase tracking-tighter mt-1">Auditor</span>
+    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] glass rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
+        <button onclick="nav('vista-auditor', this)" class="nav-btn active-nav flex flex-col items-center relative p-3">
+            <span class="text-xl">🛠️</span>
+            <span class="text-[8px] font-bold uppercase mt-1">Auditor</span>
         </button>
-        <button onclick="switchView('vista-devoluciones', this)" class="nav-btn">
-            <span class="text-lg">🔄</span>
-            <span class="text-[8px] uppercase tracking-tighter mt-1">Devolu.</span>
+        <button onclick="nav('vista-devoluciones', this)" class="nav-btn flex flex-col items-center relative p-3 text-slate-400">
+            <span class="text-xl">🔄</span>
+            <span class="text-[8px] font-bold uppercase mt-1">Devolu.</span>
         </button>
-        <button onclick="switchView('vista-historial', this)" class="nav-btn">
-            <span class="text-lg">📁</span>
-            <span class="text-[8px] uppercase tracking-tighter mt-1">Reportes</span>
+        <button onclick="nav('vista-historial', this)" class="nav-btn flex flex-col items-center relative p-3 text-slate-400">
+            <span class="text-xl">📊</span>
+            <span class="text-[8px] font-bold uppercase mt-1">Reporte</span>
         </button>
     </nav>
 
     <script>
         const { jsPDF } = window.jspdf;
 
-        // Aquí es donde yo "sé" el packing list. Se puede precargar vía variable:
+        // Base Maestra (El sistema ya "sabe" el packing)
         const packingList = [
-            { id: "A101", name: "Zapatilla Tajho Air", esperado: 120, bulto: 12 },
-            { id: "B202", name: "Boxer Cotton Pro", esperado: 48, bulto: 24 }
+            { id: "101", name: "TAJHO AIR PRO", meta: 120, pack: 12 },
+            { id: "102", name: "BOXER COTTON PREMIUM", meta: 48, pack: 24 }
         ];
 
-        let currentSession = {};
-        let db = JSON.parse(localStorage.getItem('auditor_v5')) || [];
+        let sessionData = {};
+        let db = JSON.parse(localStorage.getItem('master_logi_v1')) || [];
 
-        function switchView(viewId, btn) {
+        function nav(id, btn) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active', 'text-blue-600'));
-            btn.classList.add('active', 'text-blue-600');
-            if(viewId === 'vista-historial') renderHistory();
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav', 'text-blue-600'));
+            btn.classList.add('active-nav');
+            if(id === 'vista-historial') renderHist();
         }
 
-        function procesarEntrada(input) {
-            const cod = input.value.toUpperCase();
-            const prod = packingList.find(p => p.id === cod);
-            const card = document.getElementById('status-card');
+        function auditarCarga(input) {
+            const val = input.value.toUpperCase();
+            const prod = packingList.find(p => p.id === val);
+            const panel = document.getElementById('status-panel');
 
             if(prod) {
-                currentSession[cod] = (currentSession[cod] || 0) + prod.bulto;
-                const total = currentSession[cod];
-                const diff = prod.esperado - total;
+                sessionData[val] = (sessionData[val] || 0) + prod.pack;
+                const total = sessionData[val];
+                const falta = prod.meta - total;
 
-                card.innerHTML = `
-                    <div class="space-y-2 scale-in">
-                        <h3 class="text-4xl font-black ${diff === 0 ? 'text-green-500' : 'text-blue-600'}">${total}</h3>
-                        <p class="text-sm font-bold text-slate-800">${prod.name}</p>
-                        <p class="text-[10px] font-black bg-gray-100 px-4 py-1 rounded-full text-gray-500 uppercase">Meta: ${prod.esperado} UND</p>
-                        ${diff === 0 ? '<p class="text-[10px] font-black text-green-500 mt-2">¡CONTEO EXACTO!</p>' : ''}
-                    </div>
+                panel.className = `animate__animated animate__pulse rounded-[2.5rem] p-8 text-center space-y-2 ${total >= prod.meta ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`;
+                panel.innerHTML = `
+                    <p class="text-[10px] font-black uppercase tracking-widest">${prod.name}</p>
+                    <h3 class="text-5xl font-black tracking-tighter">${total}</h3>
+                    <p class="text-xs font-bold uppercase">${total >= prod.meta ? '¡CONTEO COMPLETADO!' : 'Faltan ' + falta + ' unidades'}</p>
                 `;
                 input.value = "";
-                updateLiveList();
+                renderLedger();
             }
         }
 
-        function updateLiveList() {
-            const list = document.getElementById('live-list');
-            list.innerHTML = "";
-            let count = 0;
-            for(let key in currentSession) {
+        function renderLedger() {
+            const ledger = document.getElementById('live-ledger');
+            ledger.innerHTML = "";
+            for(let key in sessionData) {
                 const p = packingList.find(x => x.id === key);
-                list.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl">
-                        <span class="text-xs font-bold text-slate-700">${p.name}</span>
-                        <span class="text-xs font-black text-blue-600">${currentSession[key]}</span>
-                    </div>
-                `;
-                count++;
+                ledger.innerHTML += `
+                    <div class="glass p-5 rounded-3xl flex justify-between items-center animate__animated animate__fadeInLeft">
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase">${key}</p>
+                            <p class="text-xs font-bold">${p.name}</p>
+                        </div>
+                        <span class="text-lg font-black text-blue-600">${sessionData[key]}</span>
+                    </div>`;
             }
-            document.getElementById('counter-badge').innerText = count + " ITEMS";
         }
 
-        function finalizarYGuardar() {
-            if(Object.keys(currentSession).length === 0) return;
-            const entry = {
-                id: "ING-" + Math.floor(Math.random()*1000),
+        function cerrarSesion() {
+            if(Object.keys(sessionData).length === 0) return;
+            const item = {
+                id: "REC-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
                 fecha: new Date().toLocaleString(),
                 tipo: "INGRESO",
-                data: {...currentSession}
+                detalles: {...sessionData}
             };
-            db.unshift(entry);
-            localStorage.setItem('auditor_v5', JSON.stringify(db));
-            currentSession = {};
+            db.unshift(item);
+            localStorage.setItem('master_logi_v1', JSON.stringify(db));
+            sessionData = {};
             location.reload();
         }
 
-        function renderHistory() {
-            const cont = document.getElementById('history-container');
-            cont.innerHTML = "";
-            db.forEach(item => {
-                cont.innerHTML += `
-                    <div class="soft-card flex justify-between items-center p-6">
+        function renderHist() {
+            const feed = document.getElementById('history-feed');
+            feed.innerHTML = "";
+            db.forEach(h => {
+                feed.innerHTML += `
+                    <div class="neo-card p-6 flex justify-between items-center">
                         <div>
-                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">${item.fecha}</p>
-                            <h3 class="font-extrabold text-slate-800">${item.id}</h3>
+                            <p class="text-[9px] font-black text-slate-400 uppercase">${h.fecha}</p>
+                            <h3 class="font-bold text-slate-800">${h.id}</h3>
                         </div>
-                        <button onclick="exportPDF('${item.id}')" class="w-12 h-12 bg-white shadow-sm border border-gray-100 rounded-2xl flex items-center justify-center">📄</button>
-                    </div>
-                `;
+                        <button onclick="genPDF('${h.id}')" class="w-12 h-12 bg-blue-600 rounded-2xl text-white shadow-lg">📄</button>
+                    </div>`;
             });
         }
 
-        function exportPDF(id) {
-            const item = db.find(x => x.id === id);
+        function genPDF(id) {
+            const h = db.find(x => x.id === id);
             const doc = new jsPDF();
-            doc.setFontSize(20);
-            doc.text("REPORTE LOGISTICO", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`ID: ${item.id} | Fecha: ${item.fecha}`, 14, 28);
+            doc.setFontSize(22); doc.text("REPORTE DE AUDITORÍA", 14, 20);
+            doc.setFontSize(10); doc.text(`Registro: ${h.id} | Generado: ${new Date().toLocaleString()}`, 14, 28);
             
             const rows = [];
-            for(let key in item.data) {
-                const p = packingList.find(x => x.id === key);
-                rows.push([key, p.name, item.data[key], "CONFORME"]);
+            for(let k in h.detalles) {
+                const p = packingList.find(x => x.id === k);
+                rows.push([k, p.name, h.detalles[k], "VERIFICADO"]);
             }
 
             doc.autoTable({
                 startY: 35,
-                head: [['Código', 'Descripción', 'Cantidad', 'Estado']],
+                head: [['CÓDIGO', 'PRODUCTO', 'CONTEO', 'ESTADO']],
                 body: rows,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 0, 0] }
+                headStyles: { fillColor: [37, 99, 235] }
             });
 
+            doc.setFont("helvetica", "italic");
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Reporte_${id}.pdf`);
+            doc.save(`Auditoria_${id}.pdf`);
         }
     </script>
 </body>
