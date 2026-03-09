@@ -3,282 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TWINS Logística v25</title>
+    <title>TAJHO.OS v26</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #2563eb; --slate: #64748b; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
+        :root { --blue-primary: #2563eb; --bg-light: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; margin: 0; }
         
-        /* Pantalla de Inicio */
-        #landing { position: fixed; inset: 0; z-index: 500; background: #ffffff; display: flex; flex-direction: column; justify-content: center; padding: 2.5rem; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* Estilo de Tarjetas Modernas */
+        .card-modern { background: #ffffff; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+        .input-modern { background: #f1f5f9; border-radius: 1.2rem; border: 2px solid transparent; transition: 0.3s; font-weight: 600; padding: 1.2rem; }
+        .input-modern:focus { border-color: var(--blue-primary); background: white; outline: none; }
+
+        /* Pantalla de Inicio (Landing) */
+        #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         .hide-landing { transform: translateY(-100%); }
 
-        .btn-choice { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; transition: all 0.3s; }
-        .btn-choice:active { transform: scale(0.96); background: #f1f5f9; }
+        /* Menú Lateral */
+        #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 25px 0 60px rgba(0,0,0,0.05); }
+        .menu-active { left: 0 !important; }
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); z-index: 900; display: none; }
 
-        /* Menú Hamburguesa Lateral */
-        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: white; z-index: 1000; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.05); }
-        .menu-open { left: 0 !important; }
-        #menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); z-index: 900; display: none; }
+        /* Header de Trabajo */
+        .work-header { position: sticky; top: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); z-index: 100; border-bottom: 1px solid #f1f5f9; }
 
-        /* Estilos de Trabajo */
-        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); border-bottom: 1px solid #f1f5f9; height: 64px; display: flex; align-items: center; padding: 0 1.5rem; }
-        .input-twins { background: #f1f5f9; border-radius: 1rem; border: 2px solid transparent; font-weight: 600; transition: 0.2s; }
-        .input-twins:focus { border-color: var(--accent); background: white; outline: none; }
-
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Botón Confirmar Ingreso (Estilo Captura) */
+        .btn-confirm { background: var(--blue-primary); border-radius: 1.5rem; padding: 1.2rem; color: white; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; width: 100%; transition: 0.3s; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3); }
+        .btn-confirm:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div id="menu-overlay" onclick="toggleMenu()"></div>
+    <div id="overlay" onclick="toggleMenu()"></div>
 
     <aside id="side-menu" class="p-8 flex flex-col">
-        <div class="mb-10">
-            <h2 class="text-xl font-black tracking-tighter">TWINS<span class="text-blue-600">.OS</span></h2>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Panel de Control</p>
+        <div class="mb-12">
+            <h2 class="text-2xl font-[800] tracking-tighter italic">TAJHO<span class="text-blue-600">.OS</span></h2>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Management System</p>
         </div>
-        <nav class="flex flex-col gap-4">
-            <button onclick="navTo('contenedor')" class="flex items-center gap-4 py-3 text-sm font-bold text-slate-600 hover:text-blue-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-                Contenedor
+        <nav class="space-y-6">
+            <button onclick="navTo('contenedor')" class="flex items-center gap-4 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                Carga / Contenedor
             </button>
-            <button onclick="navTo('historial')" class="flex items-center gap-4 py-3 text-sm font-bold text-slate-600 hover:text-blue-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
-                Historial
+            <button onclick="navTo('historial')" class="flex items-center gap-4 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
+                Archivo Historial
             </button>
-            <button onclick="navTo('retornos')" class="flex items-center gap-4 py-3 text-sm font-bold text-slate-600 hover:text-blue-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/><path d="M3 12h.01"/></svg>
-                Retornos
-            </button>
-            <hr class="my-4 border-slate-100">
-            <button onclick="location.reload()" class="flex items-center gap-4 py-3 text-sm font-bold text-red-500">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                Cerrar Sesión
+            <button onclick="navTo('retornos')" class="flex items-center gap-4 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M12 12 3 21"/><path d="m21 3-9 9"/></svg>
+                Devoluciones
             </button>
         </nav>
+        <div class="mt-auto">
+            <button onclick="location.reload()" class="text-[10px] font-black text-red-400 uppercase tracking-widest">Salir del Sistema</button>
+        </div>
     </aside>
 
     <div id="landing">
-        <header class="mb-10">
-            <h1 class="text-4xl font-extrabold tracking-tighter leading-tight text-slate-900">¿Qué hacemos<br><span class="text-blue-600">hoy, Angelo?</span></h1>
+        <header class="mb-12">
+            <h1 class="text-5xl font-[800] tracking-tighter leading-tight">¿Qué hacemos<br><span class="text-blue-600">hoy, Angelo?</span></h1>
         </header>
-        <div class="space-y-3">
-            <button onclick="navTo('contenedor')" class="btn-choice w-full p-6 flex items-center gap-5">
-                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        <div class="space-y-4">
+            <button onclick="navTo('contenedor')" class="card-modern w-full p-7 flex items-center gap-6">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                 </div>
                 <div class="text-left">
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-900">Contenedor</p>
-                    <p class="text-[9px] font-bold text-slate-400">DESPACHO Y CARGA</p>
+                    <p class="text-sm font-black uppercase tracking-widest text-slate-900">Contenedor</p>
+                    <p class="text-[10px] font-bold text-slate-400">DESPACHO Y LOGÍSTICA</p>
                 </div>
             </button>
-            <button onclick="navTo('historial')" class="btn-choice w-full p-6 flex items-center gap-5">
-                <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-600">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
+            <button onclick="navTo('historial')" class="card-modern w-full p-7 flex items-center gap-6">
+                <div class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-500">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                 </div>
                 <div class="text-left">
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-900">Historial</p>
-                    <p class="text-[9px] font-bold text-slate-400">REPORTES GUARDADOS</p>
+                    <p class="text-sm font-black uppercase tracking-widest text-slate-900">Historial</p>
+                    <p class="text-[10px] font-bold text-slate-400">REPORTES AUTORIZADOS</p>
                 </div>
             </button>
         </div>
     </div>
 
-    <div id="app" class="hidden">
-        <header class="top-bar justify-between">
+    <div id="app" class="hidden min-h-screen bg-[#fcfdfe]">
+        <header class="work-header px-6 py-4 flex justify-between items-center">
             <button onclick="toggleMenu()" class="p-2 -ml-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <h2 id="current-title" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Contenedor</h2>
-            <div class="w-10"></div> </header>
-
-        <div id="sticky-p" class="hidden px-6 py-4 border-b border-slate-50 bg-white sticky top-[64px] z-[90]">
-            <div class="flex justify-between items-end mb-2">
-                <span id="p-perc" class="text-2xl font-black italic text-blue-600 leading-none">0%</span>
-                <span id="p-timer" class="text-[10px] font-mono font-bold text-slate-400">00:00:00</span>
+            <div class="text-center">
+                <p id="nav-title" class="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 leading-none">Contenedor</p>
+                <h3 class="text-sm font-black tracking-tighter mt-1">TAJHO<span class="text-blue-600">.OS</span></h3>
             </div>
-            <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                <div id="p-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+            <div class="w-10"></div>
+        </header>
+
+        <div id="status-bar" class="hidden px-6 py-6">
+            <div class="bg-[#0f172a] rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mb-1">Progreso Global</p>
+                        <h4 id="disp-perc" class="text-5xl font-[800] italic leading-none">0%</h4>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mb-1">Unidades</p>
+                        <h4 id="disp-count" class="text-xl font-black leading-none">0 / 0</h4>
+                    </div>
+                </div>
+                <div class="h-2 w-full bg-white/10 rounded-full">
+                    <div id="disp-bar" class="h-full bg-blue-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+                </div>
+                <div id="disp-timer" class="absolute top-4 right-8 text-[10px] font-mono font-bold text-blue-400/50">00:00:00</div>
             </div>
         </div>
 
         <main class="p-6">
-            <section id="tab-contenedor" class="tab-panel active">
-                <div id="setup" class="space-y-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-[9px] font-black text-slate-400 uppercase">Cargar Excel Maestro</span>
-                        <input type="file" id="xl" class="hidden" accept=".xlsx, .xls" onchange="loadXl(event)">
-                        <button onclick="document.getElementById('xl').click()" class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[9px] font-black uppercase">Subir</button>
+            <div id="view-setup" class="space-y-6">
+                <div class="card-modern p-8 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                        </div>
+                        <h3 class="text-xs font-black uppercase tracking-widest">Configurar Contenedor</h3>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="sku-in" class="input-twins p-4 text-xs uppercase" placeholder="SKU">
-                        <input type="number" id="qty-in" class="input-twins p-4 text-xs uppercase" placeholder="META">
-                    </div>
-                    <button onclick="add()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest">Añadir SKU</button>
-                    <div id="pre-list" class="space-y-2"></div>
-                    <button id="btn-go" onclick="run()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.8rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl">Iniciar Despacho</button>
-                </div>
-
-                <div id="ops" class="hidden space-y-4">
-                    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <div class="flex-1 min-w-0">
-                                <select id="sel" onchange="sync()" class="w-full bg-transparent font-black text-xl outline-none truncate"></select>
-                                <p id="desc" class="text-[8px] font-bold text-blue-500 uppercase truncate">---</p>
-                            </div>
-                            <input type="number" id="q-add" placeholder="0" class="input-twins w-16 p-4 text-2xl text-center text-blue-600">
-                            <button onclick="commit()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl shadow-lg">✓</button>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Código</label>
+                            <input type="text" id="in-sku" class="input-modern w-full text-center uppercase" placeholder="XXC">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Total</label>
+                            <input type="number" id="in-meta" class="input-modern w-full text-center" placeholder="000">
                         </div>
                     </div>
-                    <div id="live-list" class="space-y-2"></div>
-                    <button onclick="save()" class="w-full py-10 text-slate-300 font-bold text-[8px] uppercase tracking-[0.5em]">Finalizar y Guardar</button>
+                    <button onclick="addItem()" class="btn-confirm bg-slate-900">Añadir al Manifiesto</button>
+                    <div id="pre-list" class="space-y-2"></div>
+                    <button id="btn-start" onclick="startLogistics()" class="hidden btn-confirm">Abrir Despacho Oficial</button>
                 </div>
-            </section>
+            </div>
 
-            <section id="tab-historial" class="tab-panel">
-                <div id="hist-grid" class="space-y-3"></div>
-            </section>
+            <div id="view-ops" class="hidden space-y-6">
+                <div class="card-modern p-10 flex flex-col items-center text-center space-y-8">
+                    <select id="sel-sku" onchange="syncDesc()" class="text-3xl font-[800] bg-transparent outline-none text-slate-900"></select>
+                    <p id="live-desc" class="text-[10px] font-black text-blue-500 uppercase tracking-widest -mt-4">Sincronizando...</p>
+                    
+                    <div class="relative py-4">
+                        <span id="live-big-count" class="text-8xl font-[800] text-slate-200">0</span>
+                    </div>
 
-            <section id="tab-retornos" class="tab-panel">
-                <div class="bg-slate-50 p-6 rounded-[2rem] space-y-4">
-                    <p class="text-[9px] font-black text-slate-400 uppercase text-center">Formulario de Devolución</p>
-                    <input type="text" placeholder="CLIENTE / VENDEDOR" class="input-twins w-full p-4 text-[10px] uppercase">
-                    <input type="text" placeholder="SKU" class="input-twins w-full p-4 text-[10px] uppercase">
-                    <textarea placeholder="ESTADO" class="input-twins w-full p-4 text-[10px] uppercase h-24"></textarea>
-                    <button class="w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase">Registrar</button>
+                    <div class="w-full flex gap-3">
+                        <input type="number" id="qty-add" class="input-modern flex-1 text-center text-3xl text-blue-600" placeholder="0">
+                        <button onclick="doCommit()" class="w-20 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg">✓</button>
+                    </div>
+                    <button onclick="doSave()" class="btn-confirm bg-slate-100 !text-slate-400 shadow-none mt-8">Finalizar y Autorizar</button>
                 </div>
-            </section>
+                <div id="live-feed" class="space-y-3"></div>
+            </div>
+
+            <div id="view-historial" class="hidden space-y-4">
+                <div id="hist-container" class="space-y-3"></div>
+            </div>
         </main>
     </div>
 
     <script>
         const { jsPDF } = window.jspdf;
-        let db = {}; let manifest = []; let time = 0, clock;
+        let manifest = [], time = 0, clock;
 
         function toggleMenu() {
-            document.getElementById('side-menu').classList.toggle('menu-open');
-            const overlay = document.getElementById('menu-overlay');
-            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+            document.getElementById('side-menu').classList.toggle('menu-active');
+            const ov = document.getElementById('overlay');
+            ov.style.display = ov.style.display === 'block' ? 'none' : 'block';
         }
 
-        function navTo(tab) {
+        function navTo(target) {
             document.getElementById('landing').classList.add('hide-landing');
             document.getElementById('app').classList.remove('hidden');
-            document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-            document.getElementById('current-title').innerText = tab;
+            document.getElementById('nav-title').innerText = target;
+            
+            ['view-setup', 'view-ops', 'view-historial'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            
+            if(target === 'contenedor') document.getElementById('view-setup').classList.remove('hidden');
+            if(target === 'historial') {
+                document.getElementById('view-historial').classList.remove('hidden');
+                renderHistory();
+            }
             toggleMenu();
-            if(tab === 'historial') renderHist();
         }
 
-        function loadXl(e) {
-            const r = new FileReader();
-            r.onload = (x) => {
-                const d = new Uint8Array(x.target.result);
-                const wb = XLSX.read(d, {type: 'array'});
-                XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]).forEach(row => {
-                    const c = String(row.CODIGO || row.codigo || "").toUpperCase().trim();
-                    db[c] = row.DESCRIPCION || row.descripcion || "ITEM SIN REGISTRO";
-                });
-                alert("Excel Cargado.");
-            };
-            r.readAsArrayBuffer(e.target.files[0]);
+        function addItem() {
+            const sku = document.getElementById('in-sku').value.toUpperCase().trim();
+            const meta = parseInt(document.getElementById('in-meta').value);
+            if(!sku || !meta) return;
+            manifest.push({ sku, meta, real: 0 });
+            document.getElementById('in-sku').value = ''; 
+            document.getElementById('in-meta').value = '';
+            renderPre();
+            document.getElementById('btn-start').classList.remove('hidden');
         }
 
-        function add() {
-            const s = document.getElementById('sku-in').value.toUpperCase().trim();
-            const m = parseInt(document.getElementById('qty-in').value);
-            if(!s || !m) return;
-            manifest.push({ sku: s, desc: db[s] || "NUEVO", meta: m, real: 0 });
-            document.getElementById('sku-in').value = ""; document.getElementById('qty-in').value = "";
-            renderMini();
-            document.getElementById('btn-go').classList.remove('hidden');
-        }
-
-        function renderMini() {
+        function renderPre() {
             document.getElementById('pre-list').innerHTML = manifest.map(i => `
-                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-white">
-                    <div><p class="text-[10px] font-black">${i.sku}</p><p class="text-[7px] text-slate-400 uppercase font-bold">${i.desc}</p></div>
-                    <span class="text-xs font-black text-slate-700">${i.meta}</span>
+                <div class="bg-slate-50 p-4 rounded-2xl flex justify-between border border-white">
+                    <span class="font-black text-xs">${i.sku}</span>
+                    <span class="font-bold text-xs text-slate-400">${i.meta} UND</span>
                 </div>
             `).join('');
         }
 
-        function run() {
-            document.getElementById('setup').classList.add('hidden');
-            document.getElementById('sticky-p').classList.remove('hidden');
-            document.getElementById('ops').classList.remove('hidden');
-            const s = document.getElementById('sel');
-            s.innerHTML = manifest.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            sync();
-            clock = setInterval(() => { time++;
+        function startLogistics() {
+            document.getElementById('view-setup').classList.add('hidden');
+            document.getElementById('status-bar').classList.remove('hidden');
+            document.getElementById('view-ops').classList.remove('hidden');
+            
+            const sel = document.getElementById('sel-sku');
+            sel.innerHTML = manifest.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            
+            clock = setInterval(() => {
+                time++;
                 const h = Math.floor(time/3600).toString().padStart(2,'0');
                 const m = Math.floor((time%3600)/60).toString().padStart(2,'0');
                 const s = (time%60).toString().padStart(2,'0');
-                document.getElementById('p-timer').innerText = `${h}:${m}:${s}`;
+                document.getElementById('disp-timer').innerText = `${h}:${m}:${s}`;
             }, 1000);
             updateUI();
         }
 
-        function sync() {
-            const v = document.getElementById('sel').value;
-            document.getElementById('desc').innerText = manifest.find(i => i.sku === v).desc;
-        }
-
-        function commit() {
-            const s = document.getElementById('sel').value;
-            const v = parseInt(document.getElementById('q-add').value);
-            if(!v) return;
-            manifest.find(i => i.sku === s).real += v;
-            document.getElementById('q-add').value = "";
+        function doCommit() {
+            const sku = document.getElementById('sel-sku').value;
+            const qty = parseInt(document.getElementById('qty-add').value);
+            if(!qty) return;
+            const item = manifest.find(i => i.sku === sku);
+            item.real += qty;
+            document.getElementById('qty-add').value = '';
             updateUI();
-            navigator.vibrate(30);
+            navigator.vibrate(40);
         }
 
         function updateUI() {
-            const plan = manifest.reduce((a,b) => a + b.meta, 0);
-            const real = manifest.reduce((a,b) => a + b.real, 0);
-            const p = Math.round((real / plan) * 100) || 0;
-            document.getElementById('p-perc').innerText = p + "%";
-            document.getElementById('p-bar').style.width = p + "%";
-            document.getElementById('live-list').innerHTML = manifest.map(i => `
-                <div class="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center shadow-sm">
-                    <div class="min-w-0 flex-1 pr-4">
-                        <p class="text-[11px] font-[800] truncate text-slate-900">${i.sku}</p>
-                        <p class="text-[8px] font-bold text-slate-400 truncate uppercase">${i.desc}</p>
+            const totalMeta = manifest.reduce((a, b) => a + b.meta, 0);
+            const totalReal = manifest.reduce((a, b) => a + b.real, 0);
+            const p = Math.round((totalReal / totalMeta) * 100) || 0;
+            
+            document.getElementById('disp-perc').innerText = p + "%";
+            document.getElementById('disp-bar').style.width = p + "%";
+            document.getElementById('disp-count').innerText = `${totalReal} / ${totalMeta}`;
+            
+            const current = manifest.find(i => i.sku === document.getElementById('sel-sku').value);
+            document.getElementById('live-big-count').innerText = current.real;
+
+            document.getElementById('live-feed').innerHTML = manifest.map(i => `
+                <div class="card-modern p-5 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-900">${i.sku}</p>
+                        <div class="h-1 w-24 bg-slate-100 mt-2 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-600" style="width: ${(i.real/i.meta)*100}%"></div>
+                        </div>
                     </div>
-                    <span class="text-[11px] font-black font-mono text-blue-600">${i.real}/${i.meta}</span>
+                    <span class="text-xs font-black text-blue-600">${i.real} / ${i.meta}</span>
                 </div>
             `).join('');
         }
 
-        function save() {
+        function doSave() {
             const doc = new jsPDF();
-            doc.setFontSize(22); doc.text("REPORTE TWINS LOGÍSTICA", 14, 25);
-            doc.autoTable({ startY: 35, head: [['SKU', 'DESC', 'PLAN', 'REAL', 'ST']], body: manifest.map(i => [i.sku, i.desc, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
+            doc.setFont("helvetica", "bold");
+            doc.text("TAJHO.OS - REPORTE DE INVENTARIO", 14, 20);
+            doc.autoTable({
+                startY: 30,
+                head: [['ITEM SKU', 'META', 'INGRESADO', 'ESTADO']],
+                body: manifest.map(i => [i.sku, i.meta, i.real, i.real >= i.meta ? 'COMPLETO' : 'PENDIENTE'])
+            });
+            doc.setFontSize(10);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
             
-            const storage = JSON.parse(localStorage.getItem('twins_v25') || '[]');
-            storage.unshift({ id: 'REP-' + Date.now(), fecha: new Date().toLocaleString() });
-            localStorage.setItem('twins_v25', JSON.stringify(storage));
+            const reports = JSON.parse(localStorage.getItem('tajho_reports') || '[]');
+            reports.unshift({ id: Date.now(), fecha: new Date().toLocaleString(), data: manifest });
+            localStorage.setItem('tajho_reports', JSON.stringify(reports));
             
-            doc.save(`Reporte_Twins_${Date.now()}.pdf`);
+            doc.save(`TAJHO_Report_${Date.now()}.pdf`);
             location.reload();
         }
 
-        function renderHist() {
-            const h = JSON.parse(localStorage.getItem('twins_v25') || '[]');
-            document.getElementById('hist-grid').innerHTML = h.map(r => `
-                <div class="bg-slate-50 p-5 rounded-2xl flex justify-between items-center border border-white">
-                    <div><p class="text-[8px] font-black text-slate-400 uppercase">${r.fecha}</p><h4 class="text-sm font-black">${r.id}</h4></div>
-                    <span class="text-blue-600 text-[10px] font-black italic">PDF</span>
+        function renderHistory() {
+            const reports = JSON.parse(localStorage.getItem('tajho_reports') || '[]');
+            document.getElementById('hist-container').innerHTML = reports.map(r => `
+                <div class="card-modern p-6 flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${r.fecha}</p>
+                        <h4 class="text-sm font-extrabold text-slate-900">ID: ${r.id}</h4>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    </div>
                 </div>
             `).join('');
         }
