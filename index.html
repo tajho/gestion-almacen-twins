@@ -2,156 +2,136 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v40 Cloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TAJHO.OS v41 SPEED</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; padding-bottom: 100px; }
-        .glass-card { background: white; border-radius: 2.5rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); }
-        .input-tajho { background: #f1f5f9; border-radius: 1.25rem; border: 2px solid transparent; transition: 0.3s; }
-        .input-tajho:focus { border-color: var(--blue); background: white; outline: none; }
-        .loading { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; }
+        .btn-mode { border-radius: 1rem; padding: 12px; font-size: 10px; font-weight: 800; transition: 0.2s; border: 2px solid #f1f5f9; }
+        .active-mode { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+        .input-box { background: #f8fafc; border-radius: 1.5rem; padding: 20px; border: 2px solid transparent; font-size: 24px; font-weight: 800; text-align: center; width: 100%; transition: 0.2s; }
+        .input-box:focus { background: white; border-color: #2563eb; outline: none; box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.2); }
     </style>
 </head>
-<body>
+<body class="p-6">
 
-    <header class="p-8 pb-4 flex justify-between items-center">
-        <div>
-            <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mb-1">Status: Conectado</p>
-            <h1 class="text-3xl font-[800] tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></h1>
-        </div>
-        <button onclick="syncCloud()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-100">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        </button>
+    <header class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-[800] tracking-tighter text-slate-900">TAJHO<span class="text-blue-600">.OS</span></h1>
+        <button onclick="syncCloud()" id="btn-sync" class="text-[10px] font-black text-slate-400 uppercase border px-3 py-2 rounded-xl">Sincronizar</button>
     </header>
 
-    <main class="px-6 space-y-6">
-        
-        <section class="glass-card p-8 space-y-6">
-            <div class="flex justify-between items-center">
-                <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Registro de Carga</h3>
-                <span id="um-badge" class="hidden px-3 py-1 bg-blue-50 text-blue-600 text-[9px] font-black rounded-lg uppercase">Cajas</span>
-            </div>
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <button id="mode-carga" onclick="setMode('CARGA')" class="btn-mode active-mode">📦 CONTENEDOR (CJ)</button>
+        <button id="mode-ret" onclick="setMode('RETORNO')" class="btn-mode">↩️ DEVOLUCIÓN (UM)</button>
+    </div>
 
-            <div class="space-y-4 text-center">
-                <input type="text" id="sku-in" oninput="autoFetch()" class="input-tajho w-full p-5 text-2xl font-black text-center uppercase" placeholder="CÓDIGO (EJ: DD)">
-                
-                <div id="display-info" class="hidden space-y-1">
-                    <p id="desc-out" class="text-sm font-bold text-slate-800 uppercase italic"></p>
-                    <p id="um-out" class="text-[10px] font-black text-blue-400 uppercase tracking-tighter"></p>
-                </div>
+    <main class="space-y-6">
+        <div class="relative">
+            <input type="text" id="sku-in" oninput="quickSearch()" class="input-box" placeholder="CÓDIGO SKU">
+            <div id="loader" class="hidden absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
 
-                <div class="flex items-center gap-4 pt-4">
-                    <input type="number" id="qty-in" class="input-tajho flex-1 p-5 text-3xl font-black text-center" placeholder="0" inputmode="numeric">
-                    <button onclick="registrar()" class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-lg shadow-blue-200 active:scale-90 transition-transform">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    </button>
-                </div>
-            </div>
-        </section>
+        <div id="info-box" class="hidden text-center space-y-1 py-2">
+            <p id="p-desc" class="text-sm font-bold text-slate-800 uppercase italic"></p>
+            <p id="p-um" class="text-[10px] font-black text-blue-500 uppercase tracking-widest"></p>
+        </div>
 
-        <div id="recent-list" class="space-y-3">
-            <h4 class="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Últimos Registros Nube</h4>
-            </div>
-
+        <div class="flex gap-4">
+            <input type="number" id="qty-in" class="input-box flex-1" placeholder="CANT" inputmode="numeric">
+            <button onclick="registrar()" class="w-20 h-20 bg-blue-600 text-white rounded-[1.8rem] flex items-center justify-center shadow-xl active:scale-90 transition-all">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+        </div>
     </main>
+
+    <section class="mt-8 space-y-3" id="log-list">
+        <h3 class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Registros de hoy</h3>
+    </section>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyijMhWNmXwMZTKv2qDhN4HvL74QeETP5Mabe4MRaDq4RkhNqiaUmEGKmniIed7FQbN3g/exec";
-        let db_ref = {};
+        let db_tajho = JSON.parse(localStorage.getItem('db_tajho') || '{}');
+        let currentMode = 'CARGA';
 
-        // 1. Sincronizar desde Google Sheets al abrir
+        // 1. Sincronización en segundo plano (No traba la app)
         async function syncCloud() {
-            document.body.classList.add('loading');
+            const btn = document.getElementById('btn-sync');
+            btn.innerText = "Cargando...";
             try {
                 const res = await fetch(CLOUD_URL);
                 const data = await res.json();
+                const tempDb = {};
                 data.forEach(r => {
                     const cod = String(r.CODIGO).toUpperCase().trim();
-                    db_ref[cod] = { desc: r.DESCRIPCION, um: r.UM || "UND" };
+                    tempDb[cod] = { d: r.DESCRIPCION, u: r.UM || "UND" };
                 });
-                alert("✅ Nube Conectada: " + Object.keys(db_ref).length + " productos.");
+                db_tajho = tempDb;
+                localStorage.setItem('db_tajho', JSON.stringify(db_tajho));
+                btn.innerText = "✅ Al día";
+                setTimeout(() => btn.innerText = "Sincronizar", 2000);
             } catch (e) {
-                alert("❌ Error al leer Maestro_Productos. Revisa tu Excel.");
+                btn.innerText = "❌ Error";
             }
-            document.body.classList.remove('loading');
         }
 
-        // 2. Búsqueda Automática Inteligente
-        function autoFetch() {
+        function setMode(m) {
+            currentMode = m;
+            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode'));
+            document.getElementById('mode-' + (m === 'CARGA' ? 'carga' : 'ret')).classList.add('active-mode');
+            quickSearch(); // Actualiza visual si hay algo escrito
+        }
+
+        function quickSearch() {
             const sku = document.getElementById('sku-in').value.toUpperCase().trim();
-            const info = document.getElementById('display-info');
-            const badge = document.getElementById('um-badge');
-
-            if(db_ref[sku]) {
-                document.getElementById('desc-out').innerText = db_ref[sku].desc;
-                document.getElementById('um-out').innerText = "Unidad: " + db_ref[sku].um;
-                badge.innerText = db_ref[sku].um;
-                badge.classList.remove('hidden');
-                info.classList.remove('hidden');
+            const box = document.getElementById('info-box');
+            if(db_tajho[sku]) {
+                document.getElementById('p-desc').innerText = db_tajho[sku].d;
+                // Si es carga, forzamos CJ, si es retorno, usamos UM del excel
+                document.getElementById('p-um').innerText = "UM: " + (currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u);
+                box.classList.remove('hidden');
             } else {
-                info.classList.add('hidden');
-                badge.classList.add('hidden');
+                box.classList.add('hidden');
             }
         }
 
-        // 3. Registrar y enviar a la nube
         async function registrar() {
             const sku = document.getElementById('sku-in').value.toUpperCase().trim();
             const qty = document.getElementById('qty-in').value;
-            
-            if(!db_ref[sku] || !qty) return alert("Tajho, completa SKU y Cantidad");
+            if(!db_tajho[sku] || !qty) return;
 
-            const payload = {
-                tipo: 'CARGA', // Cambiar a 'DEVOLUCION' si estás en ese módulo
-                datos: [
-                    new Date().toLocaleString(),
-                    sku,
-                    db_ref[sku].desc,
-                    qty,
-                    db_ref[sku].um
-                ]
-            };
+            const umActual = currentMode === 'CARGA' ? 'CJ' : db_tajho[sku].u;
+            const dataRow = [new Date().toLocaleString(), sku, db_tajho[sku].d, qty, umActual];
 
-            // Mostrar en lista local inmediatamente
-            addToList(sku, qty, db_ref[sku].um);
+            // Renderizado instantáneo en lista
+            renderLog(sku, qty, umActual);
 
-            try {
-                await fetch(CLOUD_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Importante para Google Apps Script
-                    body: JSON.stringify(payload)
-                });
-                document.getElementById('sku-in').value = "";
-                document.getElementById('qty-in').value = "";
-                document.getElementById('display-info').classList.add('hidden');
-                navigator.vibrate(50);
-            } catch (e) {
-                alert("Error al enviar a la nube");
-            }
+            // Enviar a nube en silencio (sin bloquear la app)
+            fetch(CLOUD_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ tipo: currentMode, datos: dataRow })
+            });
+
+            // Limpiar rápido
+            document.getElementById('sku-in').value = "";
+            document.getElementById('qty-in').value = "";
+            document.getElementById('info-box').classList.add('hidden');
+            document.getElementById('sku-in').focus();
+            navigator.vibrate(40);
         }
 
-        function addToList(sku, qty, um) {
-            const list = document.getElementById('recent-list');
-            const item = document.createElement('div');
-            item.className = "glass-card p-5 flex justify-between items-center border-l-4 border-l-blue-600";
-            item.innerHTML = `
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase">${sku}</p>
-                    <p class="text-xs font-bold text-slate-800">${db_ref[sku].desc}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-lg font-black text-blue-600">${qty}</p>
-                    <p class="text-[8px] font-bold text-slate-300 uppercase">${um}</p>
-                </div>
-            `;
-            list.prepend(item);
+        function renderLog(sku, qty, um) {
+            const log = document.getElementById('log-list');
+            const div = document.createElement('div');
+            div.className = "flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100";
+            div.innerHTML = `<div><p class="text-[10px] font-black text-slate-400">${sku}</p><p class="text-xs font-bold text-slate-800">${db_tajho[sku].d}</p></div>
+                             <div class="text-right"><p class="text-lg font-black text-blue-600">${qty}</p><p class="text-[8px] font-bold text-slate-300 uppercase">${um}</p></div>`;
+            log.prepend(div);
         }
 
-        window.onload = syncCloud;
+        // Ejecutar sync al iniciar pero no bloquear
+        window.onload = () => { if(Object.keys(db_tajho).length === 0) syncCloud(); };
     </script>
 </body>
 </html>
