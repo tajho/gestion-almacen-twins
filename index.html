@@ -3,250 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v29</title>
+    <title>TAJHO.OS v30</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
-        .card-main { background: white; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-        .input-qty { background: #f1f5f9; border-radius: 12px; border: 2px solid transparent; text-align: center; font-weight: 800; transition: 0.2s; }
-        .input-qty:focus { border-color: #2563eb; background: white; outline: none; }
-        .btn-plus { background: #2563eb; color: white; border-radius: 12px; transition: 0.2s; font-weight: 800; }
-        .btn-plus:active { transform: scale(0.9); }
+        :root { --blue: #2563eb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow-x: hidden; }
+        
+        .card-modern { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
+        .input-clean { background: #f1f5f9; border-radius: 1rem; border: 2px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.8rem; }
+        .input-clean:focus { border-color: var(--blue); background: white; outline: none; }
+
+        /* Pantalla de Bienvenida */
+        #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .hide-landing { transform: translateY(-100%); visibility: hidden; }
+
+        /* Menú Lateral */
+        #side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: white; z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-right: 1px solid #f1f5f9; }
+        .menu-active { left: 0 !important; box-shadow: 20px 0 60px rgba(0,0,0,0.05); }
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); z-index: 900; display: none; }
+
         .tab-panel { display: none; }
-        .active { display: block; }
-        #side-menu { position: fixed; top: 0; left: -100%; width: 80%; height: 100%; background: white; z-index: 1000; transition: 0.3s; }
-        .menu-open { left: 0 !important; }
-        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 900; display: none; backdrop-filter: blur(2px); }
+        .active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="toggleMenu()"></div>
-    <nav id="side-menu" class="p-8">
-        <h2 class="text-2xl font-black italic mb-8 text-blue-600">TAJHO.OS</h2>
-        <div class="space-y-6">
-            <button onclick="navTo('contenedor')" class="block font-bold text-slate-600">📦 Carga Contenedor</button>
-            <button onclick="navTo('devoluciones')" class="block font-bold text-slate-600">🔄 Devoluciones</button>
-            <button onclick="navTo('historial')" class="block font-bold text-slate-600">📂 Historial</button>
-        </div>
-    </nav>
 
-    <header class="p-4 flex justify-between items-center bg-white sticky top-0 z-50">
-        <button onclick="toggleMenu()" class="p-2 text-slate-600">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <div id="landing">
+        <header class="mb-12">
+            <h1 class="text-5xl font-[800] tracking-tighter leading-tight">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
+        </header>
+        <div class="space-y-4">
+            <button onclick="navTo('contenedor')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl">
+                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
+                </div>
+                <div class="text-left">
+                    <p class="text-sm font-black uppercase tracking-widest">Contenedor</p>
+                    <p class="text-[9px] font-bold text-slate-400">GESTIÓN DE CARGA</p>
+                </div>
+            </button>
+            <button onclick="navTo('devoluciones')" class="card-modern w-full p-6 flex items-center gap-5 border-none shadow-xl">
+                <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
+                </div>
+                <div class="text-left">
+                    <p class="text-sm font-black uppercase tracking-widest">Devoluciones</p>
+                    <p class="text-[9px] font-bold text-slate-400">CONTROL DE RETORNOS</p>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <aside id="side-menu" class="p-8 flex flex-col">
+        <div class="mb-12">
+            <h2 class="text-2xl font-[800] tracking-tighter italic">TAJHO<span class="text-blue-600">.OS</span></h2>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em]">Logistics v30</p>
+        </div>
+        <nav class="space-y-6">
+            <button onclick="navTo('contenedor')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
+                Carga / Contenedor
+            </button>
+            <button onclick="navTo('devoluciones')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
+                Devoluciones
+            </button>
+            <button onclick="navTo('historial')" class="flex items-center gap-4 text-sm font-bold text-slate-600">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+                Historial
+            </button>
+        </nav>
+    </aside>
+
+    <header class="h-16 px-6 flex justify-between items-center bg-white/90 backdrop-blur sticky top-0 z-100">
+        <button onclick="toggleMenu()" class="p-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div class="text-center">
-            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Almacén</p>
-            <h1 class="text-xs font-black italic">TAJHO<span class="text-blue-600">.OS</span></h1>
+            <p id="nav-title" class="text-[8px] font-black uppercase tracking-widest text-slate-400">Contenedor</p>
+            <h3 class="text-xs font-black italic">TAJHO<span class="text-blue-600">.OS</span></h3>
         </div>
-        <div class="w-10 text-[9px] font-bold text-blue-600" id="clock">00:00</div>
+        <div class="w-10"></div>
     </header>
 
-    <main class="p-4">
-        <section id="view-contenedor" class="tab-panel active space-y-4">
-            <div id="status-card" class="hidden bg-[#0f172a] p-5 rounded-[2rem] text-white">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <p class="text-[9px] font-bold text-blue-400 uppercase">Progreso</p>
-                        <h2 id="perc-val" class="text-3xl font-black italic leading-none">0%</h2>
-                    </div>
-                    <div class="text-right">
-                        <p id="unit-count" class="text-[10px] font-bold">0 / 0 UND</p>
-                    </div>
+    <main class="p-6">
+        <div id="view-contenedor" class="tab-panel active space-y-4">
+            <div id="status-bar" class="hidden card-modern bg-[#0f172a] p-6 text-white border-none">
+                <div class="flex justify-between items-end mb-4">
+                    <h4 id="perc-txt" class="text-4xl font-black italic leading-none">0%</h4>
+                    <span id="unit-txt" class="text-[10px] font-bold text-blue-400">0 / 0 UND</span>
                 </div>
-                <div class="h-1 w-full bg-white/10 rounded-full mt-3 overflow-hidden">
-                    <div id="perc-bar" class="h-full bg-blue-500 transition-all" style="width: 0%"></div>
+                <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div id="perc-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
 
-            <div id="input-card" class="hidden card-main p-5 border border-slate-100">
-                <div class="flex justify-between items-start mb-3">
+            <div id="ops-card" class="hidden card-modern p-6 space-y-4">
+                <div class="flex justify-between items-start">
                     <div>
-                        <select id="sel-sku" onchange="updateItemInfo()" class="text-xl font-black bg-transparent outline-none text-slate-900"></select>
-                        <p id="item-desc" class="text-[9px] font-bold text-blue-500 uppercase"></p>
+                        <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black bg-transparent outline-none w-full"></select>
+                        <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase tracking-widest"></p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-[8px] font-black text-slate-400 uppercase">Restante</p>
-                        <p id="item-rem" class="text-lg font-black text-slate-900">0</p>
+                    <div class="text-right pl-4">
+                        <p class="text-[8px] font-black text-slate-300 uppercase leading-none">Falta</p>
+                        <p id="live-rem" class="text-xl font-black">0</p>
                     </div>
                 </div>
 
-                <div class="flex gap-2 items-center justify-center">
-                    <input type="number" id="qty-add" class="input-qty w-24 h-12 text-xl" placeholder="Cant." inputmode="numeric">
-                    <button onclick="doSum()" class="btn-plus w-12 h-12 text-2xl flex items-center justify-center shadow-lg shadow-blue-100">+</button>
+                <div class="flex gap-3 justify-center">
+                    <input type="number" id="qty-in" class="input-clean w-24 text-center text-xl" placeholder="0" inputmode="numeric">
+                    <button onclick="sumarBulto()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform text-2xl font-bold">+</button>
                 </div>
                 
-                <button onclick="finishAndSave()" class="w-full mt-4 py-2 text-[8px] font-black text-slate-300 uppercase tracking-widest">Finalizar Despacho</button>
+                <button onclick="finalizarCarga()" class="w-full py-3 text-[8px] font-black text-slate-300 uppercase tracking-widest mt-4">Generar Reporte Oficial</button>
             </div>
 
-            <div id="setup-card" class="card-main p-6 space-y-3">
+            <div id="setup-card" class="card-modern p-6 space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-[10px] font-black uppercase text-slate-400">Nuevo Manifiesto</h3>
-                    <button onclick="document.getElementById('xl-file').click()" class="text-[9px] font-bold text-blue-600 underline">Vincular Base Datos</button>
-                    <input type="file" id="xl-file" class="hidden" onchange="loadXL(event)">
+                    <h3 class="text-[9px] font-black uppercase text-slate-400">Configuración</h3>
+                    <input type="file" id="xl-in" class="hidden" onchange="loadXl(event)">
+                    <button onclick="document.getElementById('xl-in').click()" class="text-[9px] font-black text-blue-600 underline">Vincular Base</button>
                 </div>
-                <input type="text" id="in-sku" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="CÓDIGO (SKU)">
-                <input type="text" id="in-desc" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="DESCRIPCIÓN">
-                <input type="number" id="in-meta" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="META UNIDADES">
-                <button onclick="addToList()" class="w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase">Agregar Item</button>
-                <div id="pre-list" class="space-y-2 mt-4"></div>
-                <button id="btn-init" onclick="startLoading()" class="hidden w-full bg-blue-600 text-white py-4 rounded-xl text-[11px] font-black uppercase shadow-lg shadow-blue-200">Iniciar Carga</button>
+                <input type="text" id="s-sku" class="input-clean w-full text-xs uppercase" placeholder="SKU / CÓDIGO">
+                <input type="text" id="s-desc" class="input-clean w-full text-xs uppercase" placeholder="DESCRIPCIÓN">
+                <input type="number" id="s-meta" class="input-clean w-full text-xs" placeholder="META TOTAL">
+                <button onclick="addMani()" class="w-full bg-slate-900 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Añadir Item</button>
+                <div id="pre-list" class="space-y-1"></div>
+                <button id="btn-start" onclick="startWork()" class="hidden w-full bg-blue-600 text-white py-4 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-100">Iniciar Operación</button>
             </div>
-        </section>
+        </div>
 
-        <section id="view-devoluciones" class="tab-panel space-y-4">
-            <div class="card-main p-6 space-y-3">
-                <h3 class="text-[10px] font-black uppercase text-slate-400">Registrar Devolución</h3>
-                <input type="text" id="ret-cli" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="CLIENTE / VENDEDOR">
-                <input type="text" id="ret-sku" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="SKU">
-                <input type="number" id="ret-qty" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold" placeholder="CANTIDAD">
-                <textarea id="ret-obs" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold h-20" placeholder="OBSERVACIONES"></textarea>
-                <button onclick="saveRet()" class="w-full bg-orange-500 text-white py-3 rounded-xl text-[10px] font-black uppercase">Guardar Retorno</button>
+        <div id="view-devoluciones" class="tab-panel space-y-4">
+            <div class="card-modern p-6 space-y-4">
+                <h3 class="text-[10px] font-black uppercase text-slate-400">Registro de Retorno</h3>
+                <input type="text" id="ret-cli" class="input-clean w-full text-xs uppercase" placeholder="CLIENTE / VENDEDOR">
+                <input type="text" id="ret-sku" class="input-clean w-full text-xs uppercase" placeholder="CÓDIGO PRODUCTO">
+                <input type="number" id="ret-qty" class="input-clean w-full text-xs" placeholder="CANTIDAD">
+                <textarea id="ret-obs" class="input-clean w-full text-xs h-24" placeholder="OBSERVACIONES"></textarea>
+                <button onclick="saveRet()" class="w-full bg-orange-500 text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest">Guardar en Historial</button>
             </div>
-        </section>
+        </div>
 
-        <section id="view-historial" class="tab-panel space-y-3">
-            <div id="hist-list" class="space-y-3"></div>
-        </section>
+        <div id="view-historial" class="tab-panel space-y-3">
+            <div id="hist-content" class="space-y-3"></div>
+        </div>
     </main>
 
     <script>
-        let db_desc = {}, manifest = [], time = 0, timer;
+        const { jsPDF } = window.jspdf;
+        let db_ref = {}, manifest = [];
 
         function toggleMenu() {
-            document.getElementById('side-menu').classList.toggle('menu-open');
+            document.getElementById('side-menu').classList.toggle('menu-active');
             const ov = document.getElementById('overlay');
-            ov.style.display = (ov.style.display === 'block') ? 'none' : 'block';
+            ov.style.display = ov.style.display === 'block' ? 'none' : 'block';
         }
 
-        function navTo(v) {
+        function navTo(t) {
+            document.getElementById('landing').classList.add('hide-landing');
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('view-'+v).classList.add('active');
+            document.getElementById('view-' + t).classList.add('active');
+            document.getElementById('nav-title').innerText = t;
+            if(t === 'historial') renderHist();
             toggleMenu();
-            if(v === 'historial') showHist();
         }
 
-        function loadXL(e) {
+        function loadXl(e) {
             const reader = new FileReader();
             reader.onload = (f) => {
-                const wb = XLSX.read(new Uint8Array(f.target.result), {type: 'array'});
+                const data = new Uint8Array(f.target.result);
+                const wb = XLSX.read(data, {type: 'array'});
                 XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]).forEach(r => {
-                    db_desc[String(r.CODIGO || r.codigo).toUpperCase()] = r.DESCRIPCION || r.descripcion;
+                    db_ref[String(r.CODIGO || r.codigo).toUpperCase()] = r.DESCRIPCION || r.descripcion;
                 });
-                alert("Base de datos cargada.");
+                alert("Base Tajho vinculada.");
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         }
 
-        function addToList() {
-            const sku = document.getElementById('in-sku').value.toUpperCase().trim();
-            const desc = document.getElementById('in-desc').value.toUpperCase() || db_desc[sku] || "SIN DESCRIPCIÓN";
-            const meta = parseInt(document.getElementById('in-meta').value);
+        function addMani() {
+            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
+            const desc = document.getElementById('s-desc').value.toUpperCase() || db_ref[sku] || "NUEVO ITEM";
+            const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
             manifest.push({ sku, desc, meta, real: 0 });
-            document.getElementById('in-sku').value=''; document.getElementById('in-desc').value=''; document.getElementById('in-meta').value='';
+            document.getElementById('s-sku').value = ''; document.getElementById('s-desc').value = ''; document.getElementById('s-meta').value = '';
             renderPre();
-            document.getElementById('btn-init').classList.remove('hidden');
+            document.getElementById('btn-start').classList.remove('hidden');
         }
 
         function renderPre() {
             document.getElementById('pre-list').innerHTML = manifest.map(i => `
-                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
-                    <div class="text-[9px] font-bold"><strong>${i.sku}</strong><br><span class="text-slate-400">${i.desc}</span></div>
-                    <div class="text-[10px] font-black">${i.meta} UND</div>
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                    <span class="text-[10px] font-black">${i.sku}</span>
+                    <span class="text-[10px] font-bold text-slate-400">${i.meta} UND</span>
                 </div>
             `).join('');
         }
 
-        function startLoading() {
+        function startWork() {
             document.getElementById('setup-card').classList.add('hidden');
-            document.getElementById('status-card').classList.remove('hidden');
-            document.getElementById('input-card').classList.remove('hidden');
+            document.getElementById('status-bar').classList.remove('hidden');
+            document.getElementById('ops-card').classList.remove('hidden');
             const sel = document.getElementById('sel-sku');
             sel.innerHTML = manifest.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            updateItemInfo();
-            timer = setInterval(() => {
-                time++;
-                let m = Math.floor(time/60).toString().padStart(2,'0');
-                let s = (time%60).toString().padStart(2,'0');
-                document.getElementById('clock').innerText = `${m}:${s}`;
-            }, 1000);
-            refreshUI();
+            syncItem();
+            updateUI();
         }
 
-        function updateItemInfo() {
+        function syncItem() {
             const item = manifest.find(i => i.sku === document.getElementById('sel-sku').value);
-            document.getElementById('item-desc').innerText = item.desc;
-            document.getElementById('item-rem').innerText = item.meta - item.real;
+            document.getElementById('live-desc').innerText = item.desc;
+            document.getElementById('live-rem').innerText = item.meta - item.real;
         }
 
-        function doSum() {
-            const val = parseInt(document.getElementById('qty-add').value);
-            if(!val) return;
+        function sumarBulto() {
+            const q = parseInt(document.getElementById('qty-in').value);
+            if(!q) return;
             const item = manifest.find(i => i.sku === document.getElementById('sel-sku').value);
-            item.real += val;
-            document.getElementById('qty-add').value = '';
-            refreshUI();
-            updateItemInfo();
-            navigator.vibrate(50);
+            item.real += q;
+            document.getElementById('qty-in').value = '';
+            updateUI();
+            syncItem();
+            navigator.vibrate(30);
         }
 
-        function refreshUI() {
-            const totalMeta = manifest.reduce((a, b) => a + b.meta, 0);
-            const totalReal = manifest.reduce((a, b) => a + b.real, 0);
-            const p = Math.round((totalReal / totalMeta) * 100) || 0;
-            document.getElementById('perc-val').innerText = p + "%";
+        function updateUI() {
+            const m = manifest.reduce((a, b) => a + b.meta, 0);
+            const r = manifest.reduce((a, b) => a + b.real, 0);
+            const p = Math.round((r / m) * 100) || 0;
+            document.getElementById('perc-txt').innerText = p + "%";
             document.getElementById('perc-bar').style.width = p + "%";
-            document.getElementById('unit-count').innerText = `${totalReal} / ${totalMeta} UND`;
+            document.getElementById('unit-txt').innerText = `${r} / ${m} UND`;
         }
 
         function saveRet() {
-            const r = {
+            const ret = {
                 cli: document.getElementById('ret-cli').value,
                 sku: document.getElementById('ret-sku').value,
                 qty: document.getElementById('ret-qty').value,
-                fecha: new Date().toLocaleString()
+                fecha: new Date().toLocaleString(),
+                tipo: 'RETORNO'
             };
-            let logs = JSON.parse(localStorage.getItem('tajho_v29_logs') || '[]');
-            logs.unshift({...r, type: 'RETORNO'});
-            localStorage.setItem('tajho_v29_logs', JSON.stringify(logs));
-            alert("Devolución Guardada");
+            let logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
+            logs.unshift(ret);
+            localStorage.setItem('tajho_v30_logs', JSON.stringify(logs));
+            alert("Retorno guardado.");
             location.reload();
         }
 
-        function finishAndSave() {
-            const { jsPDF } = window.jspdf;
+        function finalizarCarga() {
             const doc = new jsPDF();
-            doc.setFontSize(16); doc.text("REPORTE DE CARGA TAJHO.OS", 14, 20);
+            doc.setFontSize(18); doc.text("TAJHO.OS - REPORTE DE CARGA", 14, 20);
             doc.autoTable({
                 startY: 30,
-                head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIFF']],
+                head: [['CÓDIGO', 'DESCRIPCIÓN', 'META', 'REAL', 'FALTA']],
                 body: manifest.map(i => [i.sku, i.desc, i.meta, i.real, i.meta - i.real])
             });
             doc.setFontSize(10);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
             
-            let logs = JSON.parse(localStorage.getItem('tajho_v29_logs') || '[]');
-            logs.unshift({id: Date.now(), fecha: new Date().toLocaleString(), type: 'CARGA'});
-            localStorage.setItem('tajho_v29_logs', JSON.stringify(logs));
+            let logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
+            logs.unshift({ id: Date.now(), fecha: new Date().toLocaleString(), tipo: 'CARGA' });
+            localStorage.setItem('tajho_v30_logs', JSON.stringify(logs));
             
             doc.save(`TAJHO_REPORTE_${Date.now()}.pdf`);
             location.reload();
         }
 
-        function showHist() {
-            const logs = JSON.parse(localStorage.getItem('tajho_v29_logs') || '[]');
-            document.getElementById('hist-list').innerHTML = logs.map(l => `
-                <div class="card-main p-4 flex justify-between items-center ${l.type === 'RETORNO' ? 'border-l-4 border-orange-500' : ''}">
+        function renderHist() {
+            const logs = JSON.parse(localStorage.getItem('tajho_v30_logs') || '[]');
+            document.getElementById('hist-content').innerHTML = logs.map(l => `
+                <div class="card-modern p-5 flex justify-between items-center ${l.tipo === 'RETORNO' ? 'border-l-4 border-l-orange-500' : ''}">
                     <div>
-                        <p class="text-[7px] font-black text-slate-400">${l.fecha}</p>
-                        <h4 class="text-xs font-black">${l.type}: ${l.sku || l.id}</h4>
+                        <p class="text-[8px] font-black text-slate-400 uppercase">${l.fecha}</p>
+                        <h4 class="text-xs font-black uppercase">${l.tipo}: ${l.sku || l.id}</h4>
                     </div>
-                    <span class="text-[9px] font-black text-blue-600">VER</span>
+                    <span class="text-[9px] font-black text-blue-600">PDF</span>
                 </div>
             `).join('');
         }
