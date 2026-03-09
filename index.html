@@ -2,124 +2,161 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TAJHO.OS v14.1 - Smart Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TAJHO.OS v15 - Arquitectura Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #2563eb; --bg: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; overflow: hidden; height: 100vh; }
+        :root { --accent: #2563eb; --bg: #f8fafc; --card: #ffffff; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: #0f172a; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
         
-        .glass-card { background: white; border-radius: 2.2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); }
-        .input-tajho { background: #f1f5f9; border-radius: 1.2rem; border: 2px solid transparent; transition: all 0.2s; font-weight: 700; text-align: center; }
-        .input-tajho:focus { border-color: var(--accent); background: white; }
-        
-        .main-scroll { height: calc(100vh - 130px); overflow-y: auto; scroll-behavior: smooth; }
+        /* Contenedor Principal Adaptativo */
+        .viewport-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 0 1.25rem;
+            padding-bottom: 100px; /* Espacio para el Navbar */
+        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* Animaciones inteligentes para no perder el foco */
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .nav-shadow { shadow-[0_-10px_40px_rgba(0,0,0,0.05)]; }
+        /* Arquitectura de Tarjetas */
+        .glass-card { 
+            background: var(--card); 
+            border-radius: 2rem; 
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 4px 15px -1px rgba(0,0,0,0.02);
+        }
+
+        /* Inputs de Alta Precisión */
+        .input-pro {
+            background: #f1f5f9;
+            border-radius: 1.2rem;
+            border: 2px solid transparent;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .input-pro:focus {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Botones de Acción Rápida */
+        .btn-action {
+            border-radius: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s active;
+        }
+        .btn-action:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* Animación de flujo */
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex flex-col">
+<body>
 
-    <header class="px-7 pt-6 pb-2 flex justify-between items-center shrink-0">
+    <header class="px-6 pt-6 pb-2 flex justify-between items-center shrink-0">
         <div>
-            <h1 class="text-2xl font-[800] tracking-tighter text-slate-900 leading-none">TAJHO<span class="text-blue-600">.OS</span></h1>
-            <p class="text-[8px] font-extrabold text-slate-400 uppercase tracking-widest mt-1.5">Inventory Management V14.1</p>
+            <h1 class="text-xl font-[800] tracking-tighter text-slate-900 leading-none">TAJHO<span class="text-blue-600">.OS</span></h1>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">Inventory Management</p>
         </div>
-        <div class="text-right">
-            <p class="text-[7px] font-black text-slate-300 uppercase mb-1">Efficiency Timer</p>
-            <div class="bg-blue-50 px-3 py-1 rounded-xl border border-blue-100/50">
-                <span id="timer-val" class="text-[11px] font-black text-blue-600 font-mono">00:00:00</span>
+        <div class="flex flex-col items-end">
+            <div class="bg-blue-50 px-3 py-1 rounded-xl border border-blue-100 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
+                <span id="timer-val" class="text-[10px] font-black text-blue-600 font-mono">00:00:00</span>
             </div>
         </div>
     </header>
 
-    <main class="main-scroll no-scrollbar px-5">
+    <main class="viewport-area no-scrollbar">
         
-        <section id="tab-recepcion" class="space-y-4 pt-3 fade-in">
-            
-            <div id="stats-panel" class="hidden">
-                <div class="bg-[#0f172a] rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="space-y-1">
-                            <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest opacity-80">Progreso Global</p>
-                            <h2 id="global-perc" class="text-4xl font-black italic leading-none">0%</h2>
-                        </div>
-                        <div class="text-right">
-                            <p id="global-counter" class="text-sm font-black tracking-tight">0 / 0</p>
-                            <p class="text-[8px] font-bold text-slate-500 uppercase">Unidades Totales</p>
-                        </div>
+        <div id="stats-panel" class="hidden slide-in mt-4">
+            <div class="bg-slate-900 rounded-[2rem] p-5 text-white flex justify-between items-center shadow-xl">
+                <div class="flex-1">
+                    <p class="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1">Contenedor en Curso</p>
+                    <div class="flex items-baseline gap-2">
+                        <h2 id="global-perc" class="text-3xl font-black italic">0%</h2>
+                        <span id="global-counter" class="text-[10px] font-bold text-slate-400 font-mono">0 / 0</span>
                     </div>
+                </div>
+                <div class="w-24">
                     <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                         <div id="global-bar" class="h-full bg-blue-500 duration-1000" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <section id="tab-recepcion" class="space-y-4 pt-4">
+            
             <div id="config-card" class="glass-card p-6 space-y-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-bold">+</div>
-                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-tight">Configurar Contenedor</h3>
+                <div class="flex justify-between items-center">
+                    <h3 class="font-black text-slate-800 text-[10px] uppercase tracking-widest">Manifiesto de Carga</h3>
+                    <span class="text-blue-600 text-xs">📦</span>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="in-cod" placeholder="CÓDIGO" class="input-tajho p-3.5 text-xs outline-none uppercase">
-                    <input type="number" id="in-meta" placeholder="CANTIDAD" class="input-tajho p-3.5 text-xs outline-none">
+                <div class="grid grid-cols-12 gap-2">
+                    <input type="text" id="in-cod" placeholder="CÓDIGO" class="col-span-7 input-pro p-4 text-xs text-center uppercase outline-none">
+                    <input type="number" id="in-meta" placeholder="CANT" class="col-span-5 input-pro p-4 text-xs text-center outline-none">
                 </div>
                 
-                <button onclick="addPackingItem()" class="w-full py-3.5 bg-slate-50 text-slate-400 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all">Añadir al Manifiesto</button>
+                <button onclick="addPackingItem()" class="w-full py-4 bg-slate-50 text-slate-500 rounded-2xl font-black text-[9px] uppercase tracking-widest border border-slate-100">Registrar en Lista</button>
                 
-                <div id="mini-list" class="max-h-[180px] overflow-y-auto space-y-2 no-scrollbar"></div>
+                <div id="mini-list" class="max-h-48 overflow-y-auto space-y-2 no-scrollbar"></div>
                 
-                <button id="btn-start-ops" onclick="startOperations()" class="hidden w-full bg-blue-600 text-white py-4.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-100">Iniciar Recepción</button>
+                <button id="btn-start-ops" onclick="startOperations()" class="hidden w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-100">Abrir Operación</button>
             </div>
 
-            <div id="ops-panel" class="hidden space-y-3">
-                <div class="glass-card p-8 text-center space-y-6">
-                    <div class="relative inline-block">
-                        <select id="op-select" class="appearance-none bg-transparent font-black text-slate-800 text-2xl pr-6 outline-none"></select>
-                        <div class="absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 text-[10px]">▼</div>
+            <div id="ops-panel" class="hidden space-y-4 slide-in">
+                <div class="glass-card p-6 text-center space-y-4 border-2 border-blue-50">
+                    <div class="flex items-center justify-between px-2">
+                        <p class="text-[8px] font-black text-slate-400 uppercase">Selección:</p>
+                        <select id="op-select" class="bg-transparent font-black text-slate-800 text-sm outline-none text-right"></select>
                     </div>
-                    
-                    <input type="number" id="op-input" placeholder="0" class="w-full text-7xl font-black text-slate-900 bg-transparent text-center outline-none">
-                    
-                    <button onclick="submitCount()" class="w-full bg-blue-600 text-white py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-blue-100">Registrar Bulto</button>
+                    <input type="number" id="op-input" placeholder="0" class="w-full text-7xl font-black text-slate-900 bg-transparent text-center outline-none leading-none">
+                    <button onclick="submitCount()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">Confirmar Ingreso</button>
                 </div>
+
+                <div id="items-grid" class="space-y-2"></div>
                 
-                <div id="items-grid" class="space-y-2.5"></div>
-                
-                <button onclick="closeContainerReport()" class="w-full py-4 text-slate-300 font-bold text-[8px] uppercase tracking-[0.3em]">Finalizar Jornada</button>
+                <button onclick="closeContainerReport()" class="w-full py-4 text-slate-300 font-bold text-[8px] uppercase tracking-widest">Finalizar Contenedor</button>
             </div>
         </section>
 
-        <section id="tab-historial" class="hidden space-y-3 pt-3 fade-in">
-            <div class="sticky top-0 bg-[#f8fafc] pb-2 z-10">
-                <input type="text" id="hist-search" oninput="filterHistory()" placeholder="🔍 Buscar por código o reporte..." class="input-tajho w-full p-4 text-left text-xs shadow-sm">
+        <section id="tab-historial" class="hidden space-y-4 pt-4">
+            <div class="sticky top-0 bg-[#f8fafc] z-10 pb-2">
+                <input type="text" id="hist-search" oninput="filterHistory()" placeholder="🔍 Buscar por código o SKU..." class="input-pro w-full p-4 text-left text-xs shadow-sm">
             </div>
-            <div id="hist-container" class="space-y-2.5"></div>
+            <div id="hist-container" class="space-y-3"></div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 w-full bg-white h-20 flex justify-around items-center z-50 rounded-t-[2.2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 px-4">
-        <button onclick="switchTab('tab-recepcion', this)" class="flex flex-col items-center flex-1 tab-active">
-            <span class="text-xl mb-1">📦</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Carga</span>
+    <nav class="fixed bottom-0 left-0 w-full bg-white h-24 flex justify-around items-center z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 px-8">
+        <button onclick="switchTab('tab-recepcion', this)" class="flex flex-col items-center flex-1 text-blue-600">
+            <span class="text-2xl mb-1">📦</span>
+            <span class="text-[8px] font-black uppercase">Carga</span>
         </button>
         <button onclick="switchTab('tab-devolucion', this)" class="flex flex-col items-center flex-1 text-slate-300">
-            <span class="text-xl mb-1">🔄</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Devolu.</span>
+            <span class="text-2xl mb-1">🔄</span>
+            <span class="text-[8px] font-black uppercase">Devolu.</span>
         </button>
         <button onclick="switchTab('tab-historial', this)" class="flex flex-col items-center flex-1 text-slate-300">
-            <span class="text-xl mb-1">📂</span>
-            <span class="text-[8px] font-black uppercase tracking-tighter">Historial</span>
+            <span class="text-2xl mb-1">📂</span>
+            <span class="text-[8px] font-black uppercase">Historial</span>
         </button>
     </nav>
 
@@ -131,8 +168,8 @@
         function switchTab(id, el) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active', 'text-slate-300'));
-            el.classList.add('tab-active');
+            document.querySelectorAll('nav button').forEach(b => b.classList.replace('text-blue-600', 'text-slate-300'));
+            el.classList.replace('text-slate-300', 'text-blue-600');
             if(id === 'tab-historial') renderHistory();
         }
 
@@ -150,7 +187,7 @@
         function renderMiniList() {
             const cont = document.getElementById('mini-list');
             cont.innerHTML = pList.map((p, idx) => `
-                <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-100 fade-in">
+                <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-100 slide-in">
                     <span class="text-[11px] font-black text-slate-800">${p.cod}</span>
                     <div class="flex items-center gap-3">
                         <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg">${p.meta} UN</span>
@@ -195,13 +232,13 @@
             
             const grid = document.getElementById('items-grid');
             grid.innerHTML = pList.map(p => `
-                <div class="glass-card p-4 flex justify-between items-center border-l-4 ${p.real >= p.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
+                <div class="glass-card p-5 flex justify-between items-center border-l-[6px] ${p.real >= p.meta ? 'border-l-green-500' : 'border-l-blue-600'}">
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-tight">${p.cod}</p>
-                        <p class="text-xs font-black text-slate-800">${p.real} / ${p.meta}</p>
+                        <p class="text-sm font-black text-slate-800">${p.real} / ${p.meta}</p>
                     </div>
-                    <div class="w-20 h-1 bg-slate-50 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600" style="width: ${Math.min((p.real/p.meta)*100, 100)}%"></div>
+                    <div class="w-24 h-1.5 bg-slate-50 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.3)]" style="width: ${Math.min((p.real/p.meta)*100, 100)}%"></div>
                     </div>
                 </div>`).join('');
         }
@@ -210,12 +247,12 @@
             clearInterval(timer);
             const reportID = "TJ-" + Math.floor(1000 + Math.random() * 9000);
             const time = document.getElementById('timer-val').innerText;
-            const storage = JSON.parse(localStorage.getItem('tajho_v14_data') || '[]');
+            const storage = JSON.parse(localStorage.getItem('tajho_v15_data') || '[]');
             storage.unshift({ id: reportID, tipo: 'RECEPCIÓN', fecha: new Date().toLocaleString(), tiempo: time, data: [...pList] });
-            localStorage.setItem('tajho_v14_data', JSON.stringify(storage));
+            localStorage.setItem('tajho_v15_data', JSON.stringify(storage));
             
             const doc = new jsPDF();
-            doc.text("REPORTE TAJHO.OS", 14, 20);
+            doc.text("REPORTE OPERATIVO TAJHO.OS", 14, 20);
             doc.autoTable({ startY: 30, head: [['SKU', 'PLAN', 'REAL', 'ST']], body: pList.map(i => [i.cod, i.meta, i.real, i.real >= i.meta ? 'OK' : 'F']) });
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
             doc.save(`${reportID}_Tajho.pdf`);
@@ -224,19 +261,20 @@
 
         function renderHistory(filter = "") {
             const cont = document.getElementById('hist-container');
-            const storage = JSON.parse(localStorage.getItem('tajho_v14_data') || '[]');
+            const storage = JSON.parse(localStorage.getItem('tajho_v15_data') || '[]');
             const filtered = storage.filter(h => h.id.includes(filter) || h.tipo.includes(filter) || (h.data && h.data.some(d => d.cod.includes(filter))));
             
             cont.innerHTML = filtered.map(h => `
-                <div class="glass-card p-5 flex justify-between items-center">
+                <div class="glass-card p-5 flex justify-between items-center slide-in">
                     <div>
                         <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">${h.fecha}</p>
                         <h4 class="font-black text-slate-800 text-xs">${h.id} • ${h.tipo}</h4>
                     </div>
                     <div class="text-right">
-                        <p class="text-[11px] font-black text-blue-600 font-mono">${h.tiempo}</p>
+                        <p class="text-[11px] font-black text-blue-600 font-mono tracking-tighter">${h.tiempo}</p>
+                        <p class="text-[7px] font-bold text-slate-300 uppercase">Tiempo</p>
                     </div>
-                </div>`).join('') || "<div class='text-center py-20 text-[10px] font-black text-slate-300'>SIN REGISTROS</div>";
+                </div>`).join('') || "<div class='text-center py-20 opacity-20 font-black text-xs uppercase'>Sin registros</div>";
         }
 
         function filterHistory() { renderHistory(document.getElementById('hist-search').value.toUpperCase()); }
