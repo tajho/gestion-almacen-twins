@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v38 | ELITE</title>
+    <title>TAJHO.OS v39 | NEO-ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #2563eb; --bg: #ffffff; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; overflow: hidden; height: 100vh; -webkit-tap-highlight-color: transparent; }
+        :root { --accent: #3b82f6; --dark: #0f172a; --surface: #ffffff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: var(--dark); overflow: hidden; height: 100vh; }
         
-        /* Alto Estilismo: Glassmorphism y Sombras Profundas */
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(241, 245, 249, 0.7); border-radius: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.04); }
-        .input-elite { background: #f8fafc; border-radius: 1.5rem; border: 2px solid transparent; font-weight: 700; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 1.1rem 1.5rem; letter-spacing: -0.02em; }
-        .input-elite:focus { border-color: var(--accent); background: white; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.06); outline: none; }
-        
-        /* Sistema de Capas Animadas */
-        #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
-        .hide-landing { transform: translateY(-100%) scale(0.95); opacity: 0; visibility: hidden; }
-        
-        .view { display: none; height: calc(100vh - 90px); overflow-y: auto; padding: 1.5rem; padding-bottom: 5rem; }
-        .view.active { display: block; animation: viewReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes viewReveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* DISEÑO SUPERIOR: NEO-CARDS */
+        .neo-card { background: var(--surface); border-radius: 2.5rem; box-shadow: 20px 20px 60px #d1d9e6, -20px -20px 60px #ffffff; border: 1px solid rgba(255,255,255,0.8); }
+        .input-neo { background: #f1f5f9; border-radius: 1.5rem; border: none; box-shadow: inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff; padding: 1.2rem; font-weight: 700; transition: 0.3s; }
+        .input-neo:focus { outline: none; box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff, 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
-        /* Barras de Carga de Alta Fidelidad */
-        .track { width: 100%; height: 6px; background: #f1f5f9; border-radius: 100px; overflow: hidden; }
-        .bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 100px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* NAVEGACIÓN CAPAS */
+        #landing { position: fixed; inset: 0; z-index: 1000; background: #f1f5f9; padding: 2rem; display: flex; flex-direction: column; transition: transform 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
+        .hide-landing { transform: translateY(-110%); }
+        
+        .view { display: none; height: calc(100vh - 100px); overflow-y: auto; padding: 1.5rem; }
+        .view.active { display: block; animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Menú Lateral Premium */
-        #side-menu { position: fixed; inset: 0; z-index: 1000; visibility: hidden; pointer-events: none; }
-        #menu-content { width: 85%; max-width: 320px; height: 100%; background: white; transform: translateX(-100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* PROGRESO PREMIUM */
+        .progress-track { width: 100%; height: 10px; background: #e2e8f0; border-radius: 20px; box-shadow: inset 2px 2px 5px #cbd5e1; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); transition: width 0.6s cubic-bezier(0.1, 1, 0.3, 1); }
+
+        /* MENU LATERAL */
+        #side-menu { position: fixed; inset: 0; z-index: 2000; visibility: hidden; pointer-events: none; }
+        #menu-content { width: 75%; height: 100%; background: var(--dark); color: white; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.7, 0, 0.3, 1); padding: 3rem 2rem; }
         #side-menu.open { visibility: visible; pointer-events: auto; }
         #side-menu.open #menu-content { transform: translateX(0); }
-        #menu-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.2); opacity: 0; transition: 0.5s; backdrop-filter: blur(8px); }
+        #menu-overlay { position: absolute; inset: 0; background: rgba(15,23,42,0.4); opacity: 0; transition: 0.4s; backdrop-filter: blur(4px); }
         #side-menu.open #menu-overlay { opacity: 1; }
     </style>
 </head>
@@ -40,97 +40,96 @@
 
     <div id="side-menu">
         <div id="menu-overlay" onclick="toggleMenu()"></div>
-        <div id="menu-content" class="p-10 flex flex-col shadow-2xl">
-            <div class="mb-12">
-                <h3 class="text-xs font-black tracking-[0.4em] text-slate-300 mb-2 uppercase italic">Sistema</h3>
-                <h2 class="text-2xl font-[800] tracking-tighter italic">TAJHO<span class="text-blue-600">.OS</span></h2>
-            </div>
-            <nav class="space-y-6 flex-1">
-                <button onclick="navTo('landing')" class="w-full flex items-center gap-5 text-lg font-bold text-slate-800 active:text-blue-600 transition-all">
-                    <span class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center italic text-sm">01</span> Inicio
-                </button>
-                <button onclick="navTo('historial')" class="w-full flex items-center gap-5 text-lg font-bold text-slate-800 active:text-blue-600 transition-all">
-                    <span class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center italic text-sm">02</span> Historial
-                </button>
+        <div id="menu-content">
+            <h2 class="text-3xl font-black italic mb-12">TAJHO<span class="text-blue-500">.OS</span></h2>
+            <nav class="space-y-8">
+                <button onclick="navTo('landing')" class="block text-xl font-bold opacity-70 hover:opacity-100 uppercase tracking-tighter">01. Inicio</button>
+                <button onclick="navTo('historial')" class="block text-xl font-bold opacity-70 hover:opacity-100 uppercase tracking-tighter">02. Historial</button>
+                <button onclick="navTo('devoluciones')" class="block text-xl font-bold opacity-70 hover:opacity-100 uppercase tracking-tighter">03. Devoluciones</button>
             </nav>
-            <div class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">Logística Elite v38.2026</div>
         </div>
     </div>
 
     <div id="landing">
-        <header class="mb-16">
-            <p class="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 mb-4 animate-pulse">Ready to Work</p>
-            <h1 class="text-6xl font-[800] tracking-tighter leading-[0.9] italic">¿Qué hacemos<br><span class="text-blue-600 font-black">hoy, Tajho?</span></h1>
-        </header>
-        <div class="space-y-5">
-            <button onclick="navTo('contenedor')" class="glass-card w-full p-8 flex items-center gap-7 active:scale-[0.97] transition-all">
-                <div class="w-16 h-16 bg-blue-600 rounded-[1.4rem] flex items-center justify-center text-white shadow-xl shadow-blue-200">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
-                </div>
-                <div class="text-left"><p class="text-sm font-[800] uppercase tracking-widest italic">Contenedor</p><p class="text-[10px] font-bold text-slate-400">NUEVA DESCARGA</p></div>
-            </button>
-            <button onclick="navTo('historial')" class="glass-card w-full p-8 flex items-center gap-7 active:scale-[0.97] transition-all">
-                <div class="w-16 h-16 bg-slate-900 rounded-[1.4rem] flex items-center justify-center text-white shadow-xl">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20v-6M9 20V10M15 20V4"/></svg>
-                </div>
-                <div class="text-left"><p class="text-sm font-[800] uppercase tracking-widest italic">Historial</p><p class="text-[10px] font-bold text-slate-400">REGISTROS EN ESPERA</p></div>
-            </button>
+        <div class="flex-1 flex flex-col justify-center">
+            <p class="text-blue-600 font-black tracking-[0.4em] uppercase text-[10px] mb-4">Logística de Alto Nivel</p>
+            <h1 class="text-6xl font-[800] tracking-tighter italic leading-tight mb-12 text-slate-900">
+                ¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span>
+            </h1>
+            
+            <div class="grid gap-6">
+                <button onclick="navTo('contenedor')" class="neo-card p-8 flex items-center gap-6 active:scale-95 transition-transform">
+                    <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                    </div>
+                    <div class="text-left"><p class="font-black italic text-lg uppercase tracking-tighter">Contenedor</p><p class="text-[10px] font-bold text-slate-400">NUEVA OPERACIÓN</p></div>
+                </button>
+
+                <button onclick="navTo('historial')" class="neo-card p-8 flex items-center gap-6 active:scale-95 transition-transform">
+                    <div class="w-16 h-16 bg-slate-900 rounded-3xl flex items-center justify-center text-white shadow-lg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 20v-6M9 20V10M15 20V4"/></svg>
+                    </div>
+                    <div class="text-left"><p class="font-black italic text-lg uppercase tracking-tighter text-slate-900">Historial</p><p class="text-[10px] font-bold text-slate-400">ESPERA Y REPORTES</p></div>
+                </button>
+            </div>
         </div>
     </div>
 
-    <header class="h-24 px-8 flex justify-between items-center bg-white/50 backdrop-blur-lg sticky top-0 z-50">
-        <button onclick="toggleMenu()" class="w-12 h-12 flex flex-col justify-center gap-1.5 active:scale-90 transition-all">
-            <div class="w-6 h-[3px] bg-slate-900 rounded-full"></div>
-            <div class="w-4 h-[3px] bg-blue-600 rounded-full"></div>
+    <header class="h-24 px-8 flex justify-between items-center bg-transparent relative z-50">
+        <button onclick="toggleMenu()" class="w-14 h-14 neo-card flex items-center justify-center text-slate-900 active:scale-90 transition-all">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="15" y2="6"/><line x1="9" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <div id="monitor-box" class="hidden flex-1 px-8">
-            <div class="track"><div id="main-bar" class="bar" style="width: 0%"></div></div>
+        <div id="global-nav" class="hidden flex-1 px-6">
+            <div class="progress-track"><div id="main-bar" class="progress-bar" style="width: 0%"></div></div>
             <div class="flex justify-between mt-2">
-                <p id="timer" class="text-[9px] font-black text-blue-600 italic tracking-[0.2em]">00:00:00</p>
-                <p id="global-pc" class="text-[9px] font-black text-slate-400 italic">0%</p>
+                <span id="timer" class="text-[10px] font-black text-blue-600">00:00:00</span>
+                <span id="global-pc" class="text-[10px] font-black text-slate-400">0%</span>
             </div>
         </div>
-        <div class="text-right"><p class="text-[10px] font-black italic tracking-widest text-slate-300">ELITE</p><p class="text-[10px] font-black italic text-blue-600">v38</p></div>
+        <div class="text-right"><p class="text-xs font-black italic">ELITE</p><p class="text-[8px] font-bold text-blue-600 tracking-widest">NEO.OS</p></div>
     </header>
 
     <main>
         <div id="view-contenedor" class="view space-y-8">
-            <div class="glass-card p-10 space-y-6">
-                <input type="text" id="c-name" class="input-elite w-full" placeholder="ID DEL CONTENEDOR (PLACA)">
+            <div class="neo-card p-8 space-y-6">
+                <input type="text" id="c-name" class="input-neo w-full text-center uppercase" placeholder="ID DEL CONTENEDOR">
                 <div class="relative">
-                    <input type="text" id="s-sku" oninput="hybridSearch()" class="input-elite w-full uppercase" placeholder="BUSCAR CÓDIGO O DESCRIPCIÓN..." autocomplete="off">
-                    <div id="search-results" class="hidden absolute z-20 w-full bg-white/95 backdrop-blur-md mt-3 rounded-[2rem] shadow-2xl border border-slate-100 max-h-64 overflow-y-auto"></div>
+                    <input type="text" id="s-sku" oninput="ultraSearch()" class="input-neo w-full" placeholder="BUSCAR ARTÍCULO (SKU/DESC)..." autocomplete="off">
+                    <div id="search-results" class="hidden absolute z-50 w-full bg-white mt-4 rounded-3xl shadow-2xl border border-slate-100 max-h-60 overflow-y-auto"></div>
                 </div>
-                <input type="text" id="s-desc" class="input-elite w-full text-[10px] text-blue-600 italic" readonly placeholder="Descripción inteligente...">
-                <input type="number" id="s-meta" class="input-elite w-full" placeholder="CANTIDAD META">
-                <button onclick="addItem()" class="w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-blue-200 active:scale-95 transition-all italic">Añadir a Lista</button>
+                <input type="text" id="s-desc" class="w-full text-center text-[10px] font-black text-blue-600 uppercase italic px-4" readonly placeholder="Descripción del producto">
+                <input type="number" id="s-meta" class="input-neo w-full text-center text-xl" placeholder="CANTIDAD">
+                <button onclick="addItem()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-200 italic active:scale-95 transition-all">Agregar a la lista</button>
             </div>
             <div id="pre-list" class="space-y-3"></div>
-            <button id="btn-save" onclick="saveContenedor()" class="hidden w-full bg-slate-900 text-white py-6 rounded-[2rem] font-black uppercase text-xs tracking-[0.4em] shadow-xl italic">Confirmar Contenedor</button>
+            <button id="btn-save" onclick="saveContenedor()" class="hidden w-full bg-slate-900 text-white py-6 rounded-3xl font-black uppercase text-xs tracking-[0.3em] shadow-2xl italic">Confirmar y Guardar</button>
         </div>
 
         <div id="view-historial" class="view space-y-6">
-            <h2 class="text-3xl font-[800] italic tracking-tighter">Espera <span class="text-blue-600">Activa</span></h2>
-            <div id="history-list" class="space-y-5"></div>
+            <h2 class="text-3xl font-black italic tracking-tighter">Registros en <span class="text-blue-600">Espera</span></h2>
+            <div id="history-list" class="space-y-4"></div>
         </div>
 
         <div id="view-ops" class="view">
-            <div class="glass-card p-10 space-y-10 text-center">
-                <div class="space-y-3">
-                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent w-full text-center outline-none italic tracking-tighter"></select>
-                    <p id="ops-desc" class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] italic"></p>
+            <div class="neo-card p-10 space-y-10 text-center relative overflow-hidden">
+                <div class="space-y-2">
+                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-black bg-transparent w-full text-center outline-none italic tracking-tighter text-slate-900"></select>
+                    <p id="ops-desc" class="text-[10px] font-black text-blue-500 uppercase tracking-widest italic"></p>
                 </div>
+                
                 <div class="space-y-4">
-                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic text-left">Progreso de este ítem</p>
-                    <div class="track"><div id="item-bar" class="bar" style="width: 0%"></div></div>
+                    <div class="flex justify-between text-[9px] font-black text-slate-400 uppercase italic"><span>Progreso Ítem</span><span id="item-pc">0%</span></div>
+                    <div class="progress-track"><div id="item-bar" class="progress-bar" style="width: 0%"></div></div>
                 </div>
+
                 <div class="flex items-center justify-center gap-6">
-                    <input type="number" id="qty-in" class="input-elite w-36 text-center text-4xl h-24 shadow-inner" placeholder="0">
-                    <button onclick="doQty()" class="w-24 h-24 bg-blue-600 text-white rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-300 text-5xl font-light active:scale-90 transition-all">+</button>
+                    <input type="number" id="qty-in" class="input-neo w-32 text-center text-4xl h-24" placeholder="0">
+                    <button onclick="doQty()" class="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-2xl shadow-blue-300 text-5xl font-light active:scale-75 transition-all">+</button>
                 </div>
-                <div class="flex justify-between border-t border-slate-50 pt-10">
-                    <div class="text-left"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Pendiente</p><p id="txt-rem" class="text-3xl font-[800] tracking-tighter">0</p></div>
-                    <div class="text-right"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Logrado</p><p id="txt-real" class="text-3xl font-[800] tracking-tighter text-blue-600">0</p></div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-slate-50 pt-10">
+                    <div class="neo-card p-6"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Restante</p><p id="txt-rem" class="text-3xl font-black">0</p></div>
+                    <div class="neo-card p-6 bg-blue-50/50 border-none shadow-none"><p class="text-[9px] font-black text-blue-400 uppercase italic mb-1">Cargado</p><p id="txt-real" class="text-3xl font-black text-blue-600">0</p></div>
                 </div>
             </div>
         </div>
@@ -140,7 +139,7 @@
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let db = []; let history = []; let draft = []; let active = null; let tSec = 0; let tInt;
 
-        window.onbeforeunload = () => (draft.length > 0 || active) ? "¿Abandonar operación?" : null;
+        window.onbeforeunload = () => (draft.length > 0 || active) ? "¿Perder cambios actuales?" : null;
 
         async function init() { try { const r = await fetch(CLOUD_URL); db = await r.json(); } catch(e) {} }
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
@@ -155,22 +154,21 @@
             init();
         }
 
-        // Buscador Híbrido Ultra Veloz
-        function hybridSearch() {
+        // Buscador Inteligente Híbrido Veloz
+        function ultraSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase();
             const res = document.getElementById('search-results');
-            if(val.length < 2) { res.classList.add('hidden'); return; }
+            if(val.length < 1) { res.classList.add('hidden'); return; }
             
-            // Busca en ambas columnas simultáneamente
             const matches = db.filter(i => 
                 String(i.CODIGO).toUpperCase().includes(val) || 
                 String(i.DESCRIPCION).toUpperCase().includes(val)
-            ).slice(0, 6);
+            ).slice(0, 10);
 
             res.innerHTML = matches.map(m => `
                 <div onclick="setS('${m.CODIGO}','${m.DESCRIPCION}')" class="p-6 border-b border-slate-50 active:bg-blue-50 transition-colors">
-                    <p class="text-[10px] font-black text-blue-600 italic tracking-widest mb-1">${m.CODIGO}</p>
-                    <p class="text-[11px] font-bold text-slate-700 uppercase truncate">${m.DESCRIPCION}</p>
+                    <p class="text-[10px] font-black text-blue-600 italic mb-1">${m.CODIGO}</p>
+                    <p class="text-xs font-bold text-slate-800 uppercase truncate">${m.DESCRIPCION}</p>
                 </div>
             `).join('');
             res.classList.remove('hidden');
@@ -187,31 +185,34 @@
             const sku = document.getElementById('s-sku').value; const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
             draft.push({sku, desc: document.getElementById('s-desc').value, meta, real: 0});
-            document.getElementById('pre-list').innerHTML += `<div class="glass-card p-6 font-[800] text-[10px] uppercase italic border-l-[6px] border-blue-600 tracking-widest animate-viewReveal">${sku} <span class="text-blue-600 ml-4">OBJETIVO: ${meta}</span></div>`;
+            document.getElementById('pre-list').innerHTML += `<div class="neo-card p-6 font-black text-[11px] uppercase italic flex justify-between"><span>${sku}</span><span class="text-blue-600">META: ${meta}</span></div>`;
             document.getElementById('btn-save').classList.remove('hidden');
             document.getElementById('s-sku').value=''; document.getElementById('s-desc').value=''; document.getElementById('s-meta').value='';
         }
 
         function saveContenedor() {
-            const name = document.getElementById('c-name').value || "ELITE-" + Date.now().toString().slice(-4);
-            history.push({id: Date.now(), name, items: [...draft], status: 'WAITING'});
+            const name = document.getElementById('c-name').value || "CONT-" + Date.now().toString().slice(-4);
+            history.push({id: Date.now(), name, items: [...draft], status: 'ESPERA'});
             draft = []; document.getElementById('pre-list').innerHTML = ''; document.getElementById('btn-save').classList.add('hidden');
             navTo('historial');
         }
 
         function renderHistory() {
             document.getElementById('history-list').innerHTML = history.map(h => `
-                <div class="glass-card p-8 flex justify-between items-center">
-                    <div><p class="text-[9px] font-black text-blue-600 tracking-[0.3em] mb-1 italic">${h.status}</p><h3 class="font-[800] uppercase italic tracking-tighter text-lg">${h.name}</h3></div>
-                    <button onclick="startOps(${h.id})" class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-100 italic">Play</button>
+                <div class="neo-card p-8 flex justify-between items-center">
+                    <div><p class="text-[9px] font-black text-blue-600 mb-1 italic">${h.status}</p><h3 class="font-black uppercase italic text-lg text-slate-900">${h.name}</h3></div>
+                    <button onclick="startOps(${h.id})" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
                 </div>
             `).join('');
         }
 
         function startOps(id) {
-            active = history.find(h => h.id === id); active.status = 'ACTIVE';
+            if(!confirm("¿Comenzar descarga de este contenedor?")) return;
+            active = history.find(h => h.id === id); active.status = 'ACTIVO';
             navTo('ops');
-            document.getElementById('monitor-box').classList.remove('hidden');
+            document.getElementById('global-nav').classList.remove('hidden');
             document.getElementById('sel-sku').innerHTML = active.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncItem(); startT();
         }
@@ -221,24 +222,28 @@
             document.getElementById('ops-desc').innerText = item.desc;
             document.getElementById('txt-rem').innerText = item.meta - item.real;
             document.getElementById('txt-real').innerText = item.real;
-            document.getElementById('item-bar').style.width = (item.real/item.meta*100) + "%";
+            
+            const itemPc = Math.floor((item.real/item.meta)*100);
+            document.getElementById('item-bar').style.width = itemPc + "%";
+            document.getElementById('item-pc').innerText = itemPc + "%";
             
             const tM = active.items.reduce((a,b) => a+b.meta,0); 
             const tR = active.items.reduce((a,b) => a+b.real,0);
-            const pc = Math.floor((tR/tM)*100);
-            document.getElementById('main-bar').style.width = pc + "%";
-            document.getElementById('global-pc').innerText = pc + "%";
+            const globalPc = Math.floor((tR/tM)*100);
+            document.getElementById('main-bar').style.width = globalPc + "%";
+            document.getElementById('global-pc').innerText = globalPc + "%";
         }
 
         function doQty() {
             const q = parseInt(document.getElementById('qty-in').value); if(!q) return;
             const item = active.items.find(i => i.sku === document.getElementById('sel-sku').value);
             item.real += q; document.getElementById('qty-in').value = ''; syncItem();
-            navigator.vibrate(40);
+            navigator.vibrate(50);
             fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos:[active.name, item.sku, q]})});
         }
 
         function startT() {
+            if(tInt) clearInterval(tInt);
             tInt = setInterval(() => {
                 tSec++; let h=Math.floor(tSec/3600), m=Math.floor((tSec%3600)/60), s=tSec%60;
                 document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
