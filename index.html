@@ -3,33 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v37</title>
+    <title>TAJHO.OS v38 | ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; height: 100vh; }
-        .card-modern { background: white; border-radius: 2.2rem; border: 1px solid #f1f5f9; box-shadow: 0 15px 35px -12px rgba(0,0,0,0.06); }
-        .input-clean { background: #f8fafc; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; transition: 0.3s; padding: 0.9rem 1.3rem; }
-        .input-clean:focus { border-color: var(--blue); background: white; outline: none; }
+        :root { --accent: #2563eb; --bg: #ffffff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; overflow: hidden; height: 100vh; -webkit-tap-highlight-color: transparent; }
         
-        /* Sistema de Vistas */
-        #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        .hide-landing { transform: translateY(-100%); visibility: hidden; }
-        .view { display: none; height: calc(100vh - 80px); overflow-y: auto; padding: 1.5rem; }
-        .view.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Alto Estilismo: Glassmorphism y Sombras Profundas */
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(241, 245, 249, 0.7); border-radius: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.04); }
+        .input-elite { background: #f8fafc; border-radius: 1.5rem; border: 2px solid transparent; font-weight: 700; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 1.1rem 1.5rem; letter-spacing: -0.02em; }
+        .input-elite:focus { border-color: var(--accent); background: white; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.06); outline: none; }
+        
+        /* Sistema de Capas Animadas */
+        #landing { position: fixed; inset: 0; z-index: 500; background: white; padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
+        .hide-landing { transform: translateY(-100%) scale(0.95); opacity: 0; visibility: hidden; }
+        
+        .view { display: none; height: calc(100vh - 90px); overflow-y: auto; padding: 1.5rem; padding-bottom: 5rem; }
+        .view.active { display: block; animation: viewReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes viewReveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Barras de Progreso */
-        .progress-bg { width: 100%; height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--blue); transition: width 0.5s ease; }
+        /* Barras de Carga de Alta Fidelidad */
+        .track { width: 100%; height: 6px; background: #f1f5f9; border-radius: 100px; overflow: hidden; }
+        .bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 100px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 
-        /* Menú Lateral */
+        /* Menú Lateral Premium */
         #side-menu { position: fixed; inset: 0; z-index: 1000; visibility: hidden; pointer-events: none; }
-        #menu-content { width: 80%; max-width: 300px; height: 100%; background: white; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+        #menu-content { width: 85%; max-width: 320px; height: 100%; background: white; transform: translateX(-100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         #side-menu.open { visibility: visible; pointer-events: auto; }
         #side-menu.open #menu-content { transform: translateX(0); }
-        #menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); opacity: 0; transition: 0.4s; backdrop-filter: blur(2px); }
+        #menu-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.2); opacity: 0; transition: 0.5s; backdrop-filter: blur(8px); }
         #side-menu.open #menu-overlay { opacity: 1; }
     </style>
 </head>
@@ -37,88 +40,97 @@
 
     <div id="side-menu">
         <div id="menu-overlay" onclick="toggleMenu()"></div>
-        <div id="menu-content" class="p-8 flex flex-col">
-            <h3 class="text-xs font-black tracking-widest italic mb-10">TAJHO<span class="text-blue-600">.OS</span></h3>
-            <nav class="space-y-2 flex-1">
-                <button onclick="navTo('landing')" class="w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-slate-600">🏠 Inicio</button>
-                <button onclick="navTo('historial')" class="w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-slate-600">📦 Historial</button>
+        <div id="menu-content" class="p-10 flex flex-col shadow-2xl">
+            <div class="mb-12">
+                <h3 class="text-xs font-black tracking-[0.4em] text-slate-300 mb-2 uppercase italic">Sistema</h3>
+                <h2 class="text-2xl font-[800] tracking-tighter italic">TAJHO<span class="text-blue-600">.OS</span></h2>
+            </div>
+            <nav class="space-y-6 flex-1">
+                <button onclick="navTo('landing')" class="w-full flex items-center gap-5 text-lg font-bold text-slate-800 active:text-blue-600 transition-all">
+                    <span class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center italic text-sm">01</span> Inicio
+                </button>
+                <button onclick="navTo('historial')" class="w-full flex items-center gap-5 text-lg font-bold text-slate-800 active:text-blue-600 transition-all">
+                    <span class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center italic text-sm">02</span> Historial
+                </button>
             </nav>
+            <div class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">Logística Elite v38.2026</div>
         </div>
     </div>
 
     <div id="landing">
-        <header class="mb-12">
-            <h1 class="text-5xl font-[800] tracking-tighter leading-tight italic">¿Qué hacemos<br><span class="text-blue-600 font-black">hoy, Tajho?</span></h1>
+        <header class="mb-16">
+            <p class="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 mb-4 animate-pulse">Ready to Work</p>
+            <h1 class="text-6xl font-[800] tracking-tighter leading-[0.9] italic">¿Qué hacemos<br><span class="text-blue-600 font-black">hoy, Tajho?</span></h1>
         </header>
-        <div class="space-y-4">
-            <button onclick="navTo('contenedor')" class="card-modern w-full p-7 flex items-center gap-6 border-none shadow-2xl">
-                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
+        <div class="space-y-5">
+            <button onclick="navTo('contenedor')" class="glass-card w-full p-8 flex items-center gap-7 active:scale-[0.97] transition-all">
+                <div class="w-16 h-16 bg-blue-600 rounded-[1.4rem] flex items-center justify-center text-white shadow-xl shadow-blue-200">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg>
                 </div>
-                <div class="text-left"><p class="text-sm font-black uppercase tracking-[0.15em]">Contenedor</p><p class="text-[10px] font-bold text-slate-400 italic">LOGÍSTICA ELITE</p></div>
+                <div class="text-left"><p class="text-sm font-[800] uppercase tracking-widest italic">Contenedor</p><p class="text-[10px] font-bold text-slate-400">NUEVA DESCARGA</p></div>
             </button>
-            <button onclick="navTo('historial')" class="card-modern w-full p-7 flex items-center gap-6 border-none shadow-2xl">
-                <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20v-6M9 20V10M15 20V4"/></svg>
+            <button onclick="navTo('historial')" class="glass-card w-full p-8 flex items-center gap-7 active:scale-[0.97] transition-all">
+                <div class="w-16 h-16 bg-slate-900 rounded-[1.4rem] flex items-center justify-center text-white shadow-xl">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20v-6M9 20V10M15 20V4"/></svg>
                 </div>
-                <div class="text-left"><p class="text-sm font-black uppercase tracking-[0.15em]">Historial</p><p class="text-[10px] font-bold text-slate-400 italic">REGISTRO DE ESPERA</p></div>
-            </button>
-            <button onclick="navTo('devoluciones')" class="card-modern w-full p-7 flex items-center gap-6 border-none shadow-2xl">
-                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/><path d="M9 12h12"/></svg>
-                </div>
-                <div class="text-left"><p class="text-sm font-black uppercase tracking-[0.15em]">Devoluciones</p><p class="text-[10px] font-bold text-slate-400 italic">CONTROL RETORNOS</p></div>
+                <div class="text-left"><p class="text-sm font-[800] uppercase tracking-widest italic">Historial</p><p class="text-[10px] font-bold text-slate-400">REGISTROS EN ESPERA</p></div>
             </button>
         </div>
     </div>
 
-    <header class="h-20 px-6 flex justify-between items-center bg-white sticky top-0 z-50">
-        <button onclick="toggleMenu()" class="p-3 bg-slate-50 rounded-2xl text-slate-900"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-        <div id="global-monitor" class="hidden flex-1 px-4">
-            <div class="progress-bg"><div id="main-bar" class="progress-fill" style="width: 0%"></div></div>
-            <p id="timer" class="text-[9px] font-black text-blue-600 text-center mt-1 italic tracking-widest">00:00:00</p>
+    <header class="h-24 px-8 flex justify-between items-center bg-white/50 backdrop-blur-lg sticky top-0 z-50">
+        <button onclick="toggleMenu()" class="w-12 h-12 flex flex-col justify-center gap-1.5 active:scale-90 transition-all">
+            <div class="w-6 h-[3px] bg-slate-900 rounded-full"></div>
+            <div class="w-4 h-[3px] bg-blue-600 rounded-full"></div>
+        </button>
+        <div id="monitor-box" class="hidden flex-1 px-8">
+            <div class="track"><div id="main-bar" class="bar" style="width: 0%"></div></div>
+            <div class="flex justify-between mt-2">
+                <p id="timer" class="text-[9px] font-black text-blue-600 italic tracking-[0.2em]">00:00:00</p>
+                <p id="global-pc" class="text-[9px] font-black text-slate-400 italic">0%</p>
+            </div>
         </div>
-        <div id="header-label" class="text-right font-black italic text-blue-600 text-xs">T.OS</div>
+        <div class="text-right"><p class="text-[10px] font-black italic tracking-widest text-slate-300">ELITE</p><p class="text-[10px] font-black italic text-blue-600">v38</p></div>
     </header>
 
     <main>
-        <div id="view-contenedor" class="view space-y-6">
-            <div class="card-modern p-8 space-y-4">
-                <input type="text" id="c-name" class="input-clean w-full" placeholder="NOMBRE DEL CONTENEDOR">
+        <div id="view-contenedor" class="view space-y-8">
+            <div class="glass-card p-10 space-y-6">
+                <input type="text" id="c-name" class="input-elite w-full" placeholder="ID DEL CONTENEDOR (PLACA)">
                 <div class="relative">
-                    <input type="text" id="s-sku" oninput="smartSearch()" class="input-clean w-full uppercase" placeholder="BUSCAR SKU..." autocomplete="off">
-                    <div id="search-results" class="hidden absolute z-10 w-full bg-white mt-2 rounded-2xl shadow-2xl border max-h-48 overflow-y-auto"></div>
+                    <input type="text" id="s-sku" oninput="hybridSearch()" class="input-elite w-full uppercase" placeholder="BUSCAR CÓDIGO O DESCRIPCIÓN..." autocomplete="off">
+                    <div id="search-results" class="hidden absolute z-20 w-full bg-white/95 backdrop-blur-md mt-3 rounded-[2rem] shadow-2xl border border-slate-100 max-h-64 overflow-y-auto"></div>
                 </div>
-                <input type="text" id="s-desc" class="input-clean w-full text-xs text-blue-600 font-bold italic" readonly placeholder="...">
-                <input type="number" id="s-meta" class="input-clean w-full" placeholder="CANTIDAD META">
-                <button onclick="addItem()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest">Añadir a Lista</button>
+                <input type="text" id="s-desc" class="input-elite w-full text-[10px] text-blue-600 italic" readonly placeholder="Descripción inteligente...">
+                <input type="number" id="s-meta" class="input-elite w-full" placeholder="CANTIDAD META">
+                <button onclick="addItem()" class="w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-blue-200 active:scale-95 transition-all italic">Añadir a Lista</button>
             </div>
-            <div id="pre-list" class="space-y-2"></div>
-            <button id="btn-save" onclick="saveContenedor()" class="hidden w-full bg-blue-600 text-white py-5 rounded-3xl font-black uppercase shadow-xl">Guardar en Historial</button>
+            <div id="pre-list" class="space-y-3"></div>
+            <button id="btn-save" onclick="saveContenedor()" class="hidden w-full bg-slate-900 text-white py-6 rounded-[2rem] font-black uppercase text-xs tracking-[0.4em] shadow-xl italic">Confirmar Contenedor</button>
         </div>
 
-        <div id="view-historial" class="view space-y-4">
-            <h2 class="text-2xl font-black italic">Historial <span class="text-blue-600">Espera</span></h2>
-            <div id="history-list" class="space-y-4"></div>
+        <div id="view-historial" class="view space-y-6">
+            <h2 class="text-3xl font-[800] italic tracking-tighter">Espera <span class="text-blue-600">Activa</span></h2>
+            <div id="history-list" class="space-y-5"></div>
         </div>
 
         <div id="view-ops" class="view">
-            <div class="card-modern p-10 space-y-8 text-center">
-                <div class="space-y-2">
-                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent w-full text-center outline-none italic"></select>
-                    <p id="ops-desc" class="text-[11px] font-black text-blue-600 uppercase tracking-widest"></p>
+            <div class="glass-card p-10 space-y-10 text-center">
+                <div class="space-y-3">
+                    <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent w-full text-center outline-none italic tracking-tighter"></select>
+                    <p id="ops-desc" class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] italic"></p>
                 </div>
-                <div class="py-2">
-                    <p class="text-[9px] font-black text-slate-300 uppercase mb-2">Progreso del Ítem</p>
-                    <div class="progress-bg"><div id="item-bar" class="progress-fill" style="width: 0%"></div></div>
+                <div class="space-y-4">
+                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic text-left">Progreso de este ítem</p>
+                    <div class="track"><div id="item-bar" class="bar" style="width: 0%"></div></div>
                 </div>
-                <div class="flex items-center justify-center gap-4">
-                    <input type="number" id="qty-in" class="input-clean w-32 text-center text-4xl h-20 shadow-inner" placeholder="0">
-                    <button onclick="doQty()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl text-4xl font-bold">+</button>
+                <div class="flex items-center justify-center gap-6">
+                    <input type="number" id="qty-in" class="input-elite w-36 text-center text-4xl h-24 shadow-inner" placeholder="0">
+                    <button onclick="doQty()" class="w-24 h-24 bg-blue-600 text-white rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-300 text-5xl font-light active:scale-90 transition-all">+</button>
                 </div>
-                <div class="flex justify-around border-t pt-6">
-                    <div><p class="text-[9px] font-black text-slate-400 uppercase italic">Faltante</p><p id="txt-rem" class="text-2xl font-black">0</p></div>
-                    <div><p class="text-[9px] font-black text-slate-400 uppercase italic">Cargado</p><p id="txt-real" class="text-2xl font-black text-blue-600">0</p></div>
+                <div class="flex justify-between border-t border-slate-50 pt-10">
+                    <div class="text-left"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Pendiente</p><p id="txt-rem" class="text-3xl font-[800] tracking-tighter">0</p></div>
+                    <div class="text-right"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Logrado</p><p id="txt-real" class="text-3xl font-[800] tracking-tighter text-blue-600">0</p></div>
                 </div>
             </div>
         </div>
@@ -126,12 +138,13 @@
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let db_raw = []; let history = []; let draft = []; let active = null; let tSec = 0; let tInt;
+        let db = []; let history = []; let draft = []; let active = null; let tSec = 0; let tInt;
 
-        window.onbeforeunload = () => (draft.length > 0 || active) ? "¿Perder los cambios?" : null;
+        window.onbeforeunload = () => (draft.length > 0 || active) ? "¿Abandonar operación?" : null;
 
-        async function init() { const r = await fetch(CLOUD_URL); db_raw = await r.json(); }
+        async function init() { try { const r = await fetch(CLOUD_URL); db = await r.json(); } catch(e) {} }
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
+        
         function navTo(v) {
             if(v === 'landing') { document.getElementById('landing').classList.remove('hide-landing'); return; }
             document.getElementById('landing').classList.add('hide-landing');
@@ -142,46 +155,63 @@
             init();
         }
 
-        function smartSearch() {
+        // Buscador Híbrido Ultra Veloz
+        function hybridSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase();
             const res = document.getElementById('search-results');
             if(val.length < 2) { res.classList.add('hidden'); return; }
-            const matches = db_raw.filter(i => String(i.CODIGO).includes(val)).slice(0,5);
-            res.innerHTML = matches.map(m => `<div onclick="setS('${m.CODIGO}','${m.DESCRIPCION}')" class="p-4 border-b font-bold text-xs uppercase">${m.CODIGO} - ${m.DESCRIPCION}</div>`).join('');
+            
+            // Busca en ambas columnas simultáneamente
+            const matches = db.filter(i => 
+                String(i.CODIGO).toUpperCase().includes(val) || 
+                String(i.DESCRIPCION).toUpperCase().includes(val)
+            ).slice(0, 6);
+
+            res.innerHTML = matches.map(m => `
+                <div onclick="setS('${m.CODIGO}','${m.DESCRIPCION}')" class="p-6 border-b border-slate-50 active:bg-blue-50 transition-colors">
+                    <p class="text-[10px] font-black text-blue-600 italic tracking-widest mb-1">${m.CODIGO}</p>
+                    <p class="text-[11px] font-bold text-slate-700 uppercase truncate">${m.DESCRIPCION}</p>
+                </div>
+            `).join('');
             res.classList.remove('hidden');
         }
-        function setS(c,d) { document.getElementById('s-sku').value=c; document.getElementById('s-desc').value=d; document.getElementById('search-results').classList.add('hidden'); }
+
+        function setS(c,d) { 
+            document.getElementById('s-sku').value=c; 
+            document.getElementById('s-desc').value=d; 
+            document.getElementById('search-results').classList.add('hidden'); 
+            document.getElementById('s-meta').focus();
+        }
 
         function addItem() {
             const sku = document.getElementById('s-sku').value; const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
             draft.push({sku, desc: document.getElementById('s-desc').value, meta, real: 0});
-            document.getElementById('pre-list').innerHTML += `<div class="p-4 bg-slate-50 rounded-2xl font-black text-[10px] uppercase border border-slate-100">${sku} | META: ${meta}</div>`;
+            document.getElementById('pre-list').innerHTML += `<div class="glass-card p-6 font-[800] text-[10px] uppercase italic border-l-[6px] border-blue-600 tracking-widest animate-viewReveal">${sku} <span class="text-blue-600 ml-4">OBJETIVO: ${meta}</span></div>`;
             document.getElementById('btn-save').classList.remove('hidden');
             document.getElementById('s-sku').value=''; document.getElementById('s-desc').value=''; document.getElementById('s-meta').value='';
         }
 
         function saveContenedor() {
-            const name = document.getElementById('c-name').value || "CNT-" + Date.now().toString().slice(-4);
-            history.push({id: Date.now(), name, items: [...draft], status: 'espera'});
+            const name = document.getElementById('c-name').value || "ELITE-" + Date.now().toString().slice(-4);
+            history.push({id: Date.now(), name, items: [...draft], status: 'WAITING'});
             draft = []; document.getElementById('pre-list').innerHTML = ''; document.getElementById('btn-save').classList.add('hidden');
             navTo('historial');
         }
 
         function renderHistory() {
             document.getElementById('history-list').innerHTML = history.map(h => `
-                <div class="card-modern p-6 flex justify-between items-center">
-                    <div><p class="text-[9px] font-black text-blue-600 italic uppercase">${h.status}</p><h3 class="font-black uppercase">${h.name}</h3></div>
-                    <button onclick="startOps(${h.id})" class="bg-blue-600 text-white px-5 py-3 rounded-2xl font-black text-[10px] uppercase">Comenzar</button>
+                <div class="glass-card p-8 flex justify-between items-center">
+                    <div><p class="text-[9px] font-black text-blue-600 tracking-[0.3em] mb-1 italic">${h.status}</p><h3 class="font-[800] uppercase italic tracking-tighter text-lg">${h.name}</h3></div>
+                    <button onclick="startOps(${h.id})" class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-100 italic">Play</button>
                 </div>
             `).join('');
         }
 
         function startOps(id) {
-            if(!confirm("¿Comenzar descarga? Se iniciará el tiempo.")) return;
-            active = history.find(h => h.id === id); active.status = 'operativo';
+            active = history.find(h => h.id === id); active.status = 'ACTIVE';
             navTo('ops');
-            document.getElementById('global-monitor').classList.remove('hidden');
+            document.getElementById('monitor-box').classList.remove('hidden');
             document.getElementById('sel-sku').innerHTML = active.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncItem(); startT();
         }
@@ -192,14 +222,19 @@
             document.getElementById('txt-rem').innerText = item.meta - item.real;
             document.getElementById('txt-real').innerText = item.real;
             document.getElementById('item-bar').style.width = (item.real/item.meta*100) + "%";
-            const tM = active.items.reduce((a,b) => a+b.meta,0); const tR = active.items.reduce((a,b) => a+b.real,0);
-            document.getElementById('main-bar').style.width = (tR/tM*100) + "%";
+            
+            const tM = active.items.reduce((a,b) => a+b.meta,0); 
+            const tR = active.items.reduce((a,b) => a+b.real,0);
+            const pc = Math.floor((tR/tM)*100);
+            document.getElementById('main-bar').style.width = pc + "%";
+            document.getElementById('global-pc').innerText = pc + "%";
         }
 
         function doQty() {
             const q = parseInt(document.getElementById('qty-in').value); if(!q) return;
             const item = active.items.find(i => i.sku === document.getElementById('sel-sku').value);
             item.real += q; document.getElementById('qty-in').value = ''; syncItem();
+            navigator.vibrate(40);
             fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos:[active.name, item.sku, q]})});
         }
 
@@ -209,6 +244,8 @@
                 document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }, 1000);
         }
+
+        init();
     </script>
 </body>
 </html>
