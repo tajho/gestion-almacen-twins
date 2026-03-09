@@ -99,33 +99,50 @@
     </main>
 
     <script>
-        const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec"; 
-        let db_tajho = {}; 
-        let manifest = [];
+    // 1. TU URL OFICIAL (No la cambies)
+    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec"; 
+    let db_tajho = {}; 
+    let manifest = [];
 
-        async function initCloud() {
-            try {
-                const res = await fetch(CLOUD_URL);
-                const data = await res.json();
-                data.forEach(r => {
-                    db_tajho[r.CODIGO.toString().toUpperCase().trim()] = { desc: r.DESCRIPCION, um: r.UM || "UND" };
-                });
-                document.getElementById('cloud-led').className = "w-2.5 h-2.5 bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] rounded-full";
-            } catch (e) { console.error("Revisa permisos de Aplicación Web en Google Sheets"); }
+    // 2. CARGA SILENCIOSA (Se activa al entrar a la sección)
+    async function initCloud() {
+        try {
+            const res = await fetch(CLOUD_URL);
+            const data = await res.json();
+            // Mapeo ultra rápido para búsqueda inmediata
+            data.forEach(r => {
+                const cod = String(r.CODIGO || "").toUpperCase().trim();
+                if(cod) db_tajho[cod] = r.DESCRIPCION || "SIN NOMBRE";
+            });
+            console.log("Sincronización invisible completada");
+        } catch (e) {
+            console.warn("Error silencioso de red");
         }
+    }
 
-        function autoLookup() {
-            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
-            const descField = document.getElementById('s-desc');
-            if(db_tajho[sku]) {
-                descField.value = db_tajho[sku].desc;
-            } else { descField.value = ""; }
+    // 3. BUSCADOR INSTANTÁNEO (Se activa mientras escribes)
+    function autoLookup() {
+        const skuInput = document.getElementById('s-sku'); // Tu ID de SKU
+        const descInput = document.getElementById('s-desc'); // Tu ID de Descripción
+        const sku = skuInput.value.toUpperCase().trim();
+        
+        if(db_tajho[sku]) {
+            descInput.value = db_tajho[sku];
+        } else {
+            descInput.value = ""; 
         }
+    }
 
-        function navTo(t) {
-            document.getElementById('landing').classList.add('hide-landing');
-            initCloud();
-        }
+    // 4. ESTO ACTIVA LA NUBE CUANDO TOCAS "CONTENEDOR"
+    function navTo(t) {
+        document.getElementById('landing').classList.add('hide-landing');
+        // Aquí llamamos a la nube sin mostrar señales en pantalla
+        initCloud(); 
+    }
+
+    // ... Aquí sigue el resto de tus funciones como addMani() o registrarBulto() ...
+</script>
+
 
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
