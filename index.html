@@ -3,225 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tajho - Warehouse OS</title>
+    <title>Tajho OS - Elite Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #fcfcfd; color: #0f172a; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0,0,0,0.05); }
-        .card-neo { border-radius: 2.5rem; background: #ffffff; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        .input-minimal { @apply w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-bold transition-all text-sm; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
+        .card-premium { @apply bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 transition-all duration-300; }
+        .input-pro { @apply w-full p-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-600 focus:bg-white font-bold transition-all text-sm; }
+        .btn-black { @apply py-5 bg-slate-900 text-white rounded-3xl font-bold text-xs uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all; }
         .hidden { display: none !important; }
-        .progress-bar { transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-fill { transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
     </style>
 </head>
-<body class="pb-32">
+<body class="pb-36">
 
-    <header class="p-8 pt-12 flex justify-between items-end">
+    <header class="p-8 pt-12 flex justify-between items-start">
         <div>
-            <h1 class="text-3xl font-[900] tracking-tighter leading-none">TAJHO<span class="text-blue-600 italic">.ALMACÉN</span></h1>
-            <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mt-2 text-center">Gestión de Contenedores</p>
+            <h1 class="text-3xl font-extrabold tracking-tighter leading-none text-slate-900 uppercase">Tajho<span class="text-blue-600 italic">.OS</span></h1>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Inventory Intelligence</p>
         </div>
-        <div class="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg">📦</div>
+        <div class="h-12 w-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-xl">📦</div>
     </header>
 
     <main class="max-w-md mx-auto px-6 space-y-8">
 
-        <section id="vista-manifiesto" class="space-y-6">
+        <section id="fase-setup" class="space-y-6">
             <div class="px-2">
-                <h2 class="text-xl font-black italic">Preparar Contenedor</h2>
-                <p class="text-xs text-slate-400">Ingresa los códigos y cantidades del packing list.</p>
+                <h2 class="text-xl font-[800] italic text-slate-800 uppercase tracking-tighter">Planificación</h2>
+                <p class="text-xs text-slate-400 font-medium">Cargue los datos oficiales del Packing List antes de iniciar.</p>
             </div>
 
-            <div class="card-neo p-6 space-y-3">
-                <input type="text" id="pack-cod" placeholder="Código (Ej: 1010)" class="input-minimal uppercase">
-                <div class="flex gap-2">
-                    <input type="number" id="pack-cant" placeholder="Total Esperado" class="input-minimal">
-                    <button onclick="agregarAlManifiesto()" class="bg-blue-600 text-white px-6 rounded-2xl font-bold text-xl">+</button>
+            <div class="card-premium space-y-4">
+                <div class="grid grid-cols-3 gap-3">
+                    <input type="text" id="setup-cod" placeholder="CÓDIGO" class="input-pro col-span-2 uppercase">
+                    <input type="number" id="setup-meta" placeholder="TOTAL" class="input-pro text-center">
                 </div>
+                <input type="text" id="setup-desc" placeholder="DESCRIPCIÓN BREVE" class="input-pro">
+                <button onclick="registrarEnManifiesto()" class="w-full py-4 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-100">+ Añadir al Manifiesto</button>
             </div>
 
-            <div id="contenedor-lista-previa" class="space-y-3">
+            <div id="lista-manifiesto" class="space-y-2">
                 </div>
 
-            <button id="btn-iniciar" onclick="congelarYContar()" class="w-full py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest hidden shadow-xl active:scale-95 transition-all">
-                Crear Contenedor e Iniciar Conteo
+            <button id="btn-iniciar-conteo" onclick="iniciarConteoReal()" class="btn-black w-full hidden">
+                Confirmar Plan y Abrir Contenedor
             </button>
         </section>
 
-        <section id="vista-conteo" class="hidden space-y-8">
+        <section id="fase-operacion" class="hidden space-y-6">
             <div class="px-2 flex justify-between items-center">
-                <h2 class="text-xl font-black italic">Conteo en Piso</h2>
-                <span class="text-[10px] font-black bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase">Contenedor Abierto</span>
+                <h2 class="text-xl font-[800] italic text-slate-800 uppercase tracking-tighter">Descarga Activa</h2>
+                <span class="animate-pulse bg-green-100 text-green-600 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Live Audit</span>
             </div>
 
-            <div class="card-neo p-8 text-center space-y-4">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ingresar Código de Producto</p>
-                <input type="text" id="scan-cod" placeholder="----" class="w-full text-5xl font-black text-center text-slate-900 outline-none bg-transparent uppercase">
-                <div class="flex gap-2 mt-4">
-                    <input type="number" id="scan-cant" placeholder="Cant. Bulto/Pallet" class="input-minimal text-center">
-                    <button onclick="registrarConteo()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-xs uppercase">Sumar</button>
+            <div class="card-premium p-10 text-center space-y-6 border-2 border-blue-50 shadow-blue-50/50">
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Seleccionar Producto</p>
+                    <select id="select-item" class="input-pro text-center appearance-none cursor-pointer">
+                        </select>
                 </div>
+                
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ingresar Cantidad de Bultos</p>
+                    <div class="flex gap-4">
+                        <input type="number" id="input-cantidad" placeholder="0" class="w-full text-5xl font-black text-center text-slate-900 bg-transparent outline-none">
+                    </div>
+                </div>
+
+                <button onclick="sumarBultos()" class="w-full py-5 bg-blue-600 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-blue-200">
+                    Registrar Ingreso
+                </button>
             </div>
 
-            <div id="feedback-audit" class="text-center p-4 min-h-[50px]">
+            <div id="status-update" class="text-center h-4"></div>
+
+            <div id="progreso-items" class="space-y-4">
                 </div>
 
-            <div id="progreso-auditoria" class="space-y-4">
-                </div>
-
-            <button onclick="guardarTodo()" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-bold text-xs uppercase tracking-widest shadow-2xl">
-                Cerrar Contenedor y Generar PDF
+            <button onclick="cerrarYReportar()" class="btn-black w-full bg-slate-900 mt-10">
+                Cerrar Contenedor & Generar Reporte
             </button>
-        </section>
-
-        <section id="vista-historial" class="hidden space-y-6">
-            <h2 class="text-xl font-black italic px-2">Reportes Finalizados</h2>
-            <div id="feed-historial" class="space-y-4"></div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[85%] glass rounded-[2.5rem] p-2 flex justify-around items-center shadow-2xl z-50">
-        <button onclick="nav('vista-manifiesto', this)" class="flex-1 py-4 flex flex-col items-center text-blue-600 font-bold">
-            <span class="text-xl">📋</span>
-            <span class="text-[8px] uppercase mt-1">Planificar</span>
+    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-2 flex border border-slate-100 shadow-2xl z-50">
+        <button onclick="location.reload()" class="flex-1 py-4 flex flex-col items-center text-slate-400">
+            <span class="text-xl">🔄</span>
+            <span class="text-[8px] font-black uppercase mt-1">Nuevo</span>
         </button>
-        <button onclick="nav('vista-historial', this)" class="flex-1 py-4 flex flex-col items-center text-slate-300">
+        <button onclick="mostrarHistorial()" class="flex-1 py-4 flex flex-col items-center text-slate-400">
             <span class="text-xl">📁</span>
-            <span class="text-[8px] uppercase mt-1">Reportes</span>
+            <span class="text-[8px] font-black uppercase mt-1">Historial</span>
         </button>
     </nav>
 
     <script>
         const { jsPDF } = window.jspdf;
-        let manifiesto = [];
-        let conteoTotal = {};
+        let packingPlan = [];
+        let historialLocal = JSON.parse(localStorage.getItem('tajho_audit_history')) || [];
 
-        // Datos de prueba para ver la app funcionando al 100%
-        let db = JSON.parse(localStorage.getItem('tajho_db')) || [
-            { id: "CONT-991", fecha: "08/03/2026", items: [{cod: "1010", plan: 100, real: 100}, {cod: "2020", plan: 50, real: 48}] }
-        ];
+        function registrarEnManifiesto() {
+            const cod = document.getElementById('setup-cod').value.toUpperCase();
+            const meta = parseInt(document.getElementById('setup-meta').value);
+            const desc = document.getElementById('setup-desc').value || "Producto Tajho";
 
-        function agregarAlManifiesto() {
-            const cod = document.getElementById('pack-cod').value.toUpperCase();
-            const cant = parseInt(document.getElementById('pack-cant').value);
-            if(!cod || !cant) return;
+            if(!cod || !meta) return;
 
-            manifiesto.push({ cod, plan: cant, real: 0 });
-            renderPrevia();
-            document.getElementById('pack-cod').value = "";
-            document.getElementById('pack-cant').value = "";
-            document.getElementById('btn-iniciar').classList.remove('hidden');
+            packingPlan.push({ cod, meta, desc, real: 0 });
+            renderizarManifiesto();
+            
+            document.getElementById('setup-cod').value = "";
+            document.getElementById('setup-meta').value = "";
+            document.getElementById('setup-desc').value = "";
+            document.getElementById('btn-iniciar-conteo').classList.remove('hidden');
         }
 
-        function renderPrevia() {
-            const cont = document.getElementById('contenedor-lista-previa');
+        function renderizarManifiesto() {
+            const cont = document.getElementById('lista-manifiesto');
             cont.innerHTML = "";
-            manifiesto.forEach(m => {
+            packingPlan.forEach(p => {
                 cont.innerHTML += `
-                    <div class="card-neo p-4 flex justify-between items-center text-xs animate__animated animate__fadeInUp">
-                        <span class="font-black">${m.cod}</span>
-                        <span class="bg-slate-100 px-3 py-1 rounded-full font-bold text-slate-500">${m.plan} UNIDADES</span>
+                    <div class="card-premium p-4 flex justify-between items-center text-xs mb-2">
+                        <span class="font-black text-slate-900">${p.cod}</span>
+                        <span class="font-bold text-slate-400 uppercase tracking-tighter">${p.desc}</span>
+                        <span class="bg-slate-100 px-3 py-1 rounded-full font-black text-slate-600">${p.meta} UND</span>
                     </div>`;
             });
         }
 
-        function congelarYContar() {
-            document.getElementById('vista-manifiesto').classList.add('hidden');
-            document.getElementById('vista-conteo').classList.remove('hidden');
-            renderProgreso();
+        function iniciarConteoReal() {
+            document.getElementById('fase-setup').classList.add('hidden');
+            document.getElementById('fase-operacion').classList.remove('hidden');
+            
+            const select = document.getElementById('select-item');
+            select.innerHTML = packingPlan.map(p => `<option value="${p.cod}">${p.cod} - ${p.desc}</option>`).join('');
+            
+            actualizarUIProgreso();
         }
 
-        function registrarConteo() {
-            const cod = document.getElementById('scan-cod').value.toUpperCase();
-            const cant = parseInt(document.getElementById('scan-cant').value);
-            const item = manifiesto.find(m => m.cod === cod);
-            const feedback = document.getElementById('feedback-audit');
+        function sumarBultos() {
+            const cod = document.getElementById('select-item').value;
+            const cant = parseInt(document.getElementById('input-cantidad').value);
+            const updateDiv = document.getElementById('status-update');
 
-            if(item && cant) {
-                item.real += cant;
-                feedback.innerHTML = `<p class="text-blue-600 font-bold text-xs animate-bounce">+${cant} ingresados a ${cod}</p>`;
-                document.getElementById('scan-cod').value = "";
-                document.getElementById('scan-cant').value = "";
-                renderProgreso();
-                
-                if(item.real >= item.plan) {
-                    feedback.innerHTML = `<p class="text-green-500 font-black text-xs uppercase tracking-widest">¡CÓDIGO ${cod} COMPLETADO!</p>`;
-                }
-            } else {
-                alert("El código no existe en el manifiesto actual.");
+            if(!cant || cant <= 0) return;
+
+            const item = packingPlan.find(p => p.cod === cod);
+            item.real += cant;
+
+            updateDiv.innerHTML = `<p class="text-blue-600 font-black text-[10px] uppercase tracking-widest animate-fade">Ingreso: +${cant} unidades a ${cod}</p>`;
+            document.getElementById('input-cantidad').value = "";
+            
+            actualizarUIProgreso();
+
+            if(item.real >= item.meta) {
+                navigator.vibrate([200, 100, 200]); // Vibración de alerta
             }
         }
 
-        function renderProgreso() {
-            const cont = document.getElementById('progreso-auditoria');
+        function actualizarUIProgreso() {
+            const cont = document.getElementById('progreso-items');
             cont.innerHTML = "";
-            manifiesto.forEach(m => {
-                const porc = (m.real / m.plan) * 100;
+            packingPlan.forEach(p => {
+                const porc = Math.min((p.real / p.meta) * 100, 100);
+                const isDone = p.real >= p.meta;
+                
                 cont.innerHTML += `
-                    <div class="card-neo p-5 space-y-3">
+                    <div class="card-premium p-6 space-y-3 ${isDone ? 'border-green-200 bg-green-50/30' : ''}">
                         <div class="flex justify-between items-end">
-                            <div><p class="text-[9px] font-black text-slate-400 uppercase">PRODUCTO</p><p class="font-black text-sm">${m.cod}</p></div>
-                            <div class="text-right"><p class="text-lg font-black ${m.real >= m.plan ? 'text-green-500' : 'text-blue-600'}">${m.real} <span class="text-slate-300 text-xs">/ ${m.plan}</span></p></div>
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase italic">${p.cod}</p>
+                                <p class="font-bold text-slate-800">${p.desc}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-black ${isDone ? 'text-green-600' : 'text-blue-600'}">${p.real} <span class="text-slate-300 text-xs font-normal">/ ${p.meta}</span></p>
+                            </div>
                         </div>
                         <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="progress-bar h-full bg-blue-600" style="width: ${Math.min(porc, 100)}%"></div>
+                            <div class="progress-fill h-full ${isDone ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${porc}%"></div>
                         </div>
                     </div>`;
             });
         }
 
-        function guardarTodo() {
-            const registro = {
-                id: "CONT-" + Math.floor(1000 + Math.random() * 9000),
-                fecha: new Date().toLocaleDateString(),
-                items: [...manifiesto]
+        function cerrarYReportar() {
+            const auditID = "TJ-" + Math.floor(1000 + Math.random() * 9000);
+            const report = {
+                id: auditID,
+                fecha: new Date().toLocaleString(),
+                data: [...packingPlan]
             };
-            db.unshift(registro);
-            localStorage.setItem('tajho_db', JSON.stringify(db));
-            alert("Contenedor guardado correctamente.");
-            location.reload();
+            
+            historialLocal.unshift(report);
+            localStorage.setItem('tajho_audit_history', JSON.stringify(historialLocal));
+            
+            generarPDF(report);
+            setTimeout(() => location.reload(), 1500);
         }
 
-        function nav(id, btn) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'vista-historial') renderHistorial();
-        }
-
-        function renderHistorial() {
-            const feed = document.getElementById('feed-historial');
-            feed.innerHTML = "";
-            db.forEach(r => {
-                feed.innerHTML += `
-                    <div class="card-neo p-6 flex justify-between items-center">
-                        <div><p class="text-[10px] font-black text-slate-300 uppercase">${r.fecha}</p><h3 class="text-lg font-black">${r.id}</h3></div>
-                        <button onclick="generarPDF('${r.id}')" class="w-14 h-14 bg-slate-900 rounded-[1.5rem] flex items-center justify-center shadow-xl">📄</button>
-                    </div>`;
-            });
-        }
-
-        function generarPDF(id) {
-            const r = db.find(x => x.id === id);
+        function generarPDF(report) {
             const doc = new jsPDF();
-            doc.setFontSize(22); doc.text("REPORTE ALMACÉN TAJHO", 14, 20);
-            doc.setFontSize(10); doc.text(`Identificador: ${r.id} | Fecha de Operación: ${r.fecha}`, 14, 28);
+            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("REPORTE OPERATIVO TAJHO", 14, 25);
+            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Folio: ${report.id} | Fecha: ${report.fecha}`, 14, 33);
             
-            const rows = r.items.map(i => [i.cod, "PRODUCTO TAJHO", i.plan, i.real, (i.real >= i.plan ? 'COMPLETO' : 'FALTANTE')]);
-            
+            const rows = report.data.map(i => [
+                i.cod, i.desc, i.meta, i.real, (i.real >= i.meta ? 'COMPLETO' : 'FALTANTE')
+            ]);
+
             doc.autoTable({
-                startY: 35,
-                head: [['CÓDIGO', 'DESCRIPCIÓN', 'PLANEADO', 'CONTADO', 'ESTADO']],
+                startY: 40,
+                head: [['CÓDIGO', 'DESCRIPCIÓN', 'PLAN', 'CONTADO', 'ESTADO']],
                 body: rows,
                 theme: 'grid',
-                headStyles: { fillColor: [15, 23, 42] }
+                headStyles: { fillColor: [15, 23, 42], halign: 'center' },
+                columnStyles: { 2: { halign: 'center' }, 3: { halign: 'center' } }
             });
 
+            doc.setFontSize(9);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Tajho_${id}.pdf`);
+            doc.save(`${report.id}_Tajho.pdf`);
         }
     </script>
 </body>
