@@ -3,85 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiMaster - Control Total</title>
+    <title>LogiMaster Pro - Gestión Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease;
-        }
-        .glass-card:active { transform: scale(0.98); }
-        .primary-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .input-field { @apply w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all; }
+        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
     </style>
 </head>
-<body>
+<body class="pb-24">
 
-    <header class="primary-gradient text-white p-6 shadow-lg rounded-b-3xl">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-2xl font-bold italic">LOGIMASTER PRO</h1>
-            <p class="text-blue-100 text-sm opacity-80">Gestión Logística de Alta Precisión</p>
+    <header class="bg-white p-6 sticky top-0 z-50 border-b border-slate-100 shadow-sm">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div>
+                <p class="text-blue-600 text-[10px] font-black uppercase tracking-[3px] mb-1">Logística Profesional</p>
+                <h1 class="text-2xl font-extrabold tracking-tighter text-slate-800">LOGIMASTER<span class="text-slate-400 font-light">PRO</span></h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Estado</p>
+                    <p class="text-xs font-bold text-green-500">CONECTADO A CLOUD</p>
+                </div>
+                <div class="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200">📦</div>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-6 space-y-6">
-        
-        <div class="relative">
-            <input type="text" placeholder="Buscar producto o contenedor..." 
-                   class="w-full p-4 rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-600">
-            <span class="absolute right-4 top-4 opacity-30">🔍</span>
-        </div>
+    <main class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <button onclick="alert('Abriendo Ingreso de Contenedores...')" 
-                    class="glass-card p-8 rounded-3xl shadow-md text-left flex flex-col items-start space-y-4 hover:shadow-xl">
-                <div class="p-4 bg-blue-100 rounded-2xl">
-                    <span class="text-3xl">🚢</span>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Ingreso de Contenedor</h2>
-                    <p class="text-gray-500 text-sm">Registro de conteo, packing y estado de mercadería.</p>
-                </div>
-                <span class="text-blue-600 font-semibold text-sm">Empezar registro →</span>
-            </button>
+        <section id="modulo-ingreso" class="space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="text-xl font-extrabold text-slate-800">Ingreso de Contenedor</h2>
+                <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">NUEVO REGISTRO</span>
+            </div>
 
-            <button onclick="alert('Abriendo Gestión de Devoluciones...')" 
-                    class="glass-card p-8 rounded-3xl shadow-md text-left flex flex-col items-start space-y-4 hover:shadow-xl">
-                <div class="p-4 bg-orange-100 rounded-2xl">
-                    <span class="text-3xl">📦</span>
+            <div class="grid grid-cols-2 gap-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">N° de Contenedor</label>
+                    <input type="text" id="num_contenedor" placeholder="EJ: MCU123456" class="input-field mt-1 font-mono font-bold uppercase">
                 </div>
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Devoluciones</h2>
-                    <p class="text-gray-500 text-sm">Gestión de clientes, vendedores y motivos de retorno.</p>
-                </div>
-                <span class="text-orange-600 font-semibold text-sm">Gestionar retornos →</span>
-            </button>
-
-        </div>
-
-        <div class="mt-8">
-            <h3 class="text-gray-700 font-bold mb-4 px-2">Actividad Reciente</h3>
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div class="p-4 border-b border-gray-50 flex justify-between items-center italic text-gray-400 text-xs">
-                    <span>No hay registros hoy</span>
-                    <span>08 Mar 2026</span>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Fecha de Ingreso</label>
+                    <input type="date" id="fecha_ingreso" class="input-field mt-1">
                 </div>
             </div>
-        </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">DETALLE DE MERCADERÍA</span>
+                    <button onclick="agregarFila()" class="text-blue-600 text-xs font-bold">+ AÑADIR PRODUCTO</button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[10px] text-slate-400 uppercase border-b border-slate-50">
+                                <th class="p-4">Código / Producto</th>
+                                <th class="p-4">Packing</th>
+                                <th class="p-4">Conteo</th>
+                                <th class="p-4 text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-conteo">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button onclick="generarReporte()" class="btn-primary w-full">
+                GENERAR REPORTE PROFESIONAL PDF
+            </button>
+        </section>
 
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-100 p-4 flex justify-around items-center md:hidden">
-        <button class="text-blue-600 font-bold uppercase text-[10px]">Inicio</button>
-        <button class="text-gray-400 font-bold uppercase text-[10px]">Historial</button>
-        <button class="text-gray-400 font-bold uppercase text-[10px]">Reportes</button>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-slate-900/90 backdrop-blur-xl rounded-3xl p-2 flex justify-around items-center shadow-2xl border border-white/10">
+        <button class="p-3 text-white flex flex-col items-center">
+            <span class="text-xl italic">🏠</span>
+            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Inicio</span>
+        </button>
+        <button class="p-3 text-slate-500 flex flex-col items-center">
+            <span class="text-xl">🔍</span>
+            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Buscador</span>
+        </button>
+        <button class="p-3 text-slate-500 flex flex-col items-center">
+            <span class="text-xl">📊</span>
+            <span class="text-[8px] font-bold uppercase tracking-widest mt-1">Reportes</span>
+        </button>
     </nav>
 
+    <script>
+        // Memoria de la App: Conocimiento de Productos
+        const baseDeDatosProductos = [
+            { codigo: "A100", nombre: "Zapatillas Running Tajho", packing: "12 unidades" },
+            { codigo: "B200", nombre: "Boxer Algodón Premium", packing: "24 unidades" },
+            { codigo: "C300", nombre: "Gorra Deportiva Pro", packing: "50 unidades" }
+        ];
+
+        function agregarFila() {
+            const tbody = document.getElementById('tabla-conteo');
+            const row = document.createElement('tr');
+            row.className = "border-b border-slate-50 hover:bg-slate-50/50 transition-colors";
+            row.innerHTML = `
+                <td class="p-4">
+                    <input type="text" oninput="autocompletar(this)" placeholder="Código..." class="bg-transparent font-bold text-sm outline-none w-full uppercase">
+                    <p class="text-[10px] text-slate-400 italic producto-nombre">Esperando código...</p>
+                </td>
+                <td class="p-4">
+                    <input type="text" placeholder="Cant/Caja" class="bg-transparent text-sm outline-none w-16 text-slate-500 packing-val">
+                </td>
+                <td class="p-4 text-center">
+                    <input type="number" placeholder="0" class="w-16 p-2 bg-slate-100 rounded-lg text-center font-bold text-blue-600 outline-none">
+                </td>
+                <td class="p-4 text-center">
+                    <select class="text-[10px] font-bold p-2 rounded-lg bg-green-50 text-green-600 outline-none border-none">
+                        <option value="bueno">✅ ÓPTIMO</option>
+                        <option value="falla">❌ FALLA</option>
+                        <option value="empaque">📦 EMPAQUE</option>
+                    </select>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function autocompletar(input) {
+            const valor = input.value.toUpperCase();
+            const fila = input.closest('tr');
+            const nombreLabel = fila.querySelector('.producto-nombre');
+            const packingInput = fila.querySelector('.packing-val');
+
+            const producto = baseDeDatosProductos.find(p => p.codigo === valor);
+            if (producto) {
+                nombreLabel.innerText = producto.nombre;
+                nombreLabel.classList.add('text-blue-600', 'not-italic');
+                packingInput.value = producto.packing;
+            } else {
+                nombreLabel.innerText = "Producto no encontrado";
+                nombreLabel.classList.remove('text-blue-600');
+            }
+        }
+
+        // Agregar una fila inicial al cargar
+        window.onload = agregarFila;
+    </script>
 </body>
 </html>
-
-
