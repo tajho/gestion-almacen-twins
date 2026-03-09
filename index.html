@@ -3,208 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LogiMaster - NextGen Auditor</title>
+    <title>Almacén Tajho - Auditoría Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #fdfdfd; color: #1e293b; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); }
-        .neo-card { border-radius: 3rem; background: #ffffff; box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff; }
-        .input-scan { border: none; background: transparent; text-align: center; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em; }
-        .btn-action { background: linear-gradient(145deg, #2563eb, #1d4ed8); box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #111827; }
+        .ultra-glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.05); }
+        .neo-card { border-radius: 2.5rem; background: #ffffff; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .neo-card:active { transform: scale(0.98); }
+        .input-auditor { border: none; background: transparent; text-align: center; font-weight: 800; font-size: 2rem; letter-spacing: -0.05em; outline: none; width: 100%; color: #2563eb; }
+        .nav-active { color: #2563eb; font-weight: 800; }
+        .nav-active::after { content: ''; position: absolute; bottom: -12px; width: 6px; height: 6px; background: #2563eb; border-radius: 50%; }
         .hidden { display: none !important; }
-        .active-nav { color: #2563eb; transform: translateY(-5px); }
-        .active-nav::after { content: ''; position: absolute; bottom: -8px; width: 5px; height: 5px; background: #2563eb; border-radius: 50%; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .animate-status { animation: pulse-soft 2s infinite; }
     </style>
 </head>
-<body class="pb-36 bg-[#f8fafc]">
+<body class="pb-40 bg-gray-50/30">
 
-    <header class="p-8 pb-4 flex justify-between items-center">
+    <header class="px-8 pt-12 pb-6 flex justify-between items-center bg-white">
         <div>
-            <h1 class="text-3xl font-[900] tracking-tighter text-slate-900 italic">LOGI<span class="text-blue-600">MASTER</span></h1>
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Auditoría en Tiempo Real</p>
+            <h1 class="text-3xl font-[900] tracking-tighter text-gray-900 leading-none">ALMACÉN<span class="text-blue-600 italic ml-1">TAJHO</span></h1>
+            <div class="flex items-center gap-2 mt-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-status"></span>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Auditoría Logística de Precisión</p>
             </div>
         </div>
-        <div class="w-12 h-12 neo-card flex items-center justify-center text-xl">👤</div>
+        <div class="w-12 h-12 bg-gray-100 rounded-[1.2rem] flex items-center justify-center border border-gray-200">📦</div>
     </header>
 
     <main class="max-w-md mx-auto p-6 space-y-10">
 
-        <section id="vista-auditor" class="animate__animated animate__fadeIn space-y-8">
-            <div class="neo-card p-10 text-center space-y-6">
-                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Escaneo de Carga</p>
-                <div class="relative">
-                    <input type="text" id="scan-input" oninput="auditarCarga(this)" placeholder="ESPERANDO CÓDIGO" class="input-scan w-full text-blue-600 placeholder:text-slate-200 uppercase">
-                    <div class="h-0.5 w-1/2 bg-blue-100 mx-auto mt-2"></div>
+        <section id="vista-auditor" class="space-y-8">
+            <div class="neo-card p-10 text-center space-y-4 border border-gray-100">
+                <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">Escaneo de Carga</p>
+                <input type="text" id="scan-input" oninput="procesarCarga(this)" placeholder="INGRESAR CÓDIGO" class="input-auditor uppercase placeholder:text-gray-100">
+            </div>
+
+            <div id="status-panel" class="neo-card p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[250px]">
+                <img src="https://cdn-icons-png.flaticon.com/512/3045/3045508.png" class="w-16 opacity-10" alt="empty">
+                <p class="text-gray-400 text-sm font-medium italic">Sistema listo para recibir el primer pallet...</p>
+            </div>
+
+            <div id="live-ledger" class="space-y-3">
                 </div>
-            </div>
 
-            <div id="status-panel" class="glass rounded-[2.5rem] p-8 min-h-[220px] flex flex-col justify-center items-center text-center space-y-4">
-                <img src="https://cdn-icons-png.flaticon.com/512/2312/2312733.png" class="w-20 opacity-20 grayscale" alt="espera">
-                <p class="text-slate-400 text-sm font-semibold italic">El sistema está listo. Comience a recibir bultos.</p>
-            </div>
-
-            <div class="space-y-4">
-                <div id="live-ledger" class="space-y-3">
-                    </div>
-            </div>
-
-            <button onclick="cerrarSesion()" class="btn-action w-full py-6 rounded-[2rem] text-white font-bold text-sm tracking-widest uppercase transition-all active:scale-90">
-                Finalizar Descarga
+            <button onclick="finalizarDescarga()" class="w-full py-6 bg-gray-900 text-white rounded-[2rem] font-bold text-xs tracking-widest uppercase shadow-2xl transition-all active:scale-95">
+                Cerrar Descarga y Guardar
             </button>
         </section>
 
-        <section id="vista-devoluciones" class="hidden animate__animated animate__fadeIn space-y-6">
-            <div class="px-2">
-                <h2 class="text-2xl font-black italic">Devoluciones</h2>
-                <p class="text-xs text-slate-400">Registro de retornos y estado físico</p>
-            </div>
+        <section id="vista-devoluciones" class="hidden space-y-6">
+            <h2 class="text-2xl font-black px-2">Devoluciones</h2>
             <div class="space-y-4">
-                <input type="text" id="dev-cli" placeholder="Cliente" class="w-full p-5 neo-card border-none text-sm font-bold">
-                <input type="text" id="dev-ven" placeholder="Vendedor" class="w-full p-5 neo-card border-none text-sm font-bold text-blue-600">
+                <input type="text" id="dev-cli" placeholder="Nombre del Cliente" class="w-full p-5 neo-card text-sm font-bold border-none outline-none">
+                <input type="text" id="dev-ven" placeholder="Vendedor Responsable" class="w-full p-5 neo-card text-sm font-bold text-blue-600 border-none outline-none">
             </div>
             <div id="dev-rows" class="space-y-4"></div>
-            <button onclick="addDevRow()" class="w-full py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">+ Agregar Producto</button>
-            <button onclick="saveDev()" class="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-bold uppercase text-xs tracking-widest shadow-2xl">Confirmar Devolución</button>
+            <button onclick="addDevRow()" class="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">+ Agregar Producto</button>
+            <button onclick="guardarDev()" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-bold uppercase text-xs tracking-widest shadow-xl">Registrar Devolución</button>
         </section>
 
-        <section id="vista-historial" class="hidden animate__animated animate__fadeIn space-y-6">
-            <h2 class="text-2xl font-black italic px-2">Historial</h2>
+        <section id="vista-historial" class="hidden space-y-6">
+            <h2 class="text-2xl font-black px-2">Reportes</h2>
             <div id="history-feed" class="space-y-4">
                 </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] glass rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
-        <button onclick="nav('vista-auditor', this)" class="nav-btn active-nav flex flex-col items-center relative p-3">
+    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] ultra-glass rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
+        <button onclick="navegar('vista-auditor', this)" class="nav-active relative flex flex-col items-center p-3 transition-all">
             <span class="text-xl">🛠️</span>
-            <span class="text-[8px] font-bold uppercase mt-1">Auditor</span>
+            <span class="text-[8px] uppercase mt-1">Auditor</span>
         </button>
-        <button onclick="nav('vista-devoluciones', this)" class="nav-btn flex flex-col items-center relative p-3 text-slate-400">
+        <button onclick="navegar('vista-devoluciones', this)" class="text-gray-300 relative flex flex-col items-center p-3 transition-all">
             <span class="text-xl">🔄</span>
-            <span class="text-[8px] font-bold uppercase mt-1">Devolu.</span>
+            <span class="text-[8px] uppercase mt-1">Devolu.</span>
         </button>
-        <button onclick="nav('vista-historial', this)" class="nav-btn flex flex-col items-center relative p-3 text-slate-400">
+        <button onclick="navegar('vista-historial', this)" class="text-gray-300 relative flex flex-col items-center p-3 transition-all">
             <span class="text-xl">📊</span>
-            <span class="text-[8px] font-bold uppercase mt-1">Reporte</span>
+            <span class="text-[8px] uppercase mt-1">Reporte</span>
         </button>
     </nav>
 
     <script>
         const { jsPDF } = window.jspdf;
 
-        // Base Maestra (El sistema ya "sabe" el packing)
-        const packingList = [
-            { id: "101", name: "TAJHO AIR PRO", meta: 120, pack: 12 },
-            { id: "102", name: "BOXER COTTON PREMIUM", meta: 48, pack: 24 }
+        // DATOS FALSOS INYECTADOS (Packing List Maestro)
+        const maestroTajho = [
+            { cod: "101", nombre: "ZAPATILLA TAJHO PRO", meta: 120, pack: 12 },
+            { cod: "202", nombre: "BOXER COTTON PREMIUM", meta: 480, pack: 48 },
+            { cod: "303", nombre: "GORRA URBAN TAJHO", meta: 100, pack: 10 }
         ];
 
-        let sessionData = {};
-        let db = JSON.parse(localStorage.getItem('master_logi_v1')) || [];
+        let auditorActual = {};
+        let baseDatos = JSON.parse(localStorage.getItem('tajho_logs')) || [
+            // Registros falsos para ver historial al 100%
+            { id: "DESC-774", fecha: "08/03/2026, 14:20", tipo: "INGRESO", data: {"101": 120, "202": 480} },
+            { id: "DEV-102", fecha: "07/03/2026, 09:15", tipo: "DEVOLUCION", cli: "Tiendas Norte", ven: "Luis Waldir" }
+        ];
 
-        function nav(id, btn) {
+        function navegar(id, btn) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav', 'text-blue-600'));
-            btn.classList.add('active-nav');
-            if(id === 'vista-historial') renderHist();
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-blue-600'));
+            btn.classList.add('nav-active');
+            if(id === 'vista-historial') renderizarHistorial();
         }
 
-        function auditarCarga(input) {
+        function procesarCarga(input) {
             const val = input.value.toUpperCase();
-            const prod = packingList.find(p => p.id === val);
+            const prod = maestroTajho.find(p => p.cod === val);
             const panel = document.getElementById('status-panel');
 
             if(prod) {
-                sessionData[val] = (sessionData[val] || 0) + prod.pack;
-                const total = sessionData[val];
-                const falta = prod.meta - total;
+                auditorActual[val] = (auditorActual[val] || 0) + prod.pack;
+                const total = auditorActual[val];
+                const meta = prod.meta;
 
-                panel.className = `animate__animated animate__pulse rounded-[2.5rem] p-8 text-center space-y-2 ${total >= prod.meta ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`;
+                panel.className = `neo-card p-12 text-center flex flex-col items-center justify-center space-y-2 border-2 ${total >= meta ? 'border-green-400 bg-green-50' : 'border-blue-500 bg-blue-50'}`;
                 panel.innerHTML = `
-                    <p class="text-[10px] font-black uppercase tracking-widest">${prod.name}</p>
-                    <h3 class="text-5xl font-black tracking-tighter">${total}</h3>
-                    <p class="text-xs font-bold uppercase">${total >= prod.meta ? '¡CONTEO COMPLETADO!' : 'Faltan ' + falta + ' unidades'}</p>
+                    <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${prod.nombre}</p>
+                    <h3 class="text-6xl font-black tracking-tighter ${total >= meta ? 'text-green-600' : 'text-blue-700'}">${total}</h3>
+                    <p class="text-[11px] font-bold text-gray-500 uppercase">${total >= meta ? '¡CONTEO EXACTO!' : 'TOTAL ESPERADO: ' + meta}</p>
                 `;
                 input.value = "";
-                renderLedger();
+                renderizarLedger();
             }
         }
 
-        function renderLedger() {
-            const ledger = document.getElementById('live-ledger');
-            ledger.innerHTML = "";
-            for(let key in sessionData) {
-                const p = packingList.find(x => x.id === key);
-                ledger.innerHTML += `
-                    <div class="glass p-5 rounded-3xl flex justify-between items-center animate__animated animate__fadeInLeft">
-                        <div>
-                            <p class="text-[8px] font-black text-slate-400 uppercase">${key}</p>
-                            <p class="text-xs font-bold">${p.name}</p>
-                        </div>
-                        <span class="text-lg font-black text-blue-600">${sessionData[key]}</span>
+        function renderizarLedger() {
+            const cont = document.getElementById('live-ledger');
+            cont.innerHTML = "";
+            for(let key in auditorActual) {
+                const p = maestroTajho.find(x => x.cod === key);
+                cont.innerHTML += `
+                    <div class="neo-card p-6 flex justify-between items-center border border-gray-100">
+                        <div><p class="text-[8px] font-black text-gray-400 uppercase">${key}</p><p class="text-xs font-bold">${p.nombre}</p></div>
+                        <span class="text-xl font-black text-blue-600">${auditorActual[key]}</span>
                     </div>`;
             }
         }
 
-        function cerrarSesion() {
-            if(Object.keys(sessionData).length === 0) return;
-            const item = {
-                id: "REC-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
-                fecha: new Date().toLocaleString(),
-                tipo: "INGRESO",
-                detalles: {...sessionData}
-            };
-            db.unshift(item);
-            localStorage.setItem('master_logi_v1', JSON.stringify(db));
-            sessionData = {};
+        function finalizarDescarga() {
+            if(Object.keys(auditorActual).length === 0) return alert("Nada que guardar.");
+            const registro = { id: "DESC-" + Math.floor(Math.random()*1000), fecha: new Date().toLocaleString(), tipo: "INGRESO", data: {...auditorActual} };
+            baseDatos.unshift(registro);
+            localStorage.setItem('tajho_logs', JSON.stringify(baseDatos));
+            auditorActual = {};
             location.reload();
         }
 
-        function renderHist() {
+        function renderizarHistorial() {
             const feed = document.getElementById('history-feed');
             feed.innerHTML = "";
-            db.forEach(h => {
+            baseDatos.forEach(h => {
                 feed.innerHTML += `
-                    <div class="neo-card p-6 flex justify-between items-center">
+                    <div class="neo-card p-8 flex justify-between items-center border border-gray-50 hover:shadow-lg transition-all">
                         <div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase">${h.fecha}</p>
-                            <h3 class="font-bold text-slate-800">${h.id}</h3>
+                            <p class="text-[9px] font-black text-gray-300 uppercase italic">${h.fecha}</p>
+                            <h3 class="text-lg font-black text-gray-800">${h.id}</h3>
                         </div>
-                        <button onclick="genPDF('${h.id}')" class="w-12 h-12 bg-blue-600 rounded-2xl text-white shadow-lg">📄</button>
+                        <button onclick="exportarPDF('${h.id}')" class="w-14 h-14 bg-gray-900 rounded-[1.5rem] flex items-center justify-center text-xl shadow-xl">📄</button>
                     </div>`;
             });
         }
 
-        function genPDF(id) {
-            const h = db.find(x => x.id === id);
+        function exportarPDF(id) {
+            const item = baseDatos.find(x => x.id === id);
             const doc = new jsPDF();
-            doc.setFontSize(22); doc.text("REPORTE DE AUDITORÍA", 14, 20);
-            doc.setFontSize(10); doc.text(`Registro: ${h.id} | Generado: ${new Date().toLocaleString()}`, 14, 28);
+            doc.setFontSize(24); doc.setTextColor(20, 30, 60); doc.text("REPORTE ALMACÉN TAJHO", 14, 25);
+            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Código Registro: ${item.id} | Generado el: ${item.fecha}`, 14, 33);
             
             const rows = [];
-            for(let k in h.detalles) {
-                const p = packingList.find(x => x.id === k);
-                rows.push([k, p.name, h.detalles[k], "VERIFICADO"]);
+            if(item.data) {
+                for(let k in item.data) {
+                    const p = maestroTajho.find(x => x.cod === k);
+                    rows.push([k, p.nombre, item.data[k], "CONFORME"]);
+                }
+            } else {
+                rows.push(["DEV", item.cli, "1", "REVISIÓN"]);
             }
 
             doc.autoTable({
-                startY: 35,
-                head: [['CÓDIGO', 'PRODUCTO', 'CONTEO', 'ESTADO']],
+                startY: 40,
+                head: [['CÓDIGO', 'DESCRIPCIÓN', 'CANTIDAD', 'ESTADO']],
                 body: rows,
                 theme: 'grid',
-                headStyles: { fillColor: [37, 99, 235] }
+                headStyles: { fillColor: [17, 24, 39], fontSize: 10, halign: 'center' },
+                styles: { font: 'helvetica', fontSize: 9 }
             });
 
             doc.setFont("helvetica", "italic");
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Auditoria_${id}.pdf`);
+            doc.save(`Reporte_Tajho_${id}.pdf`);
         }
     </script>
 </body>
