@@ -3,201 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Almacén Tajho - Auditoría Pro</title>
+    <title>Almacén Tajho - Gestión de Contenedores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #111827; }
-        .ultra-glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.05); }
-        .neo-card { border-radius: 2.5rem; background: #ffffff; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .neo-card:active { transform: scale(0.98); }
-        .input-auditor { border: none; background: transparent; text-align: center; font-weight: 800; font-size: 2rem; letter-spacing: -0.05em; outline: none; width: 100%; color: #2563eb; }
-        .nav-active { color: #2563eb; font-weight: 800; }
-        .nav-active::after { content: ''; position: absolute; bottom: -12px; width: 6px; height: 6px; background: #2563eb; border-radius: 50%; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f9fafb; color: #111827; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,0.05); }
+        .card-tajho { border-radius: 2rem; background: #ffffff; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); }
+        .input-tajho { @apply w-full p-4 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-bold text-sm; }
+        .btn-primary { @apply py-5 px-8 bg-blue-600 text-white rounded-[1.5rem] font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-100 active:scale-95 transition-all; }
         .hidden { display: none !important; }
-        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .animate-status { animation: pulse-soft 2s infinite; }
+        .stepper-active { @apply text-blue-600 border-b-2 border-blue-600; }
     </style>
 </head>
-<body class="pb-40 bg-gray-50/30">
+<body class="pb-40">
 
-    <header class="px-8 pt-12 pb-6 flex justify-between items-center bg-white">
-        <div>
-            <h1 class="text-3xl font-[900] tracking-tighter text-gray-900 leading-none">ALMACÉN<span class="text-blue-600 italic ml-1">TAJHO</span></h1>
-            <div class="flex items-center gap-2 mt-2">
-                <span class="w-2 h-2 bg-blue-500 rounded-full animate-status"></span>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Auditoría Logística de Precisión</p>
-            </div>
-        </div>
-        <div class="w-12 h-12 bg-gray-100 rounded-[1.2rem] flex items-center justify-center border border-gray-200">📦</div>
+    <header class="px-8 pt-10 pb-6 bg-white border-b border-gray-100">
+        <h1 class="text-3xl font-[900] tracking-tighter text-gray-900 leading-none uppercase">Almacén<span class="text-blue-600 italic ml-1">Tajho</span></h1>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Control de Inventario Logístico</p>
     </header>
 
-    <main class="max-w-md mx-auto p-6 space-y-10">
+    <main class="max-w-md mx-auto p-6 space-y-8">
 
-        <section id="vista-auditor" class="space-y-8">
-            <div class="neo-card p-10 text-center space-y-4 border border-gray-100">
-                <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">Escaneo de Carga</p>
-                <input type="text" id="scan-input" oninput="procesarCarga(this)" placeholder="INGRESAR CÓDIGO" class="input-auditor uppercase placeholder:text-gray-100">
+        <section id="fase-plan" class="space-y-6 animate-in fade-in">
+            <div class="px-2">
+                <h2 class="text-xl font-extrabold italic">1. Planificar Contenedor</h2>
+                <p class="text-xs text-gray-400 font-medium">Define qué productos esperas recibir hoy.</p>
             </div>
 
-            <div id="status-panel" class="neo-card p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[250px]">
-                <img src="https://cdn-icons-png.flaticon.com/512/3045/3045508.png" class="w-16 opacity-10" alt="empty">
-                <p class="text-gray-400 text-sm font-medium italic">Sistema listo para recibir el primer pallet...</p>
-            </div>
-
-            <div id="live-ledger" class="space-y-3">
+            <div class="card-tajho p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="plan-cod" placeholder="Código" class="input-tajho">
+                    <input type="number" id="plan-meta" placeholder="Cant. Total" class="input-tajho">
                 </div>
+                <input type="text" id="plan-desc" placeholder="Descripción del producto" class="input-tajho">
+                <button onclick="agregarAlPacking()" class="w-full py-4 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest">+ Añadir a la Lista</button>
+            </div>
 
-            <button onclick="finalizarDescarga()" class="w-full py-6 bg-gray-900 text-white rounded-[2rem] font-bold text-xs tracking-widest uppercase shadow-2xl transition-all active:scale-95">
-                Cerrar Descarga y Guardar
-            </button>
+            <div class="space-y-3">
+                <p class="text-[10px] font-black text-gray-400 uppercase ml-2">Vista Previa Packing List</p>
+                <div id="lista-previa" class="space-y-2">
+                    </div>
+            </div>
+
+            <button id="btn-crear" onclick="activarAuditoria()" class="btn-primary w-full hidden">Crear Contenedor & Iniciar Conteo</button>
         </section>
 
-        <section id="vista-devoluciones" class="hidden space-y-6">
-            <h2 class="text-2xl font-black px-2">Devoluciones</h2>
-            <div class="space-y-4">
-                <input type="text" id="dev-cli" placeholder="Nombre del Cliente" class="w-full p-5 neo-card text-sm font-bold border-none outline-none">
-                <input type="text" id="dev-ven" placeholder="Vendedor Responsable" class="w-full p-5 neo-card text-sm font-bold text-blue-600 border-none outline-none">
+        <section id="fase-conteo" class="space-y-6 hidden">
+            <div class="px-2 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-extrabold italic">2. Conteo de Cajas</h2>
+                    <p class="text-xs text-gray-400 font-medium">Registrando ingreso físico por bulto.</p>
+                </div>
+                <button onclick="location.reload()" class="text-[10px] font-bold text-red-500 underline">Cancelar</button>
             </div>
-            <div id="dev-rows" class="space-y-4"></div>
-            <button onclick="addDevRow()" class="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">+ Agregar Producto</button>
-            <button onclick="guardarDev()" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-bold uppercase text-xs tracking-widest shadow-xl">Registrar Devolución</button>
+
+            <div class="card-tajho p-10 text-center space-y-4 border-2 border-blue-100">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ingresar Código de Bulto</p>
+                <input type="text" id="input-auditor" oninput="auditarBulto(this)" class="w-full text-4xl font-black text-blue-600 text-center outline-none bg-transparent uppercase" placeholder="----">
+            </div>
+
+            <div id="audit-feedback" class="card-tajho p-8 text-center min-h-[120px] flex flex-col justify-center items-center bg-gray-50/50">
+                <p class="text-gray-400 text-sm italic">Esperando primera caja...</p>
+            </div>
+
+            <div id="audit-resumen" class="space-y-2">
+                </div>
+
+            <button onclick="finalizarRegistro()" class="btn-primary w-full bg-gray-900">Finalizar y Generar Reporte</button>
         </section>
 
         <section id="vista-historial" class="hidden space-y-6">
-            <h2 class="text-2xl font-black px-2">Reportes</h2>
-            <div id="history-feed" class="space-y-4">
-                </div>
+            <h2 class="text-xl font-extrabold italic px-2">Historial de Descargas</h2>
+            <div id="historial-feed" class="space-y-4"></div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] ultra-glass rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
-        <button onclick="navegar('vista-auditor', this)" class="nav-active relative flex flex-col items-center p-3 transition-all">
-            <span class="text-xl">🛠️</span>
-            <span class="text-[8px] uppercase mt-1">Auditor</span>
+    <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] glass-panel rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
+        <button onclick="nav('fase-plan', this)" class="nav-active flex flex-col items-center p-3 text-blue-600">
+            <span class="text-xl">📋</span>
+            <span class="text-[8px] font-black uppercase mt-1">Planificar</span>
         </button>
-        <button onclick="navegar('vista-devoluciones', this)" class="text-gray-300 relative flex flex-col items-center p-3 transition-all">
-            <span class="text-xl">🔄</span>
-            <span class="text-[8px] uppercase mt-1">Devolu.</span>
-        </button>
-        <button onclick="navegar('vista-historial', this)" class="text-gray-300 relative flex flex-col items-center p-3 transition-all">
-            <span class="text-xl">📊</span>
-            <span class="text-[8px] uppercase mt-1">Reporte</span>
+        <button onclick="nav('vista-historial', this)" class="flex flex-col items-center p-3 text-gray-300">
+            <span class="text-xl">📁</span>
+            <span class="text-[8px] font-black uppercase mt-1">Historial</span>
         </button>
     </nav>
 
     <script>
         const { jsPDF } = window.jspdf;
+        let packingPlan = []; // La lista que creamos antes del conteo
+        let conteoReal = {};  // El conteo físico que se hace después
 
-        // DATOS FALSOS INYECTADOS (Packing List Maestro)
-        const maestroTajho = [
-            { cod: "101", nombre: "ZAPATILLA TAJHO PRO", meta: 120, pack: 12 },
-            { cod: "202", nombre: "BOXER COTTON PREMIUM", meta: 480, pack: 48 },
-            { cod: "303", nombre: "GORRA URBAN TAJHO", meta: 100, pack: 10 }
+        // Datos falsos iniciales para ver la dinámica
+        const demoData = [
+            { cod: "ZAP-01", desc: "Zapatilla Tajho Urban", meta: 100 },
+            { cod: "BOX-05", desc: "Boxer Tajho Cotton", meta: 240 }
         ];
 
-        let auditorActual = {};
-        let baseDatos = JSON.parse(localStorage.getItem('tajho_logs')) || [
-            // Registros falsos para ver historial al 100%
-            { id: "DESC-774", fecha: "08/03/2026, 14:20", tipo: "INGRESO", data: {"101": 120, "202": 480} },
-            { id: "DEV-102", fecha: "07/03/2026, 09:15", tipo: "DEVOLUCION", cli: "Tiendas Norte", ven: "Luis Waldir" }
-        ];
+        function agregarAlPacking() {
+            const cod = document.getElementById('plan-cod').value.toUpperCase();
+            const meta = parseInt(document.getElementById('plan-meta').value);
+            const desc = document.getElementById('plan-desc').value;
 
-        function navegar(id, btn) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-blue-600'));
-            btn.classList.add('nav-active');
-            if(id === 'vista-historial') renderizarHistorial();
+            if(!cod || !meta) return alert("Completa código y cantidad.");
+
+            packingPlan.push({ cod, meta, desc });
+            renderListaPrevia();
+            
+            document.getElementById('plan-cod').value = "";
+            document.getElementById('plan-meta').value = "";
+            document.getElementById('plan-desc').value = "";
+            document.getElementById('btn-crear').classList.remove('hidden');
         }
 
-        function procesarCarga(input) {
+        function renderListaPrevia() {
+            const div = document.getElementById('lista-previa');
+            div.innerHTML = "";
+            packingPlan.forEach((p, index) => {
+                div.innerHTML += `
+                    <div class="card-tajho p-4 flex justify-between items-center text-xs">
+                        <div><span class="font-black text-blue-600">${p.cod}</span> | ${p.desc}</div>
+                        <div class="font-bold bg-gray-100 px-3 py-1 rounded-full text-gray-500">${p.meta} UND</div>
+                    </div>`;
+            });
+        }
+
+        function activarAuditoria() {
+            document.getElementById('fase-plan').classList.add('hidden');
+            document.getElementById('fase-conteo').classList.remove('hidden');
+            renderResumenAuditoria();
+        }
+
+        function auditarBulto(input) {
             const val = input.value.toUpperCase();
-            const prod = maestroTajho.find(p => p.cod === val);
-            const panel = document.getElementById('status-panel');
+            const prod = packingPlan.find(p => p.cod === val);
+            const feedback = document.getElementById('audit-feedback');
 
             if(prod) {
-                auditorActual[val] = (auditorActual[val] || 0) + prod.pack;
-                const total = auditorActual[val];
-                const meta = prod.meta;
-
-                panel.className = `neo-card p-12 text-center flex flex-col items-center justify-center space-y-2 border-2 ${total >= meta ? 'border-green-400 bg-green-50' : 'border-blue-500 bg-blue-50'}`;
-                panel.innerHTML = `
-                    <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${prod.nombre}</p>
-                    <h3 class="text-6xl font-black tracking-tighter ${total >= meta ? 'text-green-600' : 'text-blue-700'}">${total}</h3>
-                    <p class="text-[11px] font-bold text-gray-500 uppercase">${total >= meta ? '¡CONTEO EXACTO!' : 'TOTAL ESPERADO: ' + meta}</p>
+                // Suponemos que cada bulto/caja trae una cantidad fija (ej: 12)
+                const cantPorCaja = 12; 
+                conteoReal[val] = (conteoReal[val] || 0) + cantPorCaja;
+                
+                const total = conteoReal[val];
+                feedback.className = `card-tajho p-8 text-center flex flex-col justify-center items-center ${total >= prod.meta ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`;
+                feedback.innerHTML = `
+                    <h3 class="text-3xl font-black">${total} / ${prod.meta}</h3>
+                    <p class="text-xs font-bold uppercase">${prod.desc}</p>
+                    <p class="text-[10px] mt-1">${total >= prod.meta ? '¡CONTEO COMPLETADO!' : 'Faltan ' + (prod.meta - total)}</p>
                 `;
                 input.value = "";
-                renderizarLedger();
+                renderResumenAuditoria();
             }
         }
 
-        function renderizarLedger() {
-            const cont = document.getElementById('live-ledger');
-            cont.innerHTML = "";
-            for(let key in auditorActual) {
-                const p = maestroTajho.find(x => x.cod === key);
-                cont.innerHTML += `
-                    <div class="neo-card p-6 flex justify-between items-center border border-gray-100">
-                        <div><p class="text-[8px] font-black text-gray-400 uppercase">${key}</p><p class="text-xs font-bold">${p.nombre}</p></div>
-                        <span class="text-xl font-black text-blue-600">${auditorActual[key]}</span>
+        function renderResumenAuditoria() {
+            const div = document.getElementById('audit-resumen');
+            div.innerHTML = "";
+            packingPlan.forEach(p => {
+                const actual = conteoReal[p.cod] || 0;
+                const porc = (actual / p.meta) * 100;
+                div.innerHTML += `
+                    <div class="card-tajho p-4 space-y-2">
+                        <div class="flex justify-between text-[10px] font-black uppercase">
+                            <span>${p.cod}</span>
+                            <span>${actual} de ${p.meta}</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-600 transition-all" style="width: ${Math.min(porc, 100)}%"></div>
+                        </div>
                     </div>`;
-            }
+            });
         }
 
-        function finalizarDescarga() {
-            if(Object.keys(auditorActual).length === 0) return alert("Nada que guardar.");
-            const registro = { id: "DESC-" + Math.floor(Math.random()*1000), fecha: new Date().toLocaleString(), tipo: "INGRESO", data: {...auditorActual} };
-            baseDatos.unshift(registro);
-            localStorage.setItem('tajho_logs', JSON.stringify(baseDatos));
-            auditorActual = {};
+        function finalizarRegistro() {
+            const hist = JSON.parse(localStorage.getItem('tajho_hist')) || [];
+            const registro = {
+                id: "CONT-" + Math.floor(1000 + Math.random() * 9000),
+                fecha: new Date().toLocaleString(),
+                packing: packingPlan,
+                conteo: conteoReal
+            };
+            hist.unshift(registro);
+            localStorage.setItem('tajho_hist', JSON.stringify(hist));
+            alert("Contenedor guardado en historial.");
             location.reload();
         }
 
-        function renderizarHistorial() {
-            const feed = document.getElementById('history-feed');
-            feed.innerHTML = "";
-            baseDatos.forEach(h => {
+        function nav(id, btn) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'vista-historial') renderHistorial();
+        }
+
+        function renderHistorial() {
+            const feed = document.getElementById('historial-feed');
+            const hist = JSON.parse(localStorage.getItem('tajho_hist')) || [];
+            feed.innerHTML = hist.length ? "" : "<p class='text-center text-gray-400 py-10'>No hay registros guardados.</p>";
+            hist.forEach(h => {
                 feed.innerHTML += `
-                    <div class="neo-card p-8 flex justify-between items-center border border-gray-50 hover:shadow-lg transition-all">
+                    <div class="card-tajho p-6 flex justify-between items-center border border-gray-50">
                         <div>
-                            <p class="text-[9px] font-black text-gray-300 uppercase italic">${h.fecha}</p>
+                            <p class="text-[9px] font-black text-gray-400 uppercase italic">${h.fecha}</p>
                             <h3 class="text-lg font-black text-gray-800">${h.id}</h3>
                         </div>
-                        <button onclick="exportarPDF('${h.id}')" class="w-14 h-14 bg-gray-900 rounded-[1.5rem] flex items-center justify-center text-xl shadow-xl">📄</button>
+                        <button onclick="generarReporte('${h.id}')" class="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center text-white shadow-xl">📄</button>
                     </div>`;
             });
         }
 
-        function exportarPDF(id) {
-            const item = baseDatos.find(x => x.id === id);
+        function generarReporte(id) {
+            const hist = JSON.parse(localStorage.getItem('tajho_hist')) || [];
+            const item = hist.find(x => x.id === id);
             const doc = new jsPDF();
-            doc.setFontSize(24); doc.setTextColor(20, 30, 60); doc.text("REPORTE ALMACÉN TAJHO", 14, 25);
-            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Código Registro: ${item.id} | Generado el: ${item.fecha}`, 14, 33);
             
-            const rows = [];
-            if(item.data) {
-                for(let k in item.data) {
-                    const p = maestroTajho.find(x => x.cod === k);
-                    rows.push([k, p.nombre, item.data[k], "CONFORME"]);
-                }
-            } else {
-                rows.push(["DEV", item.cli, "1", "REVISIÓN"]);
-            }
+            doc.setFontSize(22); doc.text("REPORTE ALMACÉN TAJHO", 14, 25);
+            doc.setFontSize(10); doc.text(`Contenedor: ${item.id} | Fecha: ${item.fecha}`, 14, 33);
+            
+            const rows = item.packing.map(p => [
+                p.cod, 
+                p.desc, 
+                p.meta, 
+                (item.conteo[p.cod] || 0), 
+                (item.conteo[p.cod] >= p.meta ? 'OK' : 'FALTANTE')
+            ]);
 
             doc.autoTable({
                 startY: 40,
-                head: [['CÓDIGO', 'DESCRIPCIÓN', 'CANTIDAD', 'ESTADO']],
+                head: [['CÓDIGO', 'PRODUCTO', 'PLANIFICADO', 'RECIBIDO', 'ESTADO']],
                 body: rows,
                 theme: 'grid',
-                headStyles: { fillColor: [17, 24, 39], fontSize: 10, halign: 'center' },
-                styles: { font: 'helvetica', fontSize: 9 }
+                headStyles: { fillColor: [17, 24, 39] }
             });
 
-            doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
             doc.save(`Reporte_Tajho_${id}.pdf`);
         }
