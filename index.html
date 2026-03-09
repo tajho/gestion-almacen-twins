@@ -2,228 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS LOGISTICS PRO - ANGELO DURAND</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiMaster - Control Total</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --black: #000000; --white: #ffffff; --gray-1: #f5f5f7; --gray-2: #e5e5e7; --accent: #2563eb; }
-        * { box-sizing: border-box; font-family: 'SF Pro Display', -apple-system, sans-serif; }
-        body { background: var(--gray-1); margin: 0; padding-bottom: 120px; color: var(--black); }
-
-        /* Header Premium */
-        .header { background: var(--black); color: var(--white); padding: 20px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 0.9rem; margin: 0; letter-spacing: 3px; font-weight: 900; text-transform: uppercase; }
-        .status-badge { font-size: 0.6rem; padding: 4px 8px; border: 1px solid #333; border-radius: 4px; color: #888; }
-
-        /* Dashboard de Inteligencia */
-        .dashboard { background: var(--white); display: flex; padding: 20px; border-bottom: 1px solid var(--gray-2); gap: 20px; }
-        .stat { flex: 1; }
-        .stat-val { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1; }
-        .stat-lbl { font-size: 0.6rem; color: #666; text-transform: uppercase; font-weight: 700; margin-top: 5px; display: block; }
-
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-
-        /* Cards Estilo Apple Industrial */
-        .card { background: var(--white); border-radius: 12px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--gray-2); transition: transform 0.2s; }
-        .card:active { transform: scale(0.98); }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .sku-tag { background: var(--black); color: var(--white); font-size: 0.7rem; padding: 3px 8px; font-weight: 800; border-radius: 3px; }
-        .sku-count { font-size: 0.85rem; font-weight: 800; color: var(--accent); }
-        .sku-desc { font-size: 0.8rem; font-weight: 600; margin: 12px 0; color: #1d1d1f; line-height: 1.4; }
-
-        /* Input de Alta Precisión */
-        .input-box { width: 100%; background: var(--gray-1); border: 1px solid var(--gray-2); padding: 12px; font-size: 1.2rem; font-weight: 800; border-radius: 8px; outline: none; margin-top: 10px; transition: all 0.2s; }
-        .input-box:focus { background: var(--white); border-color: var(--black); box-shadow: 0 0 0 4px rgba(0,0,0,0.05); }
-        
-        .obs-box { width: 100%; border: none; border-bottom: 1px solid var(--gray-2); padding: 8px 0; font-size: 0.75rem; color: #666; outline: none; margin-top: 10px; }
-
-        /* Barra de Progreso Minimalista */
-        .progress-track { background: var(--gray-2); height: 4px; border-radius: 2px; margin: 15px 0; overflow: hidden; }
-        .progress-fill { background: var(--black); height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        /* Footer y Botones */
-        .actions { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 20px; border-top: 1px solid var(--gray-2); display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 18px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; transition: 0.2s; }
-        .btn-black { background: var(--black); color: var(--white); }
-        .btn-black:disabled { background: #ccc; }
-        .btn-outline { background: transparent; border: 2px solid var(--black); color: var(--black); }
-
-        .hidden { display: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease;
+        }
+        .glass-card:active { transform: scale(0.98); }
+        .primary-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Logistics Intelligence</h1>
-    <div class="status-badge" id="status">Ready</div>
-</div>
-
-<div id="dashboard" class="dashboard hidden">
-    <div class="stat">
-        <span class="stat-val" id="total-cajas">0</span>
-        <span class="stat-lbl">Recibidas</span>
-    </div>
-    <div class="stat">
-        <span class="stat-val" id="progreso-global">0%</span>
-        <span class="stat-lbl">Avance Global</span>
-    </div>
-</div>
-
-<div class="container">
-    <div id="setup-screen">
-        <div class="card" style="text-align: center;">
-            <p style="font-size: 0.8rem; font-weight: 700; color: #666;">PEGA EL MANIFIESTO (JSON)</p>
-            <textarea id="json-input" style="width:100%; height:150px; border:1px solid #ddd; border-radius:8px; padding:10px; font-family:monospace; font-size:0.7rem; margin-bottom:15px;"></textarea>
-            <button class="btn btn-black" onclick="startApp()">Inicializar Sistema</button>
+    <header class="primary-gradient text-white p-6 shadow-lg rounded-b-3xl">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl font-bold italic">LOGIMASTER PRO</h1>
+            <p class="text-blue-100 text-sm opacity-80">Gestión Logística de Alta Precisión</p>
         </div>
-    </div>
+    </header>
 
-    <div id="main-list"></div>
-</div>
+    <main class="max-w-4xl mx-auto p-6 space-y-6">
+        
+        <div class="relative">
+            <input type="text" placeholder="Buscar producto o contenedor..." 
+                   class="w-full p-4 rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-600">
+            <span class="absolute right-4 top-4 opacity-30">🔍</span>
+        </div>
 
-<div id="footer-actions" class="actions hidden">
-    <button class="btn btn-outline" onclick="resetApp()">Limpiar</button>
-    <button class="btn btn-black" onclick="generatePDF()">Generar Reporte Oficial</button>
-</div>
-
-<script>
-    let inventory = [];
-    const FIRMA_ANGELO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADD9n8HAAAAAXNSR0IArs4c6QAAEbVJREFUeF7tXWtsHMcV/mZ29+79uCTvS5RESpYpWZZjxY6dWnHaInZsOHVaw0DRFm0fDf3ToAUK9E+BAn3ToEDRP9mgaVvHSBEnTuw6LlzVkiXHkhV9iqREiqIoeZ8P7969O7szU9zLS2mXpC7Iu0uu7wMGe7N378z55szMmTMzR0BfGgMaA1UfA9Xfgr6hxoDGgBoB9CHQGKjxGNAI1HjD69trBGoM0GdAY6DGY0AjUOMNr2+vEagxQJ8BjYEajwGNQI03vL69RoDGAn0GNAZqPAY0AjXe8Pr2GgEaA/QZ0Bio8RjQCNR4w+vbawRoDNBnQGOgxmNAI1DjDa9vrxGgMUCTAclI7E7M7M49eIAs6X6X7u/60hioixigTCI2En0pZnbnHzxAlvS4S/d3fWkM1EUMUCYRG4m+FDO78w8eIEt63KX7u740BuoiBiiTiI1EX4qZ3fkHD5AlPe7S/V1fGgN1EQOUScRGoi/FzO78gwfIkh536f6uL42BuogByiRiI9GXYmZ3/sEDZEmPu3R/15fGQF3EAGUSsZHoSzGzO/8fHSDqIatfF7fN9GvXFv6Sre/N0beu3higSCKmi0XEnBv8f15E6O8EInYnHqAn3Z/N8TfR8/Pz5Mknnmh5XpD6f9m5IubY4P+vE/mE7uD8AmXSuZHoCzGzu/7hAWpU6i6fHz9+nHznO98pS7mI6WIRMeH8/3QiH9f9XpBAEisRG4vOi5ndfX8XIEt6WvT5v3MMLFuAlEnERmIvxczuvr8LkCU9Xfr83zkGlilAnInYvTHM7P76O8fAkh4uff7vHgPLEyDxvTHM7P76O8fAkh4uff7vHgPLEyDxHTHM7P76O8fAkh4uff7vHgPLEyDx7THM7P76O8fAkh4uff7vHgPLEiDxbTHM7P76O8fAkh4uff7vHgPLEiDxzTHM7P76O8fAkh4uff7vHgPLEiDxjTHM7P76O8fAkh4uff7vHgPLEyDujTHM7P76O8fAkh4uff7vHgPLEiDu9THM7P76O8fAkh4uff7vHgPLEiDu1THM7P76O8fAkh4uff7vHgPLEiDubTHM7P76O8fAkh4uff7vHgPLEiDurzHM7P76O8fAkh4uff7vHgPLEiDu9TDM7P76O8fAkh4uff7vHgPLEiDu8TDM7P76O8fAkh4uff7vHgPLEiDu7jDM7P76O8fAkh4uff7vHgPLEiDuTjPM7P76O8fAkh4uff7vHgPLEiDuNTPM7P76O8fAkh4uff7vHgPLEiDuFTPM7P76O8fAkh4uff7vHgPLEiDubjPM7P76O8fAkh4uff7vHgPLEiDuVTPM7P76O8fAkh4uff7vHgPLEyDuyTDMPPofvMvS/S7d3/WlMVAnMUCZRGwkekPM7MH/WpY0f/r9v86Krt6/XGUSsbHoXszshR8dIEt6XfT5v3MMLFeAuFNR8U6O+f889S9fXxoDdX4C0X8W/f8Rk79v9O/79K99Y4CyREz3X8TfM+7vGfeZ940B5f//BvA68Y9TInUfAAAAAElFTkSuQmCC";
-
-    function startApp() {
-        const raw = document.getElementById('json-input').value;
-        try {
-            inventory = JSON.parse(raw).map(i => ({
-                ...i, 
-                fisico: i.fisico || 0,
-                obs: i.obs || ""
-            }));
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            // Auto-Save: Intentar recuperar datos previos si el SKU coincide
-            const saved = localStorage.getItem('twins_last_session');
-            if(saved) {
-                const parsedSaved = JSON.parse(saved);
-                inventory = inventory.map(item => {
-                    const match = parsedSaved.find(s => s.sku === item.sku);
-                    return match ? match : item;
-                });
-            }
-
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('footer-actions').classList.remove('hidden');
-            render();
-        } catch(e) { alert("Error: Verifica el formato del JSON."); }
-    }
-
-    function render() {
-        const listContainer = document.getElementById('main-list');
-        listContainer.innerHTML = "";
-        let totalFis = 0, totalExp = 0;
-
-        inventory.forEach((item, idx) => {
-            const boxesFis = item.fisico / item.u_por_caja;
-            totalFis += boxesFis;
-            totalExp += item.cajas_pck;
-            const progress = Math.min(100, (boxesFis / item.cajas_pck) * 100);
-
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="sku-tag">${item.sku}</span>
-                    <span class="sku-count">${boxesFis.toFixed(0)} / ${item.cajas_pck} CJ</span>
+            <button onclick="alert('Abriendo Ingreso de Contenedores...')" 
+                    class="glass-card p-8 rounded-3xl shadow-md text-left flex flex-col items-start space-y-4 hover:shadow-xl">
+                <div class="p-4 bg-blue-100 rounded-2xl">
+                    <span class="text-3xl">🚢</span>
                 </div>
-                <div class="sku-desc">${item.desc}</div>
-                <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
-                <input type="number" class="input-box" placeholder="Ingresar Cantidad" 
-                       value="${boxesFis > 0 ? boxesFis.toFixed(0) : ''}" 
-                       oninput="updateItem(${idx}, this.value)" inputmode="numeric">
-                <input type="text" class="obs-box" placeholder="Nota adicional..." 
-                       value="${item.obs}" onchange="updateObs(${idx}, this.value)">
-            `;
-            listContainer.appendChild(card);
-        });
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Ingreso de Contenedor</h2>
+                    <p class="text-gray-500 text-sm">Registro de conteo, packing y estado de mercadería.</p>
+                </div>
+                <span class="text-blue-600 font-semibold text-sm">Empezar registro →</span>
+            </button>
 
-        document.getElementById('total-cajas').innerText = totalFis.toFixed(0);
-        document.getElementById('progreso-global').innerText = ((totalFis / totalExp) * 100 || 0).toFixed(1) + "%";
-        
-        // Guardado persistente
-        localStorage.setItem('twins_last_session', JSON.stringify(inventory));
-    }
+            <button onclick="alert('Abriendo Gestión de Devoluciones...')" 
+                    class="glass-card p-8 rounded-3xl shadow-md text-left flex flex-col items-start space-y-4 hover:shadow-xl">
+                <div class="p-4 bg-orange-100 rounded-2xl">
+                    <span class="text-3xl">📦</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Devoluciones</h2>
+                    <p class="text-gray-500 text-sm">Gestión de clientes, vendedores y motivos de retorno.</p>
+                </div>
+                <span class="text-orange-600 font-semibold text-sm">Gestionar retornos →</span>
+            </button>
 
-    function updateItem(idx, val) {
-        const n = parseFloat(val) || 0;
-        inventory[idx].fisico = n * inventory[idx].u_por_caja;
-        // Actualizar dashboard ligero sin re-renderizar todo
-        updateDashboard();
-        localStorage.setItem('twins_last_session', JSON.stringify(inventory));
-    }
-    
-    function updateObs(idx, val) {
-        inventory[idx].obs = val;
-        localStorage.setItem('twins_last_session', JSON.stringify(inventory));
-    }
+        </div>
 
-    function updateDashboard() {
-        let tf = 0, te = 0;
-        inventory.forEach(i => { tf += (i.fisico/i.u_por_caja); te += i.cajas_pck; });
-        document.getElementById('total-cajas').innerText = tf.toFixed(0);
-        document.getElementById('progreso-global').innerText = ((tf / te) * 100 || 0).toFixed(1) + "%";
-    }
+        <div class="mt-8">
+            <h3 class="text-gray-700 font-bold mb-4 px-2">Actividad Reciente</h3>
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-gray-50 flex justify-between items-center italic text-gray-400 text-xs">
+                    <span>No hay registros hoy</span>
+                    <span>08 Mar 2026</span>
+                </div>
+            </div>
+        </div>
 
-    function generatePDF() {
-        document.getElementById('status').innerText = "PROCESANDO...";
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Estética del reporte
-        doc.setFillColor(0,0,0);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255,255,255);
-        doc.setFontSize(18).setFont(undefined, 'bold').text("REVISIÓN TÉCNICA DE CARGA", 105, 20, {align:'center'});
-        doc.setFontSize(10).setFont(undefined, 'normal').text("LOGÍSTICA TWINS - CONTROL DE INVENTARIOS", 105, 30, {align:'center'});
+    </main>
 
-        doc.setTextColor(0,0,0);
-        doc.setFontSize(8).text(`FECHA: ${new Date().toLocaleString()} | INSPECTOR: J. ANGELO NUÑEZ`, 15, 50);
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-100 p-4 flex justify-around items-center md:hidden">
+        <button class="text-blue-600 font-bold uppercase text-[10px]">Inicio</button>
+        <button class="text-gray-400 font-bold uppercase text-[10px]">Historial</button>
+        <button class="text-gray-400 font-bold uppercase text-[10px]">Reportes</button>
+    </nav>
 
-        const tableData = inventory.map(i => [
-            i.sku, 
-            i.desc, 
-            i.cajas_pck, 
-            (i.fisico/i.u_por_caja).toFixed(0),
-            (i.fisico/i.u_por_caja) >= i.cajas_pck ? "OK" : "FALTA",
-            i.obs || "-"
-        ]);
-
-        doc.autoTable({
-            startY: 55,
-            head: [['SKU', 'PRODUCTO', 'PLAN', 'REAL', 'ESTADO', 'NOTAS']],
-            body: tableData,
-            headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
-            styles: { fontSize: 7, cellPadding: 3 },
-            columnStyles: { 1: { cellWidth: 60 } }
-        });
-
-        const finalY = doc.lastAutoTable.finalY + 20;
-        doc.addImage(FIRMA_ANGELO, 'PNG', 85, finalY, 40, 20);
-        doc.line(70, finalY + 22, 140, finalY + 22);
-        doc.setFontSize(9).setFont(undefined, 'bold').text("J. ANGELO NUÑEZ DURAND", 105, finalY + 28, {align:'center'});
-        doc.setFontSize(7).setFont(undefined, 'normal').text("Asist. Inventario Logístico", 105, finalY + 33, {align:'center'});
-
-        doc.save(`TWINS_REPORT_${Date.now()}.pdf`);
-        document.getElementById('status').innerText = "LISTO";
-    }
-
-    function resetApp() {
-        if(confirm("¿Estás seguro? Se borrarán todos los datos del conteo actual.")) {
-            localStorage.removeItem('twins_last_session');
-            location.reload();
-        }
-    }
-</script>
 </body>
 </html>
-
-
