@@ -3,159 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v50 - Elite Flow</title>
+    <title>TAJHO.OS v51 - Elite Precision</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; }
+        :root { --blue: #2563eb; --blue-light: #eff6ff; --slate-soft: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         
-        /* Estética Premium */
-        .card-elite { background: white; border-radius: 2.5rem; padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 15px 40px -12px rgba(0,0,0,0.08); border: 1px solid #f8fafc; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .card-elite:active { transform: scale(0.96); }
-        .icon-box { width: 3.5rem; height: 3.5rem; background: #eff6ff; border-radius: 1.3rem; display: flex; align-items: center; justify-content: center; color: var(--blue); }
+        /* Estética Premium Refinada */
+        .card-elite { background: white; border-radius: 2.2rem; padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .card-elite:active { transform: scale(0.95); background: var(--slate-soft); }
         
-        .title-main { font-size: 2.8rem; font-weight: 800; line-height: 0.95; letter-spacing: -0.04em; font-style: italic; }
+        .icon-box { width: 3.2rem; height: 3.2rem; background: var(--blue-light); border-radius: 1.1rem; display: flex; align-items: center; justify-content: center; color: var(--blue); transition: 0.3s; }
+        .card-elite:hover .icon-box { transform: rotate(-5deg) scale(1.1); }
         
-        /* Sistema de Vistas */
-        .view { display: none; height: 100vh; overflow-y: auto; padding: 2rem; padding-top: 6rem; padding-bottom: 6rem; }
-        .view.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        .title-main { font-size: 2.6rem; font-weight: 800; line-height: 0.95; letter-spacing: -0.05em; font-style: italic; }
+        
+        /* Animaciones de Vista */
+        .view { display: none; height: 100vh; overflow-y: auto; padding: 2rem; padding-top: 6.5rem; padding-bottom: 7rem; }
+        .view.active { display: block; animation: viewIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* Barras de Progreso con Brillo */
-        .progress-track { background: #f1f5f9; border-radius: 20px; overflow: hidden; position: relative; }
-        .progress-bar { height: 100%; background: var(--blue); transition: width 0.8s ease; position: relative; }
-        .progress-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shine 2s infinite; }
+        /* Progress Bars Pro */
+        .progress-track { background: #f1f5f9; border-radius: 50px; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.02); }
+        .progress-bar { height: 100%; background: var(--blue); border-radius: 50px; transition: width 1s cubic-bezier(0.65, 0, 0.35, 1); position: relative; }
+        .progress-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 2.5s infinite linear; }
         @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-        /* Inputs y Botones */
-        .input-tech { background: #f1f5f9; border-radius: 1.2rem; border: 2px solid transparent; font-weight: 700; padding: 1rem 1.4rem; width: 100%; transition: 0.3s; }
-        .input-tech:focus { border-color: var(--blue); background: white; outline: none; }
+        /* Form Elements */
+        .input-tech { background: #f4f7fa; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; padding: 1.1rem 1.4rem; width: 100%; transition: all 0.3s; font-size: 0.9rem; color: #1e293b; }
+        .input-tech:focus { border-color: var(--blue); background: white; box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.2); outline: none; }
         
-        #modal-choice { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; padding: 2rem; }
-        #modal-choice.open { display: flex; }
+        #modal-choice { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 2rem; }
+        #modal-choice.open { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .btn-primary { background: var(--blue); color: white; border-radius: 1.4rem; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); }
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 5px 10px -5px rgba(37, 99, 235, 0.4); }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 w-full h-20 px-8 flex justify-between items-center z-[1000] bg-white/80 backdrop-blur-md">
-        <button onclick="goHome()" class="p-2 active:scale-90 transition-all">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <header class="fixed top-0 w-full h-20 px-8 flex justify-between items-center z-[1000] bg-white/70 backdrop-blur-xl border-b border-slate-50">
+        <button onclick="goHome()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-900 active:scale-90 transition-all">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
         <div class="text-right">
-            <p class="text-[10px] font-black italic">TAJHO<span class="text-blue-600">.OS</span></p>
+            <p class="text-[10px] font-black italic tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></p>
+            <div class="h-1 w-8 bg-blue-600 ml-auto rounded-full mt-0.5"></div>
         </div>
     </header>
 
     <div id="view-home" class="view active">
-        <p class="text-blue-600 font-black uppercase tracking-[0.4em] text-[10px] mb-2">Mando Central</p>
-        <h1 class="title-main mb-12">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h1>
+        <p class="text-blue-600 font-extrabold uppercase tracking-[0.3em] text-[9px] mb-3">Logistics Intelligence</p>
+        <h1 class="title-main mb-12">¿Qué gestionamos<br><span class="text-blue-600 italic">ahora, Tajho?</span></h1>
         
         <div class="space-y-4">
             <div onclick="navTo('crear')" class="card-elite">
                 <div class="icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m7.5 4.27 9 5.15"/><path d="M12 22V12"/></svg>
                 </div>
-                <div class="text-left">
-                    <p class="text-[11px] font-black uppercase tracking-widest">Contenedor</p>
-                    <p class="text-[9px] font-bold text-slate-400 italic uppercase">Crear Manifiesto</p>
+                <div class="flex-1">
+                    <p class="text-[12px] font-extrabold uppercase tracking-tight">Contenedor</p>
+                    <p class="text-[9px] font-semibold text-slate-400 italic">Nuevo manifiesto de carga</p>
                 </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-slate-300"><path d="m9 18 6-6-6-6"/></svg>
             </div>
 
             <div onclick="navTo('historial')" class="card-elite">
                 <div class="icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
                 </div>
-                <div class="text-left">
-                    <p class="text-[11px] font-black uppercase tracking-widest">Historial</p>
-                    <p class="text-[9px] font-bold text-slate-400 italic uppercase">Registros de Carga</p>
+                <div class="flex-1">
+                    <p class="text-[12px] font-extrabold uppercase tracking-tight">Historial</p>
+                    <p class="text-[9px] font-semibold text-slate-400 italic">Registros finalizados</p>
                 </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-slate-300"><path d="m9 18 6-6-6-6"/></svg>
             </div>
 
-            <div class="card-elite opacity-40">
-                <div class="icon-box" style="background: #fff7ed; color: #f97316;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m11 17-5-5 5-5"/><path d="M18 17v-3a4 4 0 0 0-4-4H6"/></svg>
+            <div class="card-elite opacity-50 bg-slate-50 border-dashed border-slate-200 shadow-none">
+                <div class="icon-box bg-white text-slate-300">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m11 17-5-5 5-5"/><path d="M18 17v-3a4 4 0 0 0-4-4H6"/></svg>
                 </div>
-                <div class="text-left"><p class="text-[11px] font-black uppercase tracking-widest">Devoluciones</p></div>
+                <div class="flex-1">
+                    <p class="text-[12px] font-extrabold uppercase tracking-tight text-slate-400">Devoluciones</p>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <div class="space-y-4">
-            <h2 class="text-xl font-black italic mb-4">Configurar <span class="text-blue-600 text-2xl">Manifiesto</span></h2>
-            <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="input-tech uppercase" placeholder="BUSCAR SKU..." autocomplete="off">
-                <div id="search-results" class="hidden absolute z-50 w-full bg-white rounded-2xl shadow-xl border p-2 mt-2 max-h-40 overflow-y-auto"></div>
-            </div>
-            <input type="text" id="s-desc" class="input-tech text-blue-600 italic text-[10px]" placeholder="PRODUCTO..." readonly>
-            <input type="number" id="s-meta" class="input-tech" placeholder="CANTIDAD META">
-            <button onclick="addMani()" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition-all">Agregar a la lista</button>
+        <div class="max-w-md mx-auto space-y-5">
+            <header class="mb-6">
+                <h2 class="text-2xl font-black italic leading-none">Configurar<br><span class="text-blue-600 uppercase text-3xl">Manifiesto</span></h2>
+            </header>
             
-            <div class="pt-6 border-t border-slate-50">
-                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-4 italic">Lista del Contenedor</p>
-                <div id="pre-list" class="space-y-2"></div>
+            <div class="relative">
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-tech uppercase tracking-widest" placeholder="ESCANEAR O BUSCAR SKU..." autocomplete="off">
+                <div id="search-results" class="hidden absolute z-50 w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 mt-2 max-h-52 overflow-y-auto"></div>
+            </div>
+            
+            <input type="text" id="s-desc" class="input-tech text-blue-600 italic bg-blue-50/50 border-blue-100/50 text-[11px]" placeholder="Descripción del producto..." readonly>
+            
+            <div class="flex gap-3">
+                <input type="number" id="s-meta" class="input-tech flex-1" placeholder="CANTIDAD META">
+                <button onclick="addMani()" class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center active:scale-90 transition-all">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
+            
+            <div class="pt-6">
+                <div class="flex justify-between items-end mb-4 px-1">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Lista de Carga</p>
+                    <span id="items-counter" class="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div id="pre-list" class="space-y-3"></div>
             </div>
 
-            <button id="btn-done" onclick="openModal()" class="hidden w-full bg-blue-600 text-white py-5 rounded-3xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-blue-100 mt-6">Finalizar Creación</button>
+            <button id="btn-done" onclick="openModal()" class="hidden w-full btn-primary py-5 mt-4">Generar Manifiesto Oficial</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="space-y-6">
-            <div class="bg-slate-50 p-6 rounded-[2.5rem] border border-slate-100">
-                <div class="flex items-center gap-2 mb-4">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-blue-600"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avance del Contenedor</p>
+        <div class="max-w-md mx-auto space-y-8">
+            <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl shadow-blue-200">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-[9px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-1">Status de Descarga</p>
+                        <h4 id="global-pc" class="text-3xl font-black text-white italic">0%</h4>
+                    </div>
+                    <div class="icon-box bg-white/10 text-white border border-white/10">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                    </div>
                 </div>
-                <div class="progress-track h-4"><div id="global-bar" class="progress-bar" style="width: 0%"></div></div>
-                <div class="flex justify-between mt-3"><p id="global-pc" class="text-xs font-black text-blue-600 italic">0%</p><p id="items-count" class="text-[10px] font-bold text-slate-400">0 SKUS</p></div>
+                <div class="progress-track h-3 bg-white/10"><div id="global-bar" class="progress-bar" style="width: 0%"></div></div>
+                <p id="items-count" class="text-[9px] font-bold text-slate-400 mt-4 text-right uppercase tracking-widest"></p>
             </div>
 
-            <div class="text-center py-2">
-                <select id="sel-sku" onchange="syncItem()" class="text-4xl font-[900] bg-transparent outline-none text-center italic w-full tracking-tighter"></select>
-                <p id="live-desc" class="text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1 opacity-60"></p>
+            <div class="text-center px-4">
+                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">SKU Seleccionado</p>
+                <select id="sel-sku" onchange="syncItem()" class="text-4xl font-black bg-transparent outline-none text-center italic w-full text-slate-900 border-b-2 border-slate-100 pb-2 mb-2"></select>
+                <p id="live-desc" class="text-[11px] font-bold text-blue-600 uppercase italic opacity-80"></p>
             </div>
 
-            <div class="px-2">
-                <div class="flex justify-between mb-2">
-                    <p class="text-[9px] font-black text-slate-300 uppercase italic">Progreso Item</p>
-                    <p id="item-pc" class="text-[9px] font-black text-slate-900">0%</p>
+            <div class="bg-slate-50/50 p-5 rounded-[2rem] border border-slate-100">
+                <div class="flex justify-between mb-3">
+                    <p class="text-[9px] font-black text-slate-400 uppercase italic">Progreso Item</p>
+                    <p id="item-pc" class="text-[10px] font-black text-blue-600">0%</p>
                 </div>
-                <div class="progress-track h-2 bg-slate-100"><div id="item-bar" class="progress-bar bg-slate-900" style="width: 0%"></div></div>
+                <div class="progress-track h-2 bg-slate-200/50"><div id="item-bar" class="progress-bar bg-slate-900" style="width: 0%"></div></div>
             </div>
 
-            <div class="flex items-center justify-center gap-6 py-4">
-                <input type="number" id="qty-in" class="input-tech w-28 text-center text-4xl h-20 shadow-inner" placeholder="0">
-                <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-xl active:scale-75 transition-all">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
+            <div class="flex flex-col gap-6">
+                <div class="flex items-center justify-center gap-6">
+                    <input type="number" id="qty-in" class="input-tech w-32 text-center text-4xl h-24 shadow-xl border-2 border-slate-100" placeholder="0">
+                    <button onclick="registrarBulto()" class="w-24 h-24 bg-blue-600 text-white rounded-[2.2rem] flex items-center justify-center shadow-xl shadow-blue-200 active:scale-75 transition-all">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white border border-slate-100 p-5 rounded-[1.8rem] text-center shadow-sm">
+                        <p class="text-[9px] font-black text-slate-300 uppercase mb-2">Restante</p>
+                        <p id="live-rem" class="text-3xl font-black text-slate-900">0</p>
+                    </div>
+                    <div class="bg-white border border-slate-100 p-5 rounded-[1.8rem] text-center shadow-sm">
+                        <p class="text-[9px] font-black text-blue-400 uppercase mb-2">Real</p>
+                        <p id="live-real" class="text-3xl font-black text-blue-600">0</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-50 p-4 rounded-3xl text-center"><p class="text-[9px] font-black text-slate-300 uppercase mb-1">Restan</p><p id="live-rem" class="text-2xl font-black">0</p></div>
-                <div class="bg-blue-50 p-4 rounded-3xl text-center"><p class="text-[9px] font-black text-blue-400 uppercase mb-1">Cargado</p><p id="live-real" class="text-2xl font-black text-blue-600">0</p></div>
-            </div>
-
-            <button onclick="finishAndReport()" class="w-full bg-slate-900 text-white py-5 rounded-3xl text-[11px] font-black tracking-widest uppercase mt-4">Guardar y Finalizar Conteo</button>
+            <button onclick="finishAndReport()" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] text-[11px] font-black tracking-widest uppercase active:opacity-80">Finalizar y Firmar Reporte</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-3xl font-black italic mb-8">Registros de <span class="text-blue-600">Carga</span></h2>
+        <header class="mb-8">
+            <h2 class="text-3xl font-black italic">Reportes de <span class="text-blue-600">Carga</span></h2>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Archivos locales guardados</p>
+        </header>
         <div id="history-list" class="space-y-4"></div>
     </div>
 
     <div id="modal-choice">
-        <div class="bg-white w-full max-w-sm p-10 rounded-[3rem] text-center shadow-2xl">
-            <h3 class="text-xl font-black italic mb-2 uppercase">Manifiesto Listo</h3>
-            <p class="text-[10px] text-slate-400 font-bold mb-8 tracking-widest uppercase">Selecciona el flujo de trabajo</p>
+        <div class="bg-white w-full max-w-sm p-8 rounded-[2.8rem] text-center shadow-2xl transform scale-100">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3 class="text-xl font-black italic mb-2 uppercase">¡Manifiesto Creado!</h3>
+            <p class="text-[10px] text-slate-400 font-bold mb-8 tracking-widest uppercase">¿Cómo deseas proceder?</p>
             <div class="space-y-3">
-                <button onclick="continuarConteo()" class="w-full bg-blue-600 text-white py-5 rounded-3xl text-[11px] font-black uppercase shadow-lg shadow-blue-100">Empezar el conteo</button>
-                <button onclick="guardarMani()" class="w-full bg-slate-900 text-white py-5 rounded-3xl text-[11px] font-black uppercase">Solo guardar en Historial</button>
-                <button onclick="closeModal()" class="w-full text-slate-400 py-2 text-[10px] font-black uppercase tracking-widest">Regresar</button>
+                <button onclick="continuarConteo()" class="w-full btn-primary py-5">Iniciar conteo ahora</button>
+                <button onclick="guardarMani()" class="w-full bg-slate-100 text-slate-600 py-5 rounded-[1.4rem] text-[11px] font-black uppercase tracking-widest active:bg-slate-200">Guardar para después</button>
+                <button onclick="closeModal()" class="w-full text-slate-400 py-2 text-[10px] font-black uppercase mt-2">Cancelar</button>
             </div>
         </div>
     </div>
@@ -173,11 +216,10 @@
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
                 
-                // Anti-bloqueo: Se queda en home a menos que haya un trabajo activo real
                 const lastView = localStorage.getItem('taj_view') || 'home';
                 if(lastView === 'ops' && activeJob) startOps(activeJob);
                 else navTo(lastView);
-            } catch (e) { console.warn("Modo Offline Activo"); }
+            } catch (e) { console.warn("App en modo Offline"); }
         }
 
         function navTo(v) {
@@ -190,13 +232,12 @@
 
         function goHome() { navTo('home'); }
 
-        // Búsqueda Smart
         function smartSearch() {
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('search-results');
             if(input.length < 1) { resDiv.classList.add('hidden'); return; }
             const matches = Object.keys(db_items).filter(k => k.includes(input)).slice(0,5);
-            resDiv.innerHTML = matches.map(k => `<div onclick="setProd('${k}','${db_items[k]}')" class="p-4 border-b border-slate-50 text-[10px] font-black uppercase">${k} - ${db_items[k]}</div>`).join('');
+            resDiv.innerHTML = matches.map(k => `<div onclick="setProd('${k}','${db_items[k]}')" class="p-4 border-b border-slate-50 text-[11px] font-black uppercase hover:bg-slate-50 transition-colors">${k} - <span class="text-blue-600">${db_items[k]}</span></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -206,7 +247,6 @@
             document.getElementById('s-meta').focus();
         }
 
-        // Crear Manifiesto
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
             const meta = parseInt(document.getElementById('s-meta').value);
@@ -215,28 +255,41 @@
             localStorage.setItem('taj_cur', JSON.stringify(currentMani));
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
+            navigator.vibrate(20);
         }
 
         function renderPreList() {
-            document.getElementById('pre-list').innerHTML = currentMani.map((i, index) => `
-                <div class="p-4 bg-slate-50 rounded-2xl flex justify-between items-center border border-slate-100 animate-slideUp">
-                    <div class="text-[10px] font-black uppercase">
-                        <p class="text-blue-600 mb-1">${i.sku}</p>
-                        <p class="text-slate-400 font-bold italic">${i.desc}</p>
+            const container = document.getElementById('pre-list');
+            container.innerHTML = currentMani.map((i, idx) => `
+                <div class="card-elite !rounded-2xl !py-4 border-l-4 border-l-blue-600">
+                    <div class="flex-1">
+                        <p class="text-[11px] font-black text-slate-900">${i.sku}</p>
+                        <p class="text-[9px] font-bold text-slate-400 italic">${i.desc}</p>
                     </div>
-                    <p class="text-[11px] font-black">${i.meta} CJ</p>
+                    <div class="text-right">
+                        <p class="text-[12px] font-black">${i.meta} <span class="text-[9px] text-slate-300">CJ</span></p>
+                    </div>
+                    <button onclick="removeItem(${idx})" class="text-slate-200 hover:text-red-400 ml-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
                 </div>
             `).join('');
+            document.getElementById('items-counter').innerText = currentMani.length;
             if(currentMani.length > 0) document.getElementById('btn-done').classList.remove('hidden');
         }
 
-        // Modal de decisión
+        function removeItem(idx) {
+            currentMani.splice(idx, 1);
+            localStorage.setItem('taj_cur', JSON.stringify(currentMani));
+            renderPreList();
+        }
+
         function openModal() { document.getElementById('modal-choice').classList.add('open'); }
         function closeModal() { document.getElementById('modal-choice').classList.remove('open'); }
 
         function continuarConteo() {
             closeModal();
-            activeJob = { id: Date.now(), name: "CONT-" + new Date().toLocaleTimeString(), items: [...currentMani], status: 'PROCESO' };
+            activeJob = { id: Date.now(), name: "C-" + new Date().getHours() + ":" + new Date().getMinutes() + "-" + new Date().getDate(), items: [...currentMani], status: 'PROCESO' };
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
             currentMani = []; localStorage.removeItem('taj_cur');
             startOps(activeJob);
@@ -244,13 +297,12 @@
 
         function guardarMani() {
             closeModal();
-            history.push({ id: Date.now(), name: "MANI-" + new Date().toLocaleTimeString(), items: [...currentMani], status: 'PENDIENTE' });
+            history.push({ id: Date.now(), name: "M-" + new Date().toLocaleDateString(), items: [...currentMani], status: 'PENDIENTE' });
             localStorage.setItem('taj_his', JSON.stringify(history));
             currentMani = []; localStorage.removeItem('taj_cur');
             navTo('historial');
         }
 
-        // Conteo (Ops)
         function startOps(job) {
             navTo('ops');
             document.getElementById('sel-sku').innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
@@ -260,21 +312,19 @@
         function syncItem() {
             const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
             document.getElementById('live-desc').innerText = item.desc;
-            document.getElementById('live-rem').innerText = item.meta - item.real;
+            document.getElementById('live-rem').innerText = Math.max(0, item.meta - item.real);
             document.getElementById('live-real').innerText = item.real;
 
-            // Barra Individual
             const itemPc = Math.min(Math.round((item.real / item.meta) * 100), 100);
             document.getElementById('item-bar').style.width = itemPc + "%";
             document.getElementById('item-pc').innerText = itemPc + "%";
 
-            // Barra Global
             const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
             const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
             const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
             document.getElementById('global-bar').style.width = pc + "%";
-            document.getElementById('global-pc').innerText = pc + "% COMPLETADO";
-            document.getElementById('items-count').innerText = activeJob.items.length + " SKUS ACTIVOS";
+            document.getElementById('global-pc').innerText = pc + "%";
+            document.getElementById('items-count').innerText = `${activeJob.items.length} SKUS TOTALES`;
             
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
         }
@@ -287,16 +337,20 @@
             document.getElementById('qty-in').value = '';
             syncItem();
             navigator.vibrate(40);
+            // Sync silencioso a la nube
             fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos: [new Date().toLocaleString(), item.sku, q]})});
         }
 
         function renderHistory() {
-            document.getElementById('history-list').innerHTML = history.map(h => `
-                <div class="card-elite justify-between border-l-4 ${h.status==='COMPLETADO'?'border-l-green-400':'border-l-blue-400'}">
-                    <div><p class="text-[8px] font-black ${h.status==='COMPLETADO'?'text-green-500':'text-blue-500'} uppercase mb-1 tracking-widest">${h.status}</p><h4 class="text-sm font-black italic uppercase">${h.name}</h4></div>
-                    <button onclick="startFromHistory(${h.id})" class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-[9px] font-black uppercase">Operar</button>
+            document.getElementById('history-list').innerHTML = history.length ? history.map(h => `
+                <div class="card-elite border-l-4 ${h.status==='COMPLETADO'?'border-l-green-500':'border-l-blue-600'}">
+                    <div class="flex-1">
+                        <p class="text-[10px] font-black ${h.status==='COMPLETADO'?'text-green-500':'text-blue-500'} uppercase tracking-widest mb-1">${h.status}</p>
+                        <h4 class="text-sm font-black italic uppercase">${h.name}</h4>
+                    </div>
+                    <button onclick="startFromHistory(${h.id})" class="bg-slate-900 text-white px-5 py-3 rounded-xl text-[9px] font-black uppercase active:scale-90 transition-all">Abrir</button>
                 </div>
-            `).join('');
+            `).join('') : '<p class="text-center text-slate-300 text-xs font-bold mt-10">No hay registros aún</p>';
         }
 
         function startFromHistory(id) {
@@ -308,16 +362,28 @@
         function finishAndReport() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("REPORTE DE DESCARGA - TAJHO.OS", 14, 20);
+            
+            doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO.OS", 14, 20);
+            doc.setFontSize(10); doc.text(`FECHA: ${new Date().toLocaleString()}`, 14, 28);
+            
             doc.autoTable({
-                startY: 30, head: [['SKU', 'DESC', 'META', 'REAL', 'DIF']],
+                startY: 35,
+                head: [['SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'DIF']],
                 body: activeJob.items.map(i => [i.sku, i.desc, i.meta, i.real, i.meta-i.real]),
-                theme: 'striped', headStyles: { fillColor: [37, 99, 235] }
+                theme: 'striped',
+                headStyles: { fillColor: [37, 99, 235], fontStyle: 'bold' },
+                styles: { fontSize: 8, cellPadding: 4 }
             });
+            
+            const finalY = doc.lastAutoTable.finalY + 20;
             doc.setFontSize(10);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, doc.lastAutoTable.finalY + 15);
-            doc.text("Asist. Inventario Logístico", 14, doc.lastAutoTable.finalY + 21);
-            doc.save(`REPORTE_${activeJob.name}.pdf`);
+            doc.text("__________________________________", 14, finalY);
+            doc.setFont("helvetica", "bold");
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.setFont("helvetica", "normal");
+            doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+            
+            doc.save(`TAJHO_REPORTE_${activeJob.name}.pdf`);
             
             activeJob.status = 'COMPLETADO';
             const idx = history.findIndex(h => h.id === activeJob.id);
