@@ -3,157 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Despacho | Executive Edition</title>
+    <title>Twins | Logistics Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --brand: #0066ff; --dark: #0f172a; --surface: #1e293b; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark); color: #f8fafc; margin: 0; overflow: hidden; }
+        :root { --accent: #2563eb; --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         
-        /* Estética Ejecutiva Moderna */
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; }
         .view { display: none; min-height: 100vh; padding: 1.5rem; flex-direction: column; }
-        .view.active { display: flex; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: flex; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* Inputs y Botones de Alto Nivel */
-        .exec-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; color: #fff; width: 100%; outline: none; transition: 0.3s; }
-        .exec-input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.15); }
-        
-        .btn-exec { background: var(--brand); color: white; font-weight: 700; border-radius: 1rem; padding: 1.25rem; transition: 0.3s; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 102, 255, 0.3); }
-        .btn-exec:active { transform: scale(0.96); opacity: 0.9; }
+        .card-app { background: var(--surface); border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .input-app { background: #f1f5f9; border: 2px solid transparent; border-radius: 0.75rem; padding: 1rem; transition: 0.2s; width: 100%; outline: none; }
+        .input-app:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        /* Progress Bar Soft */
-        .progress-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #3b82f6); transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        
-        .status-pill { font-size: 0.65rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn-main { background: var(--accent); color: white; font-weight: 700; border-radius: 0.75rem; padding: 1.25rem; text-align: center; transition: 0.2s; width: 100%; }
+        .btn-main:active { transform: scale(0.97); background: #1d4ed8; }
+
+        /* Barra de progreso elegante */
+        .p-bar { height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; position: relative; }
+        .p-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s ease; }
     </style>
 </head>
 <body>
 
-    <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-slate-950/50 backdrop-blur-xl border-b border-white/5">
-        <div>
-            <h1 class="text-xl font-extrabold tracking-tight">TWINS<span class="text-blue-500">DESPACHO</span></h1>
-            <p class="text-[9px] font-medium text-slate-500 uppercase tracking-widest">Inventory Management System</p>
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xs">T</div>
+            <h1 class="text-lg font-extrabold tracking-tight text-slate-900">TWINS <span class="text-blue-600">LOGISTICS</span></h1>
         </div>
-        <div onclick="navTo('historial')" class="w-10 h-10 glass-panel flex items-center justify-center cursor-pointer">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-        </div>
+        <button onclick="navTo('historial')" class="text-slate-400 hover:text-blue-600 transition-colors">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        </button>
     </header>
 
     <div id="view-home" class="view active">
-        <div class="mt-4 mb-8">
-            <h2 class="text-3xl font-extrabold tracking-tight text-white leading-tight">Panel de<br>Control.</h2>
-            <p class="text-slate-400 text-sm mt-2 font-medium">Gestión de flujo de salida de almacén.</p>
+        <div class="py-6">
+            <p class="text-blue-600 font-bold text-xs uppercase tracking-widest mb-1">Bienvenido de nuevo</p>
+            <h2 class="text-3xl font-extrabold text-slate-900">Gestión de Inventario</h2>
         </div>
 
         <div class="grid gap-4">
-            <div onclick="navTo('crear')" class="glass-panel p-6 flex items-center gap-5 active:bg-slate-800/50 transition-all">
-                <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 font-bold text-2xl">+</div>
+            <button onclick="navTo('crear')" class="card-app p-6 flex flex-col items-start text-left gap-4 hover:border-blue-200 transition-all active:scale-95">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                </div>
                 <div>
                     <h3 class="font-bold text-lg">Nueva Operación</h3>
-                    <p class="text-xs text-slate-500">Configurar despacho y metas.</p>
+                    <p class="text-sm text-slate-500">Configurar despacho y meta de bultos.</p>
                 </div>
-            </div>
+            </button>
 
-            <div onclick="navTo('historial')" class="glass-panel p-6 flex items-center gap-5 active:bg-slate-800/50 transition-all opacity-80">
-                <div class="w-14 h-14 bg-slate-700/20 rounded-2xl flex items-center justify-center text-slate-400">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <button onclick="navTo('historial')" class="card-app p-6 flex flex-col items-start text-left gap-4 hover:border-slate-300 transition-all active:scale-95">
+                <div class="w-12 h-12 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 </div>
                 <div>
-                    <h3 class="font-bold text-lg text-slate-300">Historial de Logs</h3>
-                    <p class="text-xs text-slate-500">Reportes de auditoría generados.</p>
+                    <h3 class="font-bold text-lg">Archivo de Reportes</h3>
+                    <p class="text-sm text-slate-500">Consulta y descarga reportes anteriores.</p>
                 </div>
-            </div>
+            </button>
         </div>
 
-        <div class="mt-auto pb-10">
-            <div class="glass-panel p-4 border-blue-500/20 bg-blue-500/5">
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Usuario Autorizado</p>
-                <p class="text-sm font-bold">J. Angelo Nuñez Durand</p>
+        <div class="mt-auto py-8">
+            <div class="bg-blue-600 rounded-2xl p-6 text-white shadow-lg shadow-blue-200">
+                <p class="text-[10px] font-bold uppercase opacity-80 tracking-widest mb-1">Encargado de Inventario</p>
+                <p class="text-lg font-bold italic">J. Angelo Nuñez Durand</p>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
         <div class="flex items-center gap-4 mb-8">
-            <button onclick="navTo('home')" class="text-slate-400 font-bold text-sm">ATRAS</button>
-            <h2 class="text-2xl font-extrabold uppercase">Configuración</h2>
+            <button onclick="navTo('home')" class="p-2 bg-white rounded-lg border border-slate-200">←</button>
+            <h2 class="text-xl font-extrabold">Configurar Despacho</h2>
         </div>
 
-        <div class="space-y-5">
-            <div class="space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Identificador de Despacho</label>
-                <input type="text" id="c-id" class="exec-input uppercase font-bold text-blue-400" placeholder="ID CONTENEDOR O GUÍA">
+        <div class="card-app p-6 space-y-6">
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase ml-1">Identificador (Guía/Contenedor)</label>
+                <input type="text" id="c-id" class="input-app mt-2 font-bold text-blue-600 uppercase" placeholder="EJ: CONT-001">
             </div>
 
-            <div class="space-y-2 relative">
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Búsqueda Inteligente (SKU)</label>
-                <input type="text" id="s-sku" oninput="execSearch()" class="exec-input" placeholder="Escribe SKU o nombre...">
-                <div id="results" class="absolute z-50 left-0 right-0 glass-panel mt-1 hidden max-h-60 overflow-y-auto shadow-2xl"></div>
+            <div class="relative">
+                <label class="text-xs font-bold text-slate-400 uppercase ml-1">Producto / SKU</label>
+                <input type="text" id="s-sku" oninput="liveSearch()" class="input-app mt-2" placeholder="Buscar por código o nombre...">
+                <div id="results" class="absolute z-50 left-0 right-0 bg-white border border-slate-200 rounded-xl mt-1 hidden max-h-56 overflow-y-auto shadow-xl"></div>
             </div>
 
-            <div class="flex gap-3">
-                <div class="flex-1 space-y-2">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Meta de Unidades</label>
-                    <input type="number" id="s-meta" class="exec-input text-center text-xl font-bold" placeholder="0">
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">Meta Cantidad</label>
+                    <input type="number" id="s-meta" class="input-app mt-2 text-center text-xl font-bold" placeholder="0">
                 </div>
-                <button onclick="addItem()" class="w-20 bg-white text-black font-extrabold text-2xl mt-6 rounded-2xl active:scale-90 transition-all">＋</button>
+                <button onclick="addItem()" class="w-20 bg-slate-900 text-white font-bold text-2xl mt-6 rounded-xl active:scale-90 transition-all">+</button>
             </div>
         </div>
 
-        <div id="item-list" class="mt-8 space-y-3 pb-32"></div>
+        <div id="staging-list" class="mt-6 space-y-3 pb-32"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-950/80 backdrop-blur-md">
-            <button onclick="startSession()" class="btn-exec w-full text-lg">INICIAR TERMINAL OPERATIVO</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-100">
+            <button onclick="launchOps()" class="btn-main shadow-xl shadow-blue-200">INICIAR CONTEO OFICIAL</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="glass-panel p-6 mb-6 border-l-4 border-l-blue-500">
-            <p id="tag-id" class="text-[10px] font-black text-blue-500 mb-2 uppercase tracking-widest"></p>
-            <select id="sel-sku" onchange="syncOps()" class="w-full bg-transparent text-3xl font-extrabold outline-none mb-6 appearance-none border-none"></select>
+        <div class="card-app p-6 mb-6">
+            <p id="op-id-label" class="text-[10px] font-bold text-blue-600 uppercase mb-2 tracking-widest"></p>
+            <select id="sel-sku" onchange="syncUI()" class="w-full bg-slate-50 p-4 rounded-xl text-xl font-extrabold outline-none mb-6 border-none appearance-none"></select>
             
-            <div class="flex items-center gap-4">
-                <input type="number" id="qty-in" class="flex-1 bg-slate-900 border border-white/10 h-20 text-center text-5xl font-extrabold rounded-2xl" placeholder="0">
-                <button onclick="saveCount()" class="w-24 h-20 btn-exec flex items-center justify-center">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+            <div class="flex gap-4">
+                <input type="number" id="qty-in" class="flex-1 bg-white border-2 border-slate-200 h-20 text-center text-4xl font-extrabold rounded-2xl focus:border-blue-600 outline-none transition-all" placeholder="0">
+                <button onclick="submitCount()" class="w-24 h-20 btn-main flex items-center justify-center">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                 </button>
             </div>
         </div>
 
-        <div id="op-progress" class="space-y-4 pb-44 overflow-y-auto"></div>
+        <div id="live-progress" class="space-y-4 pb-44 overflow-y-auto"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-950/80 backdrop-blur-md">
-            <button onclick="finishAndPDF()" class="btn-exec w-full !bg-emerald-600 shadow-emerald-900/40">FINALIZAR Y GENERAR REPORTE</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 flex gap-3">
+            <button onclick="closeAndReport()" class="btn-main !bg-emerald-600 shadow-emerald-100 shadow-xl">FINALIZAR Y FIRMAR PDF</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
         <div class="flex items-center gap-4 mb-8">
-            <button onclick="navTo('home')" class="text-slate-400 font-bold text-sm uppercase">Cerrar</button>
-            <h2 class="text-2xl font-extrabold uppercase tracking-tight">Archivo de Logs</h2>
+            <button onclick="navTo('home')" class="p-2 bg-white rounded-lg border border-slate-200">←</button>
+            <h2 class="text-xl font-extrabold">Historial Logístico</h2>
         </div>
-        <div id="hist-feed" class="space-y-4 pb-20"></div>
+        <div id="hist-list" class="space-y-4 pb-20"></div>
     </div>
 
     <script>
-        const DATA_SOURCE = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let inventoryDB = {};
-        let setupItems = [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let itemsDB = {};
+        let stagedItems = [];
         let activeOp = null;
 
         async function init() {
             try {
-                const r = await fetch(DATA_SOURCE);
+                const r = await fetch(API_URL);
                 const data = await r.json();
-                data.forEach(i => { if(i.CODIGO) inventoryDB[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
+                data.forEach(i => { if(i.CODIGO) itemsDB[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
             } catch(e) {}
             
-            const saved = localStorage.getItem('twins_exec_op');
+            const saved = localStorage.getItem('twins_v4_active');
             if(saved) { activeOp = JSON.parse(saved); navTo('ops'); }
         }
 
@@ -161,25 +159,25 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
-            if(v === 'ops' && activeOp) syncOps();
+            if(v === 'ops' && activeOp) syncUI();
         }
 
-        function execSearch() {
+        function liveSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
-            const resDiv = document.getElementById('results');
-            if(val.length < 2) { resDiv.classList.add('hidden'); return; }
+            const res = document.getElementById('results');
+            if(val.length < 2) { res.classList.add('hidden'); return; }
             
-            const matches = Object.entries(inventoryDB).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 6);
-            resDiv.innerHTML = matches.map(([k,v]) => `
-                <div onclick="selectProd('${k}')" class="p-4 border-b border-white/5 active:bg-blue-600 transition-colors">
-                    <p class="font-bold text-sm tracking-tight">${k}</p>
-                    <p class="text-[10px] text-slate-400 uppercase font-medium truncate">${v}</p>
+            const matches = Object.entries(itemsDB).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 5);
+            res.innerHTML = matches.map(([k,v]) => `
+                <div onclick="selectProduct('${k}')" class="p-4 border-b border-slate-100 hover:bg-blue-50 cursor-pointer">
+                    <p class="font-bold text-sm text-slate-900">${k}</p>
+                    <p class="text-[10px] text-slate-500 uppercase font-semibold truncate">${v}</p>
                 </div>
             `).join('');
-            resDiv.classList.remove('hidden');
+            res.classList.remove('hidden');
         }
 
-        function selectProd(k) {
+        function selectProduct(k) {
             document.getElementById('s-sku').value = k;
             document.getElementById('results').classList.add('hidden');
             document.getElementById('s-meta').focus();
@@ -189,119 +187,113 @@
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            setupItems.push({ sku, desc: inventoryDB[sku] || "N/A", meta, real: 0 });
-            renderSetupList();
+            stagedItems.push({ sku, desc: itemsDB[sku] || "N/D", meta, real: 0 });
+            renderStaging();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
-        function renderSetupList() {
-            document.getElementById('item-list').innerHTML = setupItems.map((item, idx) => `
-                <div class="glass-panel p-4 flex justify-between items-center">
-                    <div><p class="font-bold text-sm">${item.sku}</p><p class="text-[10px] text-slate-500 font-bold">${item.meta} UNIDADES PLANIFICADAS</p></div>
-                    <button onclick="setupItems.splice(${idx},1);renderSetupList()" class="text-rose-500 font-extrabold text-xs px-2">X</button>
+        function renderStaging() {
+            document.getElementById('staging-list').innerHTML = stagedItems.map((item, idx) => `
+                <div class="card-app p-4 flex justify-between items-center bg-slate-50/50">
+                    <div><p class="font-extrabold text-sm text-slate-900">${item.sku}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${item.meta} UNIDADES PLANIFICADAS</p></div>
+                    <button onclick="stagedItems.splice(${idx},1);renderStaging()" class="w-8 h-8 flex items-center justify-center text-red-500 font-black">×</button>
                 </div>
             `).join('');
         }
 
-        function startSession() {
-            if(setupItems.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "LOG-" + Date.now().toString().slice(-4);
-            activeOp = { id, items: [...setupItems], date: new Date().toLocaleString(), status: 'EJECUCION' };
-            localStorage.setItem('twins_exec_op', JSON.stringify(activeOp));
+        function launchOps() {
+            if(stagedItems.length === 0) return;
+            const id = document.getElementById('c-id').value.toUpperCase() || "CARGA-" + Date.now().toString().slice(-4);
+            activeOp = { id, items: [...stagedItems], date: new Date().toLocaleString(), status: 'PENDIENTE' };
+            localStorage.setItem('twins_v4_active', JSON.stringify(activeOp));
             
-            let hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
+            let hist = JSON.parse(localStorage.getItem('twins_v4_hist')) || [];
             hist.unshift(activeOp);
-            localStorage.setItem('twins_exec_hist', JSON.stringify(hist));
+            localStorage.setItem('twins_v4_hist', JSON.stringify(hist));
             
-            setupItems = [];
+            stagedItems = [];
             navTo('ops');
         }
 
-        function syncOps() {
-            document.getElementById('tag-id').innerText = "AUDITORÍA ACTIVA: " + activeOp.id;
+        function syncUI() {
+            document.getElementById('op-id-label').innerText = "EJECUTANDO: " + activeOp.id;
             document.getElementById('sel-sku').innerHTML = activeOp.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             renderProgress();
         }
 
-        function saveCount() {
+        function submitCount() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
             const target = activeOp.items.find(i => i.sku === document.getElementById('sel-sku').value);
             if(target) target.real += val;
             document.getElementById('qty-in').value = '';
-            localStorage.setItem('twins_exec_op', JSON.stringify(activeOp));
+            localStorage.setItem('twins_v4_active', JSON.stringify(activeOp));
             renderProgress();
         }
 
         function renderProgress() {
-            document.getElementById('op-progress').innerHTML = activeOp.items.map(i => {
+            document.getElementById('live-progress').innerHTML = activeOp.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isSelected = i.sku === document.getElementById('sel-sku').value;
+                const isSel = i.sku === document.getElementById('sel-sku').value;
                 return `
-                <div class="glass-panel p-5 transition-all ${isSelected ? 'border border-blue-500 bg-blue-500/5 scale-[1.02]' : 'opacity-40'}">
+                <div class="card-app p-5 transition-all ${isSel ? 'border-blue-500 ring-2 ring-blue-50' : 'opacity-50'}">
                     <div class="flex justify-between items-end mb-3">
-                        <div><p class="text-[10px] font-black text-slate-500 uppercase">${i.sku}</p><p class="font-bold text-lg">${i.real} <span class="text-xs opacity-50">/ ${i.meta}</span></p></div>
-                        <span class="text-xs font-black ${pc >= 100 ? 'text-emerald-500' : 'text-blue-500'}">${pc}%</span>
+                        <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${i.sku}</p><p class="font-extrabold text-xl">${i.real} <span class="text-xs text-slate-300">/ ${i.meta}</span></p></div>
+                        <span class="text-xs font-black ${pc >= 100 ? 'text-emerald-500' : 'text-blue-600'}">${pc}%</span>
                     </div>
-                    <div class="progress-track"><div class="progress-fill" style="width:${pc}%"></div></div>
+                    <div class="p-bar"><div class="p-fill ${pc >= 100 ? '!bg-emerald-500' : ''}" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        function finishAndPDF() {
-            if(!confirm("¿CONFIRMAR CIERRE DE OPERACIÓN Y GENERAR DOCUMENTO?")) return;
-            
-            let hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
+        function closeAndReport() {
+            if(!confirm("¿CONFIRMAR CIERRE Y GENERAR REPORTE?")) return;
+            let hist = JSON.parse(localStorage.getItem('twins_v4_hist')) || [];
             const idx = hist.findIndex(h => h.id === activeOp.id && h.status !== 'COMPLETADO');
             activeOp.status = 'COMPLETADO';
             if(idx !== -1) hist[idx] = activeOp;
+            localStorage.setItem('twins_v4_hist', JSON.stringify(hist));
             
-            localStorage.setItem('twins_exec_hist', JSON.stringify(hist));
-            generateOfficialPDF(activeOp);
-            
-            localStorage.removeItem('twins_exec_op');
+            savePDF(activeOp);
+            localStorage.removeItem('twins_v4_active');
             activeOp = null;
             navTo('home');
         }
 
-        function generateOfficialPDF(data) {
+        function savePDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Header Estilo Corporativo
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255); doc.setFontSize(20); doc.setFont("helvetica", "bold"); doc.text("REPORTE OFICIAL DE INVENTARIO", 14, 25);
-            doc.setFontSize(9); doc.setTextColor(150); doc.text("SISTEMA DE GESTIÓN LOGÍSTICA TWINS DESPACHOS", 14, 32);
+            doc.setFillColor(37, 99, 235); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE DE SALIDA DE ALMACÉN", 14, 25);
+            doc.setFontSize(10); doc.text("TWINS LOGISTICS - GESTIÓN DE INVENTARIOS", 14, 33);
             
-            doc.setTextColor(50); doc.setFontSize(10);
-            doc.text(`ID OPERACIÓN: ${data.id}`, 14, 55);
-            doc.text(`FECHA DE EMISIÓN: ${data.date}`, 14, 60);
+            doc.setTextColor(30); doc.setFontSize(10);
+            doc.text(`ID OPERACIÓN: ${data.id}`, 14, 50);
+            doc.text(`FECHA: ${data.date}`, 14, 55);
 
             doc.autoTable({
-                startY: 70,
-                head: [['SKU', 'DESCRIPCIÓN', 'PLANIFICADO', 'EJECUTADO', 'DIFERENCIA']],
+                startY: 65,
+                head: [['SKU', 'PRODUCTO', 'META', 'REAL', 'DIF.']],
                 body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real - i.meta)]),
-                theme: 'striped',
-                headStyles: { fillColor: [0, 102, 255] },
-                columnStyles: { 4: { fontStyle: 'bold' } }
+                theme: 'grid',
+                headStyles: { fillColor: [37, 99, 235] }
             });
 
             const finalY = doc.lastAutoTable.finalY + 25;
-            doc.line(14, finalY, 80, finalY);
-            doc.setFontSize(8);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY + 5);
-            doc.save(`Twins_Report_${data.id}.pdf`);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
+            doc.save(`Reporte_Logistico_${data.id}.pdf`);
         }
 
         function renderHistory() {
-            const hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
-            document.getElementById('hist-feed').innerHTML = hist.map(h => `
-                <div class="glass-panel p-6 border-l-4 ${h.status === 'COMPLETADO' ? 'border-l-emerald-500' : 'border-l-blue-500'}">
+            const hist = JSON.parse(localStorage.getItem('twins_v4_hist')) || [];
+            document.getElementById('hist-list').innerHTML = hist.map(h => `
+                <div class="card-app p-5 border-l-4 ${h.status === 'COMPLETADO' ? 'border-l-emerald-500' : 'border-l-blue-500'}">
                     <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">${h.date}</p><h3 class="text-xl font-extrabold tracking-tight">${h.id}</h3></div>
-                        <span class="status-pill ${h.status === 'COMPLETADO' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}">${h.status}</span>
+                        <div><p class="text-[10px] text-slate-400 font-bold mb-1">${h.date}</p><h3 class="text-xl font-extrabold text-slate-900 tracking-tight">${h.id}</h3></div>
+                        <span class="text-[9px] font-black px-2 py-1 rounded-full ${h.status === 'COMPLETADO' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}">${h.status}</span>
                     </div>
-                    <button onclick='generateOfficialPDF(${JSON.stringify(h)})' class="w-full bg-white/5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Exportar Documento PDF</button>
+                    <button onclick='savePDF(${JSON.stringify(h)})' class="w-full bg-slate-100 py-3 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200 transition-all">Descargar PDF</button>
                 </div>
             `).join('');
         }
