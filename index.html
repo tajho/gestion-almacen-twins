@@ -15,12 +15,18 @@
         .view.active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .glass-panel { background: white; border-radius: 2rem; border: 1px solid #f0f1f3; box-shadow: 0 10px 40px rgba(0,0,0,0.04); padding: 1.5rem; }
+        .glass-panel { background: white; border-radius: 2rem; border: 1px solid #f0f1f3; box-shadow: 0 10px 40px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.3s; }
         
+        /* Estilos de Historial de Élite */
+        .badge-blue { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; padding: 2px 8px; border-radius: 6px; }
+        .kpi-success { border-right: 6px solid #10b981 !important; }
+        .kpi-warning { border-right: 6px solid #f59e0b !important; }
+        .btn-action { background: #f8f9fb; border: 1px solid #eceef2; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.95); background: #f1f3f7; }
+
         .search-container { position: relative; width: 100%; }
         .results-box { position: absolute; z-index: 100; top: 100%; left: 0; width: 100%; background: white; border-radius: 1.2rem; box-shadow: 0 15px 30px rgba(0,0,0,0.1); border: 1px solid #eee; max-h: 200px; overflow-y: auto; margin-top: 5px; }
         .result-item { padding: 0.8rem 1.2rem; border-bottom: 1px solid #f8f9fa; cursor: pointer; }
-        .result-item:last-child { border-bottom: none; }
 
         .footer-action { position: fixed; bottom: 1.5rem; left: 1.2rem; right: 1.2rem; z-index: 50; }
         .btn-black { background: #1a1c21; color: white; border-radius: 1.2rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; padding: 1.2rem; width: 100%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
@@ -47,14 +53,11 @@
     <div id="view-home" class="view active">
         <div class="mt-4 mb-8">
             <p class="text-blue-600 font-bold text-xs uppercase tracking-[0.2em] mb-1">Buen dia</p>
-            <h2 class="text-3xl font-black text-slate-900 leading-tight italic">
-                ¿Qué hacemos<br>
-                <span class="text-blue-600">hoy, Tajho?</span>
-            </h2>
+            <h2 class="text-3xl font-black text-slate-900 leading-tight italic">¿Qué hacemos<br><span class="text-blue-600">hoy, Tajho?</span></h2>
         </div>
 
         <div class="space-y-4 overflow-y-auto pb-10">
-            <div onclick="navTo('crear')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-blue-600">
+            <div onclick="navTo('crear')" class="glass-panel flex items-center gap-5 active:scale-95 border-l-4 border-l-blue-600">
                 <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                 </div>
@@ -64,7 +67,7 @@
                 </div>
             </div>
 
-            <div onclick="navTo('historial')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-slate-900">
+            <div onclick="navTo('historial')" class="glass-panel flex items-center gap-5 active:scale-95 border-l-4 border-l-slate-900">
                 <div class="w-14 h-14 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                 </div>
@@ -74,7 +77,7 @@
                 </div>
             </div>
 
-            <div onclick="alert('Iniciando proceso de Devolución...')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-red-500">
+            <div onclick="alert('Módulo de Devoluciones en desarrollo...')" class="glass-panel flex items-center gap-5 active:scale-95 border-l-4 border-l-red-500">
                 <div class="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 </div>
@@ -95,7 +98,7 @@
             </div>
             <div class="flex gap-3">
                 <input type="number" id="s-meta" class="input-elite flex-1" placeholder="Cant. Meta">
-                <button onclick="addMani()" class="w-16 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 active:scale-90"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
+                <button onclick="addMani()" class="w-16 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
         </div>
         <div class="flex-grow overflow-y-auto mt-6 pb-24">
@@ -112,8 +115,8 @@
                 <span>Carga Total del Contenedor</span>
                 <span id="global-pc" class="text-blue-600 text-sm">0%</span>
             </div>
-            <div class="track bg-slate-100 h-6">
-                <div id="truck-fill" class="track-fill bg-gradient-to-r from-blue-500 to-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.4)]"></div>
+            <div class="track">
+                <div id="truck-fill" class="track-fill bg-gradient-to-r from-blue-500 to-blue-700"></div>
                 <div id="truck-icon" class="truck-icon" style="left: 0%">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a1c21"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
                 </div>
@@ -125,29 +128,30 @@
                 <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase px-4 truncate"></p>
             </div>
             <div class="flex items-center justify-center gap-4">
-                <input type="number" id="qty-in" class="input-elite w-28 h-16 text-center text-3xl !rounded-2xl border-2" placeholder="0">
+                <input type="number" id="qty-in" class="input-elite w-28 h-16 text-center text-3xl" placeholder="0">
                 <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
         </div>
         <div class="flex-grow overflow-y-auto space-y-3 pb-24" id="mini-progress-list"></div>
         <div class="footer-action">
-            <button id="btn-save-all" onclick="finishAndReport()" class="btn-black !bg-green-600 flex items-center justify-center gap-2 transition-all active:scale-95">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>
-                </svg>
+            <button id="btn-save-all" onclick="finishAndReport()" class="btn-black !bg-green-600 flex items-center justify-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
                 Finalizar y Guardar Reporte
             </button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-black italic mb-6">Registro de <span class="text-blue-600">Cargas</span></h2>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black italic">Registro de <span class="text-blue-600">Cargas</span></h2>
+            <button onclick="if(confirm('¿Borrar historial local?')) { localStorage.removeItem('taj_history'); renderHistory(); }" class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Limpiar</button>
+        </div>
         <div id="history-list" class="flex-grow overflow-y-auto space-y-4 pb-24"></div>
     </div>
 
     <div id="modal-choice" class="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-8">
         <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl">
-            <h3 class="text-xl font-black italic mb-6 uppercase">¿Iniciar Conteo?</h3>
+            <h3 class="text-xl font-black italic mb-6 uppercase italic">¿Iniciar Conteo?</h3>
             <div class="flex flex-col gap-3">
                 <button onclick="continuarConteo()" class="btn-black">Sí, iniciar ahora</button>
                 <button onclick="closeModal()" class="text-[10px] font-black text-slate-300 uppercase mt-4">Regresar</button>
@@ -157,14 +161,11 @@
 
     <div id="modal-recovery" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-8">
         <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl border-2 border-blue-600">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            </div>
             <h3 class="text-xl font-black italic mb-2 uppercase text-slate-900">Trabajo Pendiente</h3>
-            <p class="text-[11px] font-bold text-slate-500 uppercase mb-6">Hemos detectado una operación sin finalizar. ¿Qué deseas hacer?</p>
+            <p class="text-[11px] font-bold text-slate-500 uppercase mb-6">Detectamos una carga sin finalizar.</p>
             <div class="flex flex-col gap-3">
                 <button onclick="resumeJob()" class="btn-black !bg-blue-600">Continuar Conteo</button>
-                <button onclick="discardJob()" class="text-[10px] font-black text-red-500 uppercase mt-4 tracking-widest">Descartar y Nuevo</button>
+                <button onclick="discardJob()" class="text-[10px] font-black text-red-500 uppercase mt-4">Descartar</button>
             </div>
         </div>
     </div>
@@ -174,6 +175,7 @@
         let db_items = {};
         let currentMani = JSON.parse(localStorage.getItem('taj_cur')) || [];
         let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
+        let startTime = null;
 
         async function init() {
             try {
@@ -182,35 +184,12 @@
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
                 if (activeJob) openRecoveryModal(); else navTo('home');
             } catch (e) { 
-                console.warn("Modo Offline");
                 if (activeJob) openRecoveryModal(); else navTo('home');
             }
         }
 
-        function openRecoveryModal() { document.getElementById('modal-recovery').style.display = 'flex'; }
-        function resumeJob() { document.getElementById('modal-recovery').style.display = 'none'; startOps(activeJob); }
-        function discardJob() {
-            if(confirm("¿Estás seguro? Se borrarán los datos del contenedor actual.")){
-                localStorage.removeItem('taj_active');
-                activeJob = null;
-                document.getElementById('modal-recovery').style.display = 'none';
-                navTo('home');
-            }
-        }
-
-        function startOps(job) {
-            navTo('ops');
-            const selector = document.getElementById('sel-sku');
-            if (selector) {
-                selector.innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-                syncItem(); 
-            }
-        }
-
+        // NAVEGACIÓN
         function navTo(v) {
-            if (activeJob && activeJob.status === 'PROCESO' && v === 'home') {
-                if (!confirm("Angelo, la operación está activa. ¿Seguro que quieres volver al inicio?")) return;
-            }
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'crear') renderPreList();
@@ -218,29 +197,18 @@
         }
 
         function goHome() { navTo('home'); }
+        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
+        function openRecoveryModal() { document.getElementById('modal-recovery').style.display = 'flex'; }
+        function resumeJob() { document.getElementById('modal-recovery').style.display = 'none'; startOps(activeJob); }
+        function discardJob() { if(confirm("¿Borrar carga actual?")){ localStorage.removeItem('taj_active'); activeJob = null; document.getElementById('modal-recovery').style.display = 'none'; navTo('home'); } }
 
-        window.onbeforeunload = function(e) {
-            if (activeJob && activeJob.status === 'PROCESO') {
-                const msg = "Angelo, tienes una carga en curso. ¿Seguro que quieres refrescar?";
-                e.returnValue = msg;
-                return msg;
-            }
-        };
-
+        // BÚSQUEDA Y CONFIGURACIÓN
         function smartSearch() {
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(input.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.keys(db_items).filter(sku => {
-                const desc = db_items[sku].toUpperCase();
-                return sku.includes(input) || desc.includes(input);
-            }).slice(0, 8);
-            resDiv.innerHTML = matches.map(sku => `
-                <div onclick="setProd('${sku}')" class="result-item">
-                    <p class="text-[10px] font-black text-blue-600 mb-0.5">${sku}</p>
-                    <p class="text-[9px] font-bold text-slate-500 uppercase leading-tight">${db_items[sku]}</p>
-                </div>
-            `).join('');
+            const matches = Object.keys(db_items).filter(sku => sku.includes(input) || db_items[sku].toUpperCase().includes(input)).slice(0, 8);
+            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="result-item"><p class="text-[10px] font-black text-blue-600 mb-0.5">${sku}</p><p class="text-[9px] font-bold text-slate-500 uppercase">${db_items[sku]}</p></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -258,36 +226,26 @@
             localStorage.setItem('taj_cur', JSON.stringify(currentMani));
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
-            navigator.vibrate(20);
         }
 
         function renderPreList() {
             const container = document.getElementById('pre-list');
-            container.innerHTML = currentMani.map(i => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-                    <div>
-                        <p class="text-[11px] font-black text-slate-900 italic uppercase">${i.sku}</p>
-                        <p class="text-[8px] text-slate-400 font-bold uppercase">${i.desc}</p>
-                    </div>
-                    <p class="text-[11px] font-black text-blue-600">${i.meta} CJ</p>
-                </div>
-            `).join('');
-            const btnStart = document.getElementById('btn-start');
-            if(currentMani.length > 0) btnStart.classList.remove('hidden'); else btnStart.classList.add('hidden');
+            container.innerHTML = currentMani.map(i => `<div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm"><div><p class="text-[11px] font-black text-slate-900 uppercase">${i.sku}</p><p class="text-[8px] text-slate-400 font-bold uppercase">${i.desc}</p></div><p class="text-[11px] font-black text-blue-600">${i.meta} CJ</p></div>`).join('');
+            document.getElementById('btn-start').classList.toggle('hidden', currentMani.length === 0);
         }
 
-        function openModal() {
-            if (currentMani.length > 0) document.getElementById('modal-choice').style.display = 'flex';
-            else alert("Angelo, primero agrega al menos un producto.");
-        }
+        // OPERACIÓN
+        function openModal() { document.getElementById('modal-choice').style.display = 'flex'; }
 
         function continuarConteo() {
             closeModal();
+            startTime = new Date();
             activeJob = { 
-                id: Date.now(), 
-                name: "L-" + new Date().getHours() + new Date().getMinutes(), 
+                id: "ID-" + Date.now().toString().slice(-6), 
+                tipo: 'CONTENEDOR', 
                 items: [...currentMani], 
-                status: 'PROCESO' 
+                status: 'PROCESO',
+                start: startTime.toISOString()
             };
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
             currentMani = []; 
@@ -295,47 +253,26 @@
             startOps(activeJob);
         }
 
-        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
+        function startOps(job) {
+            navTo('ops');
+            document.getElementById('sel-sku').innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            syncItem();
+        }
 
         function syncItem() {
             const selectedSku = document.getElementById('sel-sku').value;
             const item = activeJob.items.find(i => i.sku === selectedSku);
-            if (!item) return;
             document.getElementById('live-desc').innerText = item.desc;
+            
             const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
             const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
-            const pcGlobal = Math.min(Math.round((totalR / totalM) * 100), 100);
-            document.getElementById('truck-fill').style.width = pcGlobal + "%";
-            document.getElementById('truck-icon').style.left = `calc(${pcGlobal}% - 15px)`;
-            document.getElementById('global-pc').innerText = pcGlobal + "%";
+            const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
+            
+            document.getElementById('truck-fill').style.width = pc + "%";
+            document.getElementById('truck-icon').style.left = `calc(${pc}% - 15px)`;
+            document.getElementById('global-pc').innerText = pc + "%";
             renderMiniBars();
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
-        }
-
-        function renderMiniBars() {
-            const container = document.getElementById('mini-progress-list');
-            if (!container) return;
-            container.innerHTML = activeJob.items.map(i => {
-                const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isSelected = i.sku === document.getElementById('sel-sku').value;
-                return `
-                    <div class="bg-white p-3 rounded-2xl border ${isSelected ? 'border-blue-500 shadow-md' : 'border-slate-100'} transition-all">
-                        <div class="flex justify-between items-center mb-2">
-                            <div>
-                                <span class="text-[10px] font-black ${isSelected ? 'text-blue-600' : 'text-slate-900'} uppercase">${i.sku}</span>
-                                <p class="text-[8px] text-slate-400 font-bold uppercase truncate w-40">${i.desc}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] font-black text-slate-900">${i.real} / ${i.meta}</span>
-                                <p class="text-[8px] font-black ${pc >= 100 ? 'text-green-500' : 'text-blue-500'}">${pc}%</p>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                            <div class="h-full transition-all duration-500 ${pc >= 100 ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${pc}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
         }
 
         function registrarBulto() {
@@ -345,69 +282,75 @@
             item.real += q;
             document.getElementById('qty-in').value = '';
             syncItem();
-            navigator.vibrate(15);
-            fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos: [new Date().toLocaleString(), item.sku, q]})});
+            fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA_REGISTRO', sku: item.sku, cant: q})});
         }
 
+        function renderMiniBars() {
+            document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
+                const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
+                const isSel = i.sku === document.getElementById('sel-sku').value;
+                return `<div class="bg-white p-3 rounded-2xl border ${isSel ? 'border-blue-500 shadow-md' : 'border-slate-100'} transition-all"><div class="flex justify-between items-center mb-2"><div><span class="text-[10px] font-black uppercase">${i.sku}</span><p class="text-[8px] text-slate-400 font-bold uppercase truncate w-40">${i.desc}</p></div><div class="text-right"><span class="text-[10px] font-black text-slate-900">${i.real}/${i.meta}</span><p class="text-[8px] font-black ${pc >= 100 ? 'text-green-500' : 'text-blue-500'}">${pc}%</p></div></div><div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="h-full ${pc >= 100 ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${pc}%"></div></div></div>`;
+            }).join('');
+        }
+
+        // FINALIZACIÓN Y REPORTES
         async function finishAndReport() {
             const btn = document.getElementById('btn-save-all');
-            const originalText = btn.innerHTML;
-            btn.innerText = "GUARDANDO..."; btn.disabled = true;
+            btn.innerText = "SINCRONIZANDO..."; btn.disabled = true;
 
-            const dateStr = new Date().toLocaleString();
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // 1. Guardar en Historial
+            const endTime = new Date();
+            const dur = Math.round((endTime - new Date(activeJob.start)) / 60000);
+            const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
+            const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
+            const efici = Math.round((totalR / totalM) * 100);
+
+            const report = {
+                id: activeJob.id,
+                fecha: endTime.toLocaleString(),
+                tipo: 'CONTENEDOR',
+                duracion: dur + " min",
+                eficiencia: efici + "%",
+                items: activeJob.items
+            };
+
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
-            history.unshift({ date: dateStr, name: activeJob.name, items: activeJob.items });
+            history.unshift(report);
             localStorage.setItem('taj_history', JSON.stringify(history));
 
-            // 2. Generar PDF con Cuadro
-            doc.setFontSize(14); doc.setFont("helvetica", "bold"); 
-            doc.text("REPORTE OPERATIVO TAJHO.OS", 14, 20);
-            doc.setFontSize(9); doc.setFont("helvetica", "normal");
-            doc.text(`Fecha de Registro: ${dateStr}`, 14, 28);
-
-            doc.autoTable({
-                startY: 32,
-                head: [['SKU', 'META (CJ)', 'REAL (CJ)', 'DIFERENCIA']],
-                body: activeJob.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]),
-                theme: 'striped',
-                headStyles: { fillColor: [26, 28, 33] },
-                styles: { fontSize: 8 }
-            });
-
-            doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 12);
-            doc.save(`TAJHO_${activeJob.name}_REGISTRO.pdf`);
-
-            // 3. Finalizar
+            fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'REPORTE_FINAL', ...report})});
+            
+            downloadPDF(report);
             localStorage.removeItem('taj_active');
             activeJob = null;
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+            btn.disabled = false; btn.innerText = "FINALIZAR";
             navTo('home');
+        }
+
+        function downloadPDF(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16); doc.setFont("helvetica", "bold"); doc.text("REPORTE OPERATIVO TAJHO.OS", 14, 20);
+            doc.setFontSize(9); doc.setFont("helvetica", "normal");
+            doc.text(`ID: ${data.id} | Fecha: ${data.fecha}`, 14, 28);
+            doc.text(`Eficiencia: ${data.eficiencia} | Tiempo: ${data.duracion}`, 14, 33);
+            doc.autoTable({
+                startY: 40,
+                head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: data.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]),
+                theme: 'striped', headStyles: { fillColor: [26, 28, 33] }
+            });
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 12);
+            doc.save(`TAJHO_${data.id}.pdf`);
         }
 
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
             const list = document.getElementById('history-list');
-            if(history.length === 0) {
-                list.innerHTML = "<div class='text-center py-20 opacity-20 font-black uppercase text-[10px]'>Sin registros</div>";
-                return;
-            }
-            list.innerHTML = history.map(h => `
-                <div class="glass-panel border-l-4 border-l-blue-600 flex justify-between items-center p-4">
-                    <div>
-                        <p class="text-[10px] font-black text-slate-900 uppercase">${h.date}</p>
-                        <p class="text-[8px] font-bold text-slate-400 italic">${h.items.length} SKUs Procesados</p>
-                    </div>
-                    <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
-                    </div>
-                </div>
-            `).join('');
+            if(history.length === 0) { list.innerHTML = `<div class="py-20 text-center opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">Sin registros</div>`; return; }
+            list.innerHTML = history.map(h => {
+                const isOk = parseInt(h.eficiencia) >= 100;
+                return `<div class="glass-panel ${isOk ? 'kpi-success' : 'kpi-warning'} p-4 active:scale-[0.98] transition-all"><div class="flex justify-between items-start mb-3"><span class="badge-blue text-[8px] font-black uppercase">${h.tipo}</span><p class="text-[9px] font-bold text-slate-400">${h.fecha.split(',')[0]}</p></div><div class="flex items-center gap-6 mb-4"><div><p class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-1">Eficiencia</p><p class="text-xl font-black ${isOk ? 'text-green-600' : 'text-orange-500'} italic">${h.eficiencia}</p></div><div class="border-l border-slate-100 pl-6"><p class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-1">Duración</p><p class="text-sm font-black text-slate-900">${h.duracion}</p></div></div><div class="flex gap-2"><button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-action flex-1 py-3 rounded-xl flex items-center justify-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a1c21" stroke-width="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="text-[9px] font-black uppercase text-slate-900">PDF</span></button></div></div>`;
+            }).join('');
         }
 
         init();
