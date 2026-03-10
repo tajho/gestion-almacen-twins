@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho Logística - Contenedores</title>
+    <title>Tajho - Contenedor Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
@@ -15,20 +15,14 @@
         .view.active { display: flex; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Menú Hamburguesa */
         .side-menu { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: var(--slate-900); z-index: 200; transition: 0.4s; padding: 2rem; }
         .side-menu.open { left: 0; box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; display: none; backdrop-filter: blur(4px); }
 
-        /* Inputs de Carga */
         .input-row { background: white; border: 1.5px solid #e2e8f0; border-radius: 0.8rem; padding: 0.8rem; font-weight: 600; width: 100%; outline: none; }
-        .input-row:focus { border-color: var(--blue-vivid); }
-        
-        .card-item { background: white; border-bottom: 1px solid #f1f5f9; padding: 0.75rem 0; }
-        .btn-main { background: var(--slate-900); color: white; border-radius: 1rem; font-weight: 700; padding: 1.1rem; width: 100%; transition: 0.2s; }
+        .btn-main { background: var(--slate-900); color: white; border-radius: 1rem; font-weight: 700; padding: 1.1rem; width: 100%; transition: 0.2s; text-align: center; border: none; }
         .btn-blue { background: var(--blue-vivid); }
-        
-        /* Modal de confirmación */
+        .card-hist { background: white; border-radius: 1.5rem; padding: 1.25rem; border: 1px solid #edf2f7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 2rem; }
     </style>
 </head>
@@ -36,83 +30,78 @@
 
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
     <nav id="side-menu" class="side-menu text-white">
-        <h2 class="text-2xl font-black italic mb-10">TAJHO <span class="text-blue-500">LOG</span></h2>
-        <div class="flex flex-col gap-6 font-bold uppercase text-sm tracking-widest">
+        <h2 class="text-2xl font-black italic mb-10 uppercase">Tajho <span class="text-blue-500">Log</span></h2>
+        <div class="flex flex-col gap-6 font-bold uppercase text-xs tracking-widest">
             <button onclick="navTo('home')">Inicio</button>
-            <button onclick="navTo('crear')">Contenedor</button>
-            <button onclick="navTo('historial')">Historia</button>
+            <button onclick="navTo('crear')">Nuevo Contenedor</button>
+            <button onclick="navTo('historial')">Historia General</button>
         </div>
     </nav>
 
     <header class="h-16 px-6 flex justify-between items-center bg-white border-b sticky top-0 z-[100]">
         <button onclick="toggleMenu()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"/></svg></button>
-        <span class="font-black text-sm tracking-tighter italic">ANGELO NUÑEZ</span>
+        <span class="font-black text-[10px] tracking-tighter italic uppercase text-slate-400">Inventory Asst. / A. Nuñez</span>
     </header>
 
     <div id="view-home" class="view active">
         <div class="mt-10 mb-10">
             <h1 class="text-4xl font-extrabold tracking-tighter italic leading-none">Hola,<br>¿llegó <span class="text-blue-600 underline">contenedor</span> tajho?</h1>
         </div>
-        <div class="grid gap-4">
-            <button onclick="navTo('crear')" class="btn-main btn-blue flex items-center justify-center gap-3">📦 NUEVO CONTENEDOR</button>
-            <button onclick="navTo('historial')" class="btn-main flex items-center justify-center gap-3">📜 VER HISTORIA</button>
+        <div class="grid gap-3">
+            <button onclick="navTo('crear')" class="btn-main btn-blue">📦 CREAR CONTENEDOR</button>
+            <button onclick="navTo('historial')" class="btn-main">📜 HISTORIA</button>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <h2 class="text-xl font-black mb-6 uppercase italic">Configurar <span class="text-blue-600">Carga</span></h2>
-        
-        <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 space-y-3">
-            <input type="text" id="c-id" class="input-row !bg-slate-50 border-none text-xs" placeholder="N° CONTENEDOR / PLACA">
-            
+        <h2 class="text-xl font-black mb-6 uppercase italic">Nuevo <span class="text-blue-600">Registro</span></h2>
+        <div class="bg-white p-4 rounded-2xl border mb-6 space-y-3">
+            <input type="text" id="c-id" class="input-row !bg-slate-50 border-none text-xs" placeholder="N° CONTENEDOR O PLACA">
             <div class="relative">
                 <input type="text" id="s-sku" oninput="smartSearch()" class="input-row" placeholder="CÓDIGO SKU">
-                <p id="live-desc-preview" class="text-[10px] text-blue-600 font-bold mt-1 uppercase truncate"></p>
+                <p id="live-desc-preview" class="text-[9px] text-blue-600 font-bold mt-1 uppercase"></p>
                 <div id="results" class="absolute z-50 left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 hidden border max-h-40 overflow-y-auto"></div>
             </div>
-
             <div class="flex gap-2">
                 <input type="number" id="s-meta" class="input-row flex-1" placeholder="CANTIDAD META">
-                <button onclick="addMani()" class="w-14 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">ADD</button>
+                <button onclick="addMani()" class="w-14 h-12 bg-blue-600 text-white rounded-lg font-bold">ADD</button>
             </div>
         </div>
-
         <div class="flex-grow bg-white rounded-t-3xl p-5 shadow-inner overflow-y-auto">
-            <div class="flex justify-between items-end border-b-2 border-slate-100 pb-2 mb-4">
-                <h3 class="font-black text-slate-900 uppercase italic">Contenedor</h3>
+            <div class="flex justify-between items-end border-b pb-2 mb-4">
+                <h3 class="font-black text-slate-900 uppercase italic text-sm">Contenedor</h3>
                 <span id="live-date" class="text-[10px] font-bold text-slate-400"></span>
             </div>
-            <div id="pre-list" class="space-y-1"></div>
+            <div id="pre-list" class="divide-y divide-slate-50"></div>
         </div>
-
-        <div class="mt-4"><button onclick="showConfirm()" class="btn-main btn-blue shadow-lg shadow-blue-200">CREAR CONTENEDOR</button></div>
+        <button onclick="showConfirm()" class="btn-main btn-blue mt-4">CREAR CONTENEDOR</button>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="bg-white p-6 rounded-3xl shadow-sm border mb-4 text-center">
-            <p id="op-title" class="text-[10px] font-bold text-slate-400 uppercase mb-2"></p>
-            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black text-slate-900 bg-transparent outline-none border-b-2 border-blue-600 w-full text-center mb-4 uppercase"></select>
+        <div class="bg-white p-6 rounded-3xl border mb-4 text-center">
+            <p id="op-title" class="text-[9px] font-bold text-slate-400 uppercase mb-2"></p>
+            <select id="sel-sku" onchange="syncItem()" class="text-xl font-black text-slate-900 bg-transparent outline-none border-b-2 border-blue-600 w-full text-center mb-6 uppercase"></select>
             <div class="flex items-center justify-center gap-4">
-                <input type="number" id="qty-in" class="input-row w-24 h-14 text-center text-2xl" placeholder="0">
-                <button onclick="registrarBulto()" class="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">OK</button>
+                <input type="number" id="qty-in" class="input-row w-24 h-16 text-center text-3xl font-black" placeholder="0">
+                <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl font-bold text-xl shadow-xl shadow-blue-100">OK</button>
             </div>
         </div>
         <div id="mini-progress-list" class="space-y-2 pb-24"></div>
-        <div class="fixed bottom-6 left-6 right-6"><button onclick="finishAndReport()" class="btn-main !bg-emerald-600">TERMINAR DESCARGA</button></div>
+        <div class="fixed bottom-6 left-6 right-6"><button onclick="finishAndReport()" class="btn-main !bg-emerald-600 shadow-xl shadow-emerald-100">FINALIZAR DESCARGA</button></div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-black italic mb-6">HISTORIA</h2>
-        <div id="history-list" class="space-y-4"></div>
+        <h2 class="text-2xl font-black italic mb-6 uppercase tracking-tighter">Historia <span class="text-blue-600">General</span></h2>
+        <div id="history-list" class="pb-10"></div>
     </div>
 
     <div id="modal-confirm" class="modal">
         <div class="bg-white rounded-3xl p-8 w-full max-w-xs text-center">
-            <h3 class="font-black text-xl mb-6 italic">¿CÓMO DESEAS <br><span class="text-blue-600">CONTINUAR?</span></h3>
+            <h3 class="font-black text-xl mb-6 italic uppercase">¿Qué sigue?</h3>
             <div class="space-y-3">
                 <button onclick="finalizeCreation('descarga')" class="btn-main btn-blue">EMPEZAR DESCARGA</button>
                 <button onclick="finalizeCreation('guardar')" class="btn-main !bg-slate-100 !text-slate-900">SOLO GUARDAR</button>
-                <button onclick="closeConfirm()" class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Cancelar</button>
+                <button onclick="closeConfirm()" class="text-[10px] font-bold text-slate-400 uppercase mt-4 block w-full">Cancelar</button>
             </div>
         </div>
     </div>
@@ -152,11 +141,9 @@
             const resDiv = document.getElementById('results');
             const preview = document.getElementById('live-desc-preview');
             if(input.length < 2) { resDiv.classList.add('hidden'); preview.innerText = ""; return; }
-            
             const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 5);
-            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-3 border-b text-[10px] font-bold uppercase">${sku}</div>`).join('');
+            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-3 border-b text-[11px] font-bold uppercase active:bg-blue-50">${sku}</div>`).join('');
             resDiv.classList.remove('hidden');
-            
             if(db_items[input]) preview.innerText = db_items[input];
         }
 
@@ -179,28 +166,26 @@
 
         function renderPreList() {
             document.getElementById('pre-list').innerHTML = currentMani.map((i, idx) => `
-                <div class="card-item flex justify-between items-center">
-                    <div class="flex-1"><p class="font-bold text-[11px] uppercase">${i.sku}</p><p class="text-[8px] text-slate-400 uppercase truncate max-w-[150px]">${i.desc}</p></div>
-                    <p class="font-black text-blue-600 text-sm">${i.meta} CJ</p>
-                    <button onclick="currentMani.splice(${idx},1);renderPreList()" class="ml-4 text-slate-300 text-xs">×</button>
+                <div class="flex justify-between items-center py-3">
+                    <div class="flex-1"><p class="font-bold text-[11px] uppercase">${i.sku}</p><p class="text-[8px] text-slate-400 uppercase truncate max-w-[180px]">${i.desc}</p></div>
+                    <p class="font-black text-blue-600 text-xs">${i.meta} CJ</p>
+                    <button onclick="currentMani.splice(${idx},1);renderPreList()" class="ml-4 text-slate-200">×</button>
                 </div>
             `).join('');
         }
 
-        function showConfirm() { 
-            if(currentMani.length === 0) return alert("Agrega al menos un item");
-            document.getElementById('modal-confirm').style.display = 'flex'; 
-        }
+        function showConfirm() { if(currentMani.length > 0) document.getElementById('modal-confirm').style.display = 'flex'; }
         function closeConfirm() { document.getElementById('modal-confirm').style.display = 'none'; }
 
         function finalizeCreation(type) {
             const cId = document.getElementById('c-id').value.toUpperCase().trim() || "CONT-" + Date.now().toString().slice(-4);
-            const newObj = { id: cId, items: [...currentMani], fecha: new Date().toLocaleString(), status: (type === 'guardar' ? 'PENDIENTE' : 'EN PROCESO') };
+            const newObj = { id: cId, items: [...currentMani], fecha: new Date().toLocaleString(), status: (type === 'guardar' ? 'PENDIENTE' : 'DESCARGANDO') };
+            
+            const history = JSON.parse(localStorage.getItem('tj_history')) || [];
+            history.unshift(newObj);
+            localStorage.setItem('tj_history', JSON.stringify(history));
             
             if(type === 'guardar') {
-                const history = JSON.parse(localStorage.getItem('taj_history')) || [];
-                history.unshift(newObj);
-                localStorage.setItem('taj_history', JSON.stringify(history));
                 currentMani = []; renderPreList(); closeConfirm(); navTo('historial');
             } else {
                 activeJob = newObj;
@@ -211,20 +196,17 @@
 
         function resumeOps() {
             navTo('ops');
-            document.getElementById('op-title').innerText = "DESCARGANDO: " + activeJob.id;
+            document.getElementById('op-title').innerText = "CONTENEDOR: " + activeJob.id;
             document.getElementById('sel-sku').innerHTML = activeJob.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncItem();
         }
 
-        function syncItem() {
-            renderMiniBars();
-        }
+        function syncItem() { renderMiniBars(); }
 
         function registrarBulto() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
-            const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
-            item.real += val;
+            activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value).real += val;
             document.getElementById('qty-in').value = '';
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
             syncItem();
@@ -234,56 +216,87 @@
             document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
                 const isSel = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="bg-white p-3 rounded-xl border ${isSel ? 'border-blue-500 shadow-md' : 'border-slate-100'}"><div class="flex justify-between text-[10px] font-bold mb-1"><span>${i.sku}</span><span class="text-blue-600">${i.real}/${i.meta}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
+                return `<div class="bg-white p-3 rounded-xl border ${isSel ? 'border-blue-500 shadow-sm' : 'border-slate-100'}"><div class="flex justify-between text-[10px] font-bold mb-1"><span>${i.sku}</span><span class="${pc>=100?'text-emerald-600':'text-blue-600'}">${i.real}/${i.meta}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
             }).join('');
         }
 
         function finishAndReport() {
+            const history = JSON.parse(localStorage.getItem('tj_history')) || [];
+            const idx = history.findIndex(h => h.id === activeJob.id && h.status !== 'COMPLETADO');
             activeJob.status = "COMPLETADO";
-            const history = JSON.parse(localStorage.getItem('taj_history')) || [];
-            history.unshift(activeJob);
-            localStorage.setItem('taj_history', JSON.stringify(history));
-            downloadPDF(activeJob);
+            if(idx !== -1) history[idx] = activeJob; else history.unshift(activeJob);
+            
+            localStorage.setItem('tj_history', JSON.stringify(history));
             localStorage.removeItem('tj_active');
-            activeJob = null;
+            downloadPDF(activeJob);
+            activeJob = null; currentMani = [];
             navTo('home');
         }
 
         function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('taj_history')) || [];
+            const history = JSON.parse(localStorage.getItem('tj_history')) || [];
             const list = document.getElementById('history-list');
             list.innerHTML = history.map(h => `
-                <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                    <div class="flex justify-between mb-2"><span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-slate-100">${h.status}</span><span class="text-[9px] text-slate-400 font-bold">${h.fecha}</span></div>
-                    <h3 class="text-lg font-black text-slate-800 uppercase italic">${h.id}</h3>
+                <div class="card-hist">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded ${h.status==='COMPLETADO'?'bg-emerald-50 text-emerald-600':'bg-amber-50 text-amber-600'}">${h.status}</span>
+                        <span class="text-[9px] text-slate-300 font-bold">${h.fecha}</span>
+                    </div>
+                    <h3 class="text-lg font-black text-slate-800 uppercase italic leading-tight">${h.id}</h3>
                     <div class="flex gap-2 mt-4">
-                        ${h.status === 'PENDIENTE' ? `<button onclick='loadDraft(${JSON.stringify(h)})' class="btn-main !py-2 !text-[10px] btn-blue">EMPEZAR</button>` : `<button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-main !py-2 !text-[10px]">PDF</button>`}
+                        ${h.status === 'PENDIENTE' ? `<button onclick='loadPending("${h.id}")' class="btn-main !py-2.5 !text-[10px] btn-blue flex-1">EMPEZAR</button>` : ''}
+                        ${h.status === 'COMPLETADO' ? `
+                            <button onclick='alertLista("${h.id}")' class="btn-main !py-2.5 !text-[10px] !bg-slate-100 !text-slate-800 flex-1">VER LISTA</button>
+                            <button onclick='downloadHistoryPDF("${h.id}")' class="btn-main !py-2.5 !text-[10px] !bg-blue-50 !text-blue-700 flex-1">PDF EXCEL</button>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        function loadDraft(h) {
-            activeJob = h;
-            activeJob.status = "EN PROCESO";
+        function loadPending(id) {
+            const history = JSON.parse(localStorage.getItem('tj_history'));
+            activeJob = history.find(h => h.id === id);
+            activeJob.status = "DESCARGANDO";
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
             resumeOps();
+        }
+
+        function alertLista(id) {
+            const h = JSON.parse(localStorage.getItem('tj_history')).find(x => x.id === id);
+            alert("DETALLE CONTENEDOR " + h.id + ":\n\n" + h.items.map(i => `${i.sku}: ${i.real}/${i.meta} CJ`).join('\n'));
+        }
+
+        function downloadHistoryPDF(id) {
+            const h = JSON.parse(localStorage.getItem('tj_history')).find(x => x.id === id);
+            downloadPDF(h);
         }
 
         function downloadPDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text(`REPORTE: ${data.id}`, 14, 20);
-            doc.setTextColor(0,0,0); doc.setFontSize(10);
-            doc.text(`Fecha: ${data.fecha}`, 14, 40);
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("REPORTE DE CARGA - TAJHO", 14, 22);
+            doc.setTextColor(0,0,0); doc.setFontSize(9);
+            doc.text(`CONTENEDOR: ${data.id}`, 14, 45);
+            doc.text(`FECHA: ${data.fecha} | OPERADOR: J. ANGELO NUÑEZ D.`, 14, 50);
+
             doc.autoTable({
-                startY: 50,
-                head: [['SKU', 'META', 'REAL', 'DIF']],
-                body: data.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]),
-                theme: 'grid', headStyles: { fillColor: [37, 99, 235] }
+                startY: 60,
+                head: [['CÓDIGO/PRODUCTO', 'CAJAS PACK', 'CAJAS FISICO', 'DIFERENCIA', 'OK']],
+                body: data.items.map(i => [
+                    i.sku, 
+                    i.meta, 
+                    i.real, 
+                    i.real - i.meta, 
+                    (i.real === i.meta ? '[ OK ]' : '[ X ]')
+                ]),
+                theme: 'grid',
+                headStyles: { fillColor: [37, 99, 235], fontSize: 8 },
+                styles: { fontSize: 7, cellPadding: 2.5 }
             });
-            doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
+
+            doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
             doc.save(`CONT_${data.id}.pdf`);
         }
 
