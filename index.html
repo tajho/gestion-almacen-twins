@@ -3,26 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins DESPACHO - Elite v1.0</title>
+    <title>Gestión de Inventario - Angelo Nuñez</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue-twins: #2563eb; --bg-light: #f8f9fc; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: #1e293b; margin: 0; -webkit-tap-highlight-color: transparent; }
+        :root { --blue-brand: #2563eb; --slate-dark: #1e293b; --bg-app: #f8f9fc; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-app); color: var(--slate-dark); margin: 0; -webkit-tap-highlight-color: transparent; }
+        
+        /* Layout */
         .view { display: none; min-height: 100vh; padding: 1.2rem; flex-direction: column; box-sizing: border-box; }
-        .view.active { display: flex; animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .history-card { background: white; border-radius: 1.5rem; border: 1px solid #f1f3f6; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .input-elite { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; font-weight: 600; width: 100%; outline: none; }
-        .input-elite:focus { border-color: var(--blue-twins); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
-        .track { height: 10px; background: #eef2f7; border-radius: 1rem; position: relative; margin: 2rem 0; }
-        .track-fill { height: 100%; background: var(--blue-twins); width: 0%; border-radius: 1rem; transition: width 0.5s ease; }
-        .truck-icon { position: absolute; top: -14px; transform: translateX(-50%); transition: left 0.5s ease; }
-        .btn-primary { background: var(--blue-twins); color: white; border-radius: 1.2rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; padding: 1.1rem; width: 100%; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1); }
-        .results-box { position: absolute; z-index: 100; top: 100%; left: 0; width: 100%; background: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #eee; max-h: 200px; overflow-y: auto; }
-        .btn-action { border: 1px solid #e2e8f0; font-size: 0.65rem; font-weight: 800; padding: 0.6rem; border-radius: 0.8rem; flex: 1; text-align: center; text-transform: uppercase; }
+        .view.active { display: flex; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tarjetas Estilo "Twins" */
+        .card-twins { 
+            background: white; 
+            border-radius: 1.2rem; 
+            border: 1px solid #edf2f7; 
+            padding: 1.25rem; 
+            margin-bottom: 1rem; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+        }
+        
+        /* Botones Acción */
+        .btn-action { 
+            border: 1px solid #e2e8f0; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            padding: 0.7rem; 
+            border-radius: 0.8rem; 
+            flex: 1; 
+            text-align: center; 
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn-action:active { transform: scale(0.95); background: #f8fafc; }
+        .btn-pdf { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
+
+        /* Inputs Profesionales */
+        .input-twins { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.8rem; 
+            padding: 0.9rem; 
+            font-weight: 600; 
+            width: 100%; 
+            outline: none; 
+        }
+        .input-twins:focus { border-color: var(--blue-brand); ring: 2px; ring-color: #dbeafe; }
+
+        /* Barra de Carga */
+        .progress-track { height: 8px; background: #e2e8f0; border-radius: 10px; position: relative; margin: 1.5rem 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--blue-brand); width: 0%; transition: width 0.4s ease; }
+
+        .footer-nav { position: fixed; bottom: 1.5rem; left: 1.2rem; right: 1.2rem; z-index: 50; }
+        .btn-main { background: var(--blue-brand); color: white; border-radius: 1rem; font-weight: 700; padding: 1.1rem; width: 100%; shadow: lg; }
     </style>
 </head>
 <body>
@@ -31,7 +68,7 @@
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black italic">T</div>
             <div>
-                <h1 class="text-lg font-black tracking-tight leading-none uppercase">Twins <span class="text-blue-600">Despacho</span></h1>
+                <h1 class="text-lg font-black tracking-tighter leading-none uppercase">Twins <span class="text-blue-600">Despacho</span></h1>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Asist. Inventario Logístico</p>
             </div>
         </div>
@@ -42,39 +79,52 @@
 
     <div id="view-home" class="view active">
         <div class="mt-8 space-y-4">
-            <div onclick="navTo('crear')" class="history-card flex items-center gap-5 !py-7 border-l-4 border-l-blue-600 active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-black">NEW</div>
-                <div><h3 class="font-black text-sm uppercase">Nueva Operación</h3><p class="text-[9px] font-bold text-slate-400 uppercase">Configurar manifiesto</p></div>
+            <div onclick="navTo('crear')" class="card-twins flex items-center gap-5 !py-8 border-l-4 border-l-blue-600 active:bg-slate-50">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">ADD</div>
+                <div><h3 class="font-bold text-sm uppercase">Nuevo Despacho</h3><p class="text-[9px] text-slate-400 font-bold uppercase">Ingresar SKUs y Metas</p></div>
             </div>
-            <div onclick="navTo('historial')" class="history-card flex items-center gap-5 !py-7 border-l-4 border-l-slate-800 active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-slate-50 text-slate-800 rounded-xl flex items-center justify-center font-black">LOG</div>
-                <div><h3 class="font-black text-sm uppercase">Historial Diario</h3><p class="text-[9px] font-bold text-slate-400 uppercase">Reportes y Consultas</p></div>
+            <div onclick="navTo('historial')" class="card-twins flex items-center gap-5 !py-8 border-l-4 border-l-slate-800 active:bg-slate-50">
+                <div class="w-12 h-12 bg-slate-50 text-slate-800 rounded-xl flex items-center justify-center font-bold">HIST</div>
+                <div><h3 class="font-bold text-sm uppercase">Historial Diario</h3><p class="text-[9px] text-slate-400 font-bold uppercase">Reportes en PDF</p></div>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <h2 class="text-xl font-black mb-6 italic uppercase">Nuevo <span class="text-blue-600">Manifiesto</span></h2>
-        <div class="history-card space-y-4">
-            <div class="relative"><input type="text" id="s-sku" oninput="smartSearch()" class="input-elite uppercase" placeholder="BUSCAR SKU"><div id="results" class="results-box hidden"></div></div>
-            <div class="flex gap-3"><input type="number" id="s-meta" class="input-elite flex-1" placeholder="META CJ"><button onclick="addMani()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <h2 class="text-xl font-black mb-6 uppercase italic">Configurar <span class="text-blue-600">Carga</span></h2>
+        <div class="card-twins space-y-4">
+            <div class="relative">
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-twins uppercase" placeholder="BUSCAR SKU / CÓDIGO">
+                <div id="results" class="absolute z-50 left-0 right-0 bg-white shadow-xl rounded-xl mt-1 border hidden max-h-48 overflow-y-auto"></div>
+            </div>
+            <div class="flex gap-3">
+                <input type="number" id="s-meta" class="input-twins flex-1" placeholder="CANTIDAD META">
+                <button onclick="addMani()" class="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
         </div>
-        <div id="pre-list" class="flex-grow overflow-y-auto mt-4 space-y-2 pb-24"></div>
-        <div class="footer-action"><button id="btn-start" onclick="startOps()" class="btn-primary hidden">Iniciar Carga</button></div>
+        <div id="pre-list" class="flex-grow overflow-y-auto space-y-2 pb-24"></div>
+        <div class="footer-nav"><button id="btn-start" onclick="startOps()" class="btn-main hidden shadow-blue-200 shadow-xl">INICIAR OPERACIÓN</ASISTENTE></button></div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="history-card !py-6 mb-4">
-            <div class="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase mb-2"><span>Progreso de Carga</span><span id="global-pc" class="text-blue-600 text-sm">0%</span></div>
-            <div class="track"><div id="truck-fill" class="track-fill"></div><div id="truck-icon" class="truck-icon" style="left: 0%"><div class="w-7 h-7 bg-white border-2 border-blue-600 rounded-lg flex items-center justify-center shadow-sm"><svg width="12" height="12" fill="#2563eb" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg></div></div></div>
+        <div class="card-twins !py-6">
+            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase mb-2"><span>Avance Total</span><span id="global-pc" class="text-blue-600">0%</span></div>
+            <div class="progress-track"><div id="pc-fill" class="progress-fill"></div></div>
         </div>
-        <div class="flex flex-col gap-4 mb-6 text-center">
-            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black text-slate-800 bg-transparent outline-none border-b-2 border-blue-600 pb-1 mx-auto max-w-full uppercase"></select>
-            <p id="live-desc" class="text-[9px] font-bold text-slate-400 uppercase"></p>
-            <div class="flex items-center justify-center gap-3 mt-2"><input type="number" id="qty-in" class="input-elite w-24 h-14 text-center text-2xl font-black" placeholder="0"><button onclick="registrarBulto()" class="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-xl active:scale-90"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="text-center mb-8">
+            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black text-slate-800 bg-transparent outline-none border-b-2 border-blue-600 pb-1 mb-2 uppercase"></select>
+            <p id="live-desc" class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter px-4"></p>
+            <div class="flex items-center justify-center gap-4 mt-6">
+                <input type="number" id="qty-in" class="input-twins w-24 h-16 text-center text-3xl font-black" placeholder="0">
+                <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl active:scale-90">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
         </div>
         <div id="mini-progress-list" class="space-y-2 pb-24"></div>
-        <div class="footer-action"><button onclick="finishAndReport()" class="btn-primary !bg-emerald-600">Finalizar Operación</button></div>
+        <div class="footer-nav"><button onclick="finishAndReport()" class="btn-main !bg-emerald-600">FINALIZAR Y GENERAR REPORTE</button></div>
     </div>
 
     <div id="view-historial" class="view">
@@ -93,7 +143,7 @@
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-            } catch (e) { console.error("Error cargando DB"); }
+            } catch (e) { console.log("Cargando modo local"); }
             if (activeJob) resumeOps(); else navTo('home');
         }
 
@@ -107,8 +157,8 @@
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(input.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 6);
-            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-3 border-b text-[10px] font-bold uppercase">${sku} <br><span class="text-slate-400 font-normal">${db_items[sku]}</span></div>`).join('');
+            const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 5);
+            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-3 border-b text-[11px] font-bold uppercase active:bg-blue-50">${sku} <br><span class="text-slate-400 font-normal">${db_items[sku]}</span></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -118,18 +168,18 @@
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            currentMani.push({ sku, desc: db_items[sku] || "GENERICO", meta, real: 0 });
+            currentMani.push({ sku, desc: db_items[sku] || "PRODUCTO GENERICO", meta, real: 0 });
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
         function renderPreList() {
-            document.getElementById('pre-list').innerHTML = currentMani.map(i => `<div class="bg-white p-3 rounded-xl border-l-4 border-blue-600 mb-2 flex justify-between"><div><p class="font-bold text-[10px]">${i.sku}</p></div><p class="font-black text-blue-600">${i.meta} CJ</p></div>`).join('');
+            document.getElementById('pre-list').innerHTML = currentMani.map(i => `<div class="bg-white p-4 rounded-xl border-l-4 border-blue-500 mb-2 flex justify-between shadow-sm"><div><p class="font-bold text-[11px] uppercase">${i.sku}</p></div><p class="font-black text-blue-600">${i.meta} CJ</p></div>`).join('');
             document.getElementById('btn-start').classList.toggle('hidden', currentMani.length === 0);
         }
 
         function startOps() {
-            activeJob = { id: "OP-" + Date.now().toString().slice(-4), items: [...currentMani], start: new Date().toISOString() };
+            activeJob = { id: "TW-" + Date.now().toString().slice(-4), items: [...currentMani], start: new Date().toISOString() };
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
             currentMani = [];
             resumeOps();
@@ -147,8 +197,7 @@
             const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
             const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
             const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
-            document.getElementById('truck-fill').style.width = pc + "%";
-            document.getElementById('truck-icon').style.left = pc + "%";
+            document.getElementById('pc-fill').style.width = pc + "%";
             document.getElementById('global-pc').innerText = pc + "%";
             renderMiniBars();
         }
@@ -166,99 +215,73 @@
 
         function autoNext() {
             const sel = document.getElementById('sel-sku');
-            if(sel.selectedIndex < sel.options.length - 1) {
-                sel.selectedIndex++;
-                syncItem();
-            }
+            if(sel.selectedIndex < sel.options.length - 1) { sel.selectedIndex++; syncItem(); }
         }
 
         function renderMiniBars() {
             document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
                 const isSel = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="bg-white p-3 rounded-xl border ${isSel ? 'border-blue-500 shadow-sm' : 'border-slate-100'}"><div class="flex justify-between text-[10px] font-black mb-1"><span>${i.sku}</span><span>${i.real}/${i.meta}</span></div><div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
+                return `<div class="bg-white p-3 rounded-xl border ${isSel ? 'border-blue-500 shadow-md' : 'border-slate-100'}"><div class="flex justify-between text-[10px] font-bold mb-1"><span>${i.sku}</span><span>${i.real}/${i.meta}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
             }).join('');
         }
 
         function finishAndReport() {
-            const report = { ...activeJob, end: new Date().toISOString(), fecha: new Date().toLocaleString(), eficiencia: calculateEf() };
+            const report = { ...activeJob, fecha: new Date().toLocaleString() };
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
             history.unshift(report);
             localStorage.setItem('taj_history', JSON.stringify(history));
-            localStorage.removeItem('taj_active');
+            localStorage.removeItem('tj_active');
             activeJob = null;
             downloadPDF(report);
             navTo('home');
         }
 
-        function calculateEf() {
-            const tr = activeJob.items.reduce((a,b)=>a+b.real, 0);
-            const tm = activeJob.items.reduce((a,b)=>a+b.meta, 0);
-            return Math.round((tr/tm)*100) + "%";
-        }
-
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
             const list = document.getElementById('history-list');
-            if(history.length === 0) { list.innerHTML = `<p class="text-center text-slate-300 text-[10px] mt-20 uppercase font-black">Sin registros hoy</p>`; return; }
+            if(history.length === 0) { list.innerHTML = `<p class="text-center text-slate-300 text-[10px] mt-20 uppercase font-black tracking-widest">Sin registros</p>`; return; }
             list.innerHTML = history.map(h => `
-                <div class="history-card">
-                    <div class="flex justify-between text-[9px] font-black mb-2"><span class="text-red-500 italic">📅 ${h.fecha.split(',')[0]}</span><span class="text-blue-600">${h.id}</span></div>
+                <div class="card-twins">
+                    <div class="flex justify-between text-[9px] font-bold mb-2"><span class="text-red-500">📅 ${h.fecha.split(',')[0]}</span><span class="text-blue-600">ID: ${h.id}</span></div>
                     <div class="flex justify-between items-end mb-4">
                         <h4 class="text-3xl font-black text-slate-800">${h.items.reduce((a,b)=>a+b.real,0)} <span class="text-[10px] text-slate-400 font-bold uppercase">Cjs</span></h4>
-                        <span class="text-sm font-black text-emerald-600">${h.eficiencia}</span>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick='viewDetails(${JSON.stringify(h)})' class="btn-action bg-slate-50">Lista</button>
-                        <button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-action bg-emerald-50 text-emerald-600 border-emerald-100">Reporte PDF</button>
+                        <button onclick='alert("${h.items.map(i => i.sku+": "+i.real).join('\\n')}")' class="btn-action bg-slate-50">Lista</button>
+                        <button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-action btn-pdf">Reporte PDF</button>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function viewDetails(h) {
-            let msg = h.items.map(i => `${i.sku}: ${i.real}/${i.meta}`).join('\n');
-            alert("DETALLE DE CARGA:\n\n" + msg);
         }
 
         function downloadPDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Encabezado Profesional Estilo Excel
-            doc.setFillColor(37, 99, 235);
-            doc.rect(0, 0, 210, 40, 'F');
+            // Estilo Cuadro Excel Profesional
+            doc.setFillColor(30, 41, 59);
+            doc.rect(0, 0, 210, 30, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22); doc.setFont("helvetica", "bold");
-            doc.text("TWINS DESPACHO", 14, 25);
-            doc.setFontSize(10); doc.text("REPORTE DE MOVIMIENTO DE INVENTARIO", 14, 33);
+            doc.setFontSize(16); doc.text("TWINS DESPACHO - REPORTE LOGÍSTICO", 14, 20);
 
             doc.setTextColor(0,0,0);
-            doc.setFontSize(9);
-            doc.text(`ID OPERACIÓN: ${data.id}`, 14, 50);
-            doc.text(`FECHA: ${data.fecha}`, 14, 55);
-            doc.text(`EFICIENCIA: ${data.eficiencia}`, 14, 60);
-            doc.text(`OPERADOR: J. ANGELO NUÑEZ DURAND`, 14, 65);
+            doc.setFontSize(10);
+            doc.text(`ID: ${data.id} | Fecha: ${data.fecha}`, 14, 40);
+            doc.text(`Operador: J. Angelo Nuñez Durand`, 14, 46);
 
-            // Tabla Estilo Excel Profesional
             doc.autoTable({
-                startY: 75,
-                head: [['SKU / CÓDIGO', 'DESCRIPCIÓN', 'META (CJ)', 'REAL (CJ)', 'DIFERENCIA']],
-                body: data.items.map(i => [i.sku, i.desc.substring(0,30), i.meta, i.real, i.real - i.meta]),
+                startY: 55,
+                head: [['CÓDIGO / SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'DIF']],
+                body: data.items.map(i => [i.sku, i.desc.substring(0,35), i.meta, i.real, i.real - i.meta]),
                 theme: 'grid',
-                headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 3 },
-                columnStyles: { 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
+                headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255] },
+                styles: { fontSize: 8, cellPadding: 2.5 }
             });
 
-            const finalY = doc.lastAutoTable.finalY + 15;
+            const fY = doc.lastAutoTable.finalY + 15;
             doc.setFontSize(8); doc.setFont("helvetica", "italic");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-            
-            // Pie de página
-            doc.setFontSize(7); doc.setTextColor(150);
-            doc.text("Este documento es un registro oficial generado por la app Twins Despacho.", 14, 285);
-
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, fY);
             doc.save(`Reporte_${data.id}.pdf`);
         }
 
