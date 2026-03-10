@@ -152,6 +152,20 @@
 </div>
 
     <div id="modal-choice" class="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-8">
+           <div id="modal-recovery" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-8">
+        <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl border-2 border-blue-600">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </div>
+            <h3 class="text-xl font-black italic mb-2 uppercase text-slate-900">Trabajo Pendiente</h3>
+            <p class="text-[11px] font-bold text-slate-500 uppercase mb-6">Hemos detectado una operación sin finalizar. ¿Qué deseas hacer?</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resumeJob()" class="btn-black !bg-blue-600">Continuar Conteo</button>
+                <button onclick="discardJob()" class="text-[10px] font-black text-red-500 uppercase mt-4 tracking-widest">Descartar y Nuevo</button>
+            </div>
+        </div>
+    </div>
+
         <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl">
             <h3 class="text-xl font-black italic mb-6 uppercase">¿Iniciar Conteo?</h3>
             <div class="flex flex-col gap-3">
@@ -167,14 +181,52 @@
         let currentMani = JSON.parse(localStorage.getItem('taj_cur')) || [];
         let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
 
-        async function init() {
+                async function init() {
             try {
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-                navTo('home');
-            } catch (e) { console.warn("Offline"); }
+                
+                // Si hay un trabajo guardado, preguntamos antes de ir a home
+                if (activeJob) {
+                    openRecoveryModal();
+                } else {
+                    navTo('home');
+                }
+            } catch (e) { 
+                console.warn("Modo Offline");
+                if (activeJob) openRecoveryModal(); else navTo('home');
+            }
         }
+
+        // Funciones para el Modal de Recuperación
+        function openRecoveryModal() {
+            document.getElementById('modal-recovery').style.display = 'flex';
+        }
+
+        function resumeJob() {
+            document.getElementById('modal-recovery').style.display = 'none';
+            startOps(activeJob);
+        }
+
+        function discardJob() {
+            if(confirm("¿Estás seguro? Se borrarán los datos del contenedor actual.")){
+                localStorage.removeItem('taj_active');
+                activeJob = null;
+                document.getElementById('modal-recovery').style.display = 'none';
+                navTo('home');
+            }
+        }
+        
+        function startOps(job) {
+            navTo('ops');
+            const selector = document.getElementById('sel-sku');
+            if (selector) {
+                selector.innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+                syncItem(); 
+            }
+        }
+
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
