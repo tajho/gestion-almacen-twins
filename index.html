@@ -3,68 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins DESPACHO v56 - Elite</title>
+    <title>Twins DESPACHO - Gestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-light: #f8f9fc;
-            --card-shadow: 0 4px 25px rgba(0,0,0,0.04);
-            --border-color: #f1f3f6;
-            --text-main: #1e293b;
-            --blue-twins: #2563eb;
-        }
-
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-main); min-height: 100vh; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        .view { display: none; min-height: 100vh; padding: 1.2rem; flex-direction: column; box-sizing: border-box; }
-        .view.active { display: flex; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Estilo Tarjetas Twins Historial */
-        .history-card {
-            background: white;
-            border-radius: 1.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--card-shadow);
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .btn-outline {
-            border: 1px solid #e2e8f0;
-            background: white;
-            color: var(--text-main);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 0.65rem;
-            border-radius: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            flex: 1;
-        }
-        .btn-outline:active { background: #f8fafc; transform: scale(0.96); }
-        .btn-report-green { border: 1px solid #dcfce7; background: #f0fdf4; color: #16a34a; }
-
-        /* Inputs y Buscador */
-        .input-elite { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; font-weight: 600; width: 100%; outline: none; }
-        .input-elite:focus { border-color: var(--blue-twins); }
-
-        .results-box { position: absolute; z-index: 100; top: 100%; left: 0; width: 100%; background: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #eee; max-h: 200px; overflow-y: auto; margin-top: 5px; }
-        .result-item { padding: 0.8rem 1.2rem; border-bottom: 1px solid #f8f9fa; font-size: 0.8rem; }
-
-        /* Barra de Progreso Camión */
-        .track { height: 10px; background: #eef2f7; border-radius: 1rem; position: relative; margin: 2rem 0; }
-        .track-fill { height: 100%; background: var(--blue-twins); width: 0%; border-radius: 1rem; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .truck-icon { position: absolute; top: -14px; transform: translateX(-50%); transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        .footer-action { position: fixed; bottom: 1.5rem; left: 1.2rem; right: 1.2rem; z-index: 50; }
-        .btn-primary { background: var(--blue-twins); color: white; border-radius: 1.2rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; padding: 1.1rem; width: 100%; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15); }
+        :root { --blue-twins: #2563eb; --bg-light: #f8f9fc; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; }
+        .view { display: none; min-height: 100vh; padding: 1.2rem; flex-direction: column; }
+        .view.active { display: flex; }
+        .history-card { background: white; border-radius: 1.5rem; border: 1px solid #f1f3f6; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .btn-outline { border: 1px solid #e2e8f0; font-size: 0.7rem; font-weight: 700; padding: 0.65rem; border-radius: 0.8rem; flex: 1; text-align: center; }
+        .btn-report-green { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
     </style>
 </head>
 <body>
@@ -77,242 +28,106 @@
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Gestión de Inventario</p>
             </div>
         </div>
-        <button onclick="goHome()" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
+        <button onclick="navTo('home')" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
         </button>
     </header>
 
     <div id="view-home" class="view active">
-        <div class="mt-6 mb-8 px-2">
-            <h2 class="text-3xl font-black text-slate-800 leading-tight italic">Control de <br><span class="text-blue-600 underline">Movimientos</span></h2>
-        </div>
-        <div class="space-y-4">
-            <div onclick="navTo('crear')" class="history-card flex items-center gap-5 !py-6 border-l-4 border-l-blue-600 active:scale-95 transition-all">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div><h3 class="font-black text-slate-800 uppercase text-sm">Nueva Carga</h3><p class="text-[9px] font-bold text-slate-400 uppercase">Iniciar registro de bultos</p></div>
+        <div class="mt-8 space-y-4">
+            <div onclick="navTo('crear')" class="history-card flex items-center gap-4 !py-6 border-l-4 border-l-blue-600">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">N</div>
+                <div><h3 class="font-black text-sm uppercase">Nueva Carga</h3></div>
             </div>
-            <div onclick="navTo('historial')" class="history-card flex items-center gap-5 !py-6 border-l-4 border-l-slate-800 active:scale-95 transition-all">
-                <div class="w-14 h-14 bg-slate-50 text-slate-800 rounded-2xl flex items-center justify-center">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                </div>
-                <div><h3 class="font-black text-slate-800 uppercase text-sm">Historial</h3><p class="text-[9px] font-bold text-slate-400 uppercase">Consultar reportes previos</p></div>
+            <div onclick="navTo('historial')" class="history-card flex items-center gap-4 !py-6 border-l-4 border-l-slate-800">
+                <div class="w-12 h-12 bg-slate-50 text-slate-800 rounded-xl flex items-center justify-center font-bold">H</div>
+                <div><h3 class="font-black text-sm uppercase">Historial</h3></div>
             </div>
         </div>
-    </div>
-
-    <div id="view-crear" class="view">
-        <h2 class="text-xl font-black mb-6 uppercase tracking-tighter italic">Configurar <span class="text-blue-600">Manifiesto</span></h2>
-        <div class="history-card space-y-4">
-            <div class="relative"><input type="text" id="s-sku" oninput="smartSearch()" class="input-elite uppercase" placeholder="BUSCAR SKU"><div id="results" class="results-box hidden"></div></div>
-            <div class="flex gap-3"><input type="number" id="s-meta" class="input-elite flex-1" placeholder="META"><button onclick="addMani()" class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        </div>
-        <div id="pre-list" class="flex-grow overflow-y-auto mt-6 pb-24 space-y-3"></div>
-        <div class="footer-action"><button id="btn-start" onclick="openModal()" class="btn-primary hidden">Lanzar Operación</button></div>
-    </div>
-
-    <div id="view-ops" class="view">
-        <div class="history-card !py-8 mb-4">
-            <div class="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase mb-4"><span>Progreso General</span><span id="global-pc" class="text-blue-600 text-base">0%</span></div>
-            <div class="track"><div id="truck-fill" class="track-fill"></div><div id="truck-icon" class="truck-icon" style="left: 0%"><div class="w-8 h-8 bg-white border-2 border-blue-600 rounded-lg flex items-center justify-center shadow-md"><svg width="14" height="14" fill="#2563eb" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg></div></div></div>
-        </div>
-        <div class="flex flex-col gap-4 mb-8 px-2">
-            <div class="text-center"><select id="sel-sku" onchange="syncItem()" class="text-2xl font-black text-slate-800 bg-transparent outline-none border-b-4 border-blue-600 pb-1 mb-2"></select><p id="live-desc" class="text-[10px] font-bold text-slate-400 uppercase truncate px-4"></p></div>
-            <div class="flex items-center justify-center gap-4"><input type="number" id="qty-in" class="input-elite w-28 h-16 text-center text-3xl font-black" placeholder="0"><button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        </div>
-        <div class="flex-grow overflow-y-auto space-y-3 pb-24" id="mini-progress-list"></div>
-        <div class="footer-action"><button id="btn-save-all" onclick="finishAndReport()" class="btn-primary !bg-emerald-600">Finalizar Operación</button></div>
     </div>
 
     <div id="view-historial" class="view">
-        <div class="flex justify-between items-end mb-6 px-2"><h2 class="text-2xl font-black italic">Historial de <br><span class="text-blue-600">Actividad</span></h2><button onclick="localStorage.removeItem('taj_history'); renderHistory();" class="text-[8px] font-bold text-slate-300 uppercase pb-1">Limpiar</button></div>
-        <div id="history-list" class="flex-grow overflow-y-auto pb-24"></div>
-    </div>
-
-    <div id="modal-choice" class="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-8">
-        <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl"><h3 class="text-lg font-black mb-6">¿CONFIRMAR INICIO?</h3><button onclick="continuarConteo()" class="btn-primary">EMPEZAR</button><button onclick="closeModal()" class="text-[10px] font-black text-slate-300 uppercase mt-5 block w-full">CANCELAR</button></div>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black italic">Historial de <br><span class="text-blue-600">Actividad</span></h2>
+            <button onclick="limpiarYRecargar()" class="text-[8px] font-bold text-slate-300 uppercase">Limpiar</button>
+        </div>
+        <div id="history-list" class="flex-grow overflow-y-auto pb-10">
+            </div>
     </div>
 
     <script>
-        const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let db_items = {};
-        let currentMani = JSON.parse(localStorage.getItem('taj_cur')) || [];
-        let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
-
-        async function init() {
-            // INYECCIÓN DE DATOS FALSOS INMEDIATA SI ESTÁ VACÍO
-            if (!localStorage.getItem('taj_history')) {
-                const fakeHistory = [
-                    { id: "TW-929", fecha: "10/3/2026, 10:15:00", tipo: 'SISTEMA', duracion: "45 min", eficiencia: "100%", items: [{sku: 'AR-03808', real: 247, meta: 247}] },
-                    { id: "TW-742", fecha: "10/3/2026, 08:30:10", tipo: 'SISTEMA', duracion: "30 min", eficiencia: "98%", items: [{sku: 'AR-00586', real: 124, meta: 126}] }
+        // FUNCIÓN CLAVE: Inyecta datos si la lista está vacía
+        function asegurarDatosFalsos() {
+            let history = JSON.parse(localStorage.getItem('taj_history')) || [];
+            if (history.length === 0) {
+                history = [
+                    { 
+                        id: "CEP-929", 
+                        fecha: "10/3/2026, 12:43:00", 
+                        tipo: 'SISTEMA', 
+                        duracion: "45 min", 
+                        eficiencia: "100%", 
+                        items: [{sku: 'AR-03808', real: 247, meta: 247}] 
+                    },
+                    { 
+                        id: "BUL-742", 
+                        fecha: "10/3/2026, 13:04:00", 
+                        tipo: 'SISTEMA', 
+                        duracion: "30 min", 
+                        eficiencia: "98%", 
+                        items: [{sku: 'AR-00586', real: 124, meta: 126}] 
+                    }
                 ];
-                localStorage.setItem('taj_history', JSON.stringify(fakeHistory));
+                localStorage.setItem('taj_history', JSON.stringify(history));
             }
-
-            try {
-                const res = await fetch(CLOUD_URL);
-                const raw = await res.json();
-                raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-                if (activeJob) startOps(activeJob); else navTo('home');
-            } catch (e) { 
-                if (activeJob) startOps(activeJob); else navTo('home');
-            }
-        }
-
-        function navTo(v) { 
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active')); 
-            document.getElementById('view-' + v).classList.add('active'); 
-            if(v === 'crear') renderPreList(); 
-            if(v === 'historial') renderHistory(); 
-        }
-
-        function goHome() { navTo('home'); }
-        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
-
-        function smartSearch() {
-            const input = document.getElementById('s-sku').value.toUpperCase().trim();
-            const resDiv = document.getElementById('results');
-            if(input.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 8);
-            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="result-item font-bold text-slate-700">${sku} <br> <span class="text-[8px] text-slate-400 font-normal uppercase">${db_items[sku]}</span></div>`).join('');
-            resDiv.classList.remove('hidden');
-        }
-
-        function setProd(sku) { document.getElementById('s-sku').value = sku; document.getElementById('results').classList.add('hidden'); document.getElementById('s-meta').focus(); }
-
-        function addMani() {
-            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
-            const meta = parseInt(document.getElementById('s-meta').value);
-            if(!sku || !meta) return;
-            currentMani.push({ sku, desc: db_items[sku] || "PRODUCTO SIN DESCRIPCIÓN", meta, real: 0 });
-            localStorage.setItem('taj_cur', JSON.stringify(currentMani));
-            renderPreList();
-            document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
-        }
-
-        function renderPreList() {
-            document.getElementById('pre-list').innerHTML = currentMani.map(i => `<div class="history-card flex justify-between items-center !py-4 border-l-4 border-l-blue-200"><div><p class="text-[11px] font-black">${i.sku}</p><p class="text-[8px] text-slate-400 font-bold uppercase">${i.desc}</p></div><p class="text-[11px] font-black text-blue-600">${i.meta} CJ</p></div>`).join('');
-            document.getElementById('btn-start').classList.toggle('hidden', currentMani.length === 0);
-        }
-
-        function openModal() { document.getElementById('modal-choice').style.display = 'flex'; }
-        
-        function continuarConteo() {
-            closeModal();
-            activeJob = { id: "TW-" + Math.floor(Math.random()*999), tipo: 'SISTEMA', items: [...currentMani], start: new Date().toISOString() };
-            localStorage.setItem('taj_active', JSON.stringify(activeJob));
-            currentMani = []; localStorage.removeItem('taj_cur');
-            startOps(activeJob);
-        }
-
-        function startOps(job) { navTo('ops'); document.getElementById('sel-sku').innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join(''); syncItem(); }
-
-        function syncItem() {
-            const selector = document.getElementById('sel-sku');
-            const item = activeJob.items.find(i => i.sku === selector.value);
-            document.getElementById('live-desc').innerText = item.desc;
-            const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
-            const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
-            const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
-            document.getElementById('truck-fill').style.width = pc + "%";
-            document.getElementById('truck-icon').style.left = pc + "%";
-            document.getElementById('global-pc').innerText = pc + "%";
-            renderMiniBars();
-        }
-
-        function registrarBulto() {
-            const input = document.getElementById('qty-in');
-            const q = parseInt(input.value);
-            if(!q) return;
-            const selector = document.getElementById('sel-sku');
-            const item = activeJob.items.find(i => i.sku === selector.value);
-            item.real += q;
-            input.value = '';
-            localStorage.setItem('taj_active', JSON.stringify(activeJob));
-            fetch(CLOUD_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA_REGISTRO', id_op: activeJob.id, sku: item.sku, cant: q}) });
-            syncItem();
-            if (item.real >= item.meta) {
-                const currentIndex = activeJob.items.findIndex(i => i.sku === item.sku);
-                if (currentIndex < activeJob.items.length - 1) {
-                    setTimeout(() => { selector.value = activeJob.items[currentIndex + 1].sku; syncItem(); }, 500);
-                }
-            }
-        }
-
-        function renderMiniBars() {
-            document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
-                const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isSel = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="bg-white p-3 rounded-2xl border ${isSel ? 'border-blue-500' : 'border-slate-100'}"><div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black">${i.sku}</span><span class="text-[10px] font-black text-slate-800">${i.real}/${i.meta}</span></div><div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden"><div class="h-full ${pc >= 100 ? 'bg-emerald-500' : 'bg-blue-600'}" style="width: ${pc}%"></div></div></div>`;
-            }).join('');
-        }
-
-        function finishAndReport() {
-            const endTime = new Date();
-            const dur = Math.round((endTime - new Date(activeJob.start)) / 60000);
-            const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
-            const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
-            const report = { id: activeJob.id, fecha: endTime.toLocaleString(), tipo: 'OPERACIÓN', duracion: dur + " min", eficiencia: Math.round((totalR / totalM) * 100) + "%", items: activeJob.items };
-            const history = JSON.parse(localStorage.getItem('taj_history')) || [];
-            history.unshift(report);
-            localStorage.setItem('taj_history', JSON.stringify(history));
-            fetch(CLOUD_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'REPORTE_FINAL', ...report}) });
-            downloadPDF(report);
-            localStorage.removeItem('taj_active'); activeJob = null; navTo('home');
-        }
-
-        function downloadPDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("REPORTE TWINS DESPACHO", 14, 20);
-            doc.setFontSize(9); doc.setFont("helvetica", "normal");
-            doc.text(`ID: ${data.id} | Fecha: ${data.fecha}`, 14, 28);
-            doc.autoTable({ startY: 35, head: [['SKU', 'META', 'REAL', 'DIF']], body: data.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]), theme: 'striped', headStyles: { fillColor: [30, 41, 59] } });
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 12);
-            doc.save(`REPORTE_${data.id}.pdf`);
+            return history;
         }
 
         function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('taj_history')) || [];
+            const history = asegurarDatosFalsos();
             const list = document.getElementById('history-list');
-            if(history.length === 0) { list.innerHTML = `<div class="py-20 text-center opacity-30 text-[10px] font-bold uppercase tracking-[0.2em]">No hay registros</div>`; return; }
-            list.innerHTML = history.map(h => {
-                const totalCjs = h.items.reduce((a,b)=>a+b.real,0);
-                const isOk = parseInt(h.eficiencia) >= 100;
-                return `
-                    <div class="history-card">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-red-500 font-black text-[9px]">📅 ${h.fecha.split(',')[0]}</span>
-                                <span class="text-slate-200">|</span>
-                                <span class="text-[9px] font-black text-blue-600 uppercase">🆔 ${h.id}</span>
-                            </div>
-                            <span class="text-[8px] font-bold text-slate-300 uppercase">${h.tipo}</span>
+            
+            list.innerHTML = history.map(h => `
+                <div class="history-card">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2 text-[9px] font-black">
+                            <span class="text-red-500">📅 ${h.fecha.split(',')[0]}</span>
+                            <span class="text-blue-600">🆔 ${h.id}</span>
                         </div>
-                        <div class="flex justify-between items-end mb-4">
-                            <div><h4 class="text-3xl font-black text-slate-800 tracking-tighter">${totalCjs} <span class="text-[10px] text-slate-400 font-bold uppercase">Cjs</span></h4></div>
-                            <div class="text-right">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase">Precisión</p>
-                                <p class="text-sm font-black ${isOk ? 'text-emerald-600' : 'text-amber-500'}">${h.eficiencia}</p>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 rounded-xl p-3 flex items-center gap-3 mb-4 border border-slate-100">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                            </div>
-                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">OPERADOR: <span class="text-slate-900">J. ANGELO NUÑEZ</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="btn-outline" onclick='alert("Duración: ${h.duracion}")'> <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> INFO </button>
-                            <button class="btn-outline btn-report-green" onclick='downloadPDF(${JSON.stringify(h)})'> <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> PDF </button>
+                        <span class="text-[8px] font-bold text-slate-300 uppercase">${h.tipo}</span>
+                    </div>
+                    <div class="flex justify-between items-end mb-4">
+                        <h4 class="text-3xl font-black text-slate-800">${h.items[0].real} <span class="text-[10px] text-slate-400 font-bold uppercase">Cjs</span></h4>
+                        <div class="text-right">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase">Precisión</p>
+                            <p class="text-sm font-black text-emerald-600">${h.eficiencia}</p>
                         </div>
                     </div>
-                `;
-            }).join('');
+                    <div class="bg-slate-50 rounded-xl p-3 flex items-center gap-3 mb-4 border border-slate-100">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase">OPERADOR: <span class="text-slate-900">J. ANGELO NUÑEZ</span></p>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        init();
+        function navTo(v) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+            document.getElementById('view-' + v).classList.add('active');
+            if (v === 'historial') renderHistory();
+        }
+
+        function limpiarYRecargar() {
+            localStorage.removeItem('taj_history');
+            renderHistory();
+        }
+
+        // Ejecutar al cargar
+        window.onload = () => {
+            if (window.location.hash === '#historial') navTo('historial');
+        };
     </script>
 </body>
 </html>
