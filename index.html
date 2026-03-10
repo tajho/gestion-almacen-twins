@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho - Gestión Logística</title>
+    <title>Twins Despachos - Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
@@ -15,6 +15,7 @@
         .view.active { display: flex; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
+        /* Menú y Header Diseño Original */
         .side-menu { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: var(--slate-900); z-index: 200; transition: 0.4s; padding: 2rem; }
         .side-menu.open { left: 0; box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; display: none; backdrop-filter: blur(4px); }
@@ -23,65 +24,62 @@
         .btn-main { background: var(--slate-900); color: white; border-radius: 1rem; font-weight: 700; padding: 1.1rem; width: 100%; text-align: center; border: none; cursor: pointer; }
         .btn-blue { background: var(--blue-vivid); }
         .card-hist { background: white; border-radius: 1.5rem; padding: 1.25rem; border: 1px solid #edf2f7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        
         #results div:active { background: #f1f5f9; }
     </style>
 </head>
 <body>
 
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
-    
-    <header class="h-16 px-6 flex justify-between items-center bg-white border-b sticky top-0 z-[100]">
-        <button onclick="toggleMenu()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"/></svg></button>
-        <span class="font-black text-[10px] tracking-tighter italic uppercase text-slate-400">Inventory Asst. / A. Nuñez</span>
-    </header>
-
     <nav id="side-menu" class="side-menu text-white">
-        <h2 class="text-2xl font-black italic mb-10 uppercase">Tajho <span class="text-blue-500">Log</span></h2>
+        <h2 class="text-2xl font-black italic mb-10">TAJHO <span class="text-blue-500">LOG</span></h2>
         <div class="flex flex-col gap-6 font-bold uppercase text-xs tracking-widest">
             <button onclick="navTo('home')">Inicio</button>
-            <button onclick="navTo('crear')">Configurar Carga</button>
-            <button onclick="navTo('historial')">Historial</button>
+            <button onclick="navTo('crear')">Nuevo Contenedor</button>
+            <button onclick="navTo('historial')">Historia</button>
         </div>
     </nav>
 
+    <header class="h-16 px-6 flex justify-between items-center bg-white border-b sticky top-0 z-[100]">
+        <button onclick="toggleMenu()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"/></svg></button>
+        <span class="font-black text-[10px] tracking-tighter italic uppercase text-slate-400">ANGELO NUÑEZ</span>
+    </header>
+
     <div id="view-home" class="view active">
         <div class="mt-10 mb-10">
-            <h1 class="text-4xl font-extrabold tracking-tighter italic leading-none">Gestión de<br><span class="text-blue-600 underline">Contenedores</span></h1>
+            <h1 class="text-4xl font-extrabold tracking-tighter italic leading-none">Hola,<br>¿llegó <span class="text-blue-600 underline">contenedor</span>?</h1>
         </div>
         <div class="grid gap-3">
-            <button onclick="navTo('crear')" class="btn-main btn-blue">📦 NUEVA CARGA</button>
-            <button onclick="navTo('historial')" class="btn-main">📜 HISTORIAL</button>
+            <button onclick="navTo('crear')" class="btn-main btn-blue">📦 NUEVO REGISTRO</button>
+            <button onclick="navTo('historial')" class="btn-main">📜 VER HISTORIAL</button>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <h2 class="text-xl font-black mb-6 uppercase italic">Configuración</h2>
-        <div class="bg-white p-4 rounded-2xl border mb-6 space-y-3 shadow-sm">
+        <h2 class="text-xl font-black mb-6 uppercase italic">Configurar Carga</h2>
+        <div class="bg-white p-4 rounded-2xl border mb-6 space-y-3">
             <input type="text" id="c-id" class="input-row !bg-slate-50 border-none text-xs" placeholder="N° CONTENEDOR">
-            
             <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="input-row" placeholder="CÓDIGO O DESCRIPCIÓN...">
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-row" placeholder="CÓDIGO O DESCRIPCIÓN">
                 <p id="live-desc-preview" class="text-[9px] text-blue-600 font-bold mt-1 uppercase"></p>
                 <div id="results" class="absolute z-50 left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 hidden border max-h-48 overflow-y-auto"></div>
             </div>
-
             <div class="flex gap-2">
-                <input type="number" id="s-meta" class="input-row flex-1" placeholder="CANT. PACK">
+                <input type="number" id="s-meta" class="input-row flex-1" placeholder="CANTIDAD PACK">
                 <button onclick="addMani()" class="w-14 h-12 bg-blue-600 text-white rounded-lg font-bold">ADD</button>
             </div>
         </div>
-
-        <div class="flex-grow bg-white rounded-3xl p-5 shadow-inner overflow-y-auto mb-4">
-            <h3 class="font-black text-slate-900 uppercase italic text-xs mb-4">Ítems programados</h3>
+        <div class="flex-grow bg-white rounded-t-3xl p-5 shadow-inner overflow-y-auto mb-4">
+            <h3 class="font-black text-slate-900 uppercase italic text-[10px] mb-2">Contenedor / <span id="live-date"></span></h3>
             <div id="pre-list" class="divide-y divide-slate-50"></div>
         </div>
-        <button onclick="finalizarCargaConfig()" class="btn-main btn-blue">GUARDAR CONTENEDOR</button>
+        <button onclick="saveAndGo()" class="btn-main btn-blue">CREAR CONTENEDOR</button>
     </div>
 
     <div id="view-ops" class="view">
         <div class="bg-white p-6 rounded-3xl border mb-4 text-center shadow-sm">
             <p id="op-title" class="text-[9px] font-bold text-slate-400 uppercase mb-2"></p>
-            <select id="sel-sku" onchange="syncItem()" class="text-xl font-black text-slate-900 bg-transparent outline-none border-b-2 border-blue-600 w-full text-center mb-6 uppercase"></select>
+            <select id="sel-sku" onchange="renderMiniBars()" class="text-xl font-black text-slate-900 bg-transparent outline-none border-b-2 border-blue-600 w-full text-center mb-6 uppercase"></select>
             <div class="flex items-center justify-center gap-4">
                 <input type="number" id="qty-in" class="input-row w-24 h-16 text-center text-3xl font-black" placeholder="0">
                 <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl font-bold text-xl shadow-lg">OK</button>
@@ -89,12 +87,12 @@
         </div>
         <div id="mini-progress-list" class="space-y-2 pb-24 overflow-y-auto"></div>
         <div class="fixed bottom-6 left-6 right-6">
-            <button onclick="cerrarOperacionOficial()" class="btn-main !bg-emerald-600 shadow-xl shadow-emerald-100">FINALIZAR DESCARGA</button>
+            <button onclick="finalizarOficial()" class="btn-main !bg-emerald-600 shadow-xl">FINALIZAR DESCARGA</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-black italic mb-6 uppercase tracking-tighter">Historial de <span class="text-blue-600">Actividad</span></h2>
+        <h2 class="text-2xl font-black italic mb-6 uppercase tracking-tighter">Historial</h2>
         <div id="history-list" class="pb-20"></div>
     </div>
 
@@ -105,14 +103,19 @@
         let activeJob = null;
 
         async function init() {
+            document.getElementById('live-date').innerText = new Date().toLocaleDateString();
             try {
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().trim().toUpperCase()] = r.DESCRIPCION; });
-            } catch (e) { console.warn("Modo offline o error de DB"); }
+            } catch (e) {}
             
             activeJob = JSON.parse(localStorage.getItem('tj_active'));
-            if (activeJob) resumeOps();
+            if (activeJob) {
+                document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+                document.getElementById('view-ops').classList.add('active');
+                resumeOps();
+            }
         }
 
         function toggleMenu() {
@@ -123,7 +126,8 @@
         }
 
         function navTo(v) {
-            toggleMenu();
+            document.getElementById('side-menu').classList.remove('open');
+            document.getElementById('overlay').style.display = 'none';
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
@@ -133,17 +137,10 @@
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(val.length < 2) { resDiv.classList.add('hidden'); return; }
-            
             const matches = Object.entries(db_items).filter(([sku, desc]) => 
                 sku.includes(val) || desc.toUpperCase().includes(val)
             ).slice(0, 8);
-
-            resDiv.innerHTML = matches.map(([sku, desc]) => `
-                <div onclick="setProd('${sku}')" class="p-3 border-b border-slate-50 flex flex-col">
-                    <span class="font-black text-xs">${sku}</span>
-                    <span class="text-[9px] text-slate-400 uppercase truncate">${desc}</span>
-                </div>
-            `).join('');
+            resDiv.innerHTML = matches.map(([sku, desc]) => `<div onclick="setProd('${sku}')" class="p-3 border-b text-xs flex flex-col font-bold"><span>${sku}</span><span class="text-[8px] text-slate-400 uppercase">${desc}</span></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -166,34 +163,30 @@
         function renderPreList() {
             document.getElementById('pre-list').innerHTML = currentMani.map((i, idx) => `
                 <div class="flex justify-between items-center py-3 text-xs">
-                    <div class="flex-1"><p class="font-bold">${i.sku}</p><p class="text-[8px] text-slate-400 uppercase">${i.desc}</p></div>
+                    <div class="flex-1 font-bold"><span>${i.sku}</span><p class="text-[8px] text-slate-400 uppercase">${i.desc}</p></div>
                     <p class="font-black text-blue-600">${i.meta} CJ</p>
-                    <button onclick="currentMani.splice(${idx},1);renderPreList()" class="ml-4 text-slate-300">×</button>
+                    <button onclick="currentMani.splice(${idx},1);renderPreList()" class="ml-4 text-slate-200">×</button>
                 </div>
             `).join('');
         }
 
-        function finalizarCargaConfig() {
-            const id = document.getElementById('c-id').value || "CONT-" + Date.now().toString().slice(-4);
-            const obj = { id, items: [...currentMani], fecha: new Date().toLocaleString(), status: 'PENDIENTE' };
+        function saveAndGo() {
+            if(currentMani.length === 0) return alert("Agrega ítems");
+            const id = document.getElementById('c-id').value || "CONT-" + Math.floor(Math.random()*900);
+            activeJob = { id, items: [...currentMani], fecha: new Date().toLocaleString(), status: 'EN DESCARGA' };
+            
             let history = JSON.parse(localStorage.getItem('tj_history')) || [];
-            history.unshift(obj);
+            history.unshift(activeJob);
             localStorage.setItem('tj_history', JSON.stringify(history));
-            currentMani = []; renderPreList(); navTo('historial');
-        }
-
-        function loadForOps(id) {
-            let history = JSON.parse(localStorage.getItem('tj_history'));
-            activeJob = history.find(h => h.id === id);
-            activeJob.status = "EN DESCARGA";
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
+            
+            currentMani = [];
             resumeOps();
+            navTo('ops');
         }
 
         function resumeOps() {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.getElementById('view-ops').classList.add('active');
-            document.getElementById('op-title').innerText = "TRABAJANDO EN: " + activeJob.id;
+            document.getElementById('op-title').innerText = "DESCARGANDO: " + activeJob.id;
             document.getElementById('sel-sku').innerHTML = activeJob.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             renderMiniBars();
         }
@@ -201,7 +194,8 @@
         function registrarBulto() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
-            activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value).real += val;
+            const target = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
+            if(target) target.real += val;
             document.getElementById('qty-in').value = '';
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
             renderMiniBars();
@@ -210,74 +204,88 @@
         function renderMiniBars() {
             document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                return `<div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                return `<div class="bg-white p-3 rounded-xl border border-slate-100 mb-2">
                     <div class="flex justify-between text-[10px] font-bold mb-1"><span>${i.sku}</span><span>${i.real}/${i.meta}</span></div>
-                    <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div>
+                    <div class="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        // --- CORRECCIÓN FINALIZAR Y PDF ---
-        function cerrarOperacionOficial() {
+        // --- SOLUCIÓN ERROR FINALIZAR Y PDF ---
+        function finalizarOficial() {
             if(!activeJob) return;
             
-            // 1. Guardar en Historial como Completado
+            // 1. Actualizar en el historial global
             let history = JSON.parse(localStorage.getItem('tj_history')) || [];
-            const idx = history.findIndex(h => h.id === activeJob.id);
+            const idx = history.findIndex(h => h.id === activeJob.id && h.status !== 'COMPLETADO');
             activeJob.status = "COMPLETADO";
             if(idx !== -1) history[idx] = activeJob; else history.unshift(activeJob);
+            
             localStorage.setItem('tj_history', JSON.stringify(history));
-
-            // 2. Generar Reporte PDF
+            
+            // 2. Disparar PDF
             generarPDF(activeJob);
 
-            // 3. Limpiar y Salir
+            // 3. Limpiar sesión activa
             localStorage.removeItem('tj_active');
             activeJob = null;
             navTo('home');
         }
 
         function generarPDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("REPORTE DE CARGA", 14, 22);
-            
-            doc.setTextColor(0,0,0); doc.setFontSize(9);
-            doc.text(`CONTENEDOR: ${data.id}`, 14, 45);
-            doc.text(`FECHA: ${data.fecha}`, 14, 50);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Cabecera Excel Style
+                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 35, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text("REPORTE DE CARGA - TAJHO", 14, 22);
+                
+                doc.setTextColor(0,0,0); doc.setFontSize(9);
+                doc.text(`ID: ${data.id} | FECHA: ${data.fecha}`, 14, 45);
 
-            doc.autoTable({
-                startY: 60,
-                head: [['CÓDIGO', 'PRODUCTO', 'CAJAS PACK', 'CAJAS FISICO', 'OK']],
-                body: data.items.map(i => [
-                    i.sku, i.desc.slice(0, 30), i.meta, i.real, (i.real === i.meta ? 'OK' : 'X')
-                ]),
-                theme: 'grid',
-                headStyles: { fillColor: [37, 99, 235] }
-            });
+                doc.autoTable({
+                    startY: 55,
+                    head: [['CÓDIGO', 'PRODUCTO', 'PACK', 'FISICO', 'OK']],
+                    body: data.items.map(i => [i.sku, i.desc.slice(0,30), i.meta, i.real, (i.real === i.meta ? 'OK' : 'X')]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [37, 99, 235] }
+                });
 
-            doc.setFontSize(8); 
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`REPORTE_${data.id}.pdf`);
+                doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
+                doc.save(`REPORTE_${data.id}.pdf`);
+            } catch(e) { alert("Error al generar PDF: " + e.message); }
         }
 
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('tj_history')) || [];
             document.getElementById('history-list').innerHTML = history.map(h => `
                 <div class="card-hist">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-[8px] font-bold uppercase px-2 py-0.5 rounded bg-slate-50">${h.status}</span>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-slate-50">${h.status}</span>
                         <span class="text-[9px] text-slate-300">${h.fecha}</span>
                     </div>
                     <h3 class="font-black uppercase text-slate-800">${h.id}</h3>
                     <div class="flex gap-2 mt-4">
-                        ${h.status !== 'COMPLETADO' ? `<button onclick="loadForOps('${h.id}')" class="btn-main !py-2 !text-[10px] btn-blue flex-1">CONTINUAR</button>` : ''}
-                        <button onclick='generarPDF(${JSON.stringify(h)})' class="btn-main !py-2 !text-[10px] !bg-slate-100 !text-slate-800 flex-1">DESCARGAR PDF</button>
+                        ${h.status !== 'COMPLETADO' ? `<button onclick='continuarPendiente("${h.id}")' class="btn-main !py-2.5 !text-[10px] btn-blue flex-1">CONTINUAR</button>` : ''}
+                        <button onclick='descargarReporteHist("${h.id}")' class="btn-main !py-2.5 !text-[10px] !bg-slate-100 !text-slate-800 flex-1">PDF EXCEL</button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function continuarPendiente(id) {
+            const history = JSON.parse(localStorage.getItem('tj_history'));
+            activeJob = history.find(h => h.id === id);
+            localStorage.setItem('tj_active', JSON.stringify(activeJob));
+            resumeOps();
+            navTo('ops');
+        }
+
+        function descargarReporteHist(id) {
+            const history = JSON.parse(localStorage.getItem('tj_history'));
+            const data = history.find(h => h.id === id);
+            if(data) generarPDF(data);
         }
 
         init();
