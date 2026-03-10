@@ -3,135 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho - Gestión de Contenedores</title>
+    <title>Tajho Logística - Contenedores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #3b82f6; --bg: #f8fafc; --card: #ffffff; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #1e293b; margin: 0; overflow-x: hidden; }
+        :root { --blue-vivid: #2563eb; --slate-900: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; margin: 0; }
+        .view { display: none; min-height: 100vh; padding: 1.2rem; flex-direction: column; }
+        .view.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .view { display: none; min-height: 100vh; padding: 1.5rem; flex-direction: column; }
-        .view.active { display: flex; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
         /* Menú Hamburguesa */
-        .side-menu { position: fixed; top: 0; left: -100%; width: 80%; height: 100%; background: #0f172a; z-index: 200; transition: 0.4s; padding: 2rem; color: white; }
-        .side-menu.open { left: 0; box-shadow: 10px 0 50px rgba(0,0,0,0.3); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; display: none; backdrop-filter: blur(4px); }
+        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: var(--slate-900); z-index: 200; transition: 0.4s; padding: 2rem; }
+        .side-menu.open { left: 0; box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; display: none; backdrop-filter: blur(4px); }
 
-        /* Estilo Contenedor */
-        .card-container { background: var(--card); border-radius: 1.5rem; border: 1px solid #e2e8f0; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-        .btn-modern { background: #0f172a; color: white; border-radius: 1rem; font-weight: 700; padding: 1.2rem; transition: 0.2s; text-align: center; width: 100%; }
-        .btn-modern:active { transform: scale(0.96); opacity: 0.9; }
+        /* Inputs de Carga */
+        .input-row { background: white; border: 1.5px solid #e2e8f0; border-radius: 0.8rem; padding: 0.8rem; font-weight: 600; width: 100%; outline: none; }
+        .input-row:focus { border-color: var(--blue-vivid); }
         
-        /* Inputs */
-        .input-log { background: #f1f5f9; border: 2px solid transparent; border-radius: 1rem; padding: 1rem; font-weight: 600; width: 100%; transition: 0.2s; }
-        .input-log:focus { border-color: var(--accent); background: white; outline: none; }
-
-        .status-badge { font-size: 0.65rem; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 2rem; text-transform: uppercase; }
+        .card-item { background: white; border-bottom: 1px solid #f1f5f9; padding: 0.75rem 0; }
+        .btn-main { background: var(--slate-900); color: white; border-radius: 1rem; font-weight: 700; padding: 1.1rem; width: 100%; transition: 0.2s; }
+        .btn-blue { background: var(--blue-vivid); }
+        
+        /* Modal de confirmación */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 2rem; }
     </style>
 </head>
 <body>
 
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
-    <nav id="side-menu" class="side-menu">
-        <h2 class="text-2xl font-extrabold mb-10 italic">TAJHO <span class="text-blue-500">LOG</span></h2>
-        <div class="space-y-6">
-            <button onclick="navTo('home')" class="flex items-center gap-4 text-lg font-semibold"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> Inicio</button>
-            <button onclick="navTo('crear')" class="flex items-center gap-4 text-lg font-semibold"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Contenedor</button>
-            <button onclick="navTo('historial')" class="flex items-center gap-4 text-lg font-semibold"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Historia</button>
+    <nav id="side-menu" class="side-menu text-white">
+        <h2 class="text-2xl font-black italic mb-10">TAJHO <span class="text-blue-500">LOG</span></h2>
+        <div class="flex flex-col gap-6 font-bold uppercase text-sm tracking-widest">
+            <button onclick="navTo('home')">Inicio</button>
+            <button onclick="navTo('crear')">Contenedor</button>
+            <button onclick="navTo('historial')">Historia</button>
         </div>
-        <p class="absolute bottom-10 text-slate-500 text-[10px] uppercase font-bold tracking-widest">v2.0 Contenedor Edition</p>
     </nav>
 
-    <header class="h-20 px-6 flex justify-between items-center bg-white sticky top-0 z-[100]">
-        <button onclick="toggleMenu()" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"/></svg>
-        </button>
-        <div class="text-right">
-            <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-tighter">Inventory Manager</p>
-            <p class="text-xs font-bold text-slate-400">J. Angelo Nuñez</p>
-        </div>
+    <header class="h-16 px-6 flex justify-between items-center bg-white border-b sticky top-0 z-[100]">
+        <button onclick="toggleMenu()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"/></svg></button>
+        <span class="font-black text-sm tracking-tighter italic">ANGELO NUÑEZ</span>
     </header>
 
     <div id="view-home" class="view active">
-        <div class="mt-10 mb-12">
-            <h1 class="text-4xl font-extrabold tracking-tighter leading-tight italic">Hola,<br>¿llegó <span class="text-blue-600 underline">contenedor</span> tajho?</h1>
+        <div class="mt-10 mb-10">
+            <h1 class="text-4xl font-extrabold tracking-tighter italic leading-none">Hola,<br>¿llegó <span class="text-blue-600 underline">contenedor</span> tajho?</h1>
         </div>
-        <div class="space-y-4">
-            <div onclick="navTo('crear')" class="card-container flex items-center gap-5 !bg-blue-600 text-white border-none">
-                <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">📦</div>
-                <div><h3 class="font-bold text-lg uppercase leading-none">Contenedor</h3><p class="text-[10px] font-bold opacity-70 uppercase mt-1">Registrar nueva descarga</p></div>
-            </div>
-            <div onclick="navTo('historial')" class="card-container flex items-center gap-5">
-                <div class="w-14 h-14 bg-slate-100 text-slate-800 rounded-2xl flex items-center justify-center text-2xl">📜</div>
-                <div><h3 class="font-bold text-lg uppercase leading-none">Historia</h3><p class="text-[10px] font-bold text-slate-400 uppercase mt-1">Ver reportes generados</p></div>
-            </div>
+        <div class="grid gap-4">
+            <button onclick="navTo('crear')" class="btn-main btn-blue flex items-center justify-center gap-3">📦 NUEVO CONTENEDOR</button>
+            <button onclick="navTo('historial')" class="btn-main flex items-center justify-center gap-3">📜 VER HISTORIA</button>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <h2 class="text-2xl font-extrabold mb-6 italic uppercase">Nuevo <span class="text-blue-600">Contenedor</span></h2>
-        <div class="card-container space-y-4">
-            <input type="text" id="c-id" class="input-log uppercase" placeholder="N° CONTENEDOR / PLACA">
+        <h2 class="text-xl font-black mb-6 uppercase italic">Configurar <span class="text-blue-600">Carga</span></h2>
+        
+        <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 space-y-3">
+            <input type="text" id="c-id" class="input-row !bg-slate-50 border-none text-xs" placeholder="N° CONTENEDOR / PLACA">
+            
             <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="input-log uppercase" placeholder="BUSCAR SKU">
-                <div id="results" class="absolute z-50 left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 hidden max-h-48 overflow-y-auto border"></div>
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-row" placeholder="CÓDIGO SKU">
+                <p id="live-desc-preview" class="text-[10px] text-blue-600 font-bold mt-1 uppercase truncate"></p>
+                <div id="results" class="absolute z-50 left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 hidden border max-h-40 overflow-y-auto"></div>
             </div>
-            <div class="flex gap-3">
-                <input type="number" id="s-meta" class="input-log flex-1" placeholder="META CJ">
-                <button onclick="addMani()" class="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+
+            <div class="flex gap-2">
+                <input type="number" id="s-meta" class="input-row flex-1" placeholder="CANTIDAD META">
+                <button onclick="addMani()" class="w-14 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">ADD</button>
             </div>
         </div>
-        <div id="pre-list" class="flex-grow space-y-2 pb-24"></div>
-        <div class="fixed bottom-8 left-6 right-6"><button id="btn-start" onclick="startOps()" class="btn-modern !bg-blue-600 hidden">INICIAR DESCARGA</button></div>
+
+        <div class="flex-grow bg-white rounded-t-3xl p-5 shadow-inner overflow-y-auto">
+            <div class="flex justify-between items-end border-b-2 border-slate-100 pb-2 mb-4">
+                <h3 class="font-black text-slate-900 uppercase italic">Contenedor</h3>
+                <span id="live-date" class="text-[10px] font-bold text-slate-400"></span>
+            </div>
+            <div id="pre-list" class="space-y-1"></div>
+        </div>
+
+        <div class="mt-4"><button onclick="showConfirm()" class="btn-main btn-blue shadow-lg shadow-blue-200">CREAR CONTENEDOR</button></div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="card-container !py-8 mb-6 text-center">
-            <p id="op-title" class="text-[10px] font-bold text-slate-400 uppercase mb-2">Contenedor en proceso</p>
-            <select id="sel-sku" onchange="syncItem()" class="text-3xl font-black text-slate-900 bg-transparent outline-none border-b-4 border-blue-600 pb-1 mb-4 uppercase text-center w-full"></select>
-            <p id="live-desc" class="text-xs font-bold text-slate-400 uppercase px-6 mb-6"></p>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border mb-4 text-center">
+            <p id="op-title" class="text-[10px] font-bold text-slate-400 uppercase mb-2"></p>
+            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black text-slate-900 bg-transparent outline-none border-b-2 border-blue-600 w-full text-center mb-4 uppercase"></select>
             <div class="flex items-center justify-center gap-4">
-                <input type="number" id="qty-in" class="input-log w-28 h-16 text-center text-3xl font-black" placeholder="0">
-                <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl active:scale-90"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+                <input type="number" id="qty-in" class="input-row w-24 h-14 text-center text-2xl" placeholder="0">
+                <button onclick="registrarBulto()" class="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">OK</button>
             </div>
         </div>
-        <div id="mini-progress-list" class="space-y-3 pb-24"></div>
-        <div class="fixed bottom-8 left-6 right-6"><button onclick="finishAndReport()" class="btn-modern !bg-emerald-600">TERMINAR Y ENVIAR</button></div>
+        <div id="mini-progress-list" class="space-y-2 pb-24"></div>
+        <div class="fixed bottom-6 left-6 right-6"><button onclick="finishAndReport()" class="btn-main !bg-emerald-600">TERMINAR DESCARGA</button></div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-extrabold italic mb-6">HISTORIA DE <span class="text-blue-600">DESCARGAS</span></h2>
-        <div id="history-list" class="space-y-4 pb-10"></div>
+        <h2 class="text-2xl font-black italic mb-6">HISTORIA</h2>
+        <div id="history-list" class="space-y-4"></div>
+    </div>
+
+    <div id="modal-confirm" class="modal">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-xs text-center">
+            <h3 class="font-black text-xl mb-6 italic">¿CÓMO DESEAS <br><span class="text-blue-600">CONTINUAR?</span></h3>
+            <div class="space-y-3">
+                <button onclick="finalizeCreation('descarga')" class="btn-main btn-blue">EMPEZAR DESCARGA</button>
+                <button onclick="finalizeCreation('guardar')" class="btn-main !bg-slate-100 !text-slate-900">SOLO GUARDAR</button>
+                <button onclick="closeConfirm()" class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Cancelar</button>
+            </div>
+        </div>
     </div>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let db_items = {};
         let currentMani = [];
-        let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
+        let activeJob = JSON.parse(localStorage.getItem('tj_active')) || null;
 
         async function init() {
+            document.getElementById('live-date').innerText = new Date().toLocaleDateString();
             try {
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-            } catch (e) { console.log("Offline mode"); }
+            } catch (e) {}
             if (activeJob) resumeOps(); else navTo('home');
         }
 
         function toggleMenu() {
-            const menu = document.getElementById('side-menu');
+            document.getElementById('side-menu').classList.toggle('open');
             const overlay = document.getElementById('overlay');
-            const isOpen = menu.classList.toggle('open');
-            overlay.style.display = isOpen ? 'block' : 'none';
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
         }
 
         function navTo(v) {
-            toggleMenu();
+            document.getElementById('side-menu').classList.remove('open');
+            document.getElementById('overlay').style.display = 'none';
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
@@ -140,13 +150,22 @@
         function smartSearch() {
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
-            if(input.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 6);
-            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-4 border-b text-[12px] font-bold uppercase active:bg-blue-50">${sku} <br><span class="text-slate-400 font-normal">${db_items[sku]}</span></div>`).join('');
+            const preview = document.getElementById('live-desc-preview');
+            if(input.length < 2) { resDiv.classList.add('hidden'); preview.innerText = ""; return; }
+            
+            const matches = Object.keys(db_items).filter(sku => sku.includes(input)).slice(0, 5);
+            resDiv.innerHTML = matches.map(sku => `<div onclick="setProd('${sku}')" class="p-3 border-b text-[10px] font-bold uppercase">${sku}</div>`).join('');
             resDiv.classList.remove('hidden');
+            
+            if(db_items[input]) preview.innerText = db_items[input];
         }
 
-        function setProd(sku) { document.getElementById('s-sku').value = sku; document.getElementById('results').classList.add('hidden'); document.getElementById('s-meta').focus(); }
+        function setProd(sku) { 
+            document.getElementById('s-sku').value = sku; 
+            document.getElementById('live-desc-preview').innerText = db_items[sku];
+            document.getElementById('results').classList.add('hidden'); 
+            document.getElementById('s-meta').focus(); 
+        }
 
         function addMani() {
             const sku = document.getElementById('s-sku').value.toUpperCase().trim();
@@ -155,32 +174,49 @@
             currentMani.push({ sku, desc: db_items[sku] || "GENERICO", meta, real: 0 });
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
+            document.getElementById('live-desc-preview').innerText = "";
         }
 
         function renderPreList() {
-            document.getElementById('pre-list').innerHTML = currentMani.map(i => `<div class="card-container flex justify-between items-center !py-4 shadow-sm"><div><p class="font-bold text-sm">${i.sku}</p></div><p class="font-extrabold text-blue-600">${i.meta} CJ</p></div>`).join('');
-            document.getElementById('btn-start').classList.toggle('hidden', currentMani.length === 0);
+            document.getElementById('pre-list').innerHTML = currentMani.map((i, idx) => `
+                <div class="card-item flex justify-between items-center">
+                    <div class="flex-1"><p class="font-bold text-[11px] uppercase">${i.sku}</p><p class="text-[8px] text-slate-400 uppercase truncate max-w-[150px]">${i.desc}</p></div>
+                    <p class="font-black text-blue-600 text-sm">${i.meta} CJ</p>
+                    <button onclick="currentMani.splice(${idx},1);renderPreList()" class="ml-4 text-slate-300 text-xs">×</button>
+                </div>
+            `).join('');
         }
 
-        function startOps() {
-            const cId = document.getElementById('c-id').value.toUpperCase().trim() || "CONT-00";
-            activeJob = { id: cId, items: [...currentMani], start: new Date().toISOString() };
-            localStorage.setItem('tj_active', JSON.stringify(activeJob));
-            currentMani = [];
-            resumeOps();
+        function showConfirm() { 
+            if(currentMani.length === 0) return alert("Agrega al menos un item");
+            document.getElementById('modal-confirm').style.display = 'flex'; 
+        }
+        function closeConfirm() { document.getElementById('modal-confirm').style.display = 'none'; }
+
+        function finalizeCreation(type) {
+            const cId = document.getElementById('c-id').value.toUpperCase().trim() || "CONT-" + Date.now().toString().slice(-4);
+            const newObj = { id: cId, items: [...currentMani], fecha: new Date().toLocaleString(), status: (type === 'guardar' ? 'PENDIENTE' : 'EN PROCESO') };
+            
+            if(type === 'guardar') {
+                const history = JSON.parse(localStorage.getItem('taj_history')) || [];
+                history.unshift(newObj);
+                localStorage.setItem('taj_history', JSON.stringify(history));
+                currentMani = []; renderPreList(); closeConfirm(); navTo('historial');
+            } else {
+                activeJob = newObj;
+                localStorage.setItem('tj_active', JSON.stringify(activeJob));
+                closeConfirm(); resumeOps();
+            }
         }
 
         function resumeOps() {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.getElementById('view-ops').classList.add('active');
-            document.getElementById('op-title').innerText = "CONTENEDOR: " + activeJob.id;
+            navTo('ops');
+            document.getElementById('op-title').innerText = "DESCARGANDO: " + activeJob.id;
             document.getElementById('sel-sku').innerHTML = activeJob.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncItem();
         }
 
         function syncItem() {
-            const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
-            document.getElementById('live-desc').innerText = item.desc;
             renderMiniBars();
         }
 
@@ -198,63 +234,57 @@
             document.getElementById('mini-progress-list').innerHTML = activeJob.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
                 const isSel = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="card-container !py-4 ${isSel ? 'border-blue-500 ring-2 ring-blue-50' : ''}"><div class="flex justify-between text-[11px] font-extrabold mb-1"><span>${i.sku}</span><span class="${pc>=100?'text-emerald-500':'text-blue-600'}">${i.real} / ${i.meta} CJ</span></div><div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
+                return `<div class="bg-white p-3 rounded-xl border ${isSel ? 'border-blue-500 shadow-md' : 'border-slate-100'}"><div class="flex justify-between text-[10px] font-bold mb-1"><span>${i.sku}</span><span class="text-blue-600">${i.real}/${i.meta}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div></div>`;
             }).join('');
         }
 
         function finishAndReport() {
-            const report = { ...activeJob, fecha: new Date().toLocaleString() };
+            activeJob.status = "COMPLETADO";
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
-            history.unshift(report);
+            history.unshift(activeJob);
             localStorage.setItem('taj_history', JSON.stringify(history));
-            localStorage.removeItem('taj_active');
+            downloadPDF(activeJob);
+            localStorage.removeItem('tj_active');
             activeJob = null;
-            downloadPDF(report);
             navTo('home');
         }
 
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('taj_history')) || [];
             const list = document.getElementById('history-list');
-            if(history.length === 0) { list.innerHTML = `<p class="text-center text-slate-400 font-bold mt-20">No hay contenedores registrados.</p>`; return; }
             list.innerHTML = history.map(h => `
-                <div class="card-container">
-                    <div class="flex justify-between mb-2"><span class="status-badge bg-blue-50 text-blue-600">Contenedor</span><span class="text-[10px] font-bold text-slate-400">${h.fecha}</span></div>
-                    <h3 class="text-xl font-black text-slate-900 mb-4">${h.id}</h3>
-                    <div class="flex gap-2">
-                        <button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-modern !py-3 !text-xs !bg-slate-100 !text-slate-800 border border-slate-200">REPORTE PDF</button>
+                <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                    <div class="flex justify-between mb-2"><span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-slate-100">${h.status}</span><span class="text-[9px] text-slate-400 font-bold">${h.fecha}</span></div>
+                    <h3 class="text-lg font-black text-slate-800 uppercase italic">${h.id}</h3>
+                    <div class="flex gap-2 mt-4">
+                        ${h.status === 'PENDIENTE' ? `<button onclick='loadDraft(${JSON.stringify(h)})' class="btn-main !py-2 !text-[10px] btn-blue">EMPEZAR</button>` : `<button onclick='downloadPDF(${JSON.stringify(h)})' class="btn-main !py-2 !text-[10px]">PDF</button>`}
                     </div>
                 </div>
             `).join('');
         }
 
+        function loadDraft(h) {
+            activeJob = h;
+            activeJob.status = "EN PROCESO";
+            localStorage.setItem('tj_active', JSON.stringify(activeJob));
+            resumeOps();
+        }
+
         function downloadPDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42);
-            doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("REPORTE DE CONTENEDOR - TAJHO", 14, 22);
-            
-            doc.setTextColor(0,0,0);
-            doc.setFontSize(10);
-            doc.text(`CONTENEDOR/PLACA: ${data.id}`, 14, 45);
-            doc.text(`FECHA DE DESCARGA: ${data.fecha}`, 14, 51);
-            doc.text(`OPERADOR: J. Angelo Nuñez Durand`, 14, 57);
-
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text(`REPORTE: ${data.id}`, 14, 20);
+            doc.setTextColor(0,0,0); doc.setFontSize(10);
+            doc.text(`Fecha: ${data.fecha}`, 14, 40);
             doc.autoTable({
-                startY: 65,
-                head: [['CÓDIGO SKU', 'DESCRIPCIÓN', 'META', 'INGRESADO', 'DIFERENCIA']],
-                body: data.items.map(i => [i.sku, i.desc.substring(0,30), i.meta, i.real, i.real - i.meta]),
-                theme: 'grid',
-                headStyles: { fillColor: [59, 130, 246] },
-                styles: { fontSize: 8 }
+                startY: 50,
+                head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: data.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]),
+                theme: 'grid', headStyles: { fillColor: [37, 99, 235] }
             });
-
-            const fY = doc.lastAutoTable.finalY + 20;
-            doc.setFontSize(8); doc.setFont("helvetica", "italic");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, fY);
-            doc.save(`CONTENEDOR_${data.id}.pdf`);
+            doc.setFontSize(8); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
+            doc.save(`CONT_${data.id}.pdf`);
         }
 
         init();
