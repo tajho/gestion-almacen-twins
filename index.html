@@ -9,28 +9,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fcfcfd; color: #1a1c21; height: 100vh; overflow: auto; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfd; color: #1a1c21; min-height: 100vh; overflow-y: auto; overscroll-behavior-y: auto; margin: 0; padding: 0; }
         .border-l-4 { border-left-width: 6px !important; }
-        /* Layout Anti-Corte para Móvil */
         .view { display: none; height: 100vh; padding: 1.2rem; flex-direction: column; box-sizing: border-box; }
         .view.active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Tarjeta de Contenedor Elevada */
         .glass-panel { background: white; border-radius: 2rem; border: 1px solid #f0f1f3; box-shadow: 0 10px 40px rgba(0,0,0,0.04); padding: 1.5rem; }
         
-        /* Buscador Inteligente */
         .search-container { position: relative; width: 100%; }
         .results-box { position: absolute; z-index: 100; top: 100%; left: 0; width: 100%; background: white; border-radius: 1.2rem; box-shadow: 0 15px 30px rgba(0,0,0,0.1); border: 1px solid #eee; max-h: 200px; overflow-y: auto; margin-top: 5px; }
         .result-item { padding: 0.8rem 1.2rem; border-bottom: 1px solid #f8f9fa; cursor: pointer; }
         .result-item:last-child { border-bottom: none; }
 
-        /* Botón Inferior Fijo con Espaciado de Seguridad */
         .footer-action { position: fixed; bottom: 1.5rem; left: 1.2rem; right: 1.2rem; z-index: 50; }
         .btn-black { background: #1a1c21; color: white; border-radius: 1.2rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; padding: 1.2rem; width: 100%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn-black:active { transform: scale(0.96); }
 
-        /* Animación del Camión */
         .track { height: 45px; background: #f1f3f7; border-radius: 1rem; position: relative; overflow: hidden; margin: 1rem 0; }
         .track-fill { height: 100%; background: #2563eb; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .truck-icon { position: absolute; top: 50%; transform: translateY(-50%); transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; color: #1a1c21; }
@@ -49,7 +44,7 @@
         <button onclick="goHome()" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
     </header>
 
-            <div id="view-home" class="view active">
+    <div id="view-home" class="view active">
         <div class="mt-4 mb-8">
             <p class="text-blue-600 font-bold text-xs uppercase tracking-[0.2em] mb-1">Buen dia</p>
             <h2 class="text-3xl font-black text-slate-900 leading-tight italic">
@@ -59,7 +54,6 @@
         </div>
 
         <div class="space-y-4 overflow-y-auto pb-10">
-            
             <div onclick="navTo('crear')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-blue-600">
                 <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
@@ -89,15 +83,11 @@
                     <p class="text-[9px] font-bold text-slate-400 uppercase italic">Revisión exacta</p>
                 </div>
             </div>
-
         </div>
     </div>
 
-
-
     <div id="view-crear" class="view">
         <h2 class="text-2xl font-black italic mb-6">Configurar <span class="text-blue-600">Carga</span></h2>
-        
         <div class="glass-panel space-y-4">
             <div class="search-container">
                 <input type="text" id="s-sku" oninput="smartSearch()" class="input-elite" placeholder="Buscar SKU, Nombre o Iniciales">
@@ -108,51 +98,54 @@
                 <button onclick="addMani()" class="w-16 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 active:scale-90"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
         </div>
-
         <div class="flex-grow overflow-y-auto mt-6 pb-24">
             <div id="pre-list" class="space-y-3"></div>
         </div>
-
         <div class="footer-action">
-    <button id="btn-start" onclick="openModal()" class="btn-black hidden">Lanzar Operación</button>
-</div>
+            <button id="btn-start" onclick="openModal()" class="btn-black hidden !bg-blue-600">Lanzar Operación</button>
+        </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="glass-panel mb-6">
         <div class="glass-panel mb-4">
-    <div class="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase italic tracking-widest mb-2">
-        <span>Carga Total del Contenedor</span>
-        <span id="global-pc" class="text-blue-600 text-sm">0%</span>
-    </div>
-    <div class="track bg-slate-100 h-6">
-        <div id="truck-fill" class="track-fill bg-gradient-to-r from-blue-500 to-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.4)]"></div>
-        <div id="truck-icon" class="truck-icon" style="left: 0%">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a1c21"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
+            <div class="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase italic tracking-widest mb-2">
+                <span>Carga Total del Contenedor</span>
+                <span id="global-pc" class="text-blue-600 text-sm">0%</span>
+            </div>
+            <div class="track bg-slate-100 h-6">
+                <div id="truck-fill" class="track-fill bg-gradient-to-r from-blue-500 to-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.4)]"></div>
+                <div id="truck-icon" class="truck-icon" style="left: 0%">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a1c21"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-3 mb-6">
+            <div class="text-center">
+                <select id="sel-sku" onchange="syncItem()" class="text-xl font-black text-slate-900 bg-transparent outline-none italic uppercase border-b-2 border-blue-600 mb-1"></select>
+                <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase px-4 truncate"></p>
+            </div>
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="qty-in" class="input-elite w-28 h-16 text-center text-3xl !rounded-2xl border-2" placeholder="0">
+                <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+        </div>
+        <div class="flex-grow overflow-y-auto space-y-3 pb-24" id="mini-progress-list"></div>
+        <div class="footer-action">
+            <button onclick="finishAndReport()" class="btn-black">Finalizar y Guardar Reporte</button>
         </div>
     </div>
-</div>
-
-<div class="flex flex-col gap-3 mb-6">
-    <div class="text-center">
-        <select id="sel-sku" onchange="syncItem()" class="text-xl font-black text-slate-900 bg-transparent outline-none italic uppercase border-b-2 border-blue-600 mb-1"></select>
-        <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase px-4 truncate"></p>
-    </div>
-    <div class="flex items-center justify-center gap-4">
-        <input type="number" id="qty-in" class="input-elite w-28 h-16 text-center text-3xl !rounded-2xl border-2" placeholder="0">
-        <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
-    </div>
-</div>
-
-<div class="flex-grow overflow-y-auto space-y-3 pb-24" id="mini-progress-list">
-    </div>
-
-<div class="footer-action">
-    <button onclick="finishAndReport()" class="btn-black">Finalizar y Guardar Reporte</button>
-</div>
 
     <div id="modal-choice" class="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-8">
-           <div id="modal-recovery" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-8">
+        <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl">
+            <h3 class="text-xl font-black italic mb-6 uppercase">¿Iniciar Conteo?</h3>
+            <div class="flex flex-col gap-3">
+                <button onclick="continuarConteo()" class="btn-black">Sí, iniciar ahora</button>
+                <button onclick="closeModal()" class="text-[10px] font-black text-slate-300 uppercase mt-4">Regresar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-recovery" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-8">
         <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl border-2 border-blue-600">
             <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -166,49 +159,26 @@
         </div>
     </div>
 
-        <div class="bg-white w-full rounded-[2.5rem] p-8 text-center shadow-2xl">
-            <h3 class="text-xl font-black italic mb-6 uppercase">¿Iniciar Conteo?</h3>
-            <div class="flex flex-col gap-3">
-                <button onclick="continuarConteo()" class="btn-black">Sí, iniciar ahora</button>
-                <button onclick="closeModal()" class="text-[10px] font-black text-slate-300 uppercase mt-4">Regresar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let db_items = {};
         let currentMani = JSON.parse(localStorage.getItem('taj_cur')) || [];
         let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
 
-                async function init() {
+        async function init() {
             try {
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-                
-                // Si hay un trabajo guardado, preguntamos antes de ir a home
-                if (activeJob) {
-                    openRecoveryModal();
-                } else {
-                    navTo('home');
-                }
+                if (activeJob) openRecoveryModal(); else navTo('home');
             } catch (e) { 
                 console.warn("Modo Offline");
                 if (activeJob) openRecoveryModal(); else navTo('home');
             }
         }
 
-        // Funciones para el Modal de Recuperación
-        function openRecoveryModal() {
-            document.getElementById('modal-recovery').style.display = 'flex';
-        }
-
-        function resumeJob() {
-            document.getElementById('modal-recovery').style.display = 'none';
-            startOps(activeJob);
-        }
-
+        function openRecoveryModal() { document.getElementById('modal-recovery').style.display = 'flex'; }
+        function resumeJob() { document.getElementById('modal-recovery').style.display = 'none'; startOps(activeJob); }
         function discardJob() {
             if(confirm("¿Estás seguro? Se borrarán los datos del contenedor actual.")){
                 localStorage.removeItem('taj_active');
@@ -217,7 +187,7 @@
                 navTo('home');
             }
         }
-        
+
         function startOps(job) {
             navTo('ops');
             const selector = document.getElementById('sel-sku');
@@ -227,27 +197,22 @@
             }
         }
 
-
         function navTo(v) {
+            if (activeJob && activeJob.status === 'PROCESO' && v === 'home') {
+                if (!confirm("Angelo, la operación está activa. ¿Seguro que quieres volver al inicio?")) return;
+            }
             document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'crear') renderPreList();
         }
 
-                function goHome() { 
-            if (activeJob && activeJob.status === 'PROCESO') {
-                if (confirm("Tienes una operación en curso. ¿Deseas salir al menú principal?")) {
-                    navTo('home');
-                }
-            } else {
-                navTo('home');
-            }
-        }
+        function goHome() { navTo('home'); }
 
-        // Además, bloqueamos el botón de retroceso del navegador si hay carga
-        window.onbeforeunload = function() {
+        window.onbeforeunload = function(e) {
             if (activeJob && activeJob.status === 'PROCESO') {
-                return "¿Deseas salir? Tienes una carga en curso.";
+                const msg = "Angelo, tienes una carga en curso. ¿Seguro que quieres refrescar?";
+                e.returnValue = msg;
+                return msg;
             }
         };
 
@@ -255,12 +220,10 @@
             const input = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(input.length < 2) { resDiv.classList.add('hidden'); return; }
-
             const matches = Object.keys(db_items).filter(sku => {
                 const desc = db_items[sku].toUpperCase();
                 return sku.includes(input) || desc.includes(input);
             }).slice(0, 8);
-
             resDiv.innerHTML = matches.map(sku => `
                 <div onclick="setProd('${sku}')" class="result-item">
                     <p class="text-[10px] font-black text-blue-600 mb-0.5">${sku}</p>
@@ -287,10 +250,10 @@
             navigator.vibrate(20);
         }
 
-                function renderPreList() {
+        function renderPreList() {
             const container = document.getElementById('pre-list');
-            container.innerHTML = currentMani.map((i, index) => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm animate-fadeIn">
+            container.innerHTML = currentMani.map(i => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
                     <div>
                         <p class="text-[11px] font-black text-slate-900 italic uppercase">${i.sku}</p>
                         <p class="text-[8px] text-slate-400 font-bold uppercase">${i.desc}</p>
@@ -298,103 +261,71 @@
                     <p class="text-[11px] font-black text-blue-600">${i.meta} CJ</p>
                 </div>
             `).join('');
-            
-            // Esto activa el botón si hay al menos un ítem
             const btnStart = document.getElementById('btn-start');
-            if(currentMani.length > 0) {
-                btnStart.classList.remove('hidden');
-            } else {
-                btnStart.classList.add('hidden');
-            }
+            if(currentMani.length > 0) btnStart.classList.remove('hidden'); else btnStart.classList.add('hidden');
         }
 
-                function openModal() {
-            if (currentMani.length > 0) {
-                document.getElementById('modal-choice').style.display = 'flex';
-            } else {
-                alert("Angelo, primero agrega al menos un producto.");
-            }
+        function openModal() {
+            if (currentMani.length > 0) document.getElementById('modal-choice').style.display = 'flex';
+            else alert("Angelo, primero agrega al menos un producto.");
         }
 
         function continuarConteo() {
             closeModal();
-            // Creamos el trabajo activo con los items de la lista previa
             activeJob = { 
                 id: Date.now(), 
                 name: "L-" + new Date().getHours() + new Date().getMinutes(), 
                 items: [...currentMani], 
                 status: 'PROCESO' 
             };
-            
-            // Guardamos en memoria para que no se pierda al refrescar
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
-            
-            // Limpiamos la lista de configuración
             currentMani = []; 
             localStorage.removeItem('taj_cur');
-            
-            // ¡ESTO ES LO QUE LANZA LA VISTA!
             startOps(activeJob);
         }
 
         function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
 
-        
+        function syncItem() {
+            const selectedSku = document.getElementById('sel-sku').value;
+            const item = activeJob.items.find(i => i.sku === selectedSku);
+            if (!item) return;
+            document.getElementById('live-desc').innerText = item.desc;
+            const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
+            const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
+            const pcGlobal = Math.min(Math.round((totalR / totalM) * 100), 100);
+            document.getElementById('truck-fill').style.width = pcGlobal + "%";
+            document.getElementById('truck-icon').style.left = `calc(${pcGlobal}% - 15px)`;
+            document.getElementById('global-pc').innerText = pcGlobal + "%";
+            renderMiniBars();
+            localStorage.setItem('taj_active', JSON.stringify(activeJob));
+        }
 
-function syncItem() {
-    const selectedSku = document.getElementById('sel-sku').value;
-    const item = activeJob.items.find(i => i.sku === selectedSku);
-    
-    if (!item) return; // Seguridad por si no hay item seleccionado
-
-    document.getElementById('live-desc').innerText = item.desc;
-    
-    // Cálculos Globales
-    const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
-    const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
-    const pcGlobal = Math.min(Math.round((totalR / totalM) * 100), 100);
-    
-    // Actualizar Barra Global y Camión
-    document.getElementById('truck-fill').style.width = pcGlobal + "%";
-    document.getElementById('truck-icon').style.left = `calc(${pcGlobal}% - 15px)`;
-    document.getElementById('global-pc').innerText = pcGlobal + "%";
-
-    // Llamamos a la nueva función para dibujar las barritas de abajo
-    renderMiniBars();
-    
-    localStorage.setItem('taj_active', JSON.stringify(activeJob));
-}
-
-// ESTA ES LA FUNCIÓN NUEVA QUE DEBES PEGAR DEBAJO DE syncItem
-function renderMiniBars() {
-    const container = document.getElementById('mini-progress-list');
-    if (!container) return;
-
-    container.innerHTML = activeJob.items.map(i => {
-        const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-        const isSelected = i.sku === document.getElementById('sel-sku').value;
-        
-        return `
-            <div class="bg-white p-3 rounded-2xl border ${isSelected ? 'border-blue-500 shadow-md' : 'border-slate-100'} transition-all">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <span class="text-[10px] font-black ${isSelected ? 'text-blue-600' : 'text-slate-900'} uppercase">${i.sku}</span>
-                        <p class="text-[8px] text-slate-400 font-bold uppercase truncate w-40">${i.desc}</p>
+        function renderMiniBars() {
+            const container = document.getElementById('mini-progress-list');
+            if (!container) return;
+            container.innerHTML = activeJob.items.map(i => {
+                const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
+                const isSelected = i.sku === document.getElementById('sel-sku').value;
+                return `
+                    <div class="bg-white p-3 rounded-2xl border ${isSelected ? 'border-blue-500 shadow-md' : 'border-slate-100'} transition-all">
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-[10px] font-black ${isSelected ? 'text-blue-600' : 'text-slate-900'} uppercase">${i.sku}</span>
+                                <p class="text-[8px] text-slate-400 font-bold uppercase truncate w-40">${i.desc}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] font-black text-slate-900">${i.real} / ${i.meta}</span>
+                                <p class="text-[8px] font-black ${pc >= 100 ? 'text-green-500' : 'text-blue-500'}">${pc}%</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-500 ${pc >= 100 ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${pc}%"></div>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <span class="text-[10px] font-black text-slate-900">${i.real} / ${i.meta}</span>
-                        <p class="text-[8px] font-black ${pc >= 100 ? 'text-green-500' : 'text-blue-500'}">${pc}%</p>
-                    </div>
-                </div>
-                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                    <div class="h-full transition-all duration-500 ${pc >= 100 ? 'bg-green-500' : 'bg-blue-600'}" style="width: ${pc}%"></div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// ... (El resto de tus funciones como registrarBulto y finishAndReport se quedan igual)
+                `;
+            }).join('');
+        }
 
         function registrarBulto() {
             const q = parseInt(document.getElementById('qty-in').value);
