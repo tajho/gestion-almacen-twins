@@ -3,143 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Despacho | Industrial Signature</title>
+    <title>Twins Despacho | Executive Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main-bg: #0a0b10; --surface: #15171f; --accent: #ff5f1f; --text-muted: #64748b; }
-        body { font-family: 'Archivo', sans-serif; background-color: var(--main-bg); color: white; margin: 0; -webkit-font-smoothing: antialiased; }
+        :root { --brand: #0066ff; --dark: #0f172a; --surface: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark); color: #f8fafc; margin: 0; overflow: hidden; }
         
-        /* Layout Structure */
+        /* Estética Ejecutiva Moderna */
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; }
         .view { display: none; min-height: 100vh; padding: 1.5rem; flex-direction: column; }
-        .view.active { display: flex; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .view.active { display: flex; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Componentes de Diseño Único */
-        .card-industrial { background: var(--surface); border-radius: 4px; border-left: 4px solid var(--accent); padding: 1.5rem; }
-        .btn-primary { background-color: var(--accent); color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; padding: 1.25rem; transition: 0.2s; }
-        .btn-primary:active { background-color: #e04e10; transform: scale(0.98); }
+        /* Inputs y Botones de Alto Nivel */
+        .exec-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; color: #fff; width: 100%; outline: none; transition: 0.3s; }
+        .exec-input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.15); }
         
-        .input-industrial { background: #1f222d; border: 1px solid #2d313f; border-radius: 4px; padding: 1rem; color: white; width: 100%; outline: none; font-size: 1rem; }
-        .input-industrial:focus { border-color: var(--accent); }
+        .btn-exec { background: var(--brand); color: white; font-weight: 700; border-radius: 1rem; padding: 1.25rem; transition: 0.3s; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 102, 255, 0.3); }
+        .btn-exec:active { transform: scale(0.96); opacity: 0.9; }
 
-        .status-badge { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        /* Progress Bar Soft */
+        .progress-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #3b82f6); transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         
-        /* Custom Scroll */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); }
+        .status-pill { font-size: 0.65rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
 <body>
 
-    <nav class="h-20 px-6 flex justify-between items-center border-b border-white/5 sticky top-0 z-50 bg-[#0a0b10]/95 backdrop-blur-md">
+    <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-slate-950/50 backdrop-blur-xl border-b border-white/5">
         <div>
-            <h1 class="text-xl font-black italic tracking-tighter">TWINS<span class="text-[#ff5f1f]">.</span></h1>
-            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em]">Logistics Management</p>
+            <h1 class="text-xl font-extrabold tracking-tight">TWINS<span class="text-blue-500">DESPACHO</span></h1>
+            <p class="text-[9px] font-medium text-slate-500 uppercase tracking-widest">Inventory Management System</p>
         </div>
-        <button onclick="navTo('historial')" class="p-2">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-        </button>
-    </nav>
+        <div onclick="navTo('historial')" class="w-10 h-10 glass-panel flex items-center justify-center cursor-pointer">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        </div>
+    </header>
 
     <div id="view-home" class="view active">
-        <div class="mt-8 mb-12">
-            <h2 class="text-4xl font-black leading-none mb-2">OPERACIONES<br>DISPONIBLES</h2>
-            <div class="h-1 w-12 bg-[#ff5f1f]"></div>
+        <div class="mt-4 mb-8">
+            <h2 class="text-3xl font-extrabold tracking-tight text-white leading-tight">Panel de<br>Control.</h2>
+            <p class="text-slate-400 text-sm mt-2 font-medium">Gestión de flujo de salida de almacén.</p>
         </div>
 
         <div class="grid gap-4">
-            <div onclick="navTo('crear')" class="card-industrial flex justify-between items-center active:bg-white/5 transition-colors">
+            <div onclick="navTo('crear')" class="glass-panel p-6 flex items-center gap-5 active:bg-slate-800/50 transition-all">
+                <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 font-bold text-2xl">+</div>
                 <div>
-                    <p class="text-[10px] font-black text-[#ff5f1f] mb-1">ACCION RAPIDA</p>
-                    <p class="text-xl font-bold">NUEVA CARGA</p>
+                    <h3 class="font-bold text-lg">Nueva Operación</h3>
+                    <p class="text-xs text-slate-500">Configurar despacho y metas.</p>
                 </div>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M12 5v14M5 12h14"/></svg>
             </div>
 
-            <div onclick="navTo('historial')" class="bg-white/5 p-6 rounded border border-white/5 flex justify-between items-center active:bg-white/10 transition-colors">
-                <p class="text-lg font-bold">HISTORIAL DE REPORTES</p>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div onclick="navTo('historial')" class="glass-panel p-6 flex items-center gap-5 active:bg-slate-800/50 transition-all opacity-80">
+                <div class="w-14 h-14 bg-slate-700/20 rounded-2xl flex items-center justify-center text-slate-400">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-slate-300">Historial de Logs</h3>
+                    <p class="text-xs text-slate-500">Reportes de auditoría generados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto pb-10">
+            <div class="glass-panel p-4 border-blue-500/20 bg-blue-500/5">
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Usuario Autorizado</p>
+                <p class="text-sm font-bold">J. Angelo Nuñez Durand</p>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <div class="flex items-center gap-4 mb-10">
-            <button onclick="navTo('home')" class="text-slate-500 text-sm font-bold">← VOLVER</button>
-            <h2 class="text-2xl font-black italic">CONFIGURAR DESPACHO</h2>
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="navTo('home')" class="text-slate-400 font-bold text-sm">ATRAS</button>
+            <h2 class="text-2xl font-extrabold uppercase">Configuración</h2>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identificador de Contenedor</label>
-                <input type="text" id="c-id" class="input-industrial uppercase font-bold text-[#ff5f1f]" placeholder="EJ: CONT-2026-A">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Identificador de Despacho</label>
+                <input type="text" id="c-id" class="exec-input uppercase font-bold text-blue-400" placeholder="ID CONTENEDOR O GUÍA">
             </div>
 
             <div class="space-y-2 relative">
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Búsqueda de Material</label>
-                <input type="text" id="s-sku" oninput="handleSearch()" class="input-industrial" placeholder="SKU o Descripción...">
-                <div id="results" class="absolute z-50 left-0 right-0 bg-[#1f222d] border border-[#2d313f] rounded mt-1 hidden max-h-60 overflow-y-auto"></div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Búsqueda Inteligente (SKU)</label>
+                <input type="text" id="s-sku" oninput="execSearch()" class="exec-input" placeholder="Escribe SKU o nombre...">
+                <div id="results" class="absolute z-50 left-0 right-0 glass-panel mt-1 hidden max-h-60 overflow-y-auto shadow-2xl"></div>
             </div>
 
-            <div class="flex gap-4">
+            <div class="flex gap-3">
                 <div class="flex-1 space-y-2">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Meta Pack (Cant)</label>
-                    <input type="number" id="s-meta" class="input-industrial text-center text-xl font-bold" placeholder="0">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Meta de Unidades</label>
+                    <input type="number" id="s-meta" class="exec-input text-center text-xl font-bold" placeholder="0">
                 </div>
-                <button onclick="addToList()" class="w-20 bg-white text-black font-black text-2xl mt-6 rounded">＋</button>
+                <button onclick="addItem()" class="w-20 bg-white text-black font-extrabold text-2xl mt-6 rounded-2xl active:scale-90 transition-all">＋</button>
             </div>
         </div>
 
-        <div id="manifest-list" class="mt-10 space-y-3 pb-32"></div>
+        <div id="item-list" class="mt-8 space-y-3 pb-32"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0a0b10]">
-            <button onclick="startOperation()" class="btn-primary w-full">LANZAR OPERACIÓN</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-950/80 backdrop-blur-md">
+            <button onclick="startSession()" class="btn-exec w-full text-lg">INICIAR TERMINAL OPERATIVO</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="card-industrial mb-6">
-            <p id="op-header" class="text-[10px] font-black text-[#ff5f1f] mb-4 tracking-[0.2em]"></p>
-            <select id="sel-sku" onchange="refreshOps()" class="w-full bg-transparent text-3xl font-black outline-none mb-8 border-b border-white/10 pb-2 appearance-none"></select>
+        <div class="glass-panel p-6 mb-6 border-l-4 border-l-blue-500">
+            <p id="tag-id" class="text-[10px] font-black text-blue-500 mb-2 uppercase tracking-widest"></p>
+            <select id="sel-sku" onchange="syncOps()" class="w-full bg-transparent text-3xl font-extrabold outline-none mb-6 appearance-none border-none"></select>
             
-            <div class="flex items-center gap-6">
-                <input type="number" id="qty-in" class="flex-1 bg-white text-black h-20 text-center text-4xl font-black rounded" placeholder="0">
-                <button onclick="recordBox()" class="w-24 h-20 btn-primary">OK</button>
+            <div class="flex items-center gap-4">
+                <input type="number" id="qty-in" class="flex-1 bg-slate-900 border border-white/10 h-20 text-center text-5xl font-extrabold rounded-2xl" placeholder="0">
+                <button onclick="saveCount()" class="w-24 h-20 btn-exec flex items-center justify-center">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                </button>
             </div>
         </div>
 
-        <div id="progress-container" class="space-y-4 pb-40"></div>
+        <div id="op-progress" class="space-y-4 pb-44 overflow-y-auto"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0a0b10] flex gap-3">
-            <button onclick="confirmAndFinish()" class="btn-primary flex-1 bg-emerald-600">FINALIZAR Y FIRMAR PDF</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-950/80 backdrop-blur-md">
+            <button onclick="finishAndPDF()" class="btn-exec w-full !bg-emerald-600 shadow-emerald-900/40">FINALIZAR Y GENERAR REPORTE</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <div class="flex items-center gap-4 mb-10">
-            <button onclick="navTo('home')" class="text-slate-500 text-sm font-bold">← VOLVER</button>
-            <h2 class="text-2xl font-black italic uppercase">REGISTROS</h2>
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="navTo('home')" class="text-slate-400 font-bold text-sm uppercase">Cerrar</button>
+            <h2 class="text-2xl font-extrabold uppercase tracking-tight">Archivo de Logs</h2>
         </div>
-        <div id="history-content" class="space-y-4"></div>
+        <div id="hist-feed" class="space-y-4 pb-20"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let localDB = {};
-        let currentItems = [];
+        const DATA_SOURCE = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let inventoryDB = {};
+        let setupItems = [];
         let activeOp = null;
 
         async function init() {
             try {
-                const r = await fetch(API_URL);
+                const r = await fetch(DATA_SOURCE);
                 const data = await r.json();
-                data.forEach(item => { if(item.CODIGO) localDB[item.CODIGO.toString().trim().toUpperCase()] = item.DESCRIPCION; });
+                data.forEach(i => { if(i.CODIGO) inventoryDB[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
             } catch(e) {}
             
-            const saved = localStorage.getItem('twins_active');
+            const saved = localStorage.getItem('twins_exec_op');
             if(saved) { activeOp = JSON.parse(saved); navTo('ops'); }
         }
 
@@ -147,137 +161,147 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
-            if(v === 'ops' && activeOp) refreshOps();
+            if(v === 'ops' && activeOp) syncOps();
         }
 
-        function handleSearch() {
+        function execSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(val.length < 2) { resDiv.classList.add('hidden'); return; }
             
-            const matches = Object.entries(localDB).filter(([k, v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 6);
-            resDiv.innerHTML = matches.map(([k, v]) => `
-                <div onclick="selectItem('${k}')" class="p-4 border-b border-white/5 active:bg-[#ff5f1f]">
-                    <p class="font-bold text-sm">${k}</p>
-                    <p class="text-[10px] text-slate-400 uppercase">${v}</p>
+            const matches = Object.entries(inventoryDB).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 6);
+            resDiv.innerHTML = matches.map(([k,v]) => `
+                <div onclick="selectProd('${k}')" class="p-4 border-b border-white/5 active:bg-blue-600 transition-colors">
+                    <p class="font-bold text-sm tracking-tight">${k}</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-medium truncate">${v}</p>
                 </div>
             `).join('');
             resDiv.classList.remove('hidden');
         }
 
-        function selectItem(k) {
+        function selectProd(k) {
             document.getElementById('s-sku').value = k;
             document.getElementById('results').classList.add('hidden');
             document.getElementById('s-meta').focus();
         }
 
-        function addToList() {
+        function addItem() {
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            currentItems.push({ sku, desc: localDB[sku] || "S/D", meta, real: 0 });
-            renderManifest();
+            setupItems.push({ sku, desc: inventoryDB[sku] || "N/A", meta, real: 0 });
+            renderSetupList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
-        function renderManifest() {
-            document.getElementById('manifest-list').innerHTML = currentItems.map((item, idx) => `
-                <div class="bg-white/5 p-4 rounded flex justify-between items-center">
-                    <div><p class="font-bold text-sm">${item.sku}</p><p class="text-[9px] text-slate-500 font-bold">${item.meta} UNIDADES</p></div>
-                    <button onclick="currentItems.splice(${idx},1);renderManifest()" class="text-red-500 font-black">QUITAR</button>
+        function renderSetupList() {
+            document.getElementById('item-list').innerHTML = setupItems.map((item, idx) => `
+                <div class="glass-panel p-4 flex justify-between items-center">
+                    <div><p class="font-bold text-sm">${item.sku}</p><p class="text-[10px] text-slate-500 font-bold">${item.meta} UNIDADES PLANIFICADAS</p></div>
+                    <button onclick="setupItems.splice(${idx},1);renderSetupList()" class="text-rose-500 font-extrabold text-xs px-2">X</button>
                 </div>
             `).join('');
         }
 
-        function startOperation() {
-            if(currentItems.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "OP-" + Date.now().toString().slice(-4);
-            activeOp = { id, items: [...currentItems], date: new Date().toLocaleString(), status: 'PENDIENTE' };
-            localStorage.setItem('twins_active', JSON.stringify(activeOp));
+        function startSession() {
+            if(setupItems.length === 0) return;
+            const id = document.getElementById('c-id').value.toUpperCase() || "LOG-" + Date.now().toString().slice(-4);
+            activeOp = { id, items: [...setupItems], date: new Date().toLocaleString(), status: 'EJECUCION' };
+            localStorage.setItem('twins_exec_op', JSON.stringify(activeOp));
             
-            let history = JSON.parse(localStorage.getItem('twins_history')) || [];
-            history.unshift(activeOp);
-            localStorage.setItem('twins_history', JSON.stringify(history));
+            let hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
+            hist.unshift(activeOp);
+            localStorage.setItem('twins_exec_hist', JSON.stringify(hist));
             
-            currentItems = [];
+            setupItems = [];
             navTo('ops');
         }
 
-        function refreshOps() {
-            document.getElementById('op-header').innerText = "CONTENEDOR: " + activeOp.id;
+        function syncOps() {
+            document.getElementById('tag-id').innerText = "AUDITORÍA ACTIVA: " + activeOp.id;
             document.getElementById('sel-sku').innerHTML = activeOp.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             renderProgress();
         }
 
-        function recordBox() {
+        function saveCount() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
             const target = activeOp.items.find(i => i.sku === document.getElementById('sel-sku').value);
             if(target) target.real += val;
             document.getElementById('qty-in').value = '';
-            localStorage.setItem('twins_active', JSON.stringify(activeOp));
+            localStorage.setItem('twins_exec_op', JSON.stringify(activeOp));
             renderProgress();
         }
 
         function renderProgress() {
-            document.getElementById('progress-container').innerHTML = activeOp.items.map(i => {
+            document.getElementById('op-progress').innerHTML = activeOp.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isSel = i.sku === document.getElementById('sel-sku').value;
+                const isSelected = i.sku === document.getElementById('sel-sku').value;
                 return `
-                <div class="p-4 rounded ${isSel ? 'bg-white/10 border border-[#ff5f1f]' : 'bg-white/5 opacity-50'}">
-                    <div class="flex justify-between font-black text-[11px] mb-3"><span>${i.sku}</span><span>${i.real} / ${i.meta}</span></div>
-                    <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-[#ff5f1f]" style="width:${pc}%"></div></div>
+                <div class="glass-panel p-5 transition-all ${isSelected ? 'border border-blue-500 bg-blue-500/5 scale-[1.02]' : 'opacity-40'}">
+                    <div class="flex justify-between items-end mb-3">
+                        <div><p class="text-[10px] font-black text-slate-500 uppercase">${i.sku}</p><p class="font-bold text-lg">${i.real} <span class="text-xs opacity-50">/ ${i.meta}</span></p></div>
+                        <span class="text-xs font-black ${pc >= 100 ? 'text-emerald-500' : 'text-blue-500'}">${pc}%</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        function confirmAndFinish() {
-            if(!confirm("¿CONFIRMAR CIERRE Y GENERAR PDF?")) return;
+        function finishAndPDF() {
+            if(!confirm("¿CONFIRMAR CIERRE DE OPERACIÓN Y GENERAR DOCUMENTO?")) return;
             
-            let history = JSON.parse(localStorage.getItem('twins_history')) || [];
-            const idx = history.findIndex(h => h.id === activeOp.id && h.status !== 'COMPLETADO');
+            let hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
+            const idx = hist.findIndex(h => h.id === activeOp.id && h.status !== 'COMPLETADO');
             activeOp.status = 'COMPLETADO';
-            if(idx !== -1) history[idx] = activeOp;
+            if(idx !== -1) hist[idx] = activeOp;
             
-            localStorage.setItem('twins_history', JSON.stringify(history));
-            generatePDF(activeOp);
+            localStorage.setItem('twins_exec_hist', JSON.stringify(hist));
+            generateOfficialPDF(activeOp);
             
-            localStorage.removeItem('twins_active');
+            localStorage.removeItem('twins_exec_op');
             activeOp = null;
             navTo('home');
         }
 
-        function generatePDF(data) {
+        function generateOfficialPDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            doc.setFillColor(10, 11, 16); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE TWINS DESPACHO", 14, 25);
+            // Header Estilo Corporativo
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 45, 'F');
+            doc.setTextColor(255); doc.setFontSize(20); doc.setFont("helvetica", "bold"); doc.text("REPORTE OFICIAL DE INVENTARIO", 14, 25);
+            doc.setFontSize(9); doc.setTextColor(150); doc.text("SISTEMA DE GESTIÓN LOGÍSTICA TWINS DESPACHOS", 14, 32);
             
-            doc.setTextColor(100); doc.setFontSize(10);
-            doc.text(`ID: ${data.id} | FECHA: ${data.date}`, 14, 50);
+            doc.setTextColor(50); doc.setFontSize(10);
+            doc.text(`ID OPERACIÓN: ${data.id}`, 14, 55);
+            doc.text(`FECHA DE EMISIÓN: ${data.date}`, 14, 60);
 
             doc.autoTable({
-                startY: 60,
-                head: [['CÓDIGO SKU', 'PRODUCTO', 'META', 'REAL', 'ESTADO']],
-                body: data.items.map(i => [i.sku, i.desc.slice(0,30), i.meta, i.real, (i.real >= i.meta ? 'OK' : 'FALTANTE')]),
-                theme: 'grid',
-                headStyles: { fillColor: [255, 95, 31], textColor: [255, 255, 255] }
+                startY: 70,
+                head: [['SKU', 'DESCRIPCIÓN', 'PLANIFICADO', 'EJECUTADO', 'DIFERENCIA']],
+                body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real - i.meta)]),
+                theme: 'striped',
+                headStyles: { fillColor: [0, 102, 255] },
+                columnStyles: { 4: { fontStyle: 'bold' } }
             });
 
-            doc.setTextColor(0); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
+            const finalY = doc.lastAutoTable.finalY + 25;
+            doc.line(14, finalY, 80, finalY);
+            doc.setFontSize(8);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY + 5);
             doc.save(`Twins_Report_${data.id}.pdf`);
         }
 
         function renderHistory() {
-            const hist = JSON.parse(localStorage.getItem('twins_history')) || [];
-            document.getElementById('history-content').innerHTML = hist.map(h => `
-                <div class="card-industrial border-l-white/20">
+            const hist = JSON.parse(localStorage.getItem('twins_exec_hist')) || [];
+            document.getElementById('hist-feed').innerHTML = hist.map(h => `
+                <div class="glass-panel p-6 border-l-4 ${h.status === 'COMPLETADO' ? 'border-l-emerald-500' : 'border-l-blue-500'}">
                     <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">${h.date}</p><h3 class="text-xl font-black">${h.id}</h3></div>
-                        <span class="status-badge ${h.status === 'COMPLETADO' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-[#ff5f1f]/20 text-[#ff5f1f]'}">${h.status}</span>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">${h.date}</p><h3 class="text-xl font-extrabold tracking-tight">${h.id}</h3></div>
+                        <span class="status-pill ${h.status === 'COMPLETADO' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}">${h.status}</span>
                     </div>
-                    <button onclick='generatePDF(${JSON.stringify(h)})' class="w-full bg-white/5 p-3 rounded text-[10px] font-black uppercase tracking-widest">Descargar Reporte</button>
+                    <button onclick='generateOfficialPDF(${JSON.stringify(h)})' class="w-full bg-white/5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Exportar Documento PDF</button>
                 </div>
             `).join('');
         }
