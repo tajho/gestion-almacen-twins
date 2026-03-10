@@ -308,18 +308,38 @@
             }
         }
 
-        function openModal() { document.getElementById('modal-choice').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
+                function openModal() {
+            if (currentMani.length > 0) {
+                document.getElementById('modal-choice').style.display = 'flex';
+            } else {
+                alert("Angelo, primero agrega al menos un producto.");
+            }
+        }
 
         function continuarConteo() {
             closeModal();
-            activeJob = { id: Date.now(), name: "L-" + new Date().getHours() + new Date().getMinutes(), items: [...currentMani], status: 'PROCESO' };
+            // Creamos el trabajo activo con los items de la lista previa
+            activeJob = { 
+                id: Date.now(), 
+                name: "L-" + new Date().getHours() + new Date().getMinutes(), 
+                items: [...currentMani], 
+                status: 'PROCESO' 
+            };
+            
+            // Guardamos en memoria para que no se pierda al refrescar
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
-            currentMani = []; localStorage.removeItem('taj_cur');
+            
+            // Limpiamos la lista de configuración
+            currentMani = []; 
+            localStorage.removeItem('taj_cur');
+            
+            // ¡ESTO ES LO QUE LANZA LA VISTA!
             startOps(activeJob);
         }
 
-        // ... (Mantén tus variables CLOUD_URL, db_items, etc. arriba)
+        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
+
+        
 
 function syncItem() {
     const selectedSku = document.getElementById('sel-sku').value;
