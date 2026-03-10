@@ -49,46 +49,50 @@
         <button onclick="goHome()" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
     </header>
 
-        <div id="view-home" class="view active">
+            <div id="view-home" class="view active">
         <div class="mt-4 mb-8">
-            <p class="text-blue-600 font-bold text-xs uppercase tracking-[0.2em] mb-1">Logística de Precisión</p>
-            <h2 class="text-3xl font-black text-slate-900 leading-tight italic">Panel de<br><span class="text-blue-600">Control Operativo</span></h2>
+            <p class="text-blue-600 font-bold text-xs uppercase tracking-[0.2em] mb-1">Intelligence</p>
+            <h2 class="text-3xl font-black text-slate-900 leading-tight italic">
+                ¿Qué hacemos<br>
+                <span class="text-blue-600">hoy, Angelo?</span>
+            </h2>
         </div>
 
         <div class="space-y-4 overflow-y-auto pb-10">
             
             <div onclick="navTo('crear')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-blue-600">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                 </div>
                 <div>
                     <h3 class="font-black text-slate-900 uppercase text-sm tracking-tight">Nuevo Contenedor</h3>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Gestión de carga y metas</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Logística Élite</p>
                 </div>
             </div>
 
-            <div onclick="alert('Módulo Historial en desarrollo')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-slate-900">
-                <div class="w-14 h-14 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center shadow-sm">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+            <div onclick="alert('Accediendo al Historial...')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-slate-900">
+                <div class="w-14 h-14 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                 </div>
                 <div>
                     <h3 class="font-black text-slate-900 uppercase text-sm tracking-tight">Historial / Registro</h3>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Consulta de despachos previos</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Revisión de movimientos</p>
                 </div>
             </div>
 
-            <div onclick="alert('Módulo Devoluciones en desarrollo')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-red-500">
-                <div class="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shadow-sm">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <div onclick="alert('Iniciando proceso de Devolución...')" class="glass-panel flex items-center gap-5 active:scale-95 transition-all border-l-4 border-l-red-500">
+                <div class="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 </div>
                 <div>
                     <h3 class="font-black text-slate-900 uppercase text-sm tracking-tight">Devoluciones</h3>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Reingreso de mercadería</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase italic">Gestión de retornos</p>
                 </div>
             </div>
 
         </div>
     </div>
+
 
 
     <div id="view-crear" class="view">
