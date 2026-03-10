@@ -82,11 +82,6 @@
 
         <div class="space-y-12">
             <div class="aura-card p-8">
-                
-                <input type="text" id="c-id" class="aura-input uppercase" placeholder="Ej: CT-9920">
-            </div>
-
-            <div class="aura-card p-8">
                 <label class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block mb-4">Búsqueda de Material</label>
                 <input type="text" id="s-sku" oninput="liveSearch()" class="aura-input" placeholder="SKU o Nombre">
                 <div id="results" class="mt-4 space-y-2 hidden"></div>
@@ -206,7 +201,8 @@
 
         function startSession() {
             if(queue.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "LOG-" + Date.now().toString().slice(-4);
+            // ID automático basado en fecha/hora
+            const id = "LOG-" + Date.now().toString().slice(-6);
             activeOp = { id, items: [...queue], date: new Date().toLocaleString(), status: 'EJECUCIÓN' };
             localStorage.setItem('twins_aura_session', JSON.stringify(activeOp));
             
