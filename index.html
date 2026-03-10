@@ -3,289 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Intelligence Hub</title>
+    <title>Twins Matrix Core</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --main-bg: #f0f4f8; --accent: #3b82f6; --text-primary: #1e293b; }
-        body { font-family: 'Outfit', sans-serif; background-color: var(--main-bg); color: var(--text-primary); margin: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
+        
+        /* Células de Datos: Diseño Único */
+        .data-cell { background: #ffffff; border: 1px solid #eee; border-radius: 4px; transition: all 0.2s; position: relative; overflow: hidden; }
+        .data-cell-active { border-left: 6px solid #2563eb; background: #f8faff; }
+        
+        /* Botones de Acción Táctica */
+        .btn-tactical { background: #1a1a1a; color: #fff; font-weight: 900; letter-spacing: 0.05em; padding: 1.25rem; border-radius: 4px; text-transform: uppercase; width: 100%; transition: 0.2s; }
+        .btn-tactical:active { background: #2563eb; transform: translateY(2px); }
 
-        /* Estética Neumórfica Profesional (No plana) */
-        .neu-inset { border-radius: 20px; background: #f0f4f8; box-shadow: inset 6px 6px 12px #ced4da, inset -6px -6px 12px #ffffff; }
-        .neu-flat { border-radius: 24px; background: #f0f4f8; box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff; border: 1px solid rgba(255,255,255,0.4); }
-        .neu-button { border-radius: 16px; background: #f0f4f8; box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff; transition: 0.2s; }
-        .neu-button:active { box-shadow: inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff; transform: scale(0.98); }
+        /* Input de Grado Industrial */
+        .industrial-input { width: 100%; background: #f5f5f5; border: 1px solid #ddd; padding: 1rem; font-size: 1.1rem; font-weight: 700; border-radius: 4px; outline: none; transition: 0.2s; }
+        .industrial-input:focus { background: #fff; border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        .view { display: none; min-height: 100vh; padding: 2rem 1.5rem; flex-direction: column; }
-        .view.active { display: flex; animation: smoothReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-        @keyframes smoothReveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .view { display: none; padding: 1.5rem; flex-direction: column; min-height: 100vh; }
+        .view.active { display: flex; animation: k-fade 0.3s ease; }
+        @keyframes k-fade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Pantalla de carga inteligente */
-        .loading-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.3; } }
+        .status-badge { font-size: 0.7rem; font-weight: 900; padding: 0.2rem 0.6rem; border-radius: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <nav class="fixed top-0 left-0 right-0 h-20 px-6 flex justify-between items-center z-50">
-        <div class="neu-flat px-4 py-2 flex items-center gap-2">
-            <div class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-            <span class="text-xs font-black tracking-widest uppercase">Twins Hub</span>
+    <nav class="bg-white border-b-2 border-slate-100 px-6 py-5 flex justify-between items-center sticky top-0 z-50">
+        <div>
+            <span class="text-[10px] font-black text-blue-600 block leading-none tracking-[0.3em]">VERSION 4.0</span>
+            <h1 class="text-xl font-black italic tracking-tighter">TWINS<span class="text-slate-400">CORE</span></h1>
         </div>
-        <button onclick="navTo('historial')" class="neu-button w-12 h-12 flex items-center justify-center">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-        </button>
+        <div id="connection-status" class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-slate-400">DATABASE SYNC</span>
+            <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+        </div>
     </nav>
 
-    <div id="view-home" class="view active pt-24">
-        <div class="mb-10">
-            <h1 class="text-4xl font-black tracking-tighter text-slate-900 leading-none mb-2">Control de<br>Flujos.</h1>
-            <p class="text-sm font-semibold text-slate-500 italic">Optimización por J. Angelo Nuñez Durand</p>
+    <div id="view-home" class="view active">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-slate-900 leading-tight">Módulo de<br>Despachos.</h2>
         </div>
 
-        <div class="grid gap-6">
-            <div onclick="navTo('crear')" class="neu-flat p-8 flex flex-col gap-6 group active:bg-blue-50 transition-colors">
-                <div class="w-14 h-14 neu-button flex items-center justify-center text-blue-600">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-                </div>
+        <div class="space-y-4">
+            <div onclick="navTo('crear')" class="data-cell p-6 flex justify-between items-center border-2 border-slate-200 hover:border-blue-500 cursor-pointer">
                 <div>
-                    <h3 class="text-2xl font-black text-slate-800">Nueva Carga</h3>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Configurar despacho inteligente</p>
+                    <p class="text-2xl font-black">NUEVA CARGA</p>
+                    <p class="text-xs font-bold text-slate-400">INICIAR REGISTRO DE SALIDA</p>
+                </div>
+                <div class="text-blue-600">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
                 </div>
             </div>
 
-            <div onclick="navTo('historial')" class="neu-flat p-8 flex items-center justify-between">
+            <div onclick="navTo('historial')" class="data-cell p-6 flex justify-between items-center opacity-70">
                 <div>
-                    <h3 class="text-lg font-black text-slate-800 uppercase">Historial</h3>
-                    <p class="text-xs font-bold text-slate-400">REPORTES DE AUDITORÍA</p>
+                    <p class="text-xl font-bold">HISTORIAL DE LOGS</p>
+                    <p class="text-xs font-bold text-slate-400">REPORTES AUTORIZADOS</p>
                 </div>
-                <div class="w-10 h-10 neu-button flex items-center justify-center text-slate-400">→</div>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <div class="mt-auto py-8">
+            <div class="border-t pt-6">
+                <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-2">Responsable Logístico</p>
+                <p class="font-bold text-slate-900">J. Angelo Nuñez Durand</p>
             </div>
         </div>
     </div>
 
-    <div id="view-crear" class="view pt-24">
-        <button onclick="navTo('home')" class="mb-8 text-xs font-black text-slate-400 tracking-widest uppercase flex items-center gap-2">
-            <span class="text-lg">←</span> Volver al Hub
-        </button>
+    <div id="view-crear" class="view">
+        <div class="flex items-center justify-between mb-8">
+            <button onclick="navTo('home')" class="font-black text-xs text-blue-600">← CANCELAR</button>
+            <span class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Paso 01: Setup</span>
+        </div>
 
-        <div class="neu-flat p-8 space-y-8">
-            <div class="space-y-3">
-                <label class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] ml-2">Referencia de Despacho</label>
-                <input type="text" id="c-id" class="neu-inset w-full p-5 font-black text-xl outline-none text-slate-700 placeholder:text-slate-300 uppercase" placeholder="ID CONTENEDOR">
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 mb-2 block tracking-widest">ID DE DOCUMENTO / CONTENEDOR</label>
+                <input type="text" id="c-id" class="industrial-input uppercase text-blue-600" placeholder="DIGITE REFERENCIA">
             </div>
 
-            <div class="relative space-y-3">
-                <label class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] ml-2">Selección de SKU</label>
-                <input type="text" id="s-sku" oninput="searchData()" class="neu-inset w-full p-5 font-bold outline-none text-slate-700" placeholder="Buscar por código...">
-                <div id="results" class="absolute z-50 left-0 right-0 neu-flat mt-2 hidden max-h-60 overflow-y-auto bg-[#f0f4f8]"></div>
+            <div class="relative">
+                <label class="text-[10px] font-black text-slate-500 mb-2 block tracking-widest">BÚSQUEDA DE MATERIAL (SKU)</label>
+                <input type="text" id="s-sku" oninput="searchMaster()" class="industrial-input" placeholder="ESCRIBA CÓDIGO O NOMBRE">
+                <div id="results" class="absolute z-50 left-0 right-0 bg-white border border-slate-200 shadow-2xl hidden max-h-60 overflow-y-auto"></div>
             </div>
 
             <div class="flex gap-4">
-                <div class="flex-1 space-y-3">
-                    <label class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] ml-2">Meta</label>
-                    <input type="number" id="s-meta" class="neu-inset w-full p-5 text-center text-2xl font-black outline-none" placeholder="0">
+                <div class="flex-1">
+                    <label class="text-[10px] font-black text-slate-500 mb-2 block tracking-widest">CANTIDAD META</label>
+                    <input type="number" id="s-meta" class="industrial-input text-center text-3xl" placeholder="0">
                 </div>
-                <button onclick="pushItem()" class="neu-button w-20 h-20 flex items-center justify-center text-3xl font-black text-blue-600 mt-6">＋</button>
+                <button onclick="addToQueue()" class="w-24 bg-blue-600 text-white font-black text-4xl rounded-sm">＋</button>
             </div>
         </div>
 
-        <div id="staged-list" class="mt-8 space-y-4 pb-32"></div>
+        <div id="queue-list" class="mt-10 space-y-2 pb-32"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-8 bg-[#f0f4f8]/80 backdrop-blur-xl">
-            <button onclick="startOperation()" class="neu-button w-full p-6 text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Ejecutar Operación</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100">
+            <button onclick="initWork()" class="btn-tactical">Activar Terminal de Conteo</button>
         </div>
     </div>
 
-    <div id="view-ops" class="view pt-24">
-        <div class="neu-flat p-8 mb-8 border-t-4 border-t-blue-500">
-            <div class="flex justify-between items-start mb-6">
-                <span id="op-tag" class="text-[10px] font-black bg-blue-600 text-white px-3 py-1 rounded-full uppercase tracking-widest"></span>
-                <div class="loading-dot"></div>
+    <div id="view-ops" class="view" style="background: #fff;">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <p id="op-ref-label" class="text-[10px] font-black text-blue-600 tracking-widest"></p>
+                <h2 class="text-2xl font-black uppercase tracking-tighter">Conteo en Curso</h2>
             </div>
+            <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+        </div>
+
+        <div class="data-cell data-cell-active p-8 mb-6 shadow-sm">
+            <label class="text-[10px] font-black text-slate-400 block mb-4 uppercase tracking-widest">Producto en Mano</label>
+            <select id="sel-sku" onchange="refreshOpsUI()" class="w-full bg-transparent text-3xl font-black outline-none mb-8 border-none appearance-none"></select>
             
-            <select id="sel-sku" onchange="refreshUI()" class="w-full bg-transparent text-3xl font-black outline-none mb-10 appearance-none text-slate-800"></select>
-            
-            <div class="flex gap-6">
-                <input type="number" id="qty-in" class="neu-inset flex-1 h-24 text-center text-5xl font-black outline-none text-blue-600" placeholder="0">
-                <button onclick="commitCount()" class="neu-button w-24 h-24 flex items-center justify-center">
-                    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" class="text-emerald-500"><path d="M5 13l4 4L19 7"/></svg>
+            <div class="flex gap-4">
+                <input type="number" id="qty-in" class="industrial-input h-24 text-6xl text-center flex-1 !bg-slate-50 border-none" placeholder="0">
+                <button onclick="registerUnits()" class="w-24 h-24 bg-blue-600 text-white flex items-center justify-center">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                 </button>
             </div>
         </div>
 
-        <div id="op-progress-feed" class="space-y-6 pb-48"></div>
+        <div id="op-feed" class="space-y-4 pb-48 overflow-y-auto"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-8 bg-[#f0f4f8]/90 backdrop-blur-md flex gap-4">
-            <button onclick="completeJob()" class="neu-button flex-1 p-6 text-xs font-black uppercase text-emerald-600 tracking-widest">Cerrar Auditoría & PDF</button>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white border-t-2 border-slate-100">
+            <button onclick="finalizeAndSign()" class="btn-tactical !bg-emerald-600">Finalizar & Generar Reporte</button>
         </div>
     </div>
 
-    <div id="view-historial" class="view pt-24">
-        <button onclick="navTo('home')" class="mb-10 text-xs font-black text-slate-400 tracking-widest uppercase">← Volver</button>
-        <div id="history-feed" class="space-y-6 pb-20"></div>
+    <div id="view-historial" class="view">
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="navTo('home')" class="font-black text-xs text-blue-600">VOLVER</button>
+            <h2 class="text-xl font-black">LOGS DE AUDITORÍA</h2>
+        </div>
+        <div id="hist-list" class="space-y-4 pb-20"></div>
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let localData = {};
-        let stagedItems = [];
-        let sessionActive = null;
+        const CLOUD_ENDPOINT = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let masterStock = {};
+        let jobQueue = [];
+        let currentSession = null;
 
-        async function init() {
+        async function initApp() {
             try {
-                const r = await fetch(API);
-                const d = await r.json();
-                d.forEach(i => { if(i.CODIGO) localData[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
-            } catch(e) {}
+                const res = await fetch(CLOUD_ENDPOINT);
+                const data = await res.json();
+                data.forEach(i => { if(i.CODIGO) masterStock[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
+            } catch(e) { console.error("Error offline"); }
             
-            const saved = localStorage.getItem('twins_hub_session');
-            if(saved) { sessionActive = JSON.parse(saved); navTo('ops'); }
+            const saved = localStorage.getItem('twins_active_session');
+            if(saved) { currentSession = JSON.parse(saved); navTo('ops'); }
         }
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
-            if(v === 'ops' && sessionActive) refreshUI();
+            if(v === 'ops' && currentSession) refreshOpsUI();
         }
 
-        function searchData() {
+        function searchMaster() {
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
-            const res = document.getElementById('results');
-            if(val.length < 2) { res.classList.add('hidden'); return; }
-            const matches = Object.entries(localData).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 5);
-            res.innerHTML = matches.map(([k,v]) => `
-                <div onclick="pickProd('${k}')" class="p-6 border-b border-white/50 active:bg-blue-50">
-                    <p class="font-black text-slate-800 text-sm">${k}</p>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase truncate">${v}</p>
+            const resDiv = document.getElementById('results');
+            if(val.length < 2) { resDiv.classList.add('hidden'); return; }
+            
+            const matches = Object.entries(masterStock).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 5);
+            resDiv.innerHTML = matches.map(([k,v]) => `
+                <div onclick="selectProduct('${k}')" class="p-6 border-b border-slate-100 hover:bg-slate-50 active:bg-blue-600 transition-colors">
+                    <p class="font-black text-sm">${k}</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase truncate">${v}</p>
                 </div>
             `).join('');
-            res.classList.remove('hidden');
+            resDiv.classList.remove('hidden');
         }
 
-        function pickProd(k) {
+        function selectProduct(k) {
             document.getElementById('s-sku').value = k;
             document.getElementById('results').classList.add('hidden');
             document.getElementById('s-meta').focus();
         }
 
-        function pushItem() {
+        function addToQueue() {
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            stagedItems.push({ sku, desc: localData[sku] || "MANUAL_INPUT", meta, real: 0 });
-            renderStaged();
+            jobQueue.push({ sku, desc: masterStock[sku] || "ID NO CATALOGADO", meta, real: 0 });
+            renderQueue();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
-        function renderStaged() {
-            document.getElementById('staged-list').innerHTML = stagedItems.map((i, idx) => `
-                <div class="neu-flat p-6 flex justify-between items-center">
-                    <div><p class="font-black text-slate-800">${i.sku}</p><p class="text-[10px] font-black text-slate-400 uppercase">META: ${i.meta} UNIDADES</p></div>
-                    <button onclick="stagedItems.splice(${idx},1);renderStaged()" class="text-red-400 font-black">QUITAR</button>
+        function renderQueue() {
+            document.getElementById('queue-list').innerHTML = jobQueue.map((item, idx) => `
+                <div class="data-cell p-4 flex justify-between items-center bg-slate-50">
+                    <div><p class="font-black text-sm">${item.sku}</p><p class="text-[10px] font-black text-slate-400">PLAN: ${item.meta} UNIDADES</p></div>
+                    <button onclick="jobQueue.splice(${idx},1);renderQueue()" class="text-red-500 font-black px-4 text-xl">×</button>
                 </div>
             `).join('');
         }
 
-        function startOperation() {
-            if(stagedItems.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "HUB-" + Date.now().toString().slice(-4);
-            sessionActive = { id, items: [...stagedItems], date: new Date().toLocaleString(), status: 'ACTIVE' };
-            localStorage.setItem('twins_hub_session', JSON.stringify(sessionActive));
+        function initWork() {
+            if(jobQueue.length === 0) return;
+            const id = document.getElementById('c-id').value.toUpperCase() || "AUDIT-" + Date.now().toString().slice(-4);
+            currentSession = { id, items: [...jobQueue], date: new Date().toLocaleString(), status: 'PENDIENTE' };
+            localStorage.setItem('twins_active_session', JSON.stringify(currentSession));
             
-            let h = JSON.parse(localStorage.getItem('twins_hub_history')) || [];
-            h.unshift(sessionActive);
-            localStorage.setItem('twins_hub_history', JSON.stringify(h));
+            let h = JSON.parse(localStorage.getItem('twins_master_hist')) || [];
+            h.unshift(currentSession);
+            localStorage.setItem('twins_master_hist', JSON.stringify(h));
             
-            stagedItems = [];
+            jobQueue = [];
             navTo('ops');
         }
 
-        function refreshUI() {
-            document.getElementById('op-tag').innerText = sessionActive.id;
-            document.getElementById('sel-sku').innerHTML = sessionActive.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
-            renderLiveProgress();
+        function refreshOpsUI() {
+            document.getElementById('op-ref-label').innerText = "ID: " + currentSession.id;
+            document.getElementById('sel-sku').innerHTML = currentSession.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+            renderLiveFeed();
         }
 
-        function commitCount() {
+        function registerUnits() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
-            const t = sessionActive.items.find(i => i.sku === document.getElementById('sel-sku').value);
-            if(t) t.real += val;
+            const target = currentSession.items.find(i => i.sku === document.getElementById('sel-sku').value);
+            if(target) target.real += val;
             document.getElementById('qty-in').value = '';
-            localStorage.setItem('twins_hub_session', JSON.stringify(sessionActive));
-            renderLiveProgress();
+            localStorage.setItem('twins_active_session', JSON.stringify(currentSession));
+            renderLiveFeed();
         }
 
-        function renderLiveProgress() {
-            document.getElementById('op-progress-feed').innerHTML = sessionActive.items.map(i => {
+        function renderLiveFeed() {
+            document.getElementById('op-feed').innerHTML = currentSession.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isSel = i.sku === document.getElementById('sel-sku').value;
+                const isSelected = i.sku === document.getElementById('sel-sku').value;
                 return `
-                <div class="neu-flat p-6 transition-all ${isSel ? 'border-2 border-blue-500 scale-[1.02]' : 'opacity-40'}">
+                <div class="data-cell p-5 ${isSelected ? 'border-2 border-blue-600 bg-blue-50' : 'opacity-40'}">
                     <div class="flex justify-between items-end mb-4">
-                        <span class="text-xs font-black text-slate-800 uppercase tracking-widest">${i.sku}</span>
-                        <span class="text-2xl font-black">${i.real}<span class="text-xs text-slate-300">/${i.meta}</span></span>
+                        <div><p class="text-[10px] font-black text-slate-500 uppercase">${i.sku}</p><p class="text-3xl font-black">${i.real} <span class="text-xs text-slate-400">/ ${i.meta}</span></p></div>
+                        <span class="text-xs font-black ${pc >= 100 ? 'text-emerald-500' : 'text-blue-600'}">${pc}%</span>
                     </div>
-                    <div class="neu-inset h-3 w-full overflow-hidden"><div class="h-full bg-blue-500" style="width:${pc}%"></div></div>
+                    <div class="h-2 bg-slate-200 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        function completeJob() {
-            if(!confirm("¿CERRAR AUDITORÍA Y GENERAR DOCUMENTO OFICIAL?")) return;
-            let h = JSON.parse(localStorage.getItem('twins_hub_history')) || [];
-            const idx = h.findIndex(x => x.id === sessionActive.id && x.status !== 'CLOSED');
-            sessionActive.status = 'CLOSED';
-            if(idx !== -1) h[idx] = sessionActive;
-            localStorage.setItem('twins_hub_history', JSON.stringify(h));
+        function finalizeAndSign() {
+            if(!confirm("¿CONFIRMAR CIERRE FINAL? ESTA ACCIÓN GENERARÁ EL REPORTE DE AUDITORÍA.")) return;
             
-            exportPDF(sessionActive);
-            localStorage.removeItem('twins_hub_session');
-            sessionActive = null;
+            let h = JSON.parse(localStorage.getItem('twins_master_hist')) || [];
+            const idx = h.findIndex(x => x.id === currentSession.id && x.status !== 'CERRADO');
+            currentSession.status = 'CERRADO';
+            if(idx !== -1) h[idx] = currentSession;
+            
+            localStorage.setItem('twins_master_hist', JSON.stringify(h));
+            generateMatrixPDF(currentSession);
+            
+            localStorage.removeItem('twins_active_session');
+            currentSession = null;
             navTo('home');
         }
 
-        function exportPDF(data) {
+        function generateMatrixPDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE DE AUDITORÍA TWINS", 14, 25);
-            doc.setFontSize(9); doc.text("HUB DE INTELIGENCIA LOGÍSTICA - REGISTRO DE SALIDAS", 14, 32);
             
-            doc.setTextColor(50); doc.setFontSize(10);
-            doc.text(`CÓDIGO OPERATIVO: ${data.id}`, 14, 52);
-            doc.text(`FECHA DE REGISTRO: ${data.date}`, 14, 57);
+            // Header Minimalista Industrial
+            doc.setFillColor(26, 26, 26); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("INFORME DE VERIFICACIÓN LOGÍSTICA", 14, 25);
+            doc.setFontSize(9); doc.setTextColor(150); doc.text("SISTEMA MATRIX CORE - CONTROL DE SALIDAS", 14, 32);
+            
+            doc.setTextColor(30); doc.setFontSize(10);
+            doc.text(`CÓDIGO DE AUDITORÍA: ${data.id}`, 14, 55);
+            doc.text(`FECHA DE EMISIÓN: ${data.date}`, 14, 60);
 
             doc.autoTable({
-                startY: 65,
-                head: [['SKU / CODIGO', 'PRODUCTO', 'META', 'CONTADO', 'ESTADO']],
-                body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real >= i.meta ? 'OK' : 'PENDIENTE')]),
-                theme: 'striped',
-                headStyles: { fillColor: [59, 130, 246] }
+                startY: 70,
+                head: [['SKU', 'DESCRIPCIÓN', 'OBJETIVO', 'REAL', 'DIFERENCIA']],
+                body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real - i.meta)]),
+                theme: 'plain',
+                headStyles: { fontStyle: 'bold', borderBottom: '1px solid black' },
+                columnStyles: { 4: { fontStyle: 'bold' } }
             });
 
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Twins_Hub_${data.id}.pdf`);
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.line(14, finalY, 100, finalY);
+            doc.setFontSize(8);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY + 5);
+            doc.save(`MATRIX_CORE_${data.id}.pdf`);
         }
 
         function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('twins_hub_history')) || [];
-            document.getElementById('history-feed').innerHTML = h.map(x => `
-                <div class="neu-flat p-6 border-l-8 ${x.status === 'CLOSED' ? 'border-l-emerald-400' : 'border-l-blue-400'}">
+            const h = JSON.parse(localStorage.getItem('twins_master_hist')) || [];
+            document.getElementById('hist-list').innerHTML = h.map(x => `
+                <div class="data-cell p-6 border-l-8 ${x.status === 'CERRADO' ? 'border-l-emerald-500' : 'border-l-blue-500'}">
                     <div class="flex justify-between items-start mb-6">
-                        <div><p class="text-[10px] font-black text-slate-400 mb-1 tracking-widest uppercase">${x.date}</p><h3 class="text-2xl font-black italic tracking-tighter">${x.id}</h3></div>
-                        <span class="text-[10px] font-black px-3 py-1 neu-button uppercase">${x.status}</span>
+                        <div><p class="text-[10px] text-slate-400 font-black mb-1">${x.date}</p><h3 class="text-2xl font-black italic tracking-tighter">${x.id}</h3></div>
+                        <span class="status-badge ${x.status === 'CERRADO' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}">${x.status}</span>
                     </div>
-                    <button onclick='exportPDF(${JSON.stringify(x)})' class="neu-button w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Exportar Reporte Oficial</button>
+                    <button onclick='generateMatrixPDF(${JSON.stringify(x)})' class="btn-tactical !p-3 text-[10px]">Descargar Auditoría PDF</button>
                 </div>
             `).join('');
         }
 
-        init();
+        initApp();
     </script>
 </body>
 </html>
