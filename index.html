@@ -3,202 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v51 - Elite Precision</title>
+    <title>TAJHO.OS v52 - Ultra-Compact</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; --blue-light: #eff6ff; --slate-soft: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        :root { --blue: #2563eb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #0f172a; height: 100vh; overflow: hidden; }
         
-        /* Estética Premium Refinada */
-        .card-elite { background: white; border-radius: 2.2rem; padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .card-elite:active { transform: scale(0.95); background: var(--slate-soft); }
-        
-        .icon-box { width: 3.2rem; height: 3.2rem; background: var(--blue-light); border-radius: 1.1rem; display: flex; align-items: center; justify-content: center; color: var(--blue); transition: 0.3s; }
-        .card-elite:hover .icon-box { transform: rotate(-5deg) scale(1.1); }
-        
-        .title-main { font-size: 2.6rem; font-weight: 800; line-height: 0.95; letter-spacing: -0.05em; font-style: italic; }
-        
-        /* Animaciones de Vista */
-        .view { display: none; height: 100vh; overflow-y: auto; padding: 2rem; padding-top: 6.5rem; padding-bottom: 7rem; }
-        .view.active { display: block; animation: viewIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes viewIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        /* Contenedores de Vista Optimizados para No Scroll */
+        .view { display: none; height: 100vh; padding: 1rem; padding-top: 4.5rem; flex-direction: column; }
+        .view.active { display: flex; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* Progress Bars Pro */
-        .progress-track { background: #f1f5f9; border-radius: 50px; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.02); }
-        .progress-bar { height: 100%; background: var(--blue); border-radius: 50px; transition: width 1s cubic-bezier(0.65, 0, 0.35, 1); position: relative; }
-        .progress-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 2.5s infinite linear; }
-        @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
-        /* Form Elements */
-        .input-tech { background: #f4f7fa; border-radius: 1.25rem; border: 2px solid transparent; font-weight: 700; padding: 1.1rem 1.4rem; width: 100%; transition: all 0.3s; font-size: 0.9rem; color: #1e293b; }
-        .input-tech:focus { border-color: var(--blue); background: white; box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.2); outline: none; }
+        /* Tarjetas Compactas */
+        .card-main { background: white; border-radius: 1.8rem; padding: 1rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.04); height: 22%; transition: 0.2s; }
+        .card-main:active { transform: scale(0.97); background: #f8fafc; }
+        .icon-sq { width: 3rem; height: 3rem; background: #eff6ff; border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: var(--blue); flex-shrink: 0; }
         
-        #modal-choice { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 2rem; }
-        #modal-choice.open { display: flex; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Sistema de Barras Compacto */
+        .progress-track { background: #f1f5f9; border-radius: 50px; overflow: hidden; height: 8px; width: 100%; position: relative; }
+        .progress-bar { height: 100%; background: var(--blue); border-radius: 50px; transition: width 0.6s ease; }
 
-        .btn-primary { background: var(--blue); color: white; border-radius: 1.4rem; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); }
-        .btn-primary:active { transform: scale(0.96); box-shadow: 0 5px 10px -5px rgba(37, 99, 235, 0.4); }
+        /* Inputs de una línea */
+        .input-mini { background: #f4f7fa; border-radius: 1rem; border: 2px solid transparent; font-weight: 700; padding: 0.75rem 1rem; font-size: 0.85rem; width: 100%; outline: none; transition: 0.3s; }
+        .input-mini:focus { border-color: var(--blue); background: white; }
+
+        .btn-action { background: var(--blue); color: white; border-radius: 1.2rem; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; padding: 1rem; width: 100%; text-align: center; }
+        
+        /* Lista Scrolleable Interna (Solo donde es crítico) */
+        .scroll-area { flex-grow: 1; overflow-y: auto; margin: 0.5rem 0; padding-right: 4px; }
+        .scroll-area::-webkit-scrollbar { width: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 w-full h-20 px-8 flex justify-between items-center z-[1000] bg-white/70 backdrop-blur-xl border-b border-slate-50">
-        <button onclick="goHome()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-900 active:scale-90 transition-all">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <header class="fixed top-0 w-full h-16 px-6 flex justify-between items-center z-[1000] bg-white/80 backdrop-blur-md border-b border-slate-50">
+        <button onclick="goHome()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-50 text-slate-900 active:scale-90">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
         <div class="text-right">
-            <p class="text-[10px] font-black italic tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></p>
-            <div class="h-1 w-8 bg-blue-600 ml-auto rounded-full mt-0.5"></div>
+            <p class="text-[9px] font-black italic tracking-tighter">TAJHO<span class="text-blue-600">.OS</span></p>
         </div>
     </header>
 
     <div id="view-home" class="view active">
-        <p class="text-blue-600 font-extrabold uppercase tracking-[0.3em] text-[9px] mb-3">Logistics Intelligence</p>
-        <h1 class="title-main mb-12">¿Qué gestionamos<br><span class="text-blue-600 italic">ahora, Tajho?</span></h1>
+        <h1 class="text-3xl font-black italic mb-6 tracking-tighter">Panel de<br><span class="text-blue-600 uppercase">Gestión</span></h1>
         
-        <div class="space-y-4">
-            <div onclick="navTo('crear')" class="card-elite">
-                <div class="icon-box">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m7.5 4.27 9 5.15"/><path d="M12 22V12"/></svg>
+        <div class="flex flex-col gap-3 flex-grow pb-4">
+            <div onclick="navTo('crear')" class="card-main">
+                <div class="icon-sq">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
                 </div>
-                <div class="flex-1">
-                    <p class="text-[12px] font-extrabold uppercase tracking-tight">Contenedor</p>
-                    <p class="text-[9px] font-semibold text-slate-400 italic">Nuevo manifiesto de carga</p>
+                <div>
+                    <p class="text-[12px] font-extrabold uppercase leading-none mb-1">Contenedor</p>
+                    <p class="text-[9px] font-bold text-slate-400 italic">Crear nuevo manifiesto</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-slate-300"><path d="m9 18 6-6-6-6"/></svg>
             </div>
 
-            <div onclick="navTo('historial')" class="card-elite">
-                <div class="icon-box">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            <div onclick="navTo('historial')" class="card-main">
+                <div class="icon-sq" style="background: #f0fdf4; color: #16a34a;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 </div>
-                <div class="flex-1">
-                    <p class="text-[12px] font-extrabold uppercase tracking-tight">Historial</p>
-                    <p class="text-[9px] font-semibold text-slate-400 italic">Registros finalizados</p>
+                <div>
+                    <p class="text-[12px] font-extrabold uppercase leading-none mb-1 text-green-600">Registros</p>
+                    <p class="text-[9px] font-bold text-slate-400 italic">Historial de descargas</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-slate-300"><path d="m9 18 6-6-6-6"/></svg>
             </div>
 
-            <div class="card-elite opacity-50 bg-slate-50 border-dashed border-slate-200 shadow-none">
-                <div class="icon-box bg-white text-slate-300">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m11 17-5-5 5-5"/><path d="M18 17v-3a4 4 0 0 0-4-4H6"/></svg>
+            <div class="card-main opacity-60">
+                <div class="icon-sq" style="background: #fff7ed; color: #f97316;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m11 17-5-5 5-5"/><path d="M18 17v-3a4 4 0 0 0-4-4H6"/></svg>
                 </div>
-                <div class="flex-1">
-                    <p class="text-[12px] font-extrabold uppercase tracking-tight text-slate-400">Devoluciones</p>
+                <div>
+                    <p class="text-[12px] font-extrabold uppercase leading-none mb-1 text-orange-500">Devoluciones</p>
+                    <p class="text-[9px] font-bold text-slate-400 italic">Gestión de retorno</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <div class="max-w-md mx-auto space-y-5">
-            <header class="mb-6">
-                <h2 class="text-2xl font-black italic leading-none">Configurar<br><span class="text-blue-600 uppercase text-3xl">Manifiesto</span></h2>
-            </header>
-            
+        <h2 class="text-xl font-black italic mb-3">Nuevo <span class="text-blue-600">Manifiesto</span></h2>
+        <div class="grid grid-cols-1 gap-2">
             <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="input-tech uppercase tracking-widest" placeholder="ESCANEAR O BUSCAR SKU..." autocomplete="off">
-                <div id="search-results" class="hidden absolute z-50 w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 mt-2 max-h-52 overflow-y-auto"></div>
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-mini uppercase" placeholder="SKU...">
+                <div id="search-results" class="hidden absolute z-50 w-full bg-white rounded-xl shadow-2xl border p-2 mt-1 max-h-32 overflow-y-auto"></div>
             </div>
-            
-            <input type="text" id="s-desc" class="input-tech text-blue-600 italic bg-blue-50/50 border-blue-100/50 text-[11px]" placeholder="Descripción del producto..." readonly>
-            
-            <div class="flex gap-3">
-                <input type="number" id="s-meta" class="input-tech flex-1" placeholder="CANTIDAD META">
-                <button onclick="addMani()" class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center active:scale-90 transition-all">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+            <input type="text" id="s-desc" class="input-mini text-blue-600 italic bg-blue-50/30 font-medium" placeholder="Producto..." readonly>
+            <div class="flex gap-2">
+                <input type="number" id="s-meta" class="input-mini" placeholder="Cant. Meta">
+                <button onclick="addMani()" class="w-12 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center active:scale-90">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
             </div>
-            
-            <div class="pt-6">
-                <div class="flex justify-between items-end mb-4 px-1">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Lista de Carga</p>
-                    <span id="items-counter" class="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">0</span>
-                </div>
-                <div id="pre-list" class="space-y-3"></div>
-            </div>
-
-            <button id="btn-done" onclick="openModal()" class="hidden w-full btn-primary py-5 mt-4">Generar Manifiesto Oficial</button>
         </div>
+
+        <div class="scroll-area mt-4">
+            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-2 italic">Pre-visualización</p>
+            <div id="pre-list" class="space-y-1.5"></div>
+        </div>
+
+        <button id="btn-done" onclick="openModal()" class="hidden btn-action mt-2 py-3 bg-blue-600 shadow-lg shadow-blue-100">Comenzar Carga</button>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="max-w-md mx-auto space-y-8">
-            <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl shadow-blue-200">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <p class="text-[9px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-1">Status de Descarga</p>
-                        <h4 id="global-pc" class="text-3xl font-black text-white italic">0%</h4>
-                    </div>
-                    <div class="icon-box bg-white/10 text-white border border-white/10">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
-                    </div>
-                </div>
-                <div class="progress-track h-3 bg-white/10"><div id="global-bar" class="progress-bar" style="width: 0%"></div></div>
-                <p id="items-count" class="text-[9px] font-bold text-slate-400 mt-4 text-right uppercase tracking-widest"></p>
+        <div class="bg-slate-900 p-4 rounded-[1.5rem] mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Avance Global</p>
+                <h4 id="global-pc" class="text-xl font-black text-white">0%</h4>
             </div>
-
-            <div class="text-center px-4">
-                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">SKU Seleccionado</p>
-                <select id="sel-sku" onchange="syncItem()" class="text-4xl font-black bg-transparent outline-none text-center italic w-full text-slate-900 border-b-2 border-slate-100 pb-2 mb-2"></select>
-                <p id="live-desc" class="text-[11px] font-bold text-blue-600 uppercase italic opacity-80"></p>
-            </div>
-
-            <div class="bg-slate-50/50 p-5 rounded-[2rem] border border-slate-100">
-                <div class="flex justify-between mb-3">
-                    <p class="text-[9px] font-black text-slate-400 uppercase italic">Progreso Item</p>
-                    <p id="item-pc" class="text-[10px] font-black text-blue-600">0%</p>
-                </div>
-                <div class="progress-track h-2 bg-slate-200/50"><div id="item-bar" class="progress-bar bg-slate-900" style="width: 0%"></div></div>
-            </div>
-
-            <div class="flex flex-col gap-6">
-                <div class="flex items-center justify-center gap-6">
-                    <input type="number" id="qty-in" class="input-tech w-32 text-center text-4xl h-24 shadow-xl border-2 border-slate-100" placeholder="0">
-                    <button onclick="registrarBulto()" class="w-24 h-24 bg-blue-600 text-white rounded-[2.2rem] flex items-center justify-center shadow-xl shadow-blue-200 active:scale-75 transition-all">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white border border-slate-100 p-5 rounded-[1.8rem] text-center shadow-sm">
-                        <p class="text-[9px] font-black text-slate-300 uppercase mb-2">Restante</p>
-                        <p id="live-rem" class="text-3xl font-black text-slate-900">0</p>
-                    </div>
-                    <div class="bg-white border border-slate-100 p-5 rounded-[1.8rem] text-center shadow-sm">
-                        <p class="text-[9px] font-black text-blue-400 uppercase mb-2">Real</p>
-                        <p id="live-real" class="text-3xl font-black text-blue-600">0</p>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="finishAndReport()" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] text-[11px] font-black tracking-widest uppercase active:opacity-80">Finalizar y Firmar Reporte</button>
+            <div class="progress-track bg-white/10 h-2.5"><div id="global-bar" class="progress-bar" style="width: 0%"></div></div>
         </div>
+
+        <div class="text-center mb-4">
+            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black bg-transparent text-slate-900 border-b-2 border-slate-100 w-full mb-1 text-center outline-none"></select>
+            <p id="live-desc" class="text-[9px] font-bold text-blue-600 uppercase truncate px-4"></p>
+        </div>
+
+        <div class="flex flex-col gap-4 flex-grow justify-center">
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="qty-in" class="input-mini w-24 h-20 text-center text-3xl shadow-inner border-2 border-slate-50" placeholder="0">
+                <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl active:scale-90 transition-all">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-50 p-3 rounded-2xl text-center">
+                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Restante</p>
+                    <p id="live-rem" class="text-xl font-black">0</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-2xl text-center">
+                    <p class="text-[8px] font-black text-blue-400 uppercase mb-1">Real</p>
+                    <p id="live-real" class="text-xl font-black text-blue-600">0</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between mb-1">
+                    <p class="text-[8px] font-black text-slate-300 uppercase">Item Progreso</p>
+                    <p id="item-pc" class="text-[8px] font-black text-slate-900">0%</p>
+                </div>
+                <div class="progress-track bg-slate-100 h-1.5"><div id="item-bar" class="progress-bar bg-slate-900" style="width: 0%"></div></div>
+            </div>
+        </div>
+
+        <button onclick="finishAndReport()" class="btn-action bg-slate-900 mt-4 py-3">Cerrar y Firmar</button>
     </div>
 
     <div id="view-historial" class="view">
-        <header class="mb-8">
-            <h2 class="text-3xl font-black italic">Reportes de <span class="text-blue-600">Carga</span></h2>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Archivos locales guardados</p>
-        </header>
-        <div id="history-list" class="space-y-4"></div>
+        <h2 class="text-xl font-black italic mb-4 uppercase">Registros <span class="text-blue-600">Finalizados</span></h2>
+        <div class="scroll-area" id="history-list"></div>
     </div>
 
-    <div id="modal-choice">
-        <div class="bg-white w-full max-w-sm p-8 rounded-[2.8rem] text-center shadow-2xl transform scale-100">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <h3 class="text-xl font-black italic mb-2 uppercase">¡Manifiesto Creado!</h3>
-            <p class="text-[10px] text-slate-400 font-bold mb-8 tracking-widest uppercase">¿Cómo deseas proceder?</p>
-            <div class="space-y-3">
-                <button onclick="continuarConteo()" class="w-full btn-primary py-5">Iniciar conteo ahora</button>
-                <button onclick="guardarMani()" class="w-full bg-slate-100 text-slate-600 py-5 rounded-[1.4rem] text-[11px] font-black uppercase tracking-widest active:bg-slate-200">Guardar para después</button>
-                <button onclick="closeModal()" class="w-full text-slate-400 py-2 text-[10px] font-black uppercase mt-2">Cancelar</button>
+    <div id="modal-choice" class="fixed inset-0 z-[2000] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-6">
+        <div class="bg-white w-full rounded-[2rem] p-8 text-center shadow-2xl">
+            <p class="text-[9px] font-black text-blue-600 uppercase mb-2 tracking-widest">Listo para procesar</p>
+            <h3 class="text-lg font-black italic mb-6">¿INICIAR CONTEO AHORA?</h3>
+            <div class="flex flex-col gap-2">
+                <button onclick="continuarConteo()" class="btn-action bg-blue-600 py-4">Sí, Empezar</button>
+                <button onclick="guardarMani()" class="btn-action bg-slate-100 text-slate-500 py-4">Solo Guardar</button>
+                <button onclick="closeModal()" class="text-[10px] font-black uppercase text-slate-300 mt-2">Regresar</button>
             </div>
         </div>
     </div>
@@ -215,11 +183,10 @@
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-                
                 const lastView = localStorage.getItem('taj_view') || 'home';
                 if(lastView === 'ops' && activeJob) startOps(activeJob);
                 else navTo(lastView);
-            } catch (e) { console.warn("App en modo Offline"); }
+            } catch (e) { console.warn("Offline"); }
         }
 
         function navTo(v) {
@@ -237,7 +204,7 @@
             const resDiv = document.getElementById('search-results');
             if(input.length < 1) { resDiv.classList.add('hidden'); return; }
             const matches = Object.keys(db_items).filter(k => k.includes(input)).slice(0,5);
-            resDiv.innerHTML = matches.map(k => `<div onclick="setProd('${k}','${db_items[k]}')" class="p-4 border-b border-slate-50 text-[11px] font-black uppercase hover:bg-slate-50 transition-colors">${k} - <span class="text-blue-600">${db_items[k]}</span></div>`).join('');
+            resDiv.innerHTML = matches.map(k => `<div onclick="setProd('${k}','${db_items[k]}')" class="p-3 border-b border-slate-50 text-[10px] font-black uppercase">${k} - <span class="text-blue-600">${db_items[k]}</span></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -255,41 +222,25 @@
             localStorage.setItem('taj_cur', JSON.stringify(currentMani));
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
-            navigator.vibrate(20);
         }
 
         function renderPreList() {
             const container = document.getElementById('pre-list');
             container.innerHTML = currentMani.map((i, idx) => `
-                <div class="card-elite !rounded-2xl !py-4 border-l-4 border-l-blue-600">
-                    <div class="flex-1">
-                        <p class="text-[11px] font-black text-slate-900">${i.sku}</p>
-                        <p class="text-[9px] font-bold text-slate-400 italic">${i.desc}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[12px] font-black">${i.meta} <span class="text-[9px] text-slate-300">CJ</span></p>
-                    </div>
-                    <button onclick="removeItem(${idx})" class="text-slate-200 hover:text-red-400 ml-2">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
+                <div class="p-3 bg-slate-50 rounded-xl flex justify-between items-center text-[10px] font-bold border border-slate-100">
+                    <p class="uppercase">${i.sku}</p>
+                    <p class="text-blue-600 font-black">${i.meta} CJ</p>
                 </div>
             `).join('');
-            document.getElementById('items-counter').innerText = currentMani.length;
             if(currentMani.length > 0) document.getElementById('btn-done').classList.remove('hidden');
         }
 
-        function removeItem(idx) {
-            currentMani.splice(idx, 1);
-            localStorage.setItem('taj_cur', JSON.stringify(currentMani));
-            renderPreList();
-        }
-
-        function openModal() { document.getElementById('modal-choice').classList.add('open'); }
-        function closeModal() { document.getElementById('modal-choice').classList.remove('open'); }
+        function openModal() { document.getElementById('modal-choice').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
 
         function continuarConteo() {
             closeModal();
-            activeJob = { id: Date.now(), name: "C-" + new Date().getHours() + ":" + new Date().getMinutes() + "-" + new Date().getDate(), items: [...currentMani], status: 'PROCESO' };
+            activeJob = { id: Date.now(), name: "L-" + new Date().getHours() + ":" + new Date().getMinutes(), items: [...currentMani], status: 'PROCESO' };
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
             currentMani = []; localStorage.removeItem('taj_cur');
             startOps(activeJob);
@@ -324,8 +275,6 @@
             const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
             document.getElementById('global-bar').style.width = pc + "%";
             document.getElementById('global-pc').innerText = pc + "%";
-            document.getElementById('items-count').innerText = `${activeJob.items.length} SKUS TOTALES`;
-            
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
         }
 
@@ -336,21 +285,20 @@
             item.real += q;
             document.getElementById('qty-in').value = '';
             syncItem();
-            navigator.vibrate(40);
-            // Sync silencioso a la nube
+            navigator.vibrate(30);
             fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos: [new Date().toLocaleString(), item.sku, q]})});
         }
 
         function renderHistory() {
-            document.getElementById('history-list').innerHTML = history.length ? history.map(h => `
-                <div class="card-elite border-l-4 ${h.status==='COMPLETADO'?'border-l-green-500':'border-l-blue-600'}">
-                    <div class="flex-1">
-                        <p class="text-[10px] font-black ${h.status==='COMPLETADO'?'text-green-500':'text-blue-500'} uppercase tracking-widest mb-1">${h.status}</p>
-                        <h4 class="text-sm font-black italic uppercase">${h.name}</h4>
+            document.getElementById('history-list').innerHTML = history.map(h => `
+                <div class="p-4 bg-white border border-slate-100 rounded-2xl mb-2 flex justify-between items-center shadow-sm">
+                    <div>
+                        <p class="text-[8px] font-black text-blue-500 uppercase mb-0.5">${h.status}</p>
+                        <p class="text-[11px] font-bold uppercase italic">${h.name}</p>
                     </div>
-                    <button onclick="startFromHistory(${h.id})" class="bg-slate-900 text-white px-5 py-3 rounded-xl text-[9px] font-black uppercase active:scale-90 transition-all">Abrir</button>
+                    <button onclick="startFromHistory(${h.id})" class="text-[9px] font-black text-slate-900 bg-slate-100 px-4 py-2 rounded-xl">ABRIR</button>
                 </div>
-            `).join('') : '<p class="text-center text-slate-300 text-xs font-bold mt-10">No hay registros aún</p>';
+            `).join('');
         }
 
         function startFromHistory(id) {
@@ -362,32 +310,18 @@
         function finishAndReport() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO.OS", 14, 20);
-            doc.setFontSize(10); doc.text(`FECHA: ${new Date().toLocaleString()}`, 14, 28);
-            
+            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("REPORTE TAJHO.OS", 14, 20);
             doc.autoTable({
-                startY: 35,
-                head: [['SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'DIF']],
-                body: activeJob.items.map(i => [i.sku, i.desc, i.meta, i.real, i.meta-i.real]),
-                theme: 'striped',
-                headStyles: { fillColor: [37, 99, 235], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 4 }
+                startY: 30, head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: activeJob.items.map(i => [i.sku, i.meta, i.real, i.meta-i.real]),
+                theme: 'striped', headStyles: { fillColor: [37, 99, 235] }
             });
-            
-            const finalY = doc.lastAutoTable.finalY + 20;
+            const finalY = doc.lastAutoTable.finalY + 15;
             doc.setFontSize(10);
-            doc.text("__________________________________", 14, finalY);
-            doc.setFont("helvetica", "bold");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-            doc.setFont("helvetica", "normal");
-            doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-            
-            doc.save(`TAJHO_REPORTE_${activeJob.name}.pdf`);
-            
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY);
+            doc.text("Asist. Inventario Logístico", 14, finalY + 5);
+            doc.save(`REPORTE_${activeJob.name}.pdf`);
             activeJob.status = 'COMPLETADO';
-            const idx = history.findIndex(h => h.id === activeJob.id);
-            if(idx !== -1) history[idx] = activeJob; else history.push(activeJob);
             localStorage.setItem('taj_his', JSON.stringify(history));
             localStorage.removeItem('taj_active');
             navTo('historial');
