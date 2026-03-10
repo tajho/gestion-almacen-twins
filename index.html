@@ -3,285 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Despacho - Signature Elite</title>
+    <title>Twins Despacho | Industrial Signature</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-cyan: #00f2ff; --bg-dark: #0a0c10; --card-dark: #141820; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #fff; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        :root { --main-bg: #0a0b10; --surface: #15171f; --accent: #ff5f1f; --text-muted: #64748b; }
+        body { font-family: 'Archivo', sans-serif; background-color: var(--main-bg); color: white; margin: 0; -webkit-font-smoothing: antialiased; }
         
-        /* Tipografía de Alto Rendimiento */
-        .title-signature { font-family: 'Syncopate', sans-serif; letter-spacing: -1px; text-transform: uppercase; }
+        /* Layout Structure */
+        .view { display: none; min-height: 100vh; padding: 1.5rem; flex-direction: column; }
+        .view.active { display: flex; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Neumorfismo Industrial Profundo */
-        .neu-inset { background: var(--card-dark); box-shadow: inset 6px 6px 12px #080a0d, inset -6px -6px 12px #202633; border-radius: 2rem; }
-        .neu-out { background: var(--card-dark); box-shadow: 8px 8px 16px #080a0d, -4px -4px 12px #1c222e; border-radius: 2rem; }
+        /* Componentes de Diseño Único */
+        .card-industrial { background: var(--surface); border-radius: 4px; border-left: 4px solid var(--accent); padding: 1.5rem; }
+        .btn-primary { background-color: var(--accent); color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; padding: 1.25rem; transition: 0.2s; }
+        .btn-primary:active { background-color: #e04e10; transform: scale(0.98); }
         
-        /* Botones Acción Elite */
-        .btn-signature { background: linear-gradient(145deg, #161b24, #12151c); border: 1px solid rgba(255,255,255,0.03); color: var(--neon-cyan); font-weight: 900; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-signature:active { box-shadow: inset 4px 4px 10px #000; transform: scale(0.97); color: #fff; }
+        .input-industrial { background: #1f222d; border: 1px solid #2d313f; border-radius: 4px; padding: 1rem; color: white; width: 100%; outline: none; font-size: 1rem; }
+        .input-industrial:focus { border-color: var(--accent); }
 
-        .view { display: none; min-height: 100vh; padding: 2rem; flex-direction: column; }
-        .view.active { display: flex; animation: reveal 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes reveal { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-        /* Buscador Flotante "HUD" */
-        .search-hud { background: rgba(20, 24, 32, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0,242,255,0.15); border-radius: 1.5rem; }
+        .status-badge { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Barra de Progreso Neon */
-        .bar-container { height: 4px; background: #080a0d; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #00f2ff, #0066ff); box-shadow: 0 0 15px var(--neon-cyan); transition: width 0.3s ease; }
+        /* Custom Scroll */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
     </style>
 </head>
 <body>
 
-    <header class="p-6 flex justify-between items-center fixed top-0 w-full z-50 bg-black/10 backdrop-blur-lg border-b border-white/5">
-        <div class="flex flex-col">
-            <h1 class="title-signature text-lg font-bold leading-none">TWINS<span class="text-[#00f2ff]">ELITE</span></h1>
-            <p class="text-[7px] tracking-[0.5em] font-black text-slate-600 mt-1 uppercase">Logistics Infrastructure</p>
+    <nav class="h-20 px-6 flex justify-between items-center border-b border-white/5 sticky top-0 z-50 bg-[#0a0b10]/95 backdrop-blur-md">
+        <div>
+            <h1 class="text-xl font-black italic tracking-tighter">TWINS<span class="text-[#ff5f1f]">.</span></h1>
+            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em]">Logistics Management</p>
         </div>
-        <div class="w-12 h-12 neu-out flex items-center justify-center border border-white/5 group active:scale-95 transition-all" onclick="navTo('historial')">
-            <div class="w-2 h-2 bg-cyan-400 rounded-full group-active:bg-white animate-pulse"></div>
-        </div>
-    </header>
+        <button onclick="navTo('historial')" class="p-2">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        </button>
+    </nav>
 
-    <div id="view-home" class="view active pt-28">
-        <div class="mb-12 text-left">
-            <p class="text-[10px] font-black text-cyan-500 mb-2 tracking-widest uppercase">System Authorized: Angelo Nuñez Durand</p>
-            <h2 class="text-5xl font-black italic tracking-tighter leading-tight uppercase text-slate-100">Master<br>Terminal.</h2>
+    <div id="view-home" class="view active">
+        <div class="mt-8 mb-12">
+            <h2 class="text-4xl font-black leading-none mb-2">OPERACIONES<br>DISPONIBLES</h2>
+            <div class="h-1 w-12 bg-[#ff5f1f]"></div>
         </div>
-        
-        <div class="grid gap-6">
-            <button onclick="navTo('crear')" class="neu-out p-8 btn-signature text-left flex justify-between items-center relative overflow-hidden">
-                <span class="relative z-10 text-xl font-black">NUEVO DESPACHO</span>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-            </button>
-            <button onclick="navTo('historial')" class="neu-out p-8 btn-signature text-left flex justify-between items-center relative overflow-hidden">
-                <span class="relative z-10 text-xl font-black text-slate-500">HISTORIAL LOGS</span>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            </button>
+
+        <div class="grid gap-4">
+            <div onclick="navTo('crear')" class="card-industrial flex justify-between items-center active:bg-white/5 transition-colors">
+                <div>
+                    <p class="text-[10px] font-black text-[#ff5f1f] mb-1">ACCION RAPIDA</p>
+                    <p class="text-xl font-bold">NUEVA CARGA</p>
+                </div>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+
+            <div onclick="navTo('historial')" class="bg-white/5 p-6 rounded border border-white/5 flex justify-between items-center active:bg-white/10 transition-colors">
+                <p class="text-lg font-bold">HISTORIAL DE REPORTES</p>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </div>
         </div>
     </div>
 
-    <div id="view-crear" class="view pt-28">
-        <div class="neu-inset p-6 mb-8 border border-white/5">
-            <input type="text" id="c-id" class="bg-transparent w-full text-cyan-400 font-bold placeholder:text-slate-800 outline-none uppercase mb-6 tracking-widest" placeholder="ID DEL CONTENEDOR_">
-            <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="bg-transparent w-full text-white font-bold placeholder:text-slate-800 outline-none mb-2" placeholder="BUSCAR SKU / DESCRIPCIÓN_">
-                <div id="results" class="absolute z-50 left-0 right-0 search-hud hidden max-h-64 overflow-y-auto"></div>
+    <div id="view-crear" class="view">
+        <div class="flex items-center gap-4 mb-10">
+            <button onclick="navTo('home')" class="text-slate-500 text-sm font-bold">← VOLVER</button>
+            <h2 class="text-2xl font-black italic">CONFIGURAR DESPACHO</h2>
+        </div>
+
+        <div class="space-y-6">
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identificador de Contenedor</label>
+                <input type="text" id="c-id" class="input-industrial uppercase font-bold text-[#ff5f1f]" placeholder="EJ: CONT-2026-A">
             </div>
-            <div class="flex gap-4 mt-6">
-                <input type="number" id="s-meta" class="neu-inset bg-transparent flex-1 p-5 text-center font-black text-3xl text-white" placeholder="00">
-                <button onclick="addMani()" class="w-20 neu-out text-4xl font-black text-cyan-400 active:text-white">+</button>
+
+            <div class="space-y-2 relative">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Búsqueda de Material</label>
+                <input type="text" id="s-sku" oninput="handleSearch()" class="input-industrial" placeholder="SKU o Descripción...">
+                <div id="results" class="absolute z-50 left-0 right-0 bg-[#1f222d] border border-[#2d313f] rounded mt-1 hidden max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="flex-1 space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Meta Pack (Cant)</label>
+                    <input type="number" id="s-meta" class="input-industrial text-center text-xl font-bold" placeholder="0">
+                </div>
+                <button onclick="addToList()" class="w-20 bg-white text-black font-black text-2xl mt-6 rounded">＋</button>
             </div>
         </div>
-        <div id="pre-list" class="flex-grow space-y-4 overflow-y-auto pb-32 pr-2"></div>
-        <div class="fixed bottom-8 left-8 right-8">
-            <button onclick="launchTerminal()" class="btn-signature w-full p-6 rounded-3xl text-xl shadow-[0_0_40px_rgba(0,242,255,0.1)] border-cyan-900/30">Lanzar Operación</button>
+
+        <div id="manifest-list" class="mt-10 space-y-3 pb-32"></div>
+
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0a0b10]">
+            <button onclick="startOperation()" class="btn-primary w-full">LANZAR OPERACIÓN</button>
         </div>
     </div>
 
-    <div id="view-ops" class="view pt-28">
-        <div class="neu-out p-8 mb-8 relative border border-white/5">
-            <div class="absolute top-4 left-6 text-[8px] font-black text-cyan-500 tracking-[0.3em] uppercase animate-pulse">Live Tracker Active</div>
-            <select id="sel-sku" onchange="updateOpsUI()" class="bg-transparent w-full text-3xl font-black text-center text-white outline-none my-6 appearance-none uppercase tracking-tight"></select>
-            <div class="flex justify-center items-center gap-8">
-                <input type="number" id="qty-in" class="neu-inset w-36 h-28 text-center text-6xl font-black bg-transparent text-white" placeholder="0">
-                <button onclick="registrarBulto()" class="w-28 h-28 neu-out bg-cyan-500/5 text-cyan-400 rounded-[2.5rem] font-black text-3xl border border-cyan-500/20 active:scale-95 active:bg-cyan-500 active:text-white transition-all">OK</button>
+    <div id="view-ops" class="view">
+        <div class="card-industrial mb-6">
+            <p id="op-header" class="text-[10px] font-black text-[#ff5f1f] mb-4 tracking-[0.2em]"></p>
+            <select id="sel-sku" onchange="refreshOps()" class="w-full bg-transparent text-3xl font-black outline-none mb-8 border-b border-white/10 pb-2 appearance-none"></select>
+            
+            <div class="flex items-center gap-6">
+                <input type="number" id="qty-in" class="flex-1 bg-white text-black h-20 text-center text-4xl font-black rounded" placeholder="0">
+                <button onclick="recordBox()" class="w-24 h-20 btn-primary">OK</button>
             </div>
         </div>
-        <div id="op-progress" class="space-y-6 pb-40 overflow-y-auto pr-2"></div>
-        <div class="fixed bottom-8 left-8 right-8 flex gap-4">
-            <button onclick="finalizarYReportar()" class="btn-signature flex-1 p-6 rounded-3xl !text-emerald-400 bg-emerald-950/10 border-emerald-900/40 shadow-emerald-500/10 shadow-xl">Finalizar Cierre</button>
+
+        <div id="progress-container" class="space-y-4 pb-40"></div>
+
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0a0b10] flex gap-3">
+            <button onclick="confirmAndFinish()" class="btn-primary flex-1 bg-emerald-600">FINALIZAR Y FIRMAR PDF</button>
         </div>
     </div>
 
-    <div id="view-historial" class="view pt-28">
-        <div class="flex items-center gap-4 mb-8">
-            <button onclick="navTo('home')" class="text-slate-600 uppercase font-black text-xs tracking-widest">← Inicio</button>
-            <h2 class="title-signature text-2xl font-bold">Logs_Archivo</h2>
+    <div id="view-historial" class="view">
+        <div class="flex items-center gap-4 mb-10">
+            <button onclick="navTo('home')" class="text-slate-500 text-sm font-bold">← VOLVER</button>
+            <h2 class="text-2xl font-black italic uppercase">REGISTROS</h2>
         </div>
-        <div id="history-list" class="space-y-6 pb-20 overflow-y-auto pr-2"></div>
+        <div id="history-content" class="space-y-4"></div>
     </div>
 
     <script>
-        const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let db_items = {};
-        let currentMani = [];
-        let activeJob = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let localDB = {};
+        let currentItems = [];
+        let activeOp = null;
 
         async function init() {
             try {
-                const res = await fetch(CLOUD_URL);
-                const raw = await res.json();
-                raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().trim().toUpperCase()] = r.DESCRIPCION; });
-            } catch (e) { console.warn("Modo offline o error de DB"); }
-            activeJob = JSON.parse(localStorage.getItem('tj_active'));
-            if (activeJob) { navTo('ops'); }
+                const r = await fetch(API_URL);
+                const data = await r.json();
+                data.forEach(item => { if(item.CODIGO) localDB[item.CODIGO.toString().trim().toUpperCase()] = item.DESCRIPCION; });
+            } catch(e) {}
+            
+            const saved = localStorage.getItem('twins_active');
+            if(saved) { activeOp = JSON.parse(saved); navTo('ops'); }
         }
 
         function navTo(v) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(v === 'historial') renderHistory();
-            if(v === 'ops' && activeJob) updateOpsUI();
+            if(v === 'ops' && activeOp) refreshOps();
         }
 
-        // BUSCADOR HUD: Sugiere por Nombre o Descripción
-        function smartSearch() {
+        function handleSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(val.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.entries(db_items).filter(([sku, desc]) => sku.includes(val) || desc.toUpperCase().includes(val)).slice(0, 8);
-            resDiv.innerHTML = matches.map(([sku, desc]) => `<div onclick="setProd('${sku}')" class="p-5 border-b border-white/5 active:bg-cyan-500/20"><p class="font-black text-cyan-400 text-sm tracking-widest">${sku}</p><p class="text-[9px] text-slate-400 uppercase truncate">${desc}</p></div>`).join('');
+            
+            const matches = Object.entries(localDB).filter(([k, v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 6);
+            resDiv.innerHTML = matches.map(([k, v]) => `
+                <div onclick="selectItem('${k}')" class="p-4 border-b border-white/5 active:bg-[#ff5f1f]">
+                    <p class="font-bold text-sm">${k}</p>
+                    <p class="text-[10px] text-slate-400 uppercase">${v}</p>
+                </div>
+            `).join('');
             resDiv.classList.remove('hidden');
         }
 
-        function setProd(sku) { 
-            document.getElementById('s-sku').value = sku; 
-            document.getElementById('results').classList.add('hidden'); 
-            document.getElementById('s-meta').focus(); 
+        function selectItem(k) {
+            document.getElementById('s-sku').value = k;
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('s-meta').focus();
         }
 
-        function addMani() {
+        function addToList() {
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            currentMani.push({ sku, desc: db_items[sku] || "S/D", meta, real: 0 });
-            renderPreList();
+            currentItems.push({ sku, desc: localDB[sku] || "S/D", meta, real: 0 });
+            renderManifest();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
-        function renderPreList() {
-            document.getElementById('pre-list').innerHTML = currentMani.map((i, idx) => `
-                <div class="neu-out p-5 flex justify-between items-center border border-white/5">
-                    <div><p class="font-black text-white text-xs tracking-widest">${i.sku}</p><p class="text-[8px] text-slate-600 uppercase tracking-wider">${i.desc}</p></div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-cyan-400 font-black text-sm">${i.meta} CJ</span>
-                        <button onclick="currentMani.splice(${idx},1);renderPreList()" class="text-red-600 text-lg font-bold">×</button>
-                    </div>
+        function renderManifest() {
+            document.getElementById('manifest-list').innerHTML = currentItems.map((item, idx) => `
+                <div class="bg-white/5 p-4 rounded flex justify-between items-center">
+                    <div><p class="font-bold text-sm">${item.sku}</p><p class="text-[9px] text-slate-500 font-bold">${item.meta} UNIDADES</p></div>
+                    <button onclick="currentItems.splice(${idx},1);renderManifest()" class="text-red-500 font-black">QUITAR</button>
                 </div>
             `).join('');
         }
 
-        function launchTerminal() {
-            if(currentMani.length === 0) return alert("Agrega al menos un ítem al manifiesto.");
-            const id = document.getElementById('c-id').value.toUpperCase() || "ELITE-" + Math.floor(1000 + Math.random()*9000);
-            activeJob = { id, items: [...currentMani], fecha: new Date().toLocaleString(), status: 'EJECUCION' };
-            localStorage.setItem('tj_active', JSON.stringify(activeJob));
-            let hist = JSON.parse(localStorage.getItem('tj_history')) || [];
-            hist.unshift(activeJob);
-            localStorage.setItem('tj_history', JSON.stringify(hist));
-            currentMani = [];
+        function startOperation() {
+            if(currentItems.length === 0) return;
+            const id = document.getElementById('c-id').value.toUpperCase() || "OP-" + Date.now().toString().slice(-4);
+            activeOp = { id, items: [...currentItems], date: new Date().toLocaleString(), status: 'PENDIENTE' };
+            localStorage.setItem('twins_active', JSON.stringify(activeOp));
+            
+            let history = JSON.parse(localStorage.getItem('twins_history')) || [];
+            history.unshift(activeOp);
+            localStorage.setItem('twins_history', JSON.stringify(history));
+            
+            currentItems = [];
             navTo('ops');
         }
 
-        function updateOpsUI() {
-            document.getElementById('sel-sku').innerHTML = activeJob.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+        function refreshOps() {
+            document.getElementById('op-header').innerText = "CONTENEDOR: " + activeOp.id;
+            document.getElementById('sel-sku').innerHTML = activeOp.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             renderProgress();
         }
 
-        function registrarBulto() {
+        function recordBox() {
             const val = parseInt(document.getElementById('qty-in').value);
             if(!val) return;
-            const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
-            if(item) item.real += val;
+            const target = activeOp.items.find(i => i.sku === document.getElementById('sel-sku').value);
+            if(target) target.real += val;
             document.getElementById('qty-in').value = '';
-            localStorage.setItem('tj_active', JSON.stringify(activeJob));
+            localStorage.setItem('twins_active', JSON.stringify(activeOp));
             renderProgress();
         }
 
         function renderProgress() {
-            document.getElementById('op-progress').innerHTML = activeJob.items.map(i => {
+            document.getElementById('progress-container').innerHTML = activeOp.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
-                const isCurrent = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="neu-inset p-5 transition-all duration-300 ${isCurrent ? 'border border-cyan-500/40 scale-[1.02]' : 'opacity-30'}">
-                    <div class="flex justify-between font-black text-[10px] mb-2"><span>${i.sku}</span><span class="text-cyan-400">${i.real}/${i.meta} CJ</span></div>
-                    <div class="bar-container"><div class="bar-fill" style="width:${pc}%"></div></div>
+                const isSel = i.sku === document.getElementById('sel-sku').value;
+                return `
+                <div class="p-4 rounded ${isSel ? 'bg-white/10 border border-[#ff5f1f]' : 'bg-white/5 opacity-50'}">
+                    <div class="flex justify-between font-black text-[11px] mb-3"><span>${i.sku}</span><span>${i.real} / ${i.meta}</span></div>
+                    <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-[#ff5f1f]" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        // --- MOTOR DE FINALIZADO IMPENETRABLE ---
-        function finalizarYReportar() {
-            if(!activeJob) return;
-            if(!confirm("¿CONFIRMAR CIERRE OFICIAL DE TERMINAL?")) return;
-
-            // 1. Bloquear estado en el historial global ANTES de descargar PDF
-            let hist = JSON.parse(localStorage.getItem('tj_history')) || [];
-            const idx = hist.findIndex(h => h.id === activeJob.id && h.status !== 'COMPLETADO');
-            activeJob.status = "COMPLETADO";
-            if(idx !== -1) hist[idx] = activeJob;
-
-            localStorage.setItem('tj_history', JSON.stringify(hist));
+        function confirmAndFinish() {
+            if(!confirm("¿CONFIRMAR CIERRE Y GENERAR PDF?")) return;
             
-            // 2. Generar el PDF con los datos finales
-            descargarPDF(activeJob);
-
-            // 3. Limpiar sesión activa y salir
-            localStorage.removeItem('tj_active');
-            activeJob = null;
+            let history = JSON.parse(localStorage.getItem('twins_history')) || [];
+            const idx = history.findIndex(h => h.id === activeOp.id && h.status !== 'COMPLETADO');
+            activeOp.status = 'COMPLETADO';
+            if(idx !== -1) history[idx] = activeOp;
+            
+            localStorage.setItem('twins_history', JSON.stringify(history));
+            generatePDF(activeOp);
+            
+            localStorage.removeItem('twins_active');
+            activeOp = null;
             navTo('home');
         }
 
-        function descargarPDF(data) {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                // Diseño Elite Industrial
-                doc.setFillColor(10, 12, 16); doc.rect(0, 0, 210, 45, 'F');
-                doc.setTextColor(0, 242, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("TWINS DESPACHO ELITE", 14, 25);
-                doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.text("SYSTEM AUTHORIZED BY ANGELO NUÑEZ DURAND", 14, 33);
-                
-                doc.setTextColor(0,0,0); doc.setFontSize(10);
-                doc.text(`ID CONTENEDOR: ${data.id}`, 14, 55);
-                doc.text(`REGISTRO FINAL: ${data.fecha}`, 14, 60);
+        function generatePDF(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFillColor(10, 11, 16); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("REPORTE TWINS DESPACHO", 14, 25);
+            
+            doc.setTextColor(100); doc.setFontSize(10);
+            doc.text(`ID: ${data.id} | FECHA: ${data.date}`, 14, 50);
 
-                doc.autoTable({
-                    startY: 70,
-                    head: [['SKU CODE', 'DESCRIPTION', 'PACK CJ', 'REAL CJ', 'STATUS']],
-                    body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real === i.meta ? 'OK' : 'DISCREPANCIA')]),
-                    theme: 'grid',
-                    headStyles: { fillColor: [20, 24, 32], textColor: [0, 242, 255] },
-                    styles: { fontSize: 8, cellPadding: 3 }
-                });
+            doc.autoTable({
+                startY: 60,
+                head: [['CÓDIGO SKU', 'PRODUCTO', 'META', 'REAL', 'ESTADO']],
+                body: data.items.map(i => [i.sku, i.desc.slice(0,30), i.meta, i.real, (i.real >= i.meta ? 'OK' : 'FALTANTE')]),
+                theme: 'grid',
+                headStyles: { fillColor: [255, 95, 31], textColor: [255, 255, 255] }
+            });
 
-                doc.setFontSize(8); doc.setTextColor(50);
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-                doc.save(`ELITE_LOG_${data.id}.pdf`);
-            } catch(e) { alert("Error al generar PDF. Asegúrate de tener permisos."); }
+            doc.setTextColor(0); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
+            doc.save(`Twins_Report_${data.id}.pdf`);
         }
 
         function renderHistory() {
-            const hist = JSON.parse(localStorage.getItem('tj_history')) || [];
-            if(hist.length === 0) { document.getElementById('history-list').innerHTML = `<p class="text-center text-slate-700 text-[10px] mt-20 uppercase font-bold tracking-[0.2em]">No hay registros</p>`; return; }
-            document.getElementById('history-list').innerHTML = hist.map(h => `
-                <div class="neu-out p-6 border-l-4 ${h.status==='COMPLETADO'?'border-l-emerald-500':'border-l-cyan-500'} border-white/5 active:scale-95 transition-all">
+            const hist = JSON.parse(localStorage.getItem('twins_history')) || [];
+            document.getElementById('history-content').innerHTML = hist.map(h => `
+                <div class="card-industrial border-l-white/20">
                     <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-[8px] font-bold text-slate-600 uppercase tracking-widest">${h.fecha}</p><h3 class="text-xl font-black italic text-white tracking-tight">${h.id}</h3></div>
-                        <span class="text-[9px] font-black uppercase text-cyan-400 bg-cyan-950/20 px-2 py-1 rounded">${h.status}</span>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">${h.date}</p><h3 class="text-xl font-black">${h.id}</h3></div>
+                        <span class="status-badge ${h.status === 'COMPLETADO' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-[#ff5f1f]/20 text-[#ff5f1f]'}">${h.status}</span>
                     </div>
-                    <div class="flex gap-2">
-                        ${h.status!=='COMPLETADO' ? `<button onclick="loadPendingOps('${h.id}')" class="flex-1 btn-signature p-3 rounded-xl text-[9px] !text-cyan-400">RESUMIR</button>`:''}
-                        <button onclick='descargarManualHist("${h.id}")' class="flex-1 btn-signature p-3 rounded-xl text-[9px] !text-slate-400">PDF REPORTE</button>
-                    </div>
+                    <button onclick='generatePDF(${JSON.stringify(h)})' class="w-full bg-white/5 p-3 rounded text-[10px] font-black uppercase tracking-widest">Descargar Reporte</button>
                 </div>
             `).join('');
-        }
-
-        function loadPendingOps(id) {
-            activeJob = (JSON.parse(localStorage.getItem('tj_history'))).find(x => x.id === id);
-            localStorage.setItem('tj_active', JSON.stringify(activeJob));
-            navTo('ops');
-        }
-
-        function descargarManualHist(id) {
-            const h = (JSON.parse(localStorage.getItem('tj_history'))).find(x => x.id === id);
-            if(h) descargarPDF(h);
         }
 
         init();
