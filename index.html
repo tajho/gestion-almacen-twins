@@ -3,104 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Elite - Exclusive UI</title>
+    <title>Twins Despacho - Signature Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --dark-bg: #0a0c10; --card-bg: #141820; }
-        body { font-family: 'Inter', sans-serif; background: var(--dark-bg); color: #fff; margin: 0; overflow-x: hidden; }
+        :root { --neon-cyan: #00f2ff; --bg-dark: #0a0c10; --card-dark: #141820; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #fff; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
-        /* Tipografía Exclusiva */
-        .title-elite { font-family: 'Syncopate', sans-serif; letter-spacing: -1px; }
+        /* Tipografía de Alto Rendimiento */
+        .title-signature { font-family: 'Syncopate', sans-serif; letter-spacing: -1px; text-transform: uppercase; }
 
-        /* Efecto Neumórfico Profundo */
-        .neu-inset { background: var(--card-bg); box-shadow: inset 6px 6px 12px #080a0d, inset -6px -6px 12px #202633; border-radius: 2rem; }
-        .neu-out { background: var(--card-bg); box-shadow: 8px 8px 16px #080a0d, -4px -4px 12px #1c222e; border-radius: 2rem; }
+        /* Neumorfismo Industrial Profundo */
+        .neu-inset { background: var(--card-dark); box-shadow: inset 6px 6px 12px #080a0d, inset -6px -6px 12px #202633; border-radius: 2rem; }
+        .neu-out { background: var(--card-dark); box-shadow: 8px 8px 16px #080a0d, -4px -4px 12px #1c222e; border-radius: 2rem; }
         
         /* Botones Acción Elite */
-        .btn-action { background: linear-gradient(145deg, #161b24, #12151c); border: 1px solid rgba(255,255,255,0.03); color: var(--neon); font-weight: 900; transition: 0.2s; text-transform: uppercase; }
-        .btn-action:active { box-shadow: inset 4px 4px 10px #000; transform: scale(0.97); color: #fff; }
+        .btn-signature { background: linear-gradient(145deg, #161b24, #12151c); border: 1px solid rgba(255,255,255,0.03); color: var(--neon-cyan); font-weight: 900; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-signature:active { box-shadow: inset 4px 4px 10px #000; transform: scale(0.97); color: #fff; }
 
-        .view { display: none; min-height: 100vh; padding: 2rem; }
-        .view.active { display: flex; flex-direction: column; animation: reveal 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes reveal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .view { display: none; min-height: 100vh; padding: 2rem; flex-direction: column; }
+        .view.active { display: flex; animation: reveal 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes reveal { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* Buscador Flotante */
-        .search-res { background: #1a202c; border: 1px solid var(--neon); box-shadow: 0 0 20px rgba(0,242,255,0.2); border-radius: 1.5rem; }
+        /* Buscador Flotante "HUD" */
+        .search-hud { background: rgba(20, 24, 32, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0,242,255,0.15); border-radius: 1.5rem; }
         
         /* Barra de Progreso Neon */
-        .bar-container { height: 6px; background: #080a0d; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #00f2ff, #0066ff); box-shadow: 0 0 10px var(--neon); }
+        .bar-container { height: 4px; background: #080a0d; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #00f2ff, #0066ff); box-shadow: 0 0 15px var(--neon-cyan); transition: width 0.3s ease; }
     </style>
 </head>
 <body>
 
-    <header class="p-6 flex justify-between items-center fixed top-0 w-full z-50 bg-black/20 backdrop-blur-xl">
+    <header class="p-6 flex justify-between items-center fixed top-0 w-full z-50 bg-black/10 backdrop-blur-lg border-b border-white/5">
         <div class="flex flex-col">
-            <h1 class="title-elite text-lg font-bold leading-none">TWINS<span class="text-[#00f2ff]">ELITE</span></h1>
-            <p class="text-[7px] tracking-[0.4em] font-black text-slate-500 mt-1">LOGISTICS INFRASTRUCTURE</p>
+            <h1 class="title-signature text-lg font-bold leading-none">TWINS<span class="text-[#00f2ff]">ELITE</span></h1>
+            <p class="text-[7px] tracking-[0.5em] font-black text-slate-600 mt-1 uppercase">Logistics Infrastructure</p>
         </div>
-        <div class="w-10 h-10 neu-out flex items-center justify-center border border-white/5" onclick="navTo('historial')">
-            <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
+        <div class="w-12 h-12 neu-out flex items-center justify-center border border-white/5 group active:scale-95 transition-all" onclick="navTo('historial')">
+            <div class="w-2 h-2 bg-cyan-400 rounded-full group-active:bg-white animate-pulse"></div>
         </div>
     </header>
 
     <div id="view-home" class="view active pt-28">
-        <div class="mb-12">
-            <p class="text-[10px] font-black text-cyan-500 mb-2 tracking-widest">SISTEMA AUTORIZADO: ANGELO NUÑEZ</p>
-            <h2 class="text-5xl font-black italic tracking-tighter leading-tight">MASTER<br>CONTROL.</h2>
+        <div class="mb-12 text-left">
+            <p class="text-[10px] font-black text-cyan-500 mb-2 tracking-widest uppercase">System Authorized: Angelo Nuñez Durand</p>
+            <h2 class="text-5xl font-black italic tracking-tighter leading-tight uppercase text-slate-100">Master<br>Terminal.</h2>
         </div>
         
         <div class="grid gap-6">
-            <button onclick="navTo('crear')" class="neu-out p-8 btn-action text-left relative overflow-hidden">
-                <span class="relative z-10 text-xl">Nueva Operación</span>
-                <div class="absolute right-[-10px] bottom-[-10px] opacity-10 text-6xl">📦</div>
+            <button onclick="navTo('crear')" class="neu-out p-8 btn-signature text-left flex justify-between items-center relative overflow-hidden">
+                <span class="relative z-10 text-xl font-black">NUEVO DESPACHO</span>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
             </button>
-            <button onclick="navTo('historial')" class="neu-out p-8 btn-action text-left relative overflow-hidden">
-                <span class="relative z-10 text-xl text-slate-400">Archivos PDF</span>
-                <div class="absolute right-[-10px] bottom-[-10px] opacity-10 text-6xl italic font-black">LOGS</div>
+            <button onclick="navTo('historial')" class="neu-out p-8 btn-signature text-left flex justify-between items-center relative overflow-hidden">
+                <span class="relative z-10 text-xl font-black text-slate-500">HISTORIAL LOGS</span>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
             </button>
         </div>
     </div>
 
     <div id="view-crear" class="view pt-28">
-        <div class="neu-inset p-6 mb-8">
-            <input type="text" id="c-id" class="bg-transparent w-full text-cyan-400 font-bold placeholder:text-slate-700 outline-none uppercase mb-6" placeholder="ID DEL CONTENEDOR_">
+        <div class="neu-inset p-6 mb-8 border border-white/5">
+            <input type="text" id="c-id" class="bg-transparent w-full text-cyan-400 font-bold placeholder:text-slate-800 outline-none uppercase mb-6 tracking-widest" placeholder="ID DEL CONTENEDOR_">
             <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="bg-transparent w-full text-white font-bold placeholder:text-slate-700 outline-none mb-2" placeholder="BUSCAR SKU / DESCRIPCIÓN_">
-                <div id="results" class="absolute z-50 left-0 right-0 search-res hidden max-h-60 overflow-y-auto"></div>
+                <input type="text" id="s-sku" oninput="smartSearch()" class="bg-transparent w-full text-white font-bold placeholder:text-slate-800 outline-none mb-2" placeholder="BUSCAR SKU / DESCRIPCIÓN_">
+                <div id="results" class="absolute z-50 left-0 right-0 search-hud hidden max-h-64 overflow-y-auto"></div>
             </div>
             <div class="flex gap-4 mt-6">
-                <input type="number" id="s-meta" class="neu-inset bg-transparent flex-1 p-4 text-center font-black text-2xl" placeholder="00">
-                <button onclick="addMani()" class="w-20 neu-out text-3xl font-black text-cyan-400">+</button>
+                <input type="number" id="s-meta" class="neu-inset bg-transparent flex-1 p-5 text-center font-black text-3xl text-white" placeholder="00">
+                <button onclick="addMani()" class="w-20 neu-out text-4xl font-black text-cyan-400 active:text-white">+</button>
             </div>
         </div>
-        <div id="pre-list" class="flex-grow space-y-4 overflow-y-auto pb-32"></div>
+        <div id="pre-list" class="flex-grow space-y-4 overflow-y-auto pb-32 pr-2"></div>
         <div class="fixed bottom-8 left-8 right-8">
-            <button onclick="launchJob()" class="btn-action w-full p-6 rounded-3xl text-xl shadow-[0_0_30px_rgba(0,242,255,0.1)] border-cyan-900/30">INICIAR TERMINAL</button>
+            <button onclick="launchTerminal()" class="btn-signature w-full p-6 rounded-3xl text-xl shadow-[0_0_40px_rgba(0,242,255,0.1)] border-cyan-900/30">Lanzar Operación</button>
         </div>
     </div>
 
     <div id="view-ops" class="view pt-28">
-        <div class="neu-out p-8 mb-8 relative">
-            <div class="absolute top-4 left-6 text-[8px] font-black text-cyan-500 tracking-widest">LIVE TRACKER</div>
-            <select id="sel-sku" onchange="updateOpsUI()" class="bg-transparent w-full text-3xl font-black text-center outline-none my-6 appearance-none uppercase"></select>
+        <div class="neu-out p-8 mb-8 relative border border-white/5">
+            <div class="absolute top-4 left-6 text-[8px] font-black text-cyan-500 tracking-[0.3em] uppercase animate-pulse">Live Tracker Active</div>
+            <select id="sel-sku" onchange="updateOpsUI()" class="bg-transparent w-full text-3xl font-black text-center text-white outline-none my-6 appearance-none uppercase tracking-tight"></select>
             <div class="flex justify-center items-center gap-8">
-                <input type="number" id="qty-in" class="neu-inset w-32 h-24 text-center text-5xl font-black bg-transparent" placeholder="0">
-                <button onclick="registrarBulto()" class="w-24 h-24 neu-out bg-cyan-500/10 text-cyan-400 rounded-[2.5rem] font-black text-2xl border border-cyan-500/20">OK</button>
+                <input type="number" id="qty-in" class="neu-inset w-36 h-28 text-center text-6xl font-black bg-transparent text-white" placeholder="0">
+                <button onclick="registrarBulto()" class="w-28 h-28 neu-out bg-cyan-500/5 text-cyan-400 rounded-[2.5rem] font-black text-3xl border border-cyan-500/20 active:scale-95 active:bg-cyan-500 active:text-white transition-all">OK</button>
             </div>
         </div>
-        <div id="op-progress" class="space-y-6 pb-40"></div>
+        <div id="op-progress" class="space-y-6 pb-40 overflow-y-auto pr-2"></div>
         <div class="fixed bottom-8 left-8 right-8 flex gap-4">
-            <button onclick="finalizeAndReport()" class="btn-action flex-1 p-6 rounded-3xl !text-emerald-400 bg-emerald-950/10 border-emerald-900/30">FINALIZAR_CIERRE</button>
+            <button onclick="finalizarYReportar()" class="btn-signature flex-1 p-6 rounded-3xl !text-emerald-400 bg-emerald-950/10 border-emerald-900/40 shadow-emerald-500/10 shadow-xl">Finalizar Cierre</button>
         </div>
     </div>
 
     <div id="view-historial" class="view pt-28">
-        <h2 class="title-elite text-2xl mb-8">LOGS_ARCHIVO</h2>
-        <div id="history-list" class="space-y-6 pb-20"></div>
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="navTo('home')" class="text-slate-600 uppercase font-black text-xs tracking-widest">← Inicio</button>
+            <h2 class="title-signature text-2xl font-bold">Logs_Archivo</h2>
+        </div>
+        <div id="history-list" class="space-y-6 pb-20 overflow-y-auto pr-2"></div>
     </div>
 
     <script>
@@ -114,10 +117,9 @@
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
                 raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().trim().toUpperCase()] = r.DESCRIPCION; });
-            } catch (e) {}
-            // No cargamos automáticamente la descarga para evitar errores de flujo
-            const active = localStorage.getItem('tj_active');
-            if(active) { activeJob = JSON.parse(active); }
+            } catch (e) { console.warn("Modo offline o error de DB"); }
+            activeJob = JSON.parse(localStorage.getItem('tj_active'));
+            if (activeJob) { navTo('ops'); }
         }
 
         function navTo(v) {
@@ -127,12 +129,13 @@
             if(v === 'ops' && activeJob) updateOpsUI();
         }
 
+        // BUSCADOR HUD: Sugiere por Nombre o Descripción
         function smartSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase().trim();
             const resDiv = document.getElementById('results');
             if(val.length < 2) { resDiv.classList.add('hidden'); return; }
-            const matches = Object.entries(db_items).filter(([sku, desc]) => sku.includes(val) || desc.toUpperCase().includes(val)).slice(0, 5);
-            resDiv.innerHTML = matches.map(([sku, desc]) => `<div onclick="setProd('${sku}')" class="p-5 border-b border-white/5 active:bg-cyan-500/20"><p class="font-black text-cyan-400">${sku}</p><p class="text-[9px] text-slate-400">${desc}</p></div>`).join('');
+            const matches = Object.entries(db_items).filter(([sku, desc]) => sku.includes(val) || desc.toUpperCase().includes(val)).slice(0, 8);
+            resDiv.innerHTML = matches.map(([sku, desc]) => `<div onclick="setProd('${sku}')" class="p-5 border-b border-white/5 active:bg-cyan-500/20"><p class="font-black text-cyan-400 text-sm tracking-widest">${sku}</p><p class="text-[9px] text-slate-400 uppercase truncate">${desc}</p></div>`).join('');
             resDiv.classList.remove('hidden');
         }
 
@@ -146,7 +149,7 @@
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            currentMani.push({ sku, desc: db_items[sku] || "N/A", meta, real: 0 });
+            currentMani.push({ sku, desc: db_items[sku] || "S/D", meta, real: 0 });
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
@@ -154,15 +157,18 @@
         function renderPreList() {
             document.getElementById('pre-list').innerHTML = currentMani.map((i, idx) => `
                 <div class="neu-out p-5 flex justify-between items-center border border-white/5">
-                    <div><p class="font-black text-xs">${i.sku}</p><p class="text-[8px] text-slate-500 uppercase">${i.desc}</p></div>
-                    <span class="text-cyan-400 font-black">${i.meta} CJ</span>
+                    <div><p class="font-black text-white text-xs tracking-widest">${i.sku}</p><p class="text-[8px] text-slate-600 uppercase tracking-wider">${i.desc}</p></div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-cyan-400 font-black text-sm">${i.meta} CJ</span>
+                        <button onclick="currentMani.splice(${idx},1);renderPreList()" class="text-red-600 text-lg font-bold">×</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function launchJob() {
-            if(currentMani.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "ELITE-" + Math.floor(Math.random()*900);
+        function launchTerminal() {
+            if(currentMani.length === 0) return alert("Agrega al menos un ítem al manifiesto.");
+            const id = document.getElementById('c-id').value.toUpperCase() || "ELITE-" + Math.floor(1000 + Math.random()*9000);
             activeJob = { id, items: [...currentMani], fecha: new Date().toLocaleString(), status: 'EJECUCION' };
             localStorage.setItem('tj_active', JSON.stringify(activeJob));
             let hist = JSON.parse(localStorage.getItem('tj_history')) || [];
@@ -191,71 +197,91 @@
             document.getElementById('op-progress').innerHTML = activeJob.items.map(i => {
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
                 const isCurrent = i.sku === document.getElementById('sel-sku').value;
-                return `<div class="neu-inset p-5 transition-all ${isCurrent ? 'border border-cyan-500/50 scale-[1.02]' : 'opacity-40'}">
-                    <div class="flex justify-between font-black text-[10px] mb-2"><span>${i.sku}</span><span class="text-cyan-400">${i.real}/${i.meta}</span></div>
+                return `<div class="neu-inset p-5 transition-all duration-300 ${isCurrent ? 'border border-cyan-500/40 scale-[1.02]' : 'opacity-30'}">
+                    <div class="flex justify-between font-black text-[10px] mb-2"><span>${i.sku}</span><span class="text-cyan-400">${i.real}/${i.meta} CJ</span></div>
                     <div class="bar-container"><div class="bar-fill" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
 
-        // --- MOTOR DE CIERRE EXCLUSIVO ---
-        function finalizeAndReport() {
+        // --- MOTOR DE FINALIZADO IMPENETRABLE ---
+        function finalizarYReportar() {
             if(!activeJob) return;
-            if(!confirm("¿CONFIRMAR CIERRE DE TERMINAL?")) return;
+            if(!confirm("¿CONFIRMAR CIERRE OFICIAL DE TERMINAL?")) return;
 
+            // 1. Bloquear estado en el historial global ANTES de descargar PDF
             let hist = JSON.parse(localStorage.getItem('tj_history')) || [];
-            const idx = hist.findIndex(h => h.id === activeJob.id && h.status !== 'CERRADO');
-            activeJob.status = "CERRADO";
+            const idx = hist.findIndex(h => h.id === activeJob.id && h.status !== 'COMPLETADO');
+            activeJob.status = "COMPLETADO";
             if(idx !== -1) hist[idx] = activeJob;
 
             localStorage.setItem('tj_history', JSON.stringify(hist));
             
-            // Generar PDF con los datos finales
-            generateElitePDF(activeJob);
+            // 2. Generar el PDF con los datos finales
+            descargarPDF(activeJob);
 
-            // Reset total
+            // 3. Limpiar sesión activa y salir
             localStorage.removeItem('tj_active');
             activeJob = null;
             navTo('home');
         }
 
-        function generateElitePDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Diseño Estilo Manifiesto Industrial
-            doc.setFillColor(10, 12, 16); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(0, 242, 255); doc.setFontSize(22); doc.text("TWINS DESPACHO ELITE", 14, 25);
-            doc.setTextColor(150, 150, 150); doc.setFontSize(8); doc.text("SYSTEM AUTHORIZED BY ANGELO NUÑEZ", 14, 33);
-            
-            doc.setTextColor(0,0,0); doc.setFontSize(10);
-            doc.text(`CONTENEDOR: ${data.id}`, 14, 55);
-            doc.text(`REGISTRO: ${data.fecha}`, 14, 60);
+        function descargarPDF(data) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Diseño Elite Industrial
+                doc.setFillColor(10, 12, 16); doc.rect(0, 0, 210, 45, 'F');
+                doc.setTextColor(0, 242, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("TWINS DESPACHO ELITE", 14, 25);
+                doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.text("SYSTEM AUTHORIZED BY ANGELO NUÑEZ DURAND", 14, 33);
+                
+                doc.setTextColor(0,0,0); doc.setFontSize(10);
+                doc.text(`ID CONTENEDOR: ${data.id}`, 14, 55);
+                doc.text(`REGISTRO FINAL: ${data.fecha}`, 14, 60);
 
-            doc.autoTable({
-                startY: 70,
-                head: [['SKU CODE', 'DESCRIPTION', 'PACK', 'REAL', 'STATUS']],
-                body: data.items.map(i => [i.sku, i.desc.slice(0,30), i.meta, i.real, (i.real === i.meta ? 'COMPLETADO' : 'DISCREPANCIA')]),
-                theme: 'grid',
-                headStyles: { fillColor: [20, 24, 32], textColor: [0, 242, 255] }
-            });
+                doc.autoTable({
+                    startY: 70,
+                    head: [['SKU CODE', 'DESCRIPTION', 'PACK CJ', 'REAL CJ', 'STATUS']],
+                    body: data.items.map(i => [i.sku, i.desc.slice(0,35), i.meta, i.real, (i.real === i.meta ? 'OK' : 'DISCREPANCIA')]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [20, 24, 32], textColor: [0, 242, 255] },
+                    styles: { fontSize: 8, cellPadding: 3 }
+                });
 
-            doc.setFontSize(8);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`ELITE_LOG_${data.id}.pdf`);
+                doc.setFontSize(8); doc.setTextColor(50);
+                const finalY = doc.lastAutoTable.finalY + 20;
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
+                doc.save(`ELITE_LOG_${data.id}.pdf`);
+            } catch(e) { alert("Error al generar PDF. Asegúrate de tener permisos."); }
         }
 
         function renderHistory() {
             const hist = JSON.parse(localStorage.getItem('tj_history')) || [];
+            if(hist.length === 0) { document.getElementById('history-list').innerHTML = `<p class="text-center text-slate-700 text-[10px] mt-20 uppercase font-bold tracking-[0.2em]">No hay registros</p>`; return; }
             document.getElementById('history-list').innerHTML = hist.map(h => `
-                <div class="neu-out p-6 border-l-4 ${h.status==='CERRADO'?'border-l-emerald-500':'border-l-cyan-500'}">
+                <div class="neu-out p-6 border-l-4 ${h.status==='COMPLETADO'?'border-l-emerald-500':'border-l-cyan-500'} border-white/5 active:scale-95 transition-all">
                     <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-[8px] font-bold text-slate-500 uppercase">${h.fecha}</p><h3 class="text-xl font-black italic">${h.id}</h3></div>
-                        <span class="text-[10px] text-cyan-400 font-black">${h.status}</span>
+                        <div><p class="text-[8px] font-bold text-slate-600 uppercase tracking-widest">${h.fecha}</p><h3 class="text-xl font-black italic text-white tracking-tight">${h.id}</h3></div>
+                        <span class="text-[9px] font-black uppercase text-cyan-400 bg-cyan-950/20 px-2 py-1 rounded">${h.status}</span>
                     </div>
-                    <button onclick='generateElitePDF(${JSON.stringify(h)})' class="w-full p-4 neu-inset text-[10px] font-black tracking-widest text-slate-300">DESCARGAR PDF REPORTE</button>
+                    <div class="flex gap-2">
+                        ${h.status!=='COMPLETADO' ? `<button onclick="loadPendingOps('${h.id}')" class="flex-1 btn-signature p-3 rounded-xl text-[9px] !text-cyan-400">RESUMIR</button>`:''}
+                        <button onclick='descargarManualHist("${h.id}")' class="flex-1 btn-signature p-3 rounded-xl text-[9px] !text-slate-400">PDF REPORTE</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function loadPendingOps(id) {
+            activeJob = (JSON.parse(localStorage.getItem('tj_history'))).find(x => x.id === id);
+            localStorage.setItem('tj_active', JSON.stringify(activeJob));
+            navTo('ops');
+        }
+
+        function descargarManualHist(id) {
+            const h = (JSON.parse(localStorage.getItem('tj_history'))).find(x => x.id === id);
+            if(h) descargarPDF(h);
         }
 
         init();
