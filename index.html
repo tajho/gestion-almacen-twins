@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TAJHO.OS v58 - Master</title>
+    <title>TAJHO.OS v59 - Precision</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
@@ -11,181 +11,128 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f4f7fa; color: #1e293b; height: 100vh; overflow: hidden; margin: 0; }
         
-        /* DISEÑO DE BARRA DE PROGRESO DINÁMICA */
-        .logistics-track { height: 70px; background: #e2e8f0; border-radius: 1.5rem; position: relative; overflow: hidden; border: 3px solid #fff; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
-        .progress-flow { position: absolute; height: 100%; background: linear-gradient(90deg, #2563eb, #3b82f6); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* ICONO DE CAMIÓN ELITE */
-        .truck-container { position: absolute; top: 50%; transform: translateY(-50%); transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 30; }
-        .truck-icon-pro { background: #1e293b; color: white; padding: 6px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid #3b82f6; }
-        .truck-wheels { position: absolute; bottom: -4px; width: 100%; display: flex; justify-content: space-around; }
-        .wheel { width: 6px; height: 6px; background: #000; border-radius: 50%; animation: spin 0.5s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* BUSCADOR Y RESULTADOS */
-        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; max-h: 250px; overflow-y: auto; z-index: 1000; margin-top: 8px; }
-        
-        /* BOTÓN INFERIOR FIJO */
-        .footer-fixed { position: fixed; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(to top, #f4f7fa 80%, transparent); z-index: 500; }
-        .btn-master { background: #1e293b; color: white; border-radius: 1.2rem; padding: 1.2rem; width: 100%; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 10px 25px rgba(30, 41, 59, 0.3); }
-
-        .view { display: none; height: 100vh; padding: 1.2rem; flex-direction: column; }
+        /* Layout Compacto */
+        .view { display: none; height: 100vh; padding: 1rem; flex-direction: column; box-sizing: border-box; }
         .view.active { display: flex; }
-        .input-pro { background: white; border: 2px solid #e2e8f0; border-radius: 1.2rem; padding: 1.2rem; width: 100%; font-weight: 700; outline: none; transition: 0.3s; }
-        .input-pro:focus { border-color: #2563eb; }
+
+        /* Cronómetro Flotante */
+        .timer-badge { background: #1e293b; color: #3b82f6; padding: 4px 12px; border-radius: 20px; font-weight: 900; font-size: 12px; font-variant-numeric: tabular-nums; border: 1px solid #3b82f6; shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* Barra de Progreso Mejorada */
+        .logistics-track { height: 50px; background: #e2e8f0; border-radius: 1rem; position: relative; overflow: hidden; border: 2px solid #fff; }
+        .progress-flow { position: absolute; height: 100%; background: linear-gradient(90deg, #2563eb, #3b82f6); transition: width 0.5s ease; }
+        .truck-unit { position: absolute; top: 50%; transform: translateY(-50%); transition: left 0.5s ease; z-index: 10; display: flex; align-items: center; }
+        .truck-body { background: #1e293b; color: white; padding: 4px 8px; border-radius: 8px; font-size: 8px; font-weight: 900; border: 1px solid #3b82f6; }
+
+        /* Inputs y Botones */
+        .input-pro { background: white; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 0.8rem; width: 100%; font-weight: 700; outline: none; }
+        .footer-fixed { position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(to top, #f4f7fa 80%, transparent); }
+        .btn-action { background: #1e293b; color: white; border-radius: 1rem; padding: 1rem; width: 100%; font-weight: 900; text-transform: uppercase; }
+
+        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 100; max-h: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <header class="h-20 px-6 flex justify-between items-center bg-white border-b">
+    <header class="h-16 px-6 flex justify-between items-center bg-white border-b">
         <div>
-            <p class="text-[8px] font-black text-blue-600 uppercase tracking-widest">Master Inventory</p>
-            <h1 class="text-xl font-black italic">TAJHO<span class="text-slate-400">.OS</span></h1>
+            <p class="text-[7px] font-black text-blue-600 uppercase tracking-widest">Master Inventory</p>
+            <h1 class="text-lg font-black italic">TAJHO<span class="text-slate-400">.OS</span></h1>
         </div>
-        <button onclick="goHome()" class="p-3 bg-slate-100 rounded-xl text-slate-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
+        <div id="op-timer" class="timer-badge hidden">00:00:00</div>
     </header>
 
-    <div id="view-home" class="view active">
-        <div class="mt-6 mb-8 text-center">
-            <h2 class="text-3xl font-black text-slate-900 leading-tight">CONTROL DE<br><span class="text-blue-600">INVENTARIO</span></h2>
-        </div>
-        <button onclick="navTo('crear')" class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all">
-            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg></div>
-            <span class="font-black text-slate-800 uppercase tracking-widest text-sm">NUEVA DESCARGA</span>
-        </button>
-    </div>
-
-    <div id="view-crear" class="view">
-        <h2 class="text-xl font-black mb-4">CONFIGURAR <span class="text-blue-600 italic">CARGA</span></h2>
-        <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm space-y-4 mb-4 relative">
+    <div id="view-crear" class="view active">
+        <h2 class="text-lg font-black mb-3">CONFIGURAR <span class="text-blue-600 italic">CARGA</span></h2>
+        <div class="bg-white p-4 rounded-[1.5rem] border border-slate-100 shadow-sm space-y-3 relative">
             <div class="relative">
-                <input type="text" id="s-sku" oninput="smartSearch()" class="input-pro" placeholder="Código, Nombre o Iniciales">
+                <input type="text" id="s-sku" oninput="smartSearch()" class="input-pro" placeholder="SKU o Descripción">
                 <div id="results" class="search-results hidden"></div>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-2">
                 <input type="number" id="s-meta" class="input-pro flex-1" placeholder="Meta">
-                <button onclick="addMani()" class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
+                <button onclick="addMani()" class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
         </div>
-        <div class="flex-grow overflow-y-auto pb-32">
+        <div class="flex-grow overflow-y-auto mt-4 pb-24">
             <div id="pre-list" class="space-y-2"></div>
         </div>
         <div class="footer-fixed">
-            <button id="btn-start" onclick="openModal()" class="btn-master hidden">CONFIRMAR MANIFIESTO</button>
+            <button id="btn-start" onclick="openModal()" class="btn-action hidden">INICIAR DESCARGA</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest italic">Avance Logístico</span>
-                <span id="global-pc" class="text-3xl font-black text-slate-900">0%</span>
+        <div class="bg-white p-4 rounded-[1.5rem] shadow-sm mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[9px] font-black text-blue-600 uppercase italic">Avance Logístico</span>
+                <span id="global-pc" class="text-xl font-black">0%</span>
             </div>
-            
             <div class="logistics-track">
                 <div id="progress-flow" class="progress-flow" style="width: 0%"></div>
-                <div id="truck-unit" class="truck-container" style="left: 0%">
-                    <div class="truck-icon-pro">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
-                        <span class="text-[9px] font-black uppercase italic">TAJHO</span>
-                    </div>
-                    <div class="truck-wheels">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
+                <div id="truck-unit" class="truck-unit" style="left: 0%">
+                    <div class="truck-body">TAJHO</div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mb-8 px-6">
-            <select id="sel-sku" onchange="syncItem()" class="text-2xl font-black bg-transparent border-none w-full text-center outline-none italic uppercase text-slate-900"></select>
-            <p id="live-desc" class="text-[10px] font-bold text-blue-500 uppercase mt-1"></p>
+        <div class="text-center mb-4">
+            <select id="sel-sku" onchange="syncItem()" class="text-xl font-black bg-white border-2 border-slate-100 rounded-xl px-4 py-2 w-full outline-none italic uppercase text-slate-900 shadow-sm"></select>
+            <p id="live-desc" class="text-[9px] font-bold text-blue-500 uppercase mt-1 px-4 truncate"></p>
         </div>
 
-        <div class="flex flex-col gap-6 flex-grow justify-center pb-32">
-            <div class="flex items-center justify-center gap-5">
-                <input type="number" id="qty-in" class="input-pro w-32 h-20 text-center text-5xl !rounded-[2rem] border-3" placeholder="0">
-                <button onclick="registrarBulto()" class="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-xl active:scale-75 transition-all"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="qty-in" class="input-pro w-28 h-16 text-center text-3xl !rounded-[1.5rem] border-2 shadow-inner" placeholder="0">
+                <button onclick="registrarBulto()" class="w-16 h-16 bg-blue-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl active:scale-90"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 text-center">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Restante</p>
-                    <p id="live-rem" class="text-3xl font-black">0</p>
+            <div class="grid grid-cols-2 gap-3 px-2">
+                <div class="bg-white p-4 rounded-2xl border border-slate-50 text-center shadow-sm">
+                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Restante</p>
+                    <p id="live-rem" class="text-2xl font-black">0</p>
                 </div>
-                <div class="bg-slate-900 p-6 rounded-3xl text-center">
-                    <p class="text-[9px] font-black text-slate-500 uppercase mb-1">Confirmado</p>
-                    <p id="live-real" class="text-3xl font-black text-white">0</p>
+                <div class="bg-slate-900 p-4 rounded-2xl text-center">
+                    <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Confirmado</p>
+                    <p id="live-real" class="text-2xl font-black text-white">0</p>
                 </div>
             </div>
         </div>
 
         <div class="footer-fixed">
-            <button onclick="finishAndReport()" class="btn-master">CERRAR Y GENERAR REPORTE</button>
+            <button onclick="finishAndReport()" class="btn-action">CERRAR Y GENERAR REPORTE</button>
         </div>
     </div>
 
-    <div id="modal-choice" class="fixed inset-0 z-[1000] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-8">
-        <div class="bg-white w-full rounded-[2.5rem] p-10 text-center shadow-2xl">
-            <h3 class="text-xl font-black italic mb-8 uppercase">¿Iniciar Descarga?</h3>
-            <button onclick="continuarConteo()" class="btn-master">INICIAR AHORA</button>
-            <button onclick="closeModal()" class="text-[10px] font-black text-slate-300 uppercase mt-6 block w-full">CANCELAR</button>
+    <div id="modal-choice" class="fixed inset-0 z-[1000] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-8">
+        <div class="bg-white w-full rounded-[2rem] p-8 text-center">
+            <h3 class="font-black mb-6">¿INICIAR CRONÓMETRO?</h3>
+            <button onclick="continuarConteo()" class="btn-action">EMPEZAR</button>
         </div>
     </div>
 
     <script>
         const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        
-        // Base de datos de respaldo (Local DB) para asegurar que siempre haya info
-        let db_items = {
-            "SKU001": "PRODUCTO DE PRUEBA A",
-            "SKU002": "PRODUCTO DE PRUEBA B",
-            "BOX-01": "CAJA ESTANDAR TAJHO",
-            "UND-20": "INTERIOR ATHLETIC M"
-        };
-        
+        let db_items = {};
         let currentMani = JSON.parse(localStorage.getItem('taj_cur')) || [];
         let activeJob = JSON.parse(localStorage.getItem('taj_active')) || null;
+        let timerInterval;
+        let seconds = 0;
 
         async function init() {
             try {
                 const res = await fetch(CLOUD_URL);
                 const raw = await res.json();
-                // Actualizamos la DB local con los datos frescos de la nube
-                raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase().trim()] = r.DESCRIPCION; });
-            } catch (e) { console.warn("Usando Base de Datos Local de Respaldo"); }
-            navTo('home');
+                raw.forEach(r => { if(r.CODIGO) db_items[r.CODIGO.toString().toUpperCase()] = r.DESCRIPCION; });
+            } catch (e) { console.warn("Modo Offline"); }
         }
 
-        function navTo(v) {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-            document.getElementById('view-' + v).classList.add('active');
-            if(v === 'crear') renderPreList();
-        }
-
-        function goHome() { navTo('home'); }
-
-        // BUSCADOR MEJORADO (SKU, NOMBRE, INICIALES)
         function smartSearch() {
-            const input = document.getElementById('s-sku').value.toUpperCase().trim();
+            const val = document.getElementById('s-sku').value.toUpperCase();
             const resDiv = document.getElementById('results');
-            if(input.length < 1) { resDiv.classList.add('hidden'); return; }
-
-            const matches = Object.keys(db_items).filter(sku => {
-                const desc = db_items[sku].toUpperCase();
-                return sku.includes(input) || desc.includes(input) || desc.split(' ').some(word => word.startsWith(input));
-            }).slice(0, 10);
-
-            if(matches.length > 0) {
-                resDiv.innerHTML = matches.map(sku => `
-                    <div onclick="setProd('${sku}')" class="p-4 border-b border-slate-50 active:bg-blue-50">
-                        <p class="text-[11px] font-black text-blue-600 uppercase">${sku}</p>
-                        <p class="text-[9px] font-bold text-slate-500 uppercase">${db_items[sku]}</p>
-                    </div>
-                `).join('');
-                resDiv.classList.remove('hidden');
-            } else {
-                resDiv.classList.add('hidden');
-            }
+            if(val.length < 1) { resDiv.classList.add('hidden'); return; }
+            const matches = Object.keys(db_items).filter(k => k.includes(val) || db_items[k].toUpperCase().includes(val)).slice(0,8);
+            resDiv.innerHTML = matches.map(k => `<div onclick="setProd('${k}')" class="p-3 border-b text-[10px] font-bold uppercase">${k} - ${db_items[k]}</div>`).join('');
+            resDiv.classList.toggle('hidden', matches.length === 0);
         }
 
         function setProd(sku) {
@@ -195,91 +142,104 @@
         }
 
         function addMani() {
-            const sku = document.getElementById('s-sku').value.toUpperCase().trim();
+            const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            currentMani.push({ sku, desc: db_items[sku] || "PRODUCTO GENERICO", meta, real: 0 });
+            currentMani.push({ sku, desc: db_items[sku] || "S/D", meta, real: 0 });
             localStorage.setItem('taj_cur', JSON.stringify(currentMani));
             renderPreList();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
         function renderPreList() {
-            const container = document.getElementById('pre-list');
-            container.innerHTML = currentMani.map(i => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm border-l-4 border-blue-600">
-                    <p class="text-[11px] font-black uppercase italic">${i.sku}</p>
-                    <p class="text-[11px] font-black text-blue-600">${i.meta} CJ</p>
-                </div>
-            `).join('');
-            if(currentMani.length > 0) document.getElementById('btn-start').classList.remove('hidden');
+            document.getElementById('pre-list').innerHTML = currentMani.map(i => `<div class="bg-white p-3 rounded-xl border-l-4 border-blue-600 flex justify-between font-black text-[11px]"><span>${i.sku}</span><span class="text-blue-600">${i.meta} CJ</span></div>`).join('');
+            document.getElementById('btn-start').classList.toggle('hidden', currentMani.length === 0);
         }
 
         function openModal() { document.getElementById('modal-choice').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-choice').style.display = 'none'; }
-
+        
         function continuarConteo() {
-            closeModal();
-            activeJob = { id: Date.now(), name: "OP-" + new Date().getHours() + new Date().getMinutes(), items: [...currentMani] };
+            document.getElementById('modal-choice').style.display = 'none';
+            activeJob = { id: Date.now(), start: new Date().toLocaleTimeString(), items: [...currentMani] };
             localStorage.setItem('taj_active', JSON.stringify(activeJob));
             currentMani = []; localStorage.removeItem('taj_cur');
-            startOps(activeJob);
+            startTimer();
+            startOps();
         }
 
-        function startOps(job) {
-            navTo('ops');
-            document.getElementById('sel-sku').innerHTML = job.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
+        function startTimer() {
+            document.getElementById('op-timer').classList.remove('hidden');
+            timerInterval = setInterval(() => {
+                seconds++;
+                let h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                let m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                let s = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('op-timer').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        function startOps() {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-ops').classList.add('active');
+            // Añadir opción por defecto
+            const selector = document.getElementById('sel-sku');
+            selector.innerHTML = `<option value="">SELECCIONA PRODUCTO</option>` + activeJob.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             syncItem();
         }
 
         function syncItem() {
-            const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
-            document.getElementById('live-desc').innerText = item.desc;
-            document.getElementById('live-rem').innerText = Math.max(0, item.meta - item.real);
-            document.getElementById('live-real').innerText = item.real;
+            const val = document.getElementById('sel-sku').value;
+            const item = activeJob.items.find(i => i.sku === val);
+            if(item) {
+                document.getElementById('live-desc').innerText = item.desc;
+                document.getElementById('live-rem').innerText = Math.max(0, item.meta - item.real);
+                document.getElementById('live-real').innerText = item.real;
+            } else {
+                document.getElementById('live-desc').innerText = "ESPERANDO SELECCIÓN";
+                document.getElementById('live-rem').innerText = "0";
+                document.getElementById('live-real').innerText = "0";
+            }
 
             const totalM = activeJob.items.reduce((a,b) => a + b.meta, 0);
             const totalR = activeJob.items.reduce((a,b) => a + b.real, 0);
             const pc = Math.min(Math.round((totalR / totalM) * 100), 100);
-            
             document.getElementById('progress-flow').style.width = pc + "%";
-            document.getElementById('truck-unit').style.left = `calc(${pc}% - 30px)`;
+            document.getElementById('truck-unit').style.left = `calc(${pc}% - 35px)`;
             document.getElementById('global-pc').innerText = pc + "%";
-            
-            // Si llega a 100%, ocultar ruedas
-            const wheels = document.querySelectorAll('.wheel');
-            if(pc >= 100) wheels.forEach(w => w.style.animation = 'none');
-            else wheels.forEach(w => w.style.animation = 'spin 0.5s linear infinite');
-
-            localStorage.setItem('taj_active', JSON.stringify(activeJob));
         }
 
         function registrarBulto() {
+            const val = document.getElementById('sel-sku').value;
             const q = parseInt(document.getElementById('qty-in').value);
-            if(!q) return;
-            const item = activeJob.items.find(i => i.sku === document.getElementById('sel-sku').value);
+            if(!val || !q) { alert("Selecciona producto y cantidad"); return; }
+            
+            const item = activeJob.items.find(i => i.sku === val);
             item.real += q;
             document.getElementById('qty-in').value = '';
+            
+            // VOLVER A "SELECCIONA PRODUCTO"
+            document.getElementById('sel-sku').value = "";
+            
             syncItem();
-            navigator.vibrate(20);
-            fetch(CLOUD_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({tipo:'CARGA', datos: [new Date().toLocaleString(), item.sku, q]})});
+            localStorage.setItem('taj_active', JSON.stringify(activeJob));
+            navigator.vibrate(30);
         }
 
         function finishAndReport() {
+            clearInterval(timerInterval);
+            const duration = document.getElementById('op-timer').innerText;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(14); doc.setFont("helvetica", "bold");
-            doc.text("REPORTE OPERATIVO - TAJHO.OS", 14, 20);
+            doc.setFontSize(14); doc.text("REPORTE OPERATIVO TAJHO.OS", 14, 20);
+            doc.setFontSize(10); doc.text(`Inicio: ${activeJob.start} | Duración Total: ${duration}`, 14, 28);
             doc.autoTable({
-                startY: 25, head: [['SKU', 'META', 'REAL', 'DIF']],
+                startY: 35, head: [['SKU', 'META', 'REAL', 'DIF']],
                 body: activeJob.items.map(i => [i.sku, i.meta, i.real, i.meta-i.real]),
                 theme: 'striped', headStyles: { fillColor: [30, 41, 59] }
             });
-            doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 12);
-            doc.save(`REPORTE_TAJHO_${activeJob.name}.pdf`);
-            localStorage.removeItem('taj_active');
-            navTo('home');
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
+            doc.save(`TAJHO_OP_${Date.now()}.pdf`);
+            location.reload();
         }
 
         init();
