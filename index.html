@@ -34,8 +34,8 @@
         .nav-btn { padding: 10px 18px; border-radius: 25px; border: none; background: transparent; color: #fff; font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .nav-btn.active { background: var(--accent); }
 
-        /* Botón OK de Conteo Estilo Industrial */
-        .btn-ok { width: 70px; height: 70px; background: #000; color: #fff; border-radius: 22px; display: flex; items-center: center; justify-content: center; font-size: 20px; font-weight: 800; box-shadow: 0 8px 15px rgba(0,0,0,0.2); active:scale-90; }
+        .btn-ok { width: 70px; height: 70px; background: #000; color: #fff; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; box-shadow: 0 8px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .btn-ok:active { scale: 0.9; }
     </style>
 </head>
 <body>
@@ -52,22 +52,14 @@
             <h2 class="text-4xl font-black tracking-tighter leading-none mb-2">¿Qué hacemos hoy, <span class="text-blue-600">Tajho?</span></h2>
             <div class="h-1 w-12 bg-black rounded-full"></div>
         </div>
-
         <div class="grid gap-3">
             <div onclick="navTo('crear')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 bg-blue-50 rounded-2xl text-blue-600">📦</div>
-                    <span class="text-[8px] font-black bg-blue-100 text-blue-600 px-2 py-1 rounded-full uppercase">Ingresos</span>
-                </div>
+                <div class="flex justify-between items-start mb-6 text-blue-600"><span>📦</span><span class="text-[8px] font-black bg-blue-100 px-2 py-1 rounded-full uppercase">Ingresos</span></div>
                 <p class="text-xl font-black tracking-tight">Crear Contenedor</p>
                 <p class="text-[10px] text-slate-400 font-semibold uppercase">Registra entrada de productos</p>
             </div>
-
             <div onclick="navTo('historial')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 bg-slate-50 rounded-2xl text-slate-900">📋</div>
-                    <span class="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-full uppercase">Registros</span>
-                </div>
+                <div class="flex justify-between items-start mb-6 text-slate-900"><span>📋</span><span class="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-full uppercase">Registros</span></div>
                 <p class="text-xl font-black tracking-tight">Historial & Pendientes</p>
                 <p class="text-[10px] text-slate-400 font-semibold uppercase">Revisar o continuar trabajos</p>
             </div>
@@ -76,46 +68,26 @@
 
     <div id="view-crear" class="view">
         <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Configurar Operación</h3>
-        
         <div class="space-y-2">
-            <div class="data-field">
-                <p class="data-label">ID Contenedor</p>
-                <input type="text" id="auto-id-input" class="data-input" placeholder="Ej: CT-LIMA-001">
-            </div>
-
+            <div class="data-field"><p class="data-label">ID Contenedor</p><input type="text" id="auto-id-input" class="data-input" placeholder="Ej: CT-LIMA-001"></div>
             <div class="relative">
-                <div class="data-field">
-                    <p class="data-label">Producto (Google Sheets)</p>
-                    <input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Escribe SKU o Nombre...">
-                </div>
+                <div class="data-field"><p class="data-label">Producto (Google Sheets)</p><input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Escribe SKU o Nombre..."></div>
                 <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden border border-slate-100 overflow-hidden"></div>
             </div>
-
             <div class="flex gap-2">
-                <div class="data-field flex-1">
-                    <p class="data-label">Meta Cajas</p>
-                    <input type="number" id="s-meta" class="data-input text-lg font-black" placeholder="0">
-                </div>
-                <button onclick="addToQueue()" class="bg-black text-white px-8 rounded-2xl font-black text-xl active:scale-90 transition-all">＋</button>
+                <div class="data-field flex-1"><p class="data-label">Meta Cajas</p><input type="number" id="s-meta" class="data-input text-lg font-black" placeholder="0"></div>
+                <button onclick="addToQueue()" class="bg-black text-white px-8 rounded-2xl font-black text-xl active:scale-90">＋</button>
             </div>
         </div>
-
         <div id="list-queue" class="mt-6 space-y-2"></div>
-
-        <div class="mt-auto">
-            <button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-[22px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all">Iniciar Conteo en Terminal</button>
-        </div>
+        <div class="mt-auto"><button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-[22px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95">Iniciar Conteo en Terminal</button></div>
     </div>
 
     <div id="view-ops" class="view">
         <div class="flex justify-between items-center mb-6">
-            <div>
-                <p id="op-id-display" class="text-[10px] font-black text-blue-600 uppercase"></p>
-                <p class="text-2xl font-black tracking-tighter">Terminal Tajho</p>
-            </div>
+            <div><p id="op-id-display" class="text-[10px] font-black text-blue-600 uppercase"></p><p class="text-2xl font-black tracking-tighter">Terminal Tajho</p></div>
             <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
         </div>
-
         <div class="bg-white rounded-[32px] p-6 shadow-2xl border border-black/5 mb-6">
             <select id="op-select" onchange="renderOps()" class="w-full text-center text-sm font-black uppercase text-slate-400 mb-4 bg-slate-50 py-2 rounded-xl border-none outline-none appearance-none"></select>
             <div class="flex items-center gap-4">
@@ -123,9 +95,7 @@
                 <button onclick="addCount()" class="btn-ok">OK</button>
             </div>
         </div>
-
         <div id="op-list" class="space-y-3"></div>
-
         <div class="grid grid-cols-2 gap-3 mt-6">
             <button onclick="descargarPDF(activeOp)" class="h-14 rounded-2xl border-2 border-slate-200 font-black text-[9px] uppercase text-slate-500 active:bg-slate-50">Vista Previa</button>
             <button onclick="openFinalModal()" class="h-14 rounded-2xl bg-black text-white font-black text-[9px] uppercase shadow-lg active:scale-95">Finalizar Reporte</button>
@@ -139,7 +109,6 @@
 
     <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-sm rounded-[35px] p-8 text-center shadow-2xl">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
             <h3 class="text-2xl font-black tracking-tight mb-2">¿Cerrar Operación?</h3>
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-8">Revisión: J. Angelo Nuñez Durand</p>
             <div class="flex flex-col gap-2">
@@ -182,8 +151,7 @@
                     <div onclick="selectProd('${x.sku}')" class="p-4 border-b last:border-0 active:bg-blue-50">
                         <p class="text-xs font-black">${x.sku}</p>
                         <p class="text-[9px] text-slate-400 uppercase truncate font-bold">${x.descripcion}</p>
-                    </div>
-                `).join('');
+                    </div>`).join('');
                 box.classList.remove('hidden');
             } catch(e) {}
         }
@@ -207,13 +175,9 @@
         function renderQueue() {
             document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
                 <div class="bg-white p-4 rounded-2xl flex justify-between items-center border border-black/5 shadow-sm">
-                    <div>
-                        <p class="text-[10px] font-black">${x.sku}</p>
-                        <p class="text-[9px] font-bold text-blue-600 uppercase">Meta: ${x.meta} Cajas</p>
-                    </div>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300 hover:text-red-500 font-bold px-2 text-xl">×</button>
-                </div>
-            `).join('');
+                    <div><p class="text-[10px] font-black">${x.sku}</p><p class="text-[9px] font-bold text-blue-600 uppercase">Meta: ${x.meta} Cajas</p></div>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300 font-bold px-2 text-xl">×</button>
+                </div>`).join('');
         }
 
         function iniciarOContinuar() {
@@ -233,15 +197,18 @@
         }
 
         function addCount() {
-            const val = parseInt(document.getElementById('op-qty').value);
-            if(!val) return;
-            const item = activeOp.items.find(x => x.sku === document.getElementById('op-select').value);
-            if(item) item.real += val;
-            document.getElementById('op-qty').value = '';
-            saveLocal();
-            renderOps();
-            // Vibración táctil si el dispositivo lo permite
-            if(window.navigator.vibrate) window.navigator.vibrate(50);
+            const inputQty = document.getElementById('op-qty');
+            const val = parseInt(inputQty.value);
+            if (!val || val <= 0) return;
+            const skuSeleccionado = document.getElementById('op-select').value;
+            const item = activeOp.items.find(x => x.sku === skuSeleccionado);
+            if (item) {
+                item.real += val; // Suma acumulativa blindada
+                inputQty.value = '';
+                saveLocal();
+                renderOps();
+                if(window.navigator.vibrate) window.navigator.vibrate(50);
+            }
         }
 
         function renderOps() {
@@ -255,18 +222,15 @@
                     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
-        function saveLocal() {
-            localStorage.setItem('active_tajho_v3', JSON.stringify(activeOp));
-        }
-
+        function saveLocal() { localStorage.setItem('active_tajho_v3', JSON.stringify(activeOp)); }
         function openFinalModal() { document.getElementById('modal-end').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal-end').classList.add('hidden'); }
 
         function finalizarDefinitivo() {
+            if (!activeOp) return;
             activeOp.status = 'finalizado';
             let h = JSON.parse(localStorage.getItem('thist_v3')) || [];
             h.unshift(activeOp);
@@ -292,7 +256,9 @@
                 body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
                 theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
             });
-            doc.text("Autorizado por: J. Angelo Nuñez Durand Asist. Inventario", 14, doc.lastAutoTable.finalY + 15);
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(9);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
             doc.save(`Reporte_${d.id}.pdf`);
         }
 
@@ -311,13 +277,9 @@
             }
             html += h.map(x => `
                 <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-black/5">
-                    <div>
-                        <p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p>
-                        <p class="text-xs font-black">${x.id}</p>
-                    </div>
+                    <div><p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p><p class="text-xs font-black">${x.id}</p></div>
                     <button onclick='descargarPDF(${JSON.stringify(x)})' class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg shadow-inner">📄</button>
-                </div>
-            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400 font-bold">SIN REGISTROS</p>';
+                </div>`).join('') || '<p class="text-center py-10 text-[10px] text-slate-400 font-bold">SIN REGISTROS</p>';
             document.getElementById('hist-feed').innerHTML = html;
         }
     </script>
