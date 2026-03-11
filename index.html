@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Pro | Twins Logistics</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     
@@ -300,63 +298,85 @@
 
        async function makePDF(d) {
     try {
-        // 1. Verificación forzada de la librería
+        // Validación de librerías con acceso global forzado
         const { jsPDF } = window.jspdf || {};
         if (!jsPDF) {
-            alert("Error: Librería PDF no detectada. Reintentando conexión...");
-            location.reload(); // Recarga para forzar la conexión
+            alert("⚠️ Error: Sistema de impresión no listo. Reintentando...");
+            location.reload();
             return;
         }
 
-        const doc = new jsPDF();
-        
-        // 2. Diseño de Cabecera Twins Pro
-        doc.setFillColor(10, 10, 15);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(22);
-        doc.text("LOGISTICA TWINS | REPORT", 14, 25);
-        
-        doc.setTextColor(150, 150, 150);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-        doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
-        
-        // 3. Tabla de Datos Blindada
-        doc.autoTable({
-            startY: 65,
-            head: [['PRODUCTO SKU', 'META', 'RECIBIDO', 'DIF']],
-            body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
-            theme: 'grid',
-            headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0], fontStyle: 'bold' },
-            styles: { fontSize: 8, cellPadding: 3 },
-            didDrawPage: function (data) {
-                // Pie de página en cada hoja
-                doc.setFontSize(8);
-                doc.setTextColor(100);
-                doc.text("Generado por Sistema AURA PRO - Twins Elite", 14, doc.internal.pageSize.height - 10);
-            }
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4'
         });
 
-        // 4. Firma Autorizada (Posición dinámica)
-        const finalY = doc.lastAutoTable.finalY + 20;
+        // DISEÑO DE CABECERA PREMIUM (Twins Logistics)
+        doc.setFillColor(15, 15, 25);
+        doc.rect(0, 0, 210, 45, 'F');
+        
+        doc.setTextColor(0, 247, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(26);
+        doc.text("AURA PRO", 14, 22);
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("TWINS ELITE LOGISTICS SYSTEM", 14, 30);
+        doc.text(`ID OPERACIÓN: ${d.id}`, 14, 38);
+
+        // CUERPO DEL REPORTE
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(9);
+        doc.text(`FECHA DE EMISIÓN: ${d.date}`, 14, 55);
+        doc.text(`RESPONSABLE: J. Angelo Nuñez Durand`, 14, 60);
+
+        // TABLA DE DATOS (AutoTable)
+        doc.autoTable({
+            startY: 70,
+            head: [['PRODUCTO SKU', 'META PLAN', 'CANT. REAL', 'DIFERENCIA']],
+            body: d.items.map(x => [
+                x.sku, 
+                x.meta, 
+                x.r, 
+                { content: (x.r - x.meta), styles: { fontStyle: 'bold', textColor: (x.r - x.meta < 0 ? [200, 0, 0] : [0, 150, 0]) } }
+            ]),
+            theme: 'grid',
+            headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0], fontSize: 10 },
+            styles: { fontSize: 9, cellPadding: 4 },
+            alternateRowStyles: { fillColor: [245, 252, 255] }
+        });
+
+        // FIRMA Y CIERRE
+        const finalY = doc.lastAutoTable.finalY + 25;
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
         doc.text("__________________________", 14, finalY);
         doc.setFont("helvetica", "bold");
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+        doc.text("Firma: J. Angelo Nuñez Durand", 14, finalY + 7);
         doc.setFont("helvetica", "normal");
-        doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+        doc.text("Asistente de Inventario Logístico", 14, finalY + 12);
 
-        // 5. Acción de Descarga Directa
-        doc.save(`Reporte_Twins_${d.id}.pdf`);
-        console.log("PDF Generado con éxito");
+        // SOLUCIÓN DEFINITIVA PARA MÓVILES (Blob Method)
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        // Crear un enlace invisible y disparar la descarga
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `Reporte_${d.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Liberar memoria
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
 
-    } catch (e) {
-        console.error("Error Crítico PDF:", e);
-        alert("Hubo un problema al generar el archivo. El reporte se guardó en tu historial de todos modos.");
+    } catch (error) {
+        console.error("Falla en PDF:", error);
+        alert("El PDF no pudo descargarse. Pero no te preocupes, los datos ya están guardados en tu Google Sheets.");
     }
 }
         function renderHistory() {
