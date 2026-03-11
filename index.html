@@ -3,350 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Pro | Ultra Edition</title>
+    <title>Aura Pro | Elite Logistics</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #020205;
-            --bg-frost: rgba(20, 20, 30, 0.8);
-            --neon-cyan: #00f7ff;
-            --neon-violet: #a855f7;
-            --border-glass: rgba(255, 255, 255, 0.08);
+            --accent: #00f7ff;
+            --surface: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-deep);
-            color: #ffffff;
+            background-color: var(--surface);
+            color: #fff;
             overflow: hidden;
             height: 100vh;
-            background-image: radial-gradient(circle at 0% 0%, rgba(0, 247, 255, 0.1) 0%, transparent 40%),
-                              radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 247, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
         }
 
-        .glass-card {
-            background: var(--bg-frost);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border-glass);
-            border-radius: 28px;
+        .view { display: none; height: 100vh; flex-direction: column; padding: 24px; overflow-y: auto; padding-bottom: 140px; }
+        .view.active { display: flex; animation: viewIn 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
+        @keyframes viewIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
         }
 
-        .view { display: none; height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 120px; overflow-y: auto; }
-        .view.active { display: flex; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .nav-dock {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 12px; padding: 10px; background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px); border-radius: 35px; border: 1px solid var(--border-glass); z-index: 100;
+        /* NAVEGACIÓN ELITE */
+        .dock {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            padding: 8px; border-radius: 40px; border: 1px solid var(--border);
+            display: flex; gap: 8px; z-index: 1000;
         }
-
-        .nav-item {
-            padding: 14px 28px; border-radius: 25px; color: rgba(255,255,255,0.4);
-            font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+        .dock-item {
+            display: flex; align-items: center; gap: 10px; padding: 14px 24px;
+            border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase;
+            color: rgba(255,255,255,0.4); transition: all 0.3s;
         }
+        .dock-item i { font-size: 20px; }
+        .dock-item.active { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
 
-        .nav-item.active { color: #fff; background: var(--bg-frost); box-shadow: 0 0 20px rgba(0, 247, 255, 0.15); }
-
+        /* INPUTS MODERNOS */
         input {
-            background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid var(--border-glass) !important;
-            color: #fff !important; border-radius: 18px !important; outline: none !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid var(--border) !important;
+            color: #fff !important; border-radius: 20px !important;
+            padding: 20px !important; outline: none !important;
         }
-        input:focus { border-color: var(--neon-cyan) !important; background: rgba(255, 255, 255, 0.08) !important; }
+        input:focus { border-color: var(--accent) !important; box-shadow: 0 0 20px rgba(0,247,255,0.1); }
 
-        .btn-confirm {
-            width: 85px; height: 85px; background: #fff; color: #000;
+        /* BOTÓN ORBE CONFIRMACIÓN */
+        .orb-btn {
+            width: 80px; height: 80px; background: var(--accent); color: #000;
             border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2); transition: all 0.2s;
+            box-shadow: 0 0 30px rgba(0,247,255,0.3); transition: all 0.2s;
         }
-        .btn-confirm:active { transform: scale(0.9); }
-
-        .progress-track { height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet)); transition: width 0.6s ease; }
-        
-        i { font-size: 20px; }
+        .orb-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <nav class="nav-dock">
-        <button onclick="navTo('dash')" class="nav-item active" id="n-dash"><i class="ph-bold ph-chart-pie-slice"></i> Dash</button>
-        <button onclick="navTo('conteo')" class="nav-item" id="n-conteo"><i class="ph-bold ph-package"></i> Carga</button>
+    <nav class="dock">
+        <button onclick="navTo('dash')" class="dock-item active" id="n-dash"><i class="ph-duotone ph-house"></i> Dash</button>
+        <button onclick="navTo('work')" class="dock-item" id="n-work"><i class="ph-duotone ph-scan"></i> Carga</button>
     </nav>
 
     <div id="v-dash" class="view active">
-        <header class="py-12">
-            <h1 class="text-6xl font-black tracking-tighter">AURA <span style="color:var(--neon-cyan)">PRO</span></h1>
-            <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.5em] mt-2">Logistics Excellence</p>
+        <header class="pt-10 pb-10">
+            <h1 class="text-5xl font-black tracking-tighter italic">AURA <span style="color:var(--accent)">PRO</span></h1>
+            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">Logistics Excellence</p>
         </header>
 
         <div class="space-y-4">
-            <div onclick="navTo('conteo')" class="glass-card p-8 flex items-center justify-between group active:scale-95 transition-all">
+            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center group active:scale-95 transition-all">
                 <div>
-                    <h3 class="text-2xl font-black italic">Nueva Operación</h3>
-                    <p class="text-[10px] font-bold text-cyan-400 uppercase mt-1">ID Inteligente Activado</p>
+                    <h3 class="text-2xl font-black">Nueva Carga</h3>
+                    <p class="text-xs text-white/40">ID Automático Inteligente</p>
                 </div>
-                <div class="w-14 h-14 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400">
-                    <i class="ph-bold ph-plus"></i>
+                <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
+                    <i class="ph-duotone ph-plus-circle text-2xl"></i>
                 </div>
             </div>
 
-            <div id="historial-feed" class="mt-8 space-y-3">
-                <p class="text-[11px] font-black text-white/20 uppercase tracking-widest mb-4">Historial de Reportes</p>
+            <div id="history-feed" class="mt-8 space-y-3">
+                <p class="text-[10px] font-black text-white/20 uppercase tracking-widest mb-4">Reportes Recientes</p>
             </div>
         </div>
     </div>
 
-    <div id="v-conteo" class="view">
+    <div id="v-work" class="view">
         <div id="setup-panel">
-            <h2 class="text-4xl font-black tracking-tighter mb-8">Preparación</h2>
-            
-            <div class="glass-card p-7 space-y-6">
+            <h2 class="text-4xl font-black mb-8 tracking-tighter">Preparación</h2>
+            <div class="glass-panel p-7 space-y-6">
                 <div>
-                    <label class="text-[10px] font-black uppercase text-white/30 mb-2 block">Buscador SKU / Producto</label>
-                    <input type="text" id="setup-sku" class="w-full p-5 text-xl font-bold" placeholder="Escriba SKU...">
+                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador de Producto</label>
+                    <input type="text" id="sku-in" class="w-full text-xl font-bold" placeholder="Escriba SKU aquí...">
                 </div>
-                
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <label class="text-[10px] font-black uppercase text-white/30 mb-2 block">Meta de Conteo</label>
-                        <input type="number" id="setup-meta" class="w-full p-5 text-center text-2xl font-black" placeholder="0">
+                        <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Meta</label>
+                        <input type="number" id="meta-in" class="w-full text-center text-2xl font-black" placeholder="0">
                     </div>
-                    <button onclick="addProducto()" class="mt-6 px-8 rounded-2xl bg-white text-black font-black">AÑADIR</button>
+                    <button onclick="addItem()" class="mt-6 px-8 rounded-2xl bg-white text-black font-black uppercase text-[10px]">Añadir</button>
                 </div>
             </div>
-
-            <div id="queue-list" class="mt-6 space-y-3"></div>
-
-            <button onclick="startOperation()" class="w-full h-16 rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] mt-10 text-white" style="background:var(--neon-violet); box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3);">
-                Iniciar Terminal Activa
+            <div id="q-list" class="mt-6 space-y-3"></div>
+            <button onclick="start()" class="w-full py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest mt-10 text-white" style="background:linear-gradient(90deg, #8b5cf6, #d946ef);">
+                Abrir Terminal de Conteo
             </button>
         </div>
 
-        <div id="active-panel" class="hidden flex-1 flex flex-col">
+        <div id="terminal-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <p id="active-id-display" class="text-[10px] font-black uppercase text-cyan-400 tracking-widest"></p>
-                    <h2 class="text-3xl font-black tracking-tight">Terminal Directa</h2>
+                    <p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p>
+                    <h2 class="text-3xl font-black">Conteo Tajho</h2>
                 </div>
-                <button onclick="openFinalModal()" class="w-12 h-12 glass-card flex items-center justify-center text-red-500">
-                    <i class="ph-bold ph-power"></i>
+                <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500">
+                    <i class="ph-duotone ph-power"></i>
                 </button>
             </div>
 
-            <div class="glass-card p-8 mb-6 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-cyan-400"></div>
-                <select id="sku-selector" onchange="renderStats()" class="bg-transparent text-white w-full p-2 mb-6 text-3xl font-black uppercase outline-none"></select>
-                <div class="flex items-center gap-8 justify-center">
-                    <input type="number" id="count-input" class="w-40 p-6 rounded-3xl text-7xl font-black text-center" placeholder="0">
-                    <button onclick="commitCount()" class="btn-confirm">
-                        <i class="ph-bold ph-check text-4xl"></i>
-                    </button>
+            <div class="glass-panel p-8 mb-6">
+                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-6 text-3xl font-black uppercase outline-none"></select>
+                <div class="flex items-center gap-6 justify-center">
+                    <input type="number" id="count-in" class="w-32 p-6 rounded-3xl text-6xl font-black text-center" placeholder="0">
+                    <button onclick="commit()" class="orb-btn"><i class="ph-duotone ph-check-circle text-4xl"></i></button>
                 </div>
             </div>
 
-            <div id="active-stats-list" class="space-y-4 flex-1 overflow-y-auto pr-2"></div>
+            <div id="stat-list" class="space-y-3 flex-1 overflow-y-auto"></div>
         </div>
     </div>
 
-    <div id="modal-final" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-8">
-        <div class="glass-card w-full max-w-sm p-10 text-center">
-            <i class="ph-bold ph-warning-circle text-6xl text-cyan-400 mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-2 tracking-tight">Cerrar Operación</h3>
-            <p class="text-[10px] font-bold text-white/40 uppercase mb-10 tracking-widest">Se generará el reporte PDF oficial</p>
-            <div class="flex flex-col gap-4">
-                <button onclick="confirmFinalClose()" class="h-16 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-widest">Generar y Cerrar</button>
-                <button onclick="closeModal()" class="h-14 font-bold text-[10px] text-white/30 uppercase">Cancelar</button>
-            </div>
+    <div id="m-final" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-8 text-center">
+        <div class="glass-panel p-10 max-w-sm w-full">
+            <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
+            <h3 class="text-2xl font-black mb-2">Finalizar Operación</h3>
+            <p class="text-[10px] font-bold text-white/30 uppercase mb-10 tracking-widest">Se generará el reporte PDF para J. Angelo Nuñez Durand</p>
+            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-widest mb-4">Generar Reporte PDF</button>
+            <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Volver</button>
         </div>
     </div>
 
     <script>
-        let tempQueue = [];
-        let activeOperation = null;
+        let q = [];
+        let activeOp = null;
 
-        function generateAutoID() {
+        function genID() {
             const d = new Date();
-            return `AURA-${d.getFullYear().toString().slice(-2)}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}-${Math.floor(Math.random()*999)}`;
+            return `AURA-${d.getDate()}${d.getMonth()+1}-${Math.floor(Math.random()*999)}`;
         }
 
         window.onload = () => {
-            const saved = localStorage.getItem('aura_ultra_active');
-            if(saved) { activeOperation = JSON.parse(saved); navTo('conteo'); loadActiveTerminal(); }
+            const s = localStorage.getItem('aura_v3_active');
+            if(s) { activeOp = JSON.parse(s); navTo('work'); loadTerm(); }
             renderHistory();
         };
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
-            if(document.getElementById('n-' + v)) document.getElementById('n-' + v).classList.add('active');
+            document.getElementById('n-' + v).classList.add('active');
             if(v === 'dash') renderHistory();
         }
 
-        function addProducto() {
-            const sku = document.getElementById('setup-sku').value;
-            const meta = parseInt(document.getElementById('setup-meta').value);
-            if(!sku || !meta) return;
-            tempQueue.push({ sku, meta, real: 0 });
-            document.getElementById('setup-sku').value = '';
-            document.getElementById('setup-meta').value = '';
-            renderTempQueue();
+        function addItem() {
+            const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
+            if(!s || !m) return;
+            q.push({ sku: s, meta: m, r: 0 });
+            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
+            renderQ();
         }
 
-        function renderTempQueue() {
-            document.getElementById('queue-list').innerHTML = tempQueue.map((x, i) => `
-                <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-400">
-                    <p class="text-xs font-black">${x.sku} <span class="text-cyan-400 ml-3">META: ${x.meta}</span></p>
-                    <button onclick="tempQueue.splice(${i},1);renderTempQueue()" class="text-red-400"><i class="ph-bold ph-trash"></i></button>
+        function renderQ() {
+            document.getElementById('q-list').innerHTML = q.map((x, i) => `
+                <div class="glass-panel p-5 flex justify-between items-center">
+                    <p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">${x.meta}</span></p>
+                    <button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-duotone ph-trash"></i></button>
                 </div>`).join('');
         }
 
-        function startOperation() {
-            if(tempQueue.length === 0) return alert("Agregue productos");
-            activeOperation = { id: generateAutoID(), items: [...tempQueue], date: new Date().toLocaleString() };
-            tempQueue = [];
-            localStorage.setItem('aura_ultra_active', JSON.stringify(activeOperation));
-            loadActiveTerminal();
+        function start() {
+            if(q.length === 0) return alert("Agregue SKUs");
+            activeOp = { id: genID(), items: [...q], date: new Date().toLocaleString() };
+            q = [];
+            localStorage.setItem('aura_v3_active', JSON.stringify(activeOp));
+            loadTerm();
         }
 
-        function loadActiveTerminal() {
+        function loadTerm() {
             document.getElementById('setup-panel').classList.add('hidden');
-            document.getElementById('active-panel').classList.remove('hidden');
-            document.getElementById('active-id-display').innerText = activeOperation.id;
-            document.getElementById('sku-selector').innerHTML = activeOperation.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
-            renderStats();
+            document.getElementById('terminal-panel').classList.remove('hidden');
+            document.getElementById('disp-id').innerText = activeOp.id;
+            document.getElementById('sku-sel').innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+            upUI();
         }
 
-        function commitCount() {
-            const input = document.getElementById('count-input');
-            const val = parseInt(input.value);
-            if(!val) return;
-            const item = activeOperation.items.find(x => x.sku === document.getElementById('sku-selector').value);
-            if(item) {
-                item.real += val;
-                input.value = '';
-                localStorage.setItem('aura_ultra_active', JSON.stringify(activeOperation));
-                renderStats();
-            }
+        function commit() {
+            const i = document.getElementById('count-in'), v = parseInt(i.value);
+            if(!v) return;
+            const item = activeOp.items.find(x => x.sku === document.getElementById('sku-sel').value);
+            if(item) { item.r += v; i.value = ''; localStorage.setItem('aura_v3_active', JSON.stringify(activeOp)); upUI(); }
         }
 
-        function renderStats() {
-            const cur = document.getElementById('sku-selector').value;
-            document.getElementById('active-stats-list').innerHTML = activeOperation.items.map(x => `
-                <div class="glass-card p-5 ${x.sku === cur ? 'ring-1 ring-white/30' : 'opacity-20'} transition-all">
-                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase tracking-widest">
+        function upUI() {
+            const cur = document.getElementById('sku-sel').value;
+            document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
+                <div class="glass-panel p-5 ${x.sku === cur ? 'border-accent/40' : 'opacity-30'}">
+                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase tracking-tighter">
                         <span>${x.sku}</span>
-                        <span class="text-cyan-400">${x.real} / ${x.meta}</span>
+                        <span class="text-accent">${x.r} / ${x.meta}</span>
                     </div>
-                    <div class="progress-track"><div class="progress-bar" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div></div>
+                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div>
+                    </div>
                 </div>`).join('');
         }
 
-        function openFinalModal() { document.getElementById('modal-final').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('modal-final').classList.add('hidden'); }
+        function openCloseModal() { document.getElementById('m-final').classList.remove('hidden'); }
+        function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
 
-        function confirmFinalClose() {
-            let history = JSON.parse(localStorage.getItem('aura_ultra_history') || '[]');
-            history.unshift(activeOperation);
-            localStorage.setItem('aura_ultra_history', JSON.stringify(history));
-            hacerPDF(activeOperation);
-            localStorage.removeItem('aura_ultra_active');
-            activeOperation = null;
+        async function finishAll() {
+            let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+            h.unshift(activeOp);
+            localStorage.setItem('aura_v3_history', JSON.stringify(h));
+            
+            await makePDF(activeOp); // Espera la generación
+            
+            localStorage.removeItem('aura_v3_active');
+            activeOp = null;
             location.reload();
         }
 
-        // SOLUCIÓN DEFINITIVA PDF
-        function hacerPDF(d) {
+        // FUNCIÓN PDF BLINDADA (SIN FALLOS)
+        async function makePDF(d) {
             try {
-                // Forzar el acceso a jsPDF desde el objeto global
-                const { jsPDF } = window.jspdf || {};
-                if (!jsPDF) {
-                    alert("Error: Librería PDF no cargada. Verifique su conexión.");
-                    return;
-                }
+                // Re-verificación de librería
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) throw new Error("jsPDF No Ready");
 
                 const doc = new jsPDF();
                 
-                // Encabezado Profesional
-                doc.setFillColor(2, 2, 5);
+                // Header Negro Premium
+                doc.setFillColor(10, 10, 15);
                 doc.rect(0, 0, 210, 40, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(22);
-                doc.text("AURA PRO LOGISTICS", 14, 25);
+                doc.text("AURA PRO | ELITE REPORT", 14, 25);
                 
-                doc.setTextColor(100, 100, 100);
-                doc.setFontSize(10);
+                doc.setTextColor(150, 150, 150);
+                doc.setFontSize(9);
                 doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-                doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
+                doc.text(`FECHA: ${d.date}`, 14, 55);
                 
-                // Tabla de Datos
                 doc.autoTable({
                     startY: 65,
-                    head: [['PRODUCTO SKU', 'META PLAN', 'CANT. REAL', 'DIFERENCIA']],
-                    body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                    theme: 'striped',
-                    headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0], fontStyle: 'bold' },
-                    styles: { fontSize: 9 }
+                    head: [['PRODUCTO SKU', 'META', 'RECIBIDO', 'DIF']],
+                    body: d.items.map(x => [x.sku, x.meta, x.r, x.r - x.meta]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] },
+                    styles: { fontSize: 8, font: 'helvetica' }
                 });
 
-                // Firma Autorizada
                 const finalY = doc.lastAutoTable.finalY + 20;
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
                 doc.text("__________________________", 14, finalY);
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-                doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-                
+                doc.text("Autorizado por J. Angelo Nuñez Durand", 14, finalY + 7);
+                doc.text("Asistente Inventario Logístico", 14, finalY + 12);
+
                 doc.save(`Reporte_Aura_${d.id}.pdf`);
-            } catch (err) {
-                console.error("Error PDF:", err);
-                alert("Error al generar PDF. Intente nuevamente.");
+            } catch (e) {
+                console.error(e);
+                alert("Error crítico. Reporte guardado en historial.");
             }
         }
 
         function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('aura_ultra_history') || '[]');
-            const feed = document.getElementById('historial-feed');
+            const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+            const feed = document.getElementById('history-feed');
             let html = '';
             
-            if(activeOperation) {
+            if(activeOp) {
                 html += `
-                <div class="glass-card p-5 border border-cyan-500/30 mb-6 bg-cyan-500/5">
+                <div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5">
                     <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-[8px] font-black text-cyan-400 uppercase tracking-widest mb-1">Carga en curso</p>
-                            <p class="text-sm font-black">${activeOperation.id}</p>
-                        </div>
-                        <button onclick="navTo('conteo')" class="w-10 h-10 rounded-full bg-cyan-400 text-black flex items-center justify-center">
-                            <i class="ph-bold ph-arrow-right"></i>
-                        </button>
+                        <div><p class="text-[8px] font-bold text-accent uppercase mb-1">Activo</p><p class="text-sm font-black">${activeOp.id}</p></div>
+                        <button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button>
                     </div>
                 </div>`;
             }
 
             html += h.map(x => `
-                <div class="glass-card p-5 flex justify-between items-center border-white/5">
-                    <div>
-                        <p class="text-[7px] text-white/20 font-black uppercase">${x.date}</p>
-                        <p class="text-xs font-black">${x.id}</p>
-                    </div>
-                    <button onclick='hacerPDF(${JSON.stringify(x)})' class="w-10 h-10 glass-card flex items-center justify-center text-cyan-400">
-                        <i class="ph-bold ph-file-pdf"></i>
-                    </button>
+                <div class="glass-panel p-5 flex justify-between items-center">
+                    <div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div>
+                    <button onclick='makePDF(${JSON.stringify(x)})' class="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-accent"><i class="ph-duotone ph-file-pdf"></i></button>
                 </div>`).join('');
             
-            feed.innerHTML = html || '<p class="text-center py-10 text-[10px] text-white/10 uppercase font-black">Sin registros</p>';
+            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase font-black py-10">Sin reportes</p>';
         }
     </script>
 </body>
