@@ -2,112 +2,117 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Pro | Tajho</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #007AFF; --bg: #F2F2F7; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1c1c1e; overflow: hidden; height: 100vh; }
-        
-        .data-field { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 6px 10px; }
-        .data-label { font-size: 8px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 2px; }
-        .data-input { background: transparent; border: none; font-size: 14px; font-weight: 600; width: 100%; outline: none; }
-
-        .view { display: none; height: 100vh; flex-direction: column; padding: 12px; padding-bottom: 85px; overflow-y: auto; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f2f2f7; color: #1c1c1e; overflow-y: auto; }
+        .aura-card { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); }
+        .view { display: none; min-height: 100vh; flex-direction: column; padding: 15px; padding-top: 60px; padding-bottom: 90px; }
         .view.active { display: flex; }
-
-        .nav-pill { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); backdrop-blur: 10px; padding: 5px; border-radius: 25px; display: flex; z-index: 100; }
-        .nav-btn { padding: 8px 15px; border-radius: 20px; color: #fff; font-size: 9px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
-        .nav-btn.active { background: var(--accent); }
-
-        .btn-ok { width: 60px; height: 60px; background: #000; color: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
-        .btn-ok:active { transform: scale(0.9); }
+        .aura-input { background: transparent; border: none; font-size: 14px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 6px 0; }
+        .aura-input:focus { border-bottom-color: #007AFF; }
         
-        /* Ajuste para que los cuadros de conteo no se salgan */
-        #op-list { max-height: 35vh; overflow-y: auto; padding-right: 4px; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(255,255,255,0.9); backdrop-blur: 10px; border-top: 1px solid #e5e5ea; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #8e8e93; background: none; border: none; }
+        .nav-item.active { color: #007AFF; }
+        .nav-text { font-size: 10px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <nav class="nav-pill">
-        <button onclick="navTo('home')" class="nav-btn active" id="btn-home">🏠 Tajho</button>
-        <button onclick="navTo('crear')" class="nav-btn" id="btn-crear">📦 Nuevo</button>
-        <button onclick="navTo('historial')" class="nav-btn" id="btn-historial">📋 Historial</button>
-    </nav>
+    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center pointer-events-none">
+        <div class="pointer-events-auto bg-white/50 backdrop-blur px-3 py-1 rounded-full border border-white/20">
+            <p class="text-[7px] font-black text-blue-600 tracking-widest uppercase">Aura Pro</p>
+            <h1 class="text-xs font-black tracking-tighter">TWINS.</h1>
+        </div>
+    </header>
 
     <div id="view-home" class="view active">
-        <div class="py-6">
-            <h2 class="text-3xl font-black tracking-tighter">¿Qué hacemos hoy, <span class="text-blue-600">Tajho?</span></h2>
+        <div class="mt-8 mb-8">
+            <h2 class="text-3xl font-black tracking-tighter">¿Qué hacemos hoy, Tajho?</h2>
+            <p class="text-xs text-slate-400 font-bold">Selecciona una tarea para iniciar</p>
         </div>
-        <div class="grid gap-3">
-            <div onclick="navTo('crear')" class="bg-white p-4 rounded-2xl border border-black/5 shadow-sm active:scale-95 transition-all">
-                <p class="text-lg font-black tracking-tight">Crear Contenedor</p>
-                <p class="text-[9px] text-slate-400 font-semibold uppercase">Registra entrada de productos</p>
-            </div>
-            <div onclick="navTo('historial')" class="bg-white p-4 rounded-2xl border border-black/5 shadow-sm active:scale-95 transition-all">
-                <p class="text-lg font-black tracking-tight">Historial & Pendientes</p>
-                <p class="text-[9px] text-slate-400 font-semibold uppercase">Revisar o continuar trabajos</p>
-            </div>
+        <div class="grid gap-4">
+            <button onclick="navTo('crear')" class="aura-card p-6 text-left border-l-8 border-blue-600 shadow-xl shadow-blue-500/10">
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-blue-600 font-black">＋</div>
+                <p class="text-lg font-black tracking-tight">Nuevo Contenedor</p>
+            </button>
+            <button onclick="navTo('historial')" class="aura-card p-6 text-left border-l-8 border-slate-900 shadow-xl shadow-slate-500/10">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-4 text-slate-900 font-black">📋</div>
+                <p class="text-lg font-black tracking-tight">Historial / Reportes</p>
+            </button>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <div class="space-y-2">
-            <div class="data-field"><p class="data-label">ID Contenedor</p><input type="text" id="auto-id-input" class="data-input" placeholder="ID..."></div>
-            <div class="relative">
-                <div class="data-field"><p class="data-label">Producto</p><input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Buscar SKU..."></div>
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 z-[110] hidden border max-h-40 overflow-y-auto"></div>
+        <div class="space-y-4">
+            <div class="aura-card p-4">
+                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">ID Contenedor</label>
+                <input type="text" id="auto-id-input" class="aura-input" placeholder="Ej: CT-99">
             </div>
-            <div class="flex gap-2">
-                <div class="data-field flex-1"><p class="data-label">Meta</p><input type="number" id="s-meta" class="data-input font-black" placeholder="0"></div>
-                <button onclick="addToQueue()" class="bg-black text-white px-6 rounded-xl font-black text-lg">＋</button>
+            <div class="aura-card p-4 relative">
+                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Buscar SKU</label>
+                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Buscar...">
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden max-h-48 overflow-y-auto border border-slate-100"></div>
+            </div>
+            <div class="flex gap-3">
+                <div class="aura-card p-4 flex-1">
+                    <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Meta Cajas</label>
+                    <input type="number" id="s-meta" class="aura-input text-center" placeholder="0">
+                </div>
+                <button onclick="addToQueue()" class="w-16 aura-card bg-black text-white flex items-center justify-center text-3xl">＋</button>
             </div>
         </div>
-        <div id="list-queue" class="mt-4 space-y-2 flex-1 overflow-y-auto"></div>
-        <button onclick="iniciarOContinuar()" class="w-full h-14 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest mt-2 shadow-lg">Iniciar Conteo</button>
+        <div id="list-queue" class="mt-6 space-y-2"></div>
+        <button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest mt-auto">Iniciar Conteo</button>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="flex justify-between items-center mb-2">
-            <div><p id="op-id-display" class="text-[8px] font-black text-blue-600 uppercase"></p><h2 class="text-xl font-black">Terminal</h2></div>
-            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-black/5 mb-3">
-            <select id="op-select" onchange="renderOps()" class="w-full text-xs font-black uppercase text-slate-500 mb-2 bg-slate-50 py-2 rounded-lg border-none outline-none"></select>
-            <div class="flex items-center gap-3">
-                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center outline-none bg-transparent" placeholder="0">
-                <button onclick="addCount()" class="btn-ok">OK</button>
+        <p id="op-id-display" class="text-xs font-black text-blue-600 mb-2"></p>
+        <div class="aura-card p-5 mb-4 shadow-xl border-t-4 border-blue-600">
+            <select id="op-select" onchange="renderOps()" class="w-full text-2xl font-black text-center mb-4 bg-transparent outline-none"></select>
+            <div class="flex gap-4">
+                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center bg-slate-50 rounded-2xl p-5 outline-none" placeholder="0">
+                <button onclick="addCount()" class="w-20 h-20 bg-black text-white rounded-3xl flex items-center justify-center text-2xl">OK</button>
             </div>
         </div>
         <div id="op-list" class="space-y-2"></div>
-        <div class="grid grid-cols-2 gap-2 mt-4">
-            <button onclick="descargarPDF(activeOp)" class="h-12 rounded-xl border-2 border-slate-200 font-black text-[8px] uppercase text-slate-500">Borrador PDF</button>
-            <button onclick="openFinalModal()" class="h-12 rounded-xl bg-black text-white font-black text-[8px] uppercase">Finalizar</button>
+        <div class="mt-8 grid grid-cols-2 gap-3">
+            <button onclick="hacerPDF(activeOp)" class="h-12 border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase text-slate-500">Borrador PDF</button>
+            <button onclick="openFinalModal()" class="h-12 bg-black text-white rounded-xl font-black text-[10px] uppercase">Finalizar</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-black mb-4">Actividad</h2>
-        <div id="hist-feed" class="space-y-2"></div>
+        <h2 class="text-2xl font-black tracking-tighter mb-6">Reportes Guardados</h2>
+        <div id="hist-feed" class="space-y-3"></div>
     </div>
 
-    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 class="text-lg font-black mb-1">¿Cerrar Operación?</h3>
-            <p class="text-[8px] text-slate-400 font-bold uppercase mb-6">J. Angelo Nuñez Durand</p>
-            <div class="flex flex-col gap-2">
-                <button onclick="finalizarDefinitivo()" class="h-12 bg-black text-white rounded-xl font-black text-[10px] uppercase">Confirmar y PDF</button>
-                <button onclick="closeModal()" class="h-10 text-slate-400 font-bold text-[10px]">Cancelar</button>
+    <nav class="nav-bar">
+        <button onclick="navTo('home')" class="nav-item" id="nav-home"><span class="text-xl">🏠</span><span class="nav-text">TAJHO</span></button>
+        <button onclick="navTo('crear')" class="nav-item" id="nav-crear"><span class="text-xl">📦</span><span class="nav-text">NUEVO</span></button>
+        <button onclick="navTo('historial')" class="nav-item" id="nav-historial"><span class="text-xl">📋</span><span class="nav-text">HISTORIAL</span></button>
+    </nav>
+
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="aura-card w-full max-w-sm p-8 text-center shadow-2xl">
+            <h3 class="text-xl font-black tracking-tighter mb-2 text-black">¿Confirmar Cierre?</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase mb-6">Autoriza: J. Angelo Nuñez Durand</p>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 h-14 bg-slate-100 rounded-2xl font-black text-[10px] uppercase">VOLVER</button>
+                <button onclick="finalizarDefinitivo()" class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-[10px] uppercase">CERRAR Y PDF</button>
             </div>
         </div>
     </div>
 
     <script>
         const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        let queue = [], activeOp = null;
+        let queue = [];
+        let activeOp = null;
 
         window.onload = () => {
             const saved = localStorage.getItem('active_tajho_v3');
@@ -116,9 +121,9 @@
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
-            document.getElementById('btn-' + v).classList.add('active');
+            const nav = document.getElementById('nav-' + v); if(nav) nav.classList.add('active');
             if(v === 'historial') renderHistorial();
         }
 
@@ -129,13 +134,16 @@
             try {
                 const res = await fetch(`${APP_URL}?action=buscar&term=${val}`);
                 const data = await res.json();
-                box.innerHTML = data.map(x => `<div onclick="selectProd('${x.sku}')" class="p-3 border-b text-[11px] font-black active:bg-blue-50">${x.sku}</div>`).join('');
+                box.innerHTML = data.map(x => `
+                    <div onclick="selectProd('${x.sku}')" class="p-4 border-b last:border-0 active:bg-blue-50">
+                        <p class="text-[10px] font-black">${x.sku}</p>
+                    </div>`).join('');
                 box.classList.remove('hidden');
             } catch(e) {}
         }
 
         function selectProd(s) { document.getElementById('s-sku').value = s; document.getElementById('res-box').classList.add('hidden'); document.getElementById('s-meta').focus(); }
-        
+
         function addToQueue() {
             const sku = document.getElementById('s-sku').value, meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
@@ -144,36 +152,45 @@
         }
 
         function renderQueue() {
-            document.getElementById('list-queue').innerHTML = queue.map((x, i) => `<div class="bg-white p-3 rounded-xl flex justify-between items-center border shadow-sm text-[10px] font-black">${x.sku} (Meta: ${x.meta}) <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 text-lg">×</button></div>`).join('');
+            document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
+                <div class="aura-card p-4 flex justify-between items-center bg-white shadow-sm border-l-4 border-blue-600">
+                    <p class="text-[9px] font-extrabold">${x.sku} [META: ${x.meta}]</p>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 font-bold px-2">×</button>
+                </div>`).join('');
         }
 
         function iniciarOContinuar() {
             const id = document.getElementById('auto-id-input').value;
-            if(!id || queue.length === 0) return alert("Falta ID o Productos");
-            activeOp = { id, items: [...queue], date: new Date().toLocaleString(), status: 'pendiente' };
+            if(!id || queue.length === 0) return alert("Faltan datos");
+            activeOp = { id, items: [...queue], date: new Date().toLocaleString() };
             saveLocal(); navTo('ops'); syncTerminal();
         }
 
         function syncTerminal() {
-            document.getElementById('op-id-display').innerText = activeOp.id;
+            document.getElementById('op-id-display').innerText = "CONTENEDOR: " + activeOp.id;
             const sel = document.getElementById('op-select');
             sel.innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             renderOps();
         }
 
         function addCount() {
-            const inputQty = document.getElementById('op-qty'), val = parseInt(inputQty.value);
-            if (!val || val <= 0) return;
+            const val = parseInt(document.getElementById('op-qty').value);
+            if(!val) return;
             const item = activeOp.items.find(x => x.sku === document.getElementById('op-select').value);
-            if (item) { item.real += val; inputQty.value = ''; saveLocal(); renderOps(); }
+            if(item) { item.real += val; document.getElementById('op-qty').value = ''; saveLocal(); renderOps(); }
         }
 
         function renderOps() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
-                <div class="bg-white p-3 rounded-xl ${x.sku === cur ? 'ring-2 ring-blue-600' : 'opacity-50'}">
-                    <div class="flex justify-between font-black text-[9px] mb-1"><span>${x.sku}</span><span>${x.real}/${x.meta}</span></div>
-                    <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div></div>
+                <div class="aura-card p-4 rounded-xl ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-xl' : 'opacity-40'} mb-2">
+                    <div class="flex justify-between font-black text-[9px] mb-1">
+                        <span>${x.sku}</span>
+                        <span class="text-blue-600">${x.real} / ${x.meta}</span>
+                    </div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
+                    </div>
                 </div>`).join('');
         }
 
@@ -181,40 +198,48 @@
         function openFinalModal() { document.getElementById('modal-end').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal-end').classList.add('hidden'); }
 
+        // --- LÓGICA DE PDF REPARADA ---
         function finalizarDefinitivo() {
             if (!activeOp) return;
-            activeOp.status = 'finalizado';
-            let h = JSON.parse(localStorage.getItem('thist_v3')) || [];
+            let h = JSON.parse(localStorage.getItem('twins_h')) || [];
             h.unshift(activeOp);
-            localStorage.setItem('thist_v3', JSON.stringify(h));
-            descargarPDF(activeOp);
+            localStorage.setItem('twins_h', JSON.stringify(h));
+            hacerPDF(activeOp);
             localStorage.removeItem('active_tajho_v3');
             activeOp = null; closeModal(); navTo('home');
         }
 
-        function descargarPDF(d) {
+        function hacerPDF(datos) {
+            if (!datos) return alert("No hay datos para el PDF");
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
-                doc.setFontSize(10); doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
+                
+                doc.setFontSize(16); doc.text("REPORTE LOGISTICO TAJHO", 14, 20);
+                doc.setFontSize(9); doc.text(`ID: ${datos.id} | FECHA: ${datos.date}`, 14, 28);
+
                 doc.autoTable({
                     startY: 35,
-                    head: [['SKU', 'PLAN', 'REAL', 'DIF']],
-                    body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                    theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+                    head: [['SKU', 'META', 'RECIBIDO', 'DIF']],
+                    body: datos.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                    theme: 'grid', styles: { fontSize: 8 }
                 });
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
-                doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { alert("Error al generar PDF. Asegúrate de estar conectado a internet."); }
+
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 12);
+                doc.save(`Reporte_${datos.id}.pdf`);
+            } catch (e) {
+                console.error(e);
+                alert("Error generando PDF. Intenta de nuevo.");
+            }
         }
 
         function renderHistorial() {
-            const h = JSON.parse(localStorage.getItem('thist_v3')) || [];
-            const act = localStorage.getItem('active_tajho_v3');
-            let html = act ? `<div class="bg-blue-600 p-4 rounded-2xl text-white mb-4"><p class="text-xs font-black">${JSON.parse(act).id}</p><button onclick="navTo('ops')" class="w-full mt-2 py-2 bg-white text-blue-600 rounded-lg text-[10px] font-black uppercase">Continuar</button></div>` : '';
-            html += h.map(x => `<div class="bg-white p-3 rounded-xl flex justify-between items-center border mb-2"><div class="text-[10px] font-black">${x.id}</div><button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-50 p-2 rounded-lg">📄</button></div>`).join('');
-            document.getElementById('hist-feed').innerHTML = html || '<p class="text-center text-[10px]">Sin registros</p>';
+            const h = JSON.parse(localStorage.getItem('twins_h')) || [];
+            document.getElementById('hist-feed').innerHTML = h.map(x => `
+                <div class="aura-card p-4 flex justify-between items-center mb-2">
+                    <div><p class="text-xs font-black">${x.id}</p><p class="text-[8px] font-bold text-slate-400">${x.date}</p></div>
+                    <button onclick='hacerPDF(${JSON.stringify(x)})' class="bg-blue-50 text-blue-600 p-2 rounded-lg text-[10px] font-black">VER PDF</button>
+                </div>`).join('') || '<p class="text-center text-slate-400 py-10">Vacío</p>';
         }
     </script>
 </body>
