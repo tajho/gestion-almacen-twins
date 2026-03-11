@@ -10,126 +10,108 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #007AFF; --bg: #F2F2F7; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1c1c1e; touch-action: manipulation; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1c1c1e; overflow: hidden; height: 100vh; }
         
-        /* Contenedores de inputs optimizados */
-        .data-field { 
-            background: #fff; 
-            border: 1px solid rgba(0,0,0,0.08); 
-            border-radius: 14px; 
-            padding: 8px 12px;
-            transition: all 0.2s ease;
-        }
-        .data-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
-        .data-label { font-size: 8px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .data-input { background: transparent; border: none; font-size: 15px; font-weight: 600; width: 100%; outline: none; color: #000; }
-        .data-input::placeholder { color: #c7c7cc; font-size: 13px; }
+        .data-field { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 6px 10px; }
+        .data-label { font-size: 8px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 2px; }
+        .data-input { background: transparent; border: none; font-size: 14px; font-weight: 600; width: 100%; outline: none; }
 
-        /* Vistas y Navegación */
-        .view { display: none; min-height: 100vh; flex-direction: column; padding: 16px; padding-bottom: 100px; }
-        .view.active { display: flex; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .view { display: none; height: 100vh; flex-direction: column; padding: 12px; padding-bottom: 85px; overflow-y: auto; }
+        .view.active { display: flex; }
 
-        .nav-pill { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); backdrop-blur: 15px; padding: 6px; border-radius: 30px; display: flex; gap: 4px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .nav-btn { padding: 10px 18px; border-radius: 25px; border: none; background: transparent; color: #fff; font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .nav-pill { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); backdrop-blur: 10px; padding: 5px; border-radius: 25px; display: flex; z-index: 100; }
+        .nav-btn { padding: 8px 15px; border-radius: 20px; color: #fff; font-size: 9px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
         .nav-btn.active { background: var(--accent); }
 
-        .btn-ok { width: 70px; height: 70px; background: #000; color: #fff; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; box-shadow: 0 8px 15px rgba(0,0,0,0.2); transition: 0.2s; }
-        .btn-ok:active { scale: 0.9; }
+        .btn-ok { width: 60px; height: 60px; background: #000; color: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+        .btn-ok:active { transform: scale(0.9); }
+        
+        /* Ajuste para que los cuadros de conteo no se salgan */
+        #op-list { max-height: 35vh; overflow-y: auto; padding-right: 4px; }
     </style>
 </head>
 <body>
 
     <nav class="nav-pill">
-        <button onclick="navTo('home')" class="nav-btn active" id="btn-home"><span>🏠</span> Tajho</button>
-        <button onclick="navTo('crear')" class="nav-btn" id="btn-crear"><span>📦</span> Nuevo</button>
-        <button onclick="navTo('historial')" class="nav-btn" id="btn-historial"><span>📋</span> Historial</button>
+        <button onclick="navTo('home')" class="nav-btn active" id="btn-home">🏠 Tajho</button>
+        <button onclick="navTo('crear')" class="nav-btn" id="btn-crear">📦 Nuevo</button>
+        <button onclick="navTo('historial')" class="nav-btn" id="btn-historial">📋 Historial</button>
     </nav>
 
     <div id="view-home" class="view active">
-        <div class="py-10">
-            <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Bienvenido</p>
-            <h2 class="text-4xl font-black tracking-tighter leading-none mb-2">¿Qué hacemos hoy, <span class="text-blue-600">Tajho?</span></h2>
-            <div class="h-1 w-12 bg-black rounded-full"></div>
+        <div class="py-6">
+            <h2 class="text-3xl font-black tracking-tighter">¿Qué hacemos hoy, <span class="text-blue-600">Tajho?</span></h2>
         </div>
         <div class="grid gap-3">
-            <div onclick="navTo('crear')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
-                <div class="flex justify-between items-start mb-6 text-blue-600"><span>📦</span><span class="text-[8px] font-black bg-blue-100 px-2 py-1 rounded-full uppercase">Ingresos</span></div>
-                <p class="text-xl font-black tracking-tight">Crear Contenedor</p>
-                <p class="text-[10px] text-slate-400 font-semibold uppercase">Registra entrada de productos</p>
+            <div onclick="navTo('crear')" class="bg-white p-4 rounded-2xl border border-black/5 shadow-sm active:scale-95 transition-all">
+                <p class="text-lg font-black tracking-tight">Crear Contenedor</p>
+                <p class="text-[9px] text-slate-400 font-semibold uppercase">Registra entrada de productos</p>
             </div>
-            <div onclick="navTo('historial')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
-                <div class="flex justify-between items-start mb-6 text-slate-900"><span>📋</span><span class="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-full uppercase">Registros</span></div>
-                <p class="text-xl font-black tracking-tight">Historial & Pendientes</p>
-                <p class="text-[10px] text-slate-400 font-semibold uppercase">Revisar o continuar trabajos</p>
+            <div onclick="navTo('historial')" class="bg-white p-4 rounded-2xl border border-black/5 shadow-sm active:scale-95 transition-all">
+                <p class="text-lg font-black tracking-tight">Historial & Pendientes</p>
+                <p class="text-[9px] text-slate-400 font-semibold uppercase">Revisar o continuar trabajos</p>
             </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Configurar Operación</h3>
         <div class="space-y-2">
-            <div class="data-field"><p class="data-label">ID Contenedor</p><input type="text" id="auto-id-input" class="data-input" placeholder="Ej: CT-LIMA-001"></div>
+            <div class="data-field"><p class="data-label">ID Contenedor</p><input type="text" id="auto-id-input" class="data-input" placeholder="ID..."></div>
             <div class="relative">
-                <div class="data-field"><p class="data-label">Producto (Google Sheets)</p><input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Escribe SKU o Nombre..."></div>
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden border border-slate-100 overflow-hidden"></div>
+                <div class="data-field"><p class="data-label">Producto</p><input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Buscar SKU..."></div>
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-xl mt-1 z-[110] hidden border max-h-40 overflow-y-auto"></div>
             </div>
             <div class="flex gap-2">
-                <div class="data-field flex-1"><p class="data-label">Meta Cajas</p><input type="number" id="s-meta" class="data-input text-lg font-black" placeholder="0"></div>
-                <button onclick="addToQueue()" class="bg-black text-white px-8 rounded-2xl font-black text-xl active:scale-90">＋</button>
+                <div class="data-field flex-1"><p class="data-label">Meta</p><input type="number" id="s-meta" class="data-input font-black" placeholder="0"></div>
+                <button onclick="addToQueue()" class="bg-black text-white px-6 rounded-xl font-black text-lg">＋</button>
             </div>
         </div>
-        <div id="list-queue" class="mt-6 space-y-2"></div>
-        <div class="mt-auto"><button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-[22px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95">Iniciar Conteo en Terminal</button></div>
+        <div id="list-queue" class="mt-4 space-y-2 flex-1 overflow-y-auto"></div>
+        <button onclick="iniciarOContinuar()" class="w-full h-14 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest mt-2 shadow-lg">Iniciar Conteo</button>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="flex justify-between items-center mb-6">
-            <div><p id="op-id-display" class="text-[10px] font-black text-blue-600 uppercase"></p><p class="text-2xl font-black tracking-tighter">Terminal Tajho</p></div>
-            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <div class="flex justify-between items-center mb-2">
+            <div><p id="op-id-display" class="text-[8px] font-black text-blue-600 uppercase"></p><h2 class="text-xl font-black">Terminal</h2></div>
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
         </div>
-        <div class="bg-white rounded-[32px] p-6 shadow-2xl border border-black/5 mb-6">
-            <select id="op-select" onchange="renderOps()" class="w-full text-center text-sm font-black uppercase text-slate-400 mb-4 bg-slate-50 py-2 rounded-xl border-none outline-none appearance-none"></select>
-            <div class="flex items-center gap-4">
-                <input type="number" id="op-qty" class="flex-1 text-7xl font-black text-center outline-none bg-transparent" placeholder="0">
+        <div class="bg-white rounded-2xl p-4 shadow-lg border border-black/5 mb-3">
+            <select id="op-select" onchange="renderOps()" class="w-full text-xs font-black uppercase text-slate-500 mb-2 bg-slate-50 py-2 rounded-lg border-none outline-none"></select>
+            <div class="flex items-center gap-3">
+                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center outline-none bg-transparent" placeholder="0">
                 <button onclick="addCount()" class="btn-ok">OK</button>
             </div>
         </div>
-        <div id="op-list" class="space-y-3"></div>
-        <div class="grid grid-cols-2 gap-3 mt-6">
-            <button onclick="descargarPDF(activeOp)" class="h-14 rounded-2xl border-2 border-slate-200 font-black text-[9px] uppercase text-slate-500 active:bg-slate-50">Vista Previa</button>
-            <button onclick="openFinalModal()" class="h-14 rounded-2xl bg-black text-white font-black text-[9px] uppercase shadow-lg active:scale-95">Finalizar Reporte</button>
+        <div id="op-list" class="space-y-2"></div>
+        <div class="grid grid-cols-2 gap-2 mt-4">
+            <button onclick="descargarPDF(activeOp)" class="h-12 rounded-xl border-2 border-slate-200 font-black text-[8px] uppercase text-slate-500">Borrador PDF</button>
+            <button onclick="openFinalModal()" class="h-12 rounded-xl bg-black text-white font-black text-[8px] uppercase">Finalizar</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-3xl font-black tracking-tighter mb-6">Actividad</h2>
-        <div id="hist-feed" class="space-y-3"></div>
+        <h2 class="text-2xl font-black mb-4">Actividad</h2>
+        <div id="hist-feed" class="space-y-2"></div>
     </div>
 
-    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-[35px] p-8 text-center shadow-2xl">
-            <h3 class="text-2xl font-black tracking-tight mb-2">¿Cerrar Operación?</h3>
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-8">Revisión: J. Angelo Nuñez Durand</p>
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
+            <h3 class="text-lg font-black mb-1">¿Cerrar Operación?</h3>
+            <p class="text-[8px] text-slate-400 font-bold uppercase mb-6">J. Angelo Nuñez Durand</p>
             <div class="flex flex-col gap-2">
-                <button onclick="finalizarDefinitivo()" class="h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest">Confirmar y Generar PDF</button>
-                <button onclick="closeModal()" class="h-14 text-slate-400 font-bold text-xs">Cancelar</button>
+                <button onclick="finalizarDefinitivo()" class="h-12 bg-black text-white rounded-xl font-black text-[10px] uppercase">Confirmar y PDF</button>
+                <button onclick="closeModal()" class="h-10 text-slate-400 font-bold text-[10px]">Cancelar</button>
             </div>
         </div>
     </div>
 
     <script>
         const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        let queue = [];
-        let activeOp = null;
+        let queue = [], activeOp = null;
 
         window.onload = () => {
             const saved = localStorage.getItem('active_tajho_v3');
-            if(saved) {
-                activeOp = JSON.parse(saved);
-                navTo('ops');
-                syncTerminal();
-            }
+            if(saved) { activeOp = JSON.parse(saved); navTo('ops'); syncTerminal(); }
         };
 
         function navTo(v) {
@@ -147,46 +129,29 @@
             try {
                 const res = await fetch(`${APP_URL}?action=buscar&term=${val}`);
                 const data = await res.json();
-                box.innerHTML = data.map(x => `
-                    <div onclick="selectProd('${x.sku}')" class="p-4 border-b last:border-0 active:bg-blue-50">
-                        <p class="text-xs font-black">${x.sku}</p>
-                        <p class="text-[9px] text-slate-400 uppercase truncate font-bold">${x.descripcion}</p>
-                    </div>`).join('');
+                box.innerHTML = data.map(x => `<div onclick="selectProd('${x.sku}')" class="p-3 border-b text-[11px] font-black active:bg-blue-50">${x.sku}</div>`).join('');
                 box.classList.remove('hidden');
             } catch(e) {}
         }
 
-        function selectProd(s) {
-            document.getElementById('s-sku').value = s;
-            document.getElementById('res-box').classList.add('hidden');
-            document.getElementById('s-meta').focus();
-        }
-
+        function selectProd(s) { document.getElementById('s-sku').value = s; document.getElementById('res-box').classList.add('hidden'); document.getElementById('s-meta').focus(); }
+        
         function addToQueue() {
-            const sku = document.getElementById('s-sku').value;
-            const meta = parseInt(document.getElementById('s-meta').value);
+            const sku = document.getElementById('s-sku').value, meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            queue.push({ sku, meta, real: 0 });
-            renderQueue();
-            document.getElementById('s-sku').value = '';
-            document.getElementById('s-meta').value = '';
+            queue.push({ sku, meta, real: 0 }); renderQueue();
+            document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
         function renderQueue() {
-            document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
-                <div class="bg-white p-4 rounded-2xl flex justify-between items-center border border-black/5 shadow-sm">
-                    <div><p class="text-[10px] font-black">${x.sku}</p><p class="text-[9px] font-bold text-blue-600 uppercase">Meta: ${x.meta} Cajas</p></div>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300 font-bold px-2 text-xl">×</button>
-                </div>`).join('');
+            document.getElementById('list-queue').innerHTML = queue.map((x, i) => `<div class="bg-white p-3 rounded-xl flex justify-between items-center border shadow-sm text-[10px] font-black">${x.sku} (Meta: ${x.meta}) <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 text-lg">×</button></div>`).join('');
         }
 
         function iniciarOContinuar() {
             const id = document.getElementById('auto-id-input').value;
             if(!id || queue.length === 0) return alert("Falta ID o Productos");
             activeOp = { id, items: [...queue], date: new Date().toLocaleString(), status: 'pendiente' };
-            saveLocal();
-            navTo('ops');
-            syncTerminal();
+            saveLocal(); navTo('ops'); syncTerminal();
         }
 
         function syncTerminal() {
@@ -197,31 +162,18 @@
         }
 
         function addCount() {
-            const inputQty = document.getElementById('op-qty');
-            const val = parseInt(inputQty.value);
+            const inputQty = document.getElementById('op-qty'), val = parseInt(inputQty.value);
             if (!val || val <= 0) return;
-            const skuSeleccionado = document.getElementById('op-select').value;
-            const item = activeOp.items.find(x => x.sku === skuSeleccionado);
-            if (item) {
-                item.real += val; // Suma acumulativa blindada
-                inputQty.value = '';
-                saveLocal();
-                renderOps();
-                if(window.navigator.vibrate) window.navigator.vibrate(50);
-            }
+            const item = activeOp.items.find(x => x.sku === document.getElementById('op-select').value);
+            if (item) { item.real += val; inputQty.value = ''; saveLocal(); renderOps(); }
         }
 
         function renderOps() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
-                <div class="bg-white p-4 rounded-2xl ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-lg' : 'opacity-40'} transition-all duration-300">
-                    <div class="flex justify-between font-black text-[10px] mb-2 uppercase tracking-tighter">
-                        <span>${x.sku}</span>
-                        <span class="${x.real >= x.meta ? 'text-green-500' : 'text-blue-600'}">${x.real} / ${x.meta}</span>
-                    </div>
-                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
-                    </div>
+                <div class="bg-white p-3 rounded-xl ${x.sku === cur ? 'ring-2 ring-blue-600' : 'opacity-50'}">
+                    <div class="flex justify-between font-black text-[9px] mb-1"><span>${x.sku}</span><span>${x.real}/${x.meta}</span></div>
+                    <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div></div>
                 </div>`).join('');
         }
 
@@ -237,50 +189,32 @@
             localStorage.setItem('thist_v3', JSON.stringify(h));
             descargarPDF(activeOp);
             localStorage.removeItem('active_tajho_v3');
-            activeOp = null;
-            closeModal();
-            navTo('home');
+            activeOp = null; closeModal(); navTo('home');
         }
 
         function descargarPDF(d) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
-            doc.text(`FECHA: ${d.date}`, 14, 35);
-            doc.autoTable({
-                startY: 40,
-                head: [['SKU', 'PLAN', 'REAL', 'DIF']],
-                body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
-            });
-            const finalY = doc.lastAutoTable.finalY + 15;
-            doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-            doc.save(`Reporte_${d.id}.pdf`);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
+                doc.setFontSize(10); doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
+                doc.autoTable({
+                    startY: 35,
+                    head: [['SKU', 'PLAN', 'REAL', 'DIF']],
+                    body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                    theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+                });
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
+                doc.save(`Reporte_${d.id}.pdf`);
+            } catch(e) { alert("Error al generar PDF. Asegúrate de estar conectado a internet."); }
         }
 
         function renderHistorial() {
             const h = JSON.parse(localStorage.getItem('thist_v3')) || [];
             const act = localStorage.getItem('active_tajho_v3');
-            let html = "";
-            if(act) {
-                const a = JSON.parse(act);
-                html += `
-                    <div class="bg-blue-600 p-5 rounded-[28px] text-white shadow-xl mb-6">
-                        <p class="text-[8px] font-black uppercase opacity-60 mb-1">Operación Activa</p>
-                        <p class="text-xl font-black mb-4">${a.id}</p>
-                        <button onclick="navTo('ops')" class="w-full h-12 bg-white text-blue-600 rounded-xl font-black text-[10px] uppercase">Continuar Conteo</button>
-                    </div>`;
-            }
-            html += h.map(x => `
-                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-black/5">
-                    <div><p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p><p class="text-xs font-black">${x.id}</p></div>
-                    <button onclick='descargarPDF(${JSON.stringify(x)})' class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg shadow-inner">📄</button>
-                </div>`).join('') || '<p class="text-center py-10 text-[10px] text-slate-400 font-bold">SIN REGISTROS</p>';
-            document.getElementById('hist-feed').innerHTML = html;
+            let html = act ? `<div class="bg-blue-600 p-4 rounded-2xl text-white mb-4"><p class="text-xs font-black">${JSON.parse(act).id}</p><button onclick="navTo('ops')" class="w-full mt-2 py-2 bg-white text-blue-600 rounded-lg text-[10px] font-black uppercase">Continuar</button></div>` : '';
+            html += h.map(x => `<div class="bg-white p-3 rounded-xl flex justify-between items-center border mb-2"><div class="text-[10px] font-black">${x.id}</div><button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-50 p-2 rounded-lg">📄</button></div>`).join('');
+            document.getElementById('hist-feed').innerHTML = html || '<p class="text-center text-[10px]">Sin registros</p>';
         }
     </script>
 </body>
