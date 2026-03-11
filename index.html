@@ -158,7 +158,7 @@
     </div>
 
     <script>
-        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbx7c6bHpxn9HWgsgdh7NC5wuZpEcqTh-ta6JqPgH9sBt6vyHpRX1sLpMLHGUp_OS6G1eQ/exec";
         let masterProducts = [];
         let q = [], activeOp = null;
 
@@ -271,14 +271,33 @@
         function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
 
         async function finishAll() {
-            let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-            h.unshift(activeOp);
-            localStorage.setItem('aura_v3_history', JSON.stringify(h));
-            await makePDF(activeOp);
-            localStorage.removeItem('aura_v3_active');
-            activeOp = null;
-            location.reload();
-        }
+    let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+    h.unshift(activeOp);
+    localStorage.setItem('aura_v3_history', JSON.stringify(h));
+
+    // NUEVO: Enviar a la Hoja 2 antes de cerrar
+    try {
+        await fetch(SHEETS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                accion: "guardar_contenedor",
+                id: activeOp.id,
+                fecha: activeOp.date,
+                detalles: activeOp.items // Envía el array completo de SKUs, metas y reales
+            })
+        });
+        console.log("Datos sincronizados con la Base de Datos");
+    } catch (e) {
+        console.error("Error al sincronizar:", e);
+    }
+
+    await makePDF(activeOp);
+    localStorage.removeItem('aura_v3_active');
+    activeOp = null;
+    location.reload();
+}
 
         async function makePDF(d) {
             const { jsPDF } = window.jspdf;
