@@ -9,49 +9,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root { --accent: #00f7ff; --surface: #0a0a0f; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--surface);
-            color: #fff;
-            overflow-y: auto;
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 247, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--surface); color: #fff; overflow-y: auto; min-height: 100vh; }
         .view { display: none; min-height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 140px; }
-        .view.active { display: flex; animation: viewIn 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
-        @keyframes viewIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        .glass-panel { background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 32px; }
-
-        .dock {
-            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            padding: 8px; border-radius: 40px; border: 1px solid var(--border);
-            display: flex; gap: 8px; z-index: 1000;
-        }
-        .dock-item {
-            display: flex; align-items: center; gap: 10px; padding: 14px 24px;
-            border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase;
-            color: rgba(255,255,255,0.4); transition: all 0.3s;
-        }
-        .dock-item.active { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
-
-        input { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--border) !important; color: #fff !important; border-radius: 20px !important; padding: 20px !important; outline: none !important; }
-        input:focus { border-color: var(--accent) !important; }
-
-        .orb-btn { width: 80px; height: 80px; background: var(--accent); color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0,247,255,0.3); }
-
-        #suggestions { position: absolute; width: calc(100% - 10px); top: 100%; left: 5px; z-index: 100; max-height: 250px; overflow-y: auto; margin-top: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .suggestion-item { padding: 16px 20px; background: rgba(15, 15, 25, 0.98); border-bottom: 1px solid var(--border); cursor: pointer; }
+        .view.active { display: flex; animation: viewIn 0.4s ease-out; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 28px; }
+        .dock { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); padding: 8px; border-radius: 40px; border: 1px solid var(--border); display: flex; gap: 8px; z-index: 1000; }
+        .dock-item { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+        .dock-item.active { background: #fff; color: #000; }
+        input { background: rgba(255,255,255,0.05)!important; border: 1px solid var(--border)!important; color: #fff!important; border-radius: 16px!important; padding: 16px!important; outline: none!important; }
+        .orb-btn { width: 70px; height: 70px; background: var(--accent); color: #000; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,247,255,0.2); }
+        #suggestions { position: absolute; width: 100%; top: 100%; z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+        .suggestion-item { padding: 14px; background: #16161e; border-bottom: 1px solid var(--border); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -62,115 +35,76 @@
     </nav>
 
     <div id="v-dash" class="view active">
-        <header class="pt-10 pb-10 text-center">
-            <h1 class="text-5xl font-black tracking-tighter italic text-white">LOGISTICA <span style="color:var(--accent)">TWINS</span></h1>
-            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2 text-white">By Tajho Intelligence</p>
+        <header class="pt-10 pb-8 text-center">
+            <h1 class="text-4xl font-black italic">TWINS <span style="color:var(--accent)">LOGISTICS</span></h1>
+            <p class="text-[8px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1">Inventory Management System</p>
         </header>
-        <div class="space-y-4">
-            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center active:scale-95 transition-all cursor-pointer">
-                <div>
-                    <h3 class="text-2xl font-black text-white">Nueva Carga</h3>
-                    <p class="text-xs text-white/40 italic">Sincronizado con Hoja 2</p>
-                </div>
-                <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
-                    <i class="ph-duotone ph-plus-circle text-2xl text-black"></i>
-                </div>
+        <div id="history-feed" class="space-y-3">
             </div>
-            <div id="history-feed" class="mt-8 space-y-3"></div>
-        </div>
     </div>
 
-    <div id="v-work" class="view text-white">
+    <div id="v-work" class="view">
         <div id="setup-panel">
-            <h2 class="text-4xl font-black mb-8 tracking-tighter text-white">Preparación</h2>
-            <div class="glass-panel p-7 space-y-6 relative">
+            <h2 class="text-3xl font-black mb-6">Nuevo Contenedor</h2>
+            <div class="glass-panel p-6 space-y-4 relative">
                 <div class="relative">
-                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador de Maestra</label>
-                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full text-xl font-bold" placeholder="SKU o Nombre..." autocomplete="off">
-                    <div id="suggestions" class="glass-panel hidden overflow-hidden border-accent/20"></div>
+                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full font-bold" placeholder="Buscar SKU..." autocomplete="off">
+                    <div id="suggestions" class="glass-panel hidden overflow-hidden"></div>
                 </div>
-                <div class="flex gap-4">
-                    <div class="flex-1">
-                        <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Meta</label>
-                        <input type="number" id="meta-in" class="w-full text-center text-2xl font-black" placeholder="0">
-                    </div>
-                    <button onclick="addItem()" class="mt-6 px-8 rounded-2xl bg-white text-black font-black uppercase text-[10px]">Añadir</button>
+                <div class="flex gap-3">
+                    <input type="number" id="meta-in" class="w-full text-center font-black" placeholder="Meta">
+                    <button onclick="addItem()" class="px-6 rounded-xl bg-white text-black font-bold uppercase text-[10px]">Añadir</button>
                 </div>
             </div>
-            <div id="q-list" class="mt-6 space-y-3"></div>
-            <button onclick="start()" class="w-full py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest mt-10 text-white shadow-lg" style="background:linear-gradient(90deg, #8b5cf6, #d946ef);">
-                Iniciar Conteo Activo
+            <div id="q-list" class="mt-6 space-y-2"></div>
+            <button onclick="startOp()" class="w-full py-4 rounded-2xl font-black text-xs uppercase mt-8 text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg">
+                Iniciar Conteo de Carga
             </button>
         </div>
 
         <div id="terminal-panel" class="hidden flex-1 flex flex-col">
-            <div class="flex justify-between items-center mb-8">
-                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black text-white">Conteo Real</h2></div>
-                <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-duotone ph-power"></i></button>
+            <div class="flex justify-between items-center mb-6">
+                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase mb-1"></p><h2 class="text-2xl font-black">Conteo Real</h2></div>
+                <button onclick="openFinalModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-bold ph-check"></i></button>
             </div>
-            <div class="glass-panel p-8 mb-6 text-center">
-                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-6 text-2xl font-black uppercase outline-none"></select>
-                <div class="flex items-center gap-6 justify-center">
-                    <input type="number" id="count-in" class="w-32 p-6 rounded-3xl text-6xl font-black text-center text-white" placeholder="0">
-                    <button onclick="commit()" class="orb-btn"><i class="ph-duotone ph-check-circle text-4xl text-black"></i></button>
+            <div class="glass-panel p-6 mb-6 text-center">
+                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-4 text-xl font-black outline-none"></select>
+                <div class="flex items-center gap-4 justify-center">
+                    <input type="number" id="count-in" class="w-28 p-4 rounded-xl text-4xl font-black text-center" placeholder="0">
+                    <button onclick="commitCount()" class="orb-btn"><i class="ph-bold ph-plus text-3xl"></i></button>
                 </div>
             </div>
-            <div id="stat-list" class="space-y-3 flex-1 overflow-y-auto"></div>
+            <div id="stat-list" class="space-y-2 overflow-y-auto"></div>
         </div>
     </div>
 
-    <div id="m-final" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-8 text-center">
-        <div class="glass-panel p-10 max-w-sm w-full">
-            <div id="modal-dynamic-content">
-                <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
-                <h3 class="text-2xl font-black mb-2 text-white">Finalizar Contenedor</h3>
-                <p class="text-[10px] font-bold text-white/30 uppercase mb-8">Se guardará en Google Sheets y Base de Datos</p>
-                <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4 shadow-xl">Guardar y Generar</button>
-                <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Cancelar</button>
-            </div>
+    <div id="m-final" class="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6 text-center">
+        <div class="glass-panel p-8 max-w-sm w-full">
+            <i class="ph-duotone ph-cloud-arrow-up text-5xl text-accent mb-4 block"></i>
+            <h3 class="text-xl font-black mb-2">¿Finalizar Carga?</h3>
+            <p class="text-[10px] text-white/40 mb-6 uppercase">Los datos se enviarán a la base de datos central</p>
+            <button id="save-btn" onclick="saveData()" class="w-full py-4 rounded-xl bg-white text-black font-black uppercase text-xs mb-3">Guardar Registro</button>
+            <button onclick="closeFinalModal()" class="text-white/30 text-[10px] font-bold uppercase">Volver al conteo</button>
         </div>
     </div>
 
     <script>
         const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let masterProducts = [];
-        let q = [], activeOp = null;
+        let tempItems = [], activeOp = null;
 
-        async function loadProducts() {
-            try {
-                const response = await fetch(SHEETS_URL);
-                masterProducts = await response.json();
-            } catch (e) { console.error("Error Sheets:", e); }
-        }
-
-        function searchProduct(query) {
-            const div = document.getElementById('suggestions');
-            if (query.length < 2) { div.classList.add('hidden'); return; }
-            const matches = masterProducts.filter(p => p.sku.toLowerCase().includes(query.toLowerCase()) || p.nombre.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
-            if (matches.length > 0) {
-                div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectProduct('${m.sku}')"><p class="font-bold text-sm text-accent">${m.sku}</p><p class="text-[10px] text-white/50">${m.nombre}</p></div>`).join('');
-                div.classList.remove('hidden');
-            } else { div.classList.add('hidden'); }
-        }
-
-        function selectProduct(sku) {
-            document.getElementById('sku-in').value = sku;
-            document.getElementById('suggestions').classList.add('hidden');
-            document.getElementById('meta-in').focus();
-        }
-
-        function genID() {
-            const d = new Date();
-            return `AURA-${d.getDate()}${(d.getMonth()+1)}-${Math.floor(Math.random()*999)}`;
-        }
-
-        window.onload = () => {
-            loadProducts();
-            const s = localStorage.getItem('aura_v3_active');
-            if(s) { activeOp = JSON.parse(s); navTo('work'); loadTerm(); }
+        // CARGA INICIAL
+        window.onload = async () => {
+            const savedOp = localStorage.getItem('aura_active');
+            if(savedOp) { activeOp = JSON.parse(savedOp); showTerminal(); }
             renderHistory();
+            try {
+                const res = await fetch(SHEETS_URL);
+                masterProducts = await res.json();
+            } catch(e) { console.error("Error cargando maestra"); }
         };
 
+        // NAVEGACIÓN
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
@@ -179,27 +113,52 @@
             if(v === 'dash') renderHistory();
         }
 
+        // BÚSQUEDA Y CREACIÓN
+        function searchProduct(query) {
+            const div = document.getElementById('suggestions');
+            if (query.length < 2) { div.classList.add('hidden'); return; }
+            const matches = masterProducts.filter(p => p.sku.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
+            div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectItem('${m.sku}')"><p class="font-bold text-accent text-sm">${m.sku}</p></div>`).join('');
+            div.classList.toggle('hidden', matches.length === 0);
+        }
+
+        function selectItem(sku) {
+            document.getElementById('sku-in').value = sku;
+            document.getElementById('suggestions').classList.add('hidden');
+        }
+
         function addItem() {
-            const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
-            if(!s || !m) return;
-            q.push({ sku: s, meta: m, r: 0 });
-            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
-            renderQ();
+            const sku = document.getElementById('sku-in').value;
+            const meta = parseInt(document.getElementById('meta-in').value);
+            if(!sku || !meta) return;
+            tempItems.push({ sku, meta, r: 0 });
+            document.getElementById('sku-in').value = '';
+            document.getElementById('meta-in').value = '';
+            renderTempList();
         }
 
-        function renderQ() {
-            document.getElementById('q-list').innerHTML = q.map((x, i) => `<div class="glass-panel p-5 flex justify-between items-center"><p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">META: ${x.meta}</span></p><button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-bold ph-trash"></i></button></div>`).join('');
+        function renderTempList() {
+            document.getElementById('q-list').innerHTML = tempItems.map((it, i) => `
+                <div class="glass-panel p-4 flex justify-between items-center text-sm font-bold">
+                    <span>${it.sku} <span class="text-accent ml-2">META: ${it.meta}</span></span>
+                    <button onclick="tempItems.splice(${i},1);renderTempList()" class="text-red-500"><i class="ph-bold ph-x"></i></button>
+                </div>`).join('');
         }
 
-        function start() {
-            if(q.length === 0) return alert("Agregue SKUs");
-            activeOp = { id: genID(), items: [...q], date: new Date().toLocaleString() };
-            q = [];
-            localStorage.setItem('aura_v3_active', JSON.stringify(activeOp));
-            loadTerm();
+        // OPERACIÓN DE CONTEO
+        function startOp() {
+            if(tempItems.length === 0) return alert("Agrega al menos un SKU");
+            activeOp = { 
+                id: `OP-${Date.now().toString().slice(-4)}`, 
+                items: [...tempItems], 
+                date: new Date().toLocaleString() 
+            };
+            tempItems = [];
+            localStorage.setItem('aura_active', JSON.stringify(activeOp));
+            showTerminal();
         }
 
-        function loadTerm() {
+        function showTerminal() {
             document.getElementById('setup-panel').classList.add('hidden');
             document.getElementById('terminal-panel').classList.remove('hidden');
             document.getElementById('disp-id').innerText = activeOp.id;
@@ -207,99 +166,112 @@
             upUI();
         }
 
-        function commit() {
-            const i = document.getElementById('count-in'), v = parseInt(i.value);
-            if(!v && v !== 0) return;
-            const item = activeOp.items.find(x => x.sku === document.getElementById('sku-sel').value);
-            if(item) { item.r += v; i.value = ''; localStorage.setItem('aura_v3_active', JSON.stringify(activeOp)); upUI(); }
+        function commitCount() {
+            const val = parseInt(document.getElementById('count-in').value);
+            if(!val && val !== 0) return;
+            const sku = document.getElementById('sku-sel').value;
+            const it = activeOp.items.find(x => x.sku === sku);
+            if(it) { it.r += val; document.getElementById('count-in').value = ''; upUI(); localStorage.setItem('aura_active', JSON.stringify(activeOp)); }
         }
 
         function upUI() {
-            const cur = document.getElementById('sku-sel').value;
             document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
-                <div class="glass-panel p-5 ${x.sku === cur ? 'border-accent/40' : 'opacity-30'}">
-                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase"><span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span></div>
-                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div></div>
+                <div class="glass-panel p-4 mb-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                        <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
+                    </div>
+                    <div class="h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
                 </div>`).join('');
         }
 
-        function openCloseModal() { 
-            document.getElementById('modal-dynamic-content').innerHTML = `
-                <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
-                <h3 class="text-2xl font-black mb-2 text-white">Finalizar Contenedor</h3>
-                <p class="text-[10px] font-bold text-white/30 uppercase mb-8 text-white">Se guardará en Google Sheets y Base de Datos</p>
-                <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4 shadow-xl text-black">Guardar y Generar</button>
-                <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase text-white">Cancelar</button>
-            `;
-            document.getElementById('m-final').classList.remove('hidden'); 
-        }
-        function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
+        // GUARDADO (SOLO GUARDA)
+        function openFinalModal() { document.getElementById('m-final').classList.remove('hidden'); }
+        function closeFinalModal() { document.getElementById('m-final').classList.add('hidden'); }
 
-        async function finishAll() {
-            const content = document.getElementById('modal-dynamic-content');
-            content.innerHTML = `<i class="ph-duotone ph-cloud-arrow-up text-6xl text-accent animate-bounce mb-6 block"></i><h3 class="text-xl font-black text-white">GUARDANDO...</h3>`;
-            
+        async function saveData() {
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "ENVIANDO...";
+            btn.disabled = true;
+
             try {
                 await fetch(SHEETS_URL, {
-                    method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+                    method: "POST", mode: "no-cors",
                     body: JSON.stringify({ accion: "guardar_contenedor", id: activeOp.id, fecha: activeOp.date, detalles: activeOp.items })
                 });
 
-                let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-                h.unshift(activeOp);
-                localStorage.setItem('aura_v3_history', JSON.stringify(h));
-
-                const copyData = JSON.parse(JSON.stringify(activeOp));
-                content.innerHTML = `
-                    <i class="ph-duotone ph-check-circle text-6xl text-green-400 mb-6 block"></i>
-                    <h3 class="text-2xl font-black mb-2 text-white">¡GUARDADO!</h3>
-                    <button id="btnRealPDF" class="w-full py-5 rounded-2xl bg-accent text-black font-black uppercase text-xs mb-4 shadow-xl">📥 DESCARGAR PDF AHORA</button>
-                    <button onclick="location.reload()" class="text-white/40 text-[10px] font-bold uppercase text-white">Finalizar y Limpiar</button>
-                `;
-                document.getElementById('btnRealPDF').onclick = () => masterPDF(copyData);
-                localStorage.removeItem('aura_v3_active');
-            } catch (e) { alert("Error al conectar"); location.reload(); }
+                let history = JSON.parse(localStorage.getItem('aura_history') || '[]');
+                history.unshift(activeOp);
+                localStorage.setItem('aura_history', JSON.stringify(history));
+                localStorage.removeItem('aura_active');
+                
+                alert("Guardado correctamente. Revisa el historial para tu PDF.");
+                location.reload();
+            } catch(e) { alert("Error al guardar"); btn.disabled = false; btn.innerText = "Guardar Registro"; }
         }
 
-        function masterPDF(d) {
+        // HISTORIAL Y GENERACIÓN DE PDF
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
+            const feed = document.getElementById('history-feed');
+            
+            feed.innerHTML = history.map((h, i) => `
+                <div class="glass-panel p-5 flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] text-white/20 font-black uppercase">${h.date}</p>
+                        <p class="font-black text-sm">${h.id}</p>
+                    </div>
+                    <button onclick='generatePDF(${i})' class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                        <i class="ph-duotone ph-file-pdf text-2xl"></i>
+                    </button>
+                </div>`).join('') || '<p class="text-center py-20 text-white/20 font-bold uppercase text-xs">Sin registros</p>';
+        }
+
+        function generatePDF(index) {
+            const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
+            const d = history[index];
+            if(!d) return;
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(15, 15, 25); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
-            doc.setTextColor(150); doc.setFontSize(9); doc.text(`ID: ${d.id} | FECHA: ${d.date}`, 14, 48);
-            
+
+            // Cabecera
+            doc.setFillColor(15, 15, 25);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+
+            doc.setTextColor(100);
+            doc.setFontSize(9);
+            doc.text(`REPORTE DE CARGA: ${d.id}`, 14, 48);
+            doc.text(`FECHA: ${d.date}`, 14, 53);
+
+            // Tabla de datos
             doc.autoTable({
-                startY: 55, head: [['SKU', 'META', 'REAL', 'DIF']],
-                body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
-                theme: 'grid', headStyles: { fillColor: [0, 247, 255], textColor: [0,0,0] }
+                startY: 60,
+                head: [['SKU', 'META', 'CONTEO REAL', 'DIFERENCIA']],
+                body: d.items.map(it => [it.sku, it.meta, it.r, (it.r - it.meta)]),
+                theme: 'grid',
+                headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
             });
 
+            // Firma obligatoria
             const finalY = doc.lastAutoTable.finalY + 20;
-            doc.setTextColor(0); doc.text("__________________________", 14, finalY);
-            doc.setFont("helvetica", "bold"); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+            doc.setTextColor(0);
+            doc.text("__________________________________", 14, finalY);
+            doc.setFont("helvetica", "bold");
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.setFont("helvetica", "normal");
+            doc.text("Asist. Inventario Logístico", 14, finalY + 12);
 
+            // Descarga por clic forzado (Blob)
             const blob = doc.output('blob');
             const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url; link.download = `Reporte_${d.id}.pdf`;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Reporte_${d.id}.pdf`;
+            a.click();
             URL.revokeObjectURL(url);
-        }
-
-        function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-            const feed = document.getElementById('history-feed');
-            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center text-white"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga en Curso</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right text-black"></i></button></div>` : '';
-            
-            h.forEach((x, i) => {
-                html += `<div class="glass-panel p-5 flex justify-between items-center mb-2 text-white"><div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button id="hbtn-${i}" class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`;
-            });
-            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10 font-bold">Sin registros</p>';
-            h.forEach((x, i) => { 
-                const btn = document.getElementById(`hbtn-${i}`);
-                if(btn) btn.onclick = () => masterPDF(x);
-            });
         }
     </script>
 </body>
