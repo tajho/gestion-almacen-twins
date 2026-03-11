@@ -2,307 +2,187 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho Pro | Logistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aura Pro | Warehouse System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0F172A; color: white; overflow: hidden; height: 100vh; }
-        
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .view { display: none; height: 100vh; flex-direction: column; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; overflow: hidden; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; backdrop-blur: 10px; }
+        .view { display: none; height: 100vh; flex-direction: column; padding: 20px; overflow-y: auto; }
         .view.active { display: flex; }
-
-        .btn-primary { background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); transition: all 0.2s; }
+        .neon-accent { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .btn-primary { background: #ffffff; color: #000000; font-weight: 900; border-radius: 16px; transition: all 0.2s; }
         .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
-
-        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; height: 70px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-icon { font-size: 24px; opacity: 0.4; transition: 0.3s; }
-        .nav-icon.active { opacity: 1; transform: translateY(-5px); }
-
-        input, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; outline: none !important; }
-        input:focus { border-color: #3B82F6 !important; background: rgba(255,255,255,0.1) !important; }
-
-        /* Scrollbar discreto */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        input, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; outline: none; }
+        .progress-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .progress-fill { height: 100%; background: #00f2ff; transition: width 0.3s ease; }
     </style>
 </head>
 <body>
 
-    <div id="view-home" class="view active">
-        <div class="mt-12 mb-10">
-            <p class="text-blue-400 font-bold tracking-[0.2em] text-[10px] uppercase mb-2">Inventory Manager</p>
-            <h1 class="text-4xl font-extrabold tracking-tighter">¿Qué hacemos hoy, <span class="text-blue-500">Tajho?</span></h1>
-        </div>
-        
-        <div class="grid gap-4">
-            <button onclick="navTo('crear')" class="glass p-8 text-left group">
-                <div class="w-14 h-14 btn-primary rounded-2xl flex items-center justify-center mb-6 text-2xl">📦</div>
-                <h3 class="text-2xl font-bold mb-1">Crear Contenedor</h3>
-                <p class="text-slate-400 text-sm">Inicia un nuevo registro de mercadería</p>
-            </button>
-            
-            <button onclick="navTo('historial')" class="glass p-8 text-left">
-                <div class="w-14 h-14 bg-slate-700 rounded-2xl flex items-center justify-center mb-6 text-2xl">📋</div>
-                <h3 class="text-2xl font-bold mb-1">Historial</h3>
-                <p class="text-slate-400 text-sm">Revisa reportes y pendientes</p>
-            </button>
-        </div>
-    </div>
-
-    <div id="view-crear" class="view">
-        <h2 class="text-2xl font-bold mb-6">Nuevo Contenedor</h2>
-        <div class="glass p-4 mb-4">
-            <label class="text-[10px] font-bold text-blue-400 uppercase mb-2 block">Identificador</label>
-            <input type="text" id="input-id" class="w-full p-3 rounded-xl font-bold" placeholder="Ej: CT-2026-001">
-        </div>
-
-        <div class="glass p-4 space-y-4 mb-6">
-            <div class="relative">
-                <label class="text-[10px] font-bold text-blue-400 uppercase mb-2 block">Producto (SKU)</label>
-                <input type="text" id="input-sku" oninput="apiSearch()" class="w-full p-3 rounded-xl font-bold" placeholder="Buscar...">
-                <div id="search-results" class="absolute left-0 right-0 top-[75px] glass z-[100] hidden max-h-40 overflow-y-auto"></div>
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-blue-400 uppercase mb-2 block">Cantidad Meta</label>
-                <div class="flex gap-3">
-                    <input type="number" id="input-meta" class="flex-1 p-3 rounded-xl font-bold text-center text-xl" placeholder="0">
-                    <button onclick="addToPlan()" class="w-16 h-14 btn-primary rounded-xl text-2xl">＋</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="plan-list" class="space-y-3 mb-6"></div>
-        <button onclick="startConteo()" class="w-full py-5 btn-primary rounded-2xl font-extrabold uppercase tracking-widest text-sm shadow-2xl">Iniciar Operación</button>
-    </div>
-
-    <div id="view-ops" class="view">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <p id="display-id" class="text-blue-500 font-bold text-[10px] uppercase"></p>
-                <h2 class="text-2xl font-extrabold tracking-tight">Terminal de Conteo</h2>
-            </div>
-            <div class="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-[8px] text-green-400 font-black animate-pulse uppercase">En vivo</div>
-        </div>
-
-        <div class="glass p-6 mb-6">
-            <select id="select-item" onchange="refreshTerminal()" class="w-full p-3 rounded-xl font-bold text-center mb-4 uppercase text-sm"></select>
-            <div class="flex gap-4 items-center">
-                <input type="number" id="input-qty" class="flex-1 h-24 text-6xl font-black text-center bg-transparent outline-none" placeholder="0">
-                <button onclick="sumarConteo()" class="w-24 h-24 btn-primary rounded-3xl text-3xl font-bold">OK</button>
-            </div>
-        </div>
-
-        <div id="live-status" class="space-y-3"></div>
-        
-        <div class="grid grid-cols-2 gap-3 mt-8">
-            <button onclick="generarPDF(activeOp)" class="glass py-4 text-[10px] font-black uppercase text-slate-400">Borrador PDF</button>
-            <button onclick="openFinalModal()" class="btn-primary py-4 rounded-2xl text-[10px] font-black uppercase">Finalizar</button>
-        </div>
-    </div>
-
-    <div id="view-historial" class="view">
-        <h2 class="text-3xl font-extrabold mb-8 tracking-tighter">Registros</h2>
-        <div id="history-feed" class="space-y-4"></div>
-    </div>
-
-    <nav class="nav-bar">
-        <button onclick="navTo('home')" id="nav-home" class="nav-icon active">🏠</button>
-        <button onclick="navTo('crear')" id="nav-crear" class="nav-icon">📦</button>
-        <button onclick="navTo('historial')" id="nav-historial" class="nav-icon">📋</button>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-2 p-2 glass-card z-50">
+        <button onclick="navTo('home')" class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10" id="n-home">Dashboard</button>
+        <button onclick="navTo('work')" class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10" id="n-work">Operación</button>
     </nav>
 
-    <div id="modal-final" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[2000] hidden flex items-center justify-center p-6">
-        <div class="glass p-8 w-full max-w-sm text-center">
-            <h3 class="text-2xl font-extrabold mb-2">¿Cerrar Reporte?</h3>
-            <p class="text-slate-400 text-xs mb-8">Una vez finalizado, el estado cambiará y se generará el documento oficial.</p>
-            <button onclick="confirmarCierre()" class="w-full py-4 btn-primary rounded-xl font-black uppercase text-xs mb-3">Finalizar y Guardar</button>
-            <button onclick="closeModal()" class="text-slate-500 font-bold text-xs uppercase">Cancelar</button>
+    <div id="v-home" class="view active">
+        <header class="py-8">
+            <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-2">Inventory Manager</p>
+            <h1 class="text-5xl font-black tracking-tighter">AURA <span class="neon-accent">PRO.</span></h1>
+        </header>
+
+        <div class="grid gap-4">
+            <div onclick="navTo('work')" class="glass-card p-8 active:scale-95 transition-all cursor-pointer">
+                <h3 class="text-2xl font-black mb-1">Nueva Carga</h3>
+                <p class="text-sm text-white/50">Iniciar registro de contenedor</p>
+            </div>
+            <div id="historial-list" class="space-y-3 mt-4">
+                <p class="text-[10px] font-black text-white/40 uppercase mb-4">Recientes</p>
+                </div>
+        </div>
+    </div>
+
+    <div id="v-work" class="view">
+        <div id="setup-view">
+            <h2 class="text-3xl font-black mb-6 tracking-tight">Configuración</h2>
+            <div class="glass-card p-6 space-y-4">
+                <div>
+                    <label class="text-[10px] font-black uppercase text-white/30 ml-2">ID Contenedor</label>
+                    <input type="text" id="c-id" class="w-full p-4 rounded-xl mt-1 text-lg" placeholder="EJ: CT-2026">
+                </div>
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="text-[10px] font-black uppercase text-white/30 ml-2">SKU</label>
+                        <input type="text" id="c-sku" class="w-full p-4 rounded-xl mt-1" placeholder="Producto...">
+                    </div>
+                    <div class="w-24">
+                        <label class="text-[10px] font-black uppercase text-white/30 ml-2">Meta</label>
+                        <input type="number" id="c-meta" class="w-full p-4 rounded-xl mt-1 text-center" placeholder="0">
+                    </div>
+                    <button onclick="addItem()" class="mt-5 px-6 btn-primary">＋</button>
+                </div>
+            </div>
+            <div id="queue-display" class="mt-6 space-y-2"></div>
+            <button onclick="startSession()" class="w-full py-5 btn-primary mt-8 shadow-[0_20px_40px_rgba(255,255,255,0.1)]">INICIAR CONTEO</button>
+        </div>
+
+        <div id="active-view" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="display-id" class="text-2xl font-black neon-accent"></h2>
+                <button onclick="finishSession()" class="text-[10px] font-black bg-red-500/10 text-red-500 px-4 py-2 rounded-full border border-red-500/20">CERRAR</button>
+            </div>
+            
+            <div class="glass-card p-6 mb-6">
+                <select id="sku-picker" onchange="refreshUI()" class="w-full p-4 rounded-xl mb-6 text-xl font-black"></select>
+                <div class="flex gap-4 items-center">
+                    <input type="number" id="qty-input" class="flex-1 p-6 rounded-2xl text-6xl font-black text-center" placeholder="0">
+                    <button onclick="submitCount()" class="w-24 h-24 btn-primary text-4xl">OK</button>
+                </div>
+            </div>
+
+            <div id="stats-display" class="space-y-4"></div>
+            <button onclick="generatePDF(currentSession)" class="w-full py-4 glass-card mt-6 text-[10px] font-black uppercase tracking-widest">Descargar Borrador</button>
         </div>
     </div>
 
     <script>
-        const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-        let plan = [];
-        let activeOp = null;
-
-        // Persistencia
-        window.onload = () => {
-            const saved = localStorage.getItem('tajho_active_op');
-            if(saved) {
-                activeOp = JSON.parse(saved);
-                navTo('ops');
-                syncTerminal();
-            }
-        };
+        let currentSession = null;
+        let queue = [];
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-icon').forEach(e => e.classList.remove('active'));
-            document.getElementById('view-' + v).classList.add('active');
-            document.getElementById('nav-' + v).classList.add('active');
-            if(v === 'historial') renderHistorial();
+            document.getElementById('v-' + v).classList.add('active');
+            if(v === 'home') loadHistory();
         }
 
-        // Búsqueda inteligente
-        async function apiSearch() {
-            const term = document.getElementById('input-sku').value.toUpperCase();
-            const resBox = document.getElementById('search-results');
-            if(term.length < 2) { resBox.classList.add('hidden'); return; }
-            try {
-                const r = await fetch(`${APP_URL}?action=buscar&term=${term}`);
-                const data = await r.json();
-                resBox.innerHTML = data.map(x => `
-                    <div onclick="selectProduct('${x.sku}')" class="p-4 border-b border-white/5 active:bg-blue-600 font-bold text-sm">
-                        ${x.sku}
-                    </div>`).join('');
-                resBox.classList.remove('hidden');
-            } catch(e) {}
-        }
-
-        function selectProduct(sku) {
-            document.getElementById('input-sku').value = sku;
-            document.getElementById('search-results').classList.add('hidden');
-            document.getElementById('input-meta').focus();
-        }
-
-        // Lógica de Planificación
-        function addToPlan() {
-            const sku = document.getElementById('input-sku').value;
-            const meta = parseInt(document.getElementById('input-meta').value);
+        function addItem() {
+            const sku = document.getElementById('c-sku').value, meta = parseInt(document.getElementById('c-meta').value);
             if(!sku || !meta) return;
-            plan.push({ sku, meta, real: 0 });
-            renderPlan();
-            document.getElementById('input-sku').value = '';
-            document.getElementById('input-meta').value = '';
+            queue.push({ sku, meta, real: 0 });
+            document.getElementById('c-sku').value = ''; document.getElementById('c-meta').value = '';
+            renderQueue();
         }
 
-        function renderPlan() {
-            document.getElementById('plan-list').innerHTML = plan.map((x, i) => `
-                <div class="glass p-4 flex justify-between items-center border-l-4 border-blue-500">
-                    <span class="font-bold text-sm">${x.sku} <span class="text-blue-400 ml-2">Meta: ${x.meta}</span></span>
-                    <button onclick="plan.splice(${i},1);renderPlan()" class="text-red-400 font-black px-2 text-xl">×</button>
+        function renderQueue() {
+            document.getElementById('queue-display').innerHTML = queue.map((x, i) => `
+                <div class="glass-card p-4 flex justify-between items-center">
+                    <span class="font-black text-xs">${x.sku} <span class="text-white/30 ml-2">${x.meta} PCS</span></span>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 font-bold">✕</button>
                 </div>`).join('');
         }
 
-        function startConteo() {
-            const id = document.getElementById('input-id').value;
-            if(!id || plan.length === 0) return alert("Completa los datos");
-            activeOp = { id, items: [...plan], date: new Date().toLocaleString(), status: 'PENDIENTE' };
-            localStorage.setItem('tajho_active_op', JSON.stringify(activeOp));
-            navTo('ops');
-            syncTerminal();
+        function startSession() {
+            const id = document.getElementById('c-id').value;
+            if(!id || queue.length === 0) return alert("Faltan datos");
+            currentSession = { id, items: [...queue], date: new Date().toLocaleString() };
+            document.getElementById('setup-view').classList.add('hidden');
+            document.getElementById('active-view').classList.remove('hidden');
+            document.getElementById('display-id').innerText = id;
+            
+            const picker = document.getElementById('sku-picker');
+            picker.innerHTML = currentSession.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+            refreshUI();
         }
 
-        // Terminal de Conteo
-        function syncTerminal() {
-            document.getElementById('display-id').innerText = `ID: ${activeOp.id}`;
-            const sel = document.getElementById('select-item');
-            sel.innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
-            refreshTerminal();
-        }
-
-        function sumarConteo() {
-            const input = document.getElementById('input-qty');
-            const val = parseInt(input.value);
+        function submitCount() {
+            const input = document.getElementById('qty-input'), val = parseInt(input.value);
             if(!val) return;
-            const sku = document.getElementById('select-item').value;
-            const item = activeOp.items.find(x => x.sku === sku);
-            if(item) {
-                item.real += val;
-                input.value = '';
-                save();
-                refreshTerminal();
-                if(window.navigator.vibrate) window.navigator.vibrate(50);
-            }
+            const item = currentSession.items.find(x => x.sku === document.getElementById('sku-picker').value);
+            if(item) { item.real += val; input.value = ''; refreshUI(); }
         }
 
-        function refreshTerminal() {
-            const currentSku = document.getElementById('select-item').value;
-            document.getElementById('live-status').innerHTML = activeOp.items.map(x => `
-                <div class="glass p-4 ${x.sku === currentSku ? 'ring-2 ring-blue-500 shadow-lg shadow-blue-500/20' : 'opacity-40'}">
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-2">
-                        <span>${x.sku}</span>
-                        <span class="${x.real >= x.meta ? 'text-green-400' : 'text-blue-400'}">${x.real} / ${x.meta}</span>
+        function refreshUI() {
+            const sel = document.getElementById('sku-picker').value;
+            document.getElementById('stats-display').innerHTML = currentSession.items.map(x => `
+                <div class="p-4 ${x.sku === sel ? 'glass-card border-white/20' : 'opacity-30'} transition-all">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase">${x.sku}</span>
+                        <span class="text-[10px] font-black">${x.real} / ${x.meta}</span>
                     </div>
-                    <div class="h-2 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full ${x.real >= x.meta ? 'bg-green-500' : 'bg-blue-500'} transition-all duration-500" 
-                             style="width: ${Math.min((x.real/x.meta)*100, 100)}%"></div>
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${Math.min((x.real/x.meta)*100, 100)}%"></div></div>
                 </div>`).join('');
         }
 
-        function save() { localStorage.setItem('tajho_active_op', JSON.stringify(activeOp)); }
-
-        // Historial y Cierre
-        function openFinalModal() { document.getElementById('modal-final').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('modal-final').classList.add('hidden'); }
-
-        function confirmarCierre() {
-            activeOp.status = 'FINALIZADO';
-            let history = JSON.parse(localStorage.getItem('tajho_history')) || [];
-            history.unshift(activeOp);
-            localStorage.setItem('tajho_history', JSON.stringify(history));
-            generarPDF(activeOp);
-            localStorage.removeItem('tajho_active_op');
-            activeOp = null;
-            plan = [];
-            closeModal();
-            navTo('home');
+        function finishSession() {
+            if(!confirm("¿Finalizar y guardar reporte?")) return;
+            let history = JSON.parse(localStorage.getItem('aura_history') || '[]');
+            history.unshift(currentSession);
+            localStorage.setItem('aura_history', JSON.stringify(history));
+            generatePDF(currentSession);
+            location.reload();
         }
 
-        function generarPDF(op) {
+        function generatePDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.text("REPORTE TAJHO LOGISTICS", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`CONTENEDOR: ${op.id} | ESTADO: ${op.status}`, 14, 30);
-            doc.text(`FECHA: ${op.date}`, 14, 35);
-
+            doc.setFontSize(22); doc.text("REPORTE LOGISTICO AURA", 14, 20);
+            doc.setFontSize(10); doc.text(`CONTENEDOR: ${data.id} | FECHA: ${data.date}`, 14, 30);
+            
             doc.autoTable({
-                startY: 45,
-                head: [['SKU', 'META', 'RECIBIDO', 'DIFERENCIA']],
-                body: op.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                theme: 'striped',
-                headStyles: { fillColor: [37, 99, 235] }
+                startY: 40,
+                head: [['PRODUCTO SKU', 'PLANIFICADO', 'RECIBIDO', 'DIFERENCIA']],
+                body: data.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                theme: 'grid',
+                styles: { fontSize: 9, cellPadding: 5 }
             });
 
-            doc.setFontSize(9);
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`Reporte_${op.id}.pdf`);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
+            doc.save(`AURA_${data.id}.pdf`);
         }
 
-        function renderHistorial() {
-            const history = JSON.parse(localStorage.getItem('tajho_history')) || [];
-            const active = localStorage.getItem('tajho_active_op');
-            let html = '';
-
-            if(active) {
-                const a = JSON.parse(active);
-                html += `
-                <div class="glass p-5 border-l-4 border-yellow-500 bg-yellow-500/5">
-                    <p class="text-[8px] font-black text-yellow-500 uppercase mb-1">Operación en curso</p>
-                    <h4 class="font-bold text-lg mb-4">${a.id}</h4>
-                    <button onclick="navTo('ops')" class="w-full py-2 btn-primary rounded-lg text-[10px] font-black uppercase">Continuar Conteo</button>
-                </div>`;
-            }
-
-            html += history.map(x => `
-                <div class="glass p-5 flex justify-between items-center">
-                    <div>
-                        <p class="text-[8px] font-bold text-slate-500 uppercase">${x.date}</p>
-                        <h4 class="font-bold">${x.id}</h4>
-                        <span class="text-[8px] px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full font-black uppercase">Finalizado</span>
-                    </div>
-                    <button onclick='generarPDF(${JSON.stringify(x)})' class="w-12 h-12 glass flex items-center justify-center text-xl active:bg-blue-600">📄</button>
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('aura_history') || '[]');
+            document.getElementById('historial-list').innerHTML = h.map(x => `
+                <div class="glass-card p-4 flex justify-between items-center" onclick='generatePDF(${JSON.stringify(x)})'>
+                    <div><p class="text-xs font-black">${x.id}</p><p class="text-[8px] text-white/30">${x.date}</p></div>
+                    <span class="text-xl">📄</span>
                 </div>`).join('');
-            
-            document.getElementById('history-feed').innerHTML = html || '<p class="text-center text-slate-500 py-20 uppercase font-black text-xs tracking-widest">No hay registros</p>';
         }
+
+        window.onload = loadHistory;
     </script>
 </body>
 </html>
