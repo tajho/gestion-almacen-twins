@@ -3,111 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura | Twins Control de Ingreso</title>
+    <title>Aura Pro | Twins Inbound</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;500;800&display=swap" rel="stylesheet">
     <style>
         :root { --aura-blue: #007AFF; --aura-bg: #f2f2f7; --aura-card: #ffffff; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--aura-bg); color: #1c1c1e; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--aura-bg); color: #1c1c1e; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .aura-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 32px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
-        .aura-input { background: transparent; border: none; font-size: 1.5rem; font-weight: 800; width: 100%; color: #000; outline: none; border-bottom: 2px solid #e5e5ea; transition: 0.3s; }
+        .aura-input { background: transparent; border: none; font-size: 1.5rem; font-weight: 800; width: 100%; color: #000; outline: none; border-bottom: 2px solid #e5e5ea; transition: 0.3s; border-radius: 0; }
         .aura-input:focus { border-bottom-color: var(--aura-blue); }
-        .view { display: none; padding: 20px; flex-direction: column; min-height: 100vh; padding-bottom: 120px; }
+        .view { display: none; padding: 20px; flex-direction: column; min-height: 100vh; padding-bottom: 140px; }
         .view.active { display: flex; animation: view-slide 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes view-slide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        .finish-slider { position: relative; height: 70px; background: #e5e5ea; border-radius: 35px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .slider-handle { position: absolute; left: 5px; height: 60px; width: 60px; background: #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: transform 0.1s; }
-        .slider-text { font-size: 0.75rem; font-weight: 800; color: #8e8e93; text-transform: uppercase; letter-spacing: 2px; pointer-events: none; }
+        @keyframes view-slide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .finish-slider { position: relative; height: 80px; background: #000; border-radius: 40px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .slider-handle { position: absolute; left: 10px; height: 60px; width: 60px; background: #fff; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: transform 0.1s; }
+        .slider-text { font-size: 0.7rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 2px; pointer-events: none; opacity: 0.5; }
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
 <body>
 
     <header class="fixed top-0 left-0 right-0 px-8 py-10 z-50 flex justify-between items-end pointer-events-none">
         <div>
-            <p class="text-[10px] font-extrabold text-blue-600 tracking-[0.4em] uppercase opacity-60">Aura 1.0</p>
+            <p class="text-[10px] font-extrabold text-blue-600 tracking-[0.4em] uppercase opacity-60">Control de Ingresos</p>
             <h1 class="text-2xl font-black tracking-tighter">TWINS.</h1>
         </div>
         <div class="pointer-events-auto">
-            <button onclick="navTo('historial')" class="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white shadow-xl">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            </button>
+            <div id="sync-indicator" class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
         </div>
     </header>
 
     <div id="view-home" class="view active pt-32">
         <div class="mt-10 mb-12">
-            <h2 class="text-5xl font-black leading-none tracking-tighter text-slate-900">Control de<br>Ingresos.</h2>
+            <h2 class="text-5xl font-black leading-none tracking-tighter text-slate-900">Muelle de<br>Carga.</h2>
         </div>
 
         <div class="grid gap-6">
-            <div onclick="navTo('crear')" class="aura-card p-8 bg-blue-600 text-white border-none shadow-blue-200">
+            <div onclick="navTo('crear')" class="aura-card p-8 bg-blue-600 text-white border-none shadow-2xl shadow-blue-200 active:scale-95 transition-transform">
                 <div class="flex justify-between items-start mb-10">
-                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-                    </div>
-                    <span class="text-[10px] font-bold bg-white/10 px-3 py-1 rounded-full uppercase">Nueva Descarga</span>
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl font-light">＋</div>
+                    <span class="text-[10px] font-bold bg-white/10 px-3 py-1 rounded-full uppercase">Nuevo Contenedor</span>
                 </div>
-                <p class="text-2xl font-extrabold leading-tight">Iniciar Registro de Contenedor</p>
+                <p class="text-2xl font-extrabold leading-tight">Iniciar Descarga e Inventario</p>
             </div>
 
-            <div onclick="navTo('historial')" class="aura-card p-8 flex items-center justify-between">
+            <div onclick="navTo('historial')" class="aura-card p-8 flex items-center justify-between active:scale-95 transition-transform">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Trazabilidad</p>
-                    <p class="text-xl font-extrabold text-slate-900">Buscador de Ingresos</p>
+                    <p class="text-xl font-extrabold text-slate-900">Buscar en Historial</p>
                 </div>
-                <div class="w-10 h-10 border-2 border-slate-100 rounded-full flex items-center justify-center">→</div>
+                <div class="w-12 h-12 border-2 border-slate-100 rounded-full flex items-center justify-center text-xl">→</div>
             </div>
         </div>
 
-        <footer class="mt-auto py-10 opacity-40">
-            <p class="text-[10px] font-bold uppercase tracking-widest">Responsable de Inventario</p>
+        <footer class="mt-auto py-10 opacity-60">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-1">Responsable</p>
             <p class="text-sm font-bold text-slate-900">J. Angelo Nuñez Durand</p>
         </footer>
     </div>
 
     <div id="view-crear" class="view pt-32">
         <div class="flex items-center gap-4 mb-8">
-            <button onclick="navTo('home')" class="text-xs font-bold text-slate-400">← CANCELAR</button>
+            <button onclick="navTo('home')" class="text-[10px] font-black text-slate-400 tracking-widest">← CANCELAR</button>
         </div>
 
         <div class="space-y-6">
             <div class="aura-card p-8">
-                <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Referencia de Contenedor</label>
-                <input type="text" id="c-id" class="aura-input uppercase" placeholder="Ej: CT-9920">
+                <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Referencia del Contenedor</label>
+                <input type="text" id="c-id" class="aura-input uppercase" placeholder="Ej: CONT-2024-001">
             </div>
 
             <div class="aura-card p-8">
-                <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Búsqueda de Producto</label>
-                <input type="text" id="s-sku" oninput="liveSearch()" class="aura-input" placeholder="SKU o Nombre">
+                <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Buscador de SKUs</label>
+                <input type="text" id="s-sku" oninput="liveSearch()" class="aura-input" placeholder="Nombre o SKU">
                 <div id="results" class="mt-4 space-y-2 hidden"></div>
             </div>
 
             <div class="flex gap-4">
                 <div class="aura-card p-8 flex-1">
-                    <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Meta Ingreso</label>
+                    <label class="text-[10px] font-bold text-blue-600 uppercase block mb-4">Cajas Esperadas</label>
                     <input type="number" id="s-meta" class="aura-input text-center" placeholder="0">
                 </div>
-                <button onclick="queueItem()" class="w-24 aura-card bg-black text-white flex items-center justify-center text-4xl font-light">＋</button>
+                <button onclick="queueItem()" class="w-24 aura-card bg-black text-white flex items-center justify-center text-4xl font-light active:scale-90">＋</button>
             </div>
         </div>
 
         <div id="staging-area" class="mt-8 space-y-4"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 p-8 bg-white/80 backdrop-blur-xl">
-            <button onclick="startSession()" class="w-full bg-blue-600 text-white h-16 rounded-[24px] font-black text-sm uppercase tracking-widest shadow-xl">Confirmar e Iniciar Conteo</button>
+        <div class="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/90 to-transparent">
+            <button onclick="startSession()" class="w-full bg-blue-600 text-white h-20 rounded-[30px] font-black text-sm uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-transform">Confirmar Plan de Descarga</button>
         </div>
     </div>
 
     <div id="view-ops" class="view pt-32">
-        <div class="aura-card p-10 mb-8 border-t-8 border-t-blue-600">
-            <div id="op-title" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.3em] mb-6"></div>
+        <div class="aura-card p-10 mb-8 border-t-[12px] border-t-blue-600">
+            <div id="op-title" class="text-[10px] font-extrabold text-blue-600 uppercase tracking-[0.4em] mb-6"></div>
             <select id="sel-sku" onchange="syncTerminal()" class="w-full bg-transparent text-4xl font-black outline-none mb-10 appearance-none border-none text-slate-900"></select>
             
-            <div class="flex gap-4 items-center">
-                <input type="number" id="qty-in" class="flex-1 text-7xl font-black bg-transparent outline-none border-none text-slate-900" placeholder="0">
-                <button onclick="recordCount()" class="w-24 h-24 bg-black text-white rounded-[32px] flex items-center justify-center shadow-2xl">
+            <div class="flex gap-6 items-center">
+                <input type="number" id="qty-in" class="flex-1 text-8xl font-black bg-transparent outline-none border-none text-slate-900" placeholder="0">
+                <button onclick="recordCount()" class="w-28 h-28 bg-black text-white rounded-[40px] flex items-center justify-center shadow-2xl active:scale-90 transition-all">
                     <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                 </button>
             </div>
@@ -117,22 +114,39 @@
 
         <div class="fixed bottom-0 left-0 right-0 p-8 bg-white/90 border-t border-slate-100">
             <div class="finish-slider" id="main-slider">
-                <div class="slider-text">Desliza para registrar en Excel</div>
+                <div class="slider-text">Desliza para Cerrar Contenedor</div>
                 <div class="slider-handle" id="handle">
-                    <svg width="24" height="24" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path d="M13 5l7 7-7 7"/></svg>
+                    <svg width="24" height="24" fill="none" stroke="black" stroke-width="3" viewBox="0 0 24 24"><path d="M13 5l7 7-7 7"/></svg>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="modal-confirm" class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="aura-card w-full max-w-md p-10 bg-white space-y-8">
+            <h3 class="text-3xl font-black tracking-tighter">Validación Final</h3>
+            <div>
+                <label class="text-[10px] font-bold text-blue-600 uppercase block mb-2">Asistente / Chofer Responsable</label>
+                <input type="text" id="final-assistant" class="aura-input !text-xl" placeholder="Nombre del asistente">
+                <p class="text-[9px] font-bold text-slate-400 mt-2">CONFIRMA SI HUBO CAMBIO POR EMERGENCIA</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="closeModal()" class="flex-1 py-5 rounded-2xl bg-slate-100 font-bold text-xs uppercase tracking-widest">Atrás</button>
+                <button onclick="processFinalClosure()" class="flex-1 py-5 rounded-2xl bg-black text-white font-bold text-xs uppercase tracking-widest">Emitir Reporte</button>
+            </div>
+        </div>
+    </div>
+
     <div id="view-historial" class="view pt-32">
-        <div class="mb-6">
-            <button onclick="navTo('home')" class="text-xs font-bold text-slate-400">← VOLVER</button>
-            <h2 class="text-4xl font-black mt-4 text-slate-900">Historial de Ingresos.</h2>
+        <div class="mb-6 flex justify-between items-start">
+            <div>
+                <button onclick="navTo('home')" class="text-[10px] font-black text-slate-400 tracking-widest uppercase">← Dashboard</button>
+                <h2 class="text-4xl font-black mt-4 text-slate-900 tracking-tighter">Trazabilidad.</h2>
+            </div>
         </div>
 
         <div class="aura-card p-6 mb-8 space-y-4">
-            <input type="text" id="h-search-sku" oninput="renderHistory()" class="aura-input !text-lg !border-b" placeholder="Buscar por SKU...">
+            <input type="text" id="h-search-sku" oninput="renderHistory()" class="aura-input !text-lg !border-b" placeholder="Buscar por SKU o Producto...">
             <input type="date" id="h-search-date" onchange="renderHistory()" class="aura-input !text-lg">
         </div>
 
@@ -140,19 +154,24 @@
     </div>
 
     <script>
-        const SOURCE = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let db = {};
         let queue = [];
         let activeOp = null;
 
         async function init() {
+            // Carga de base de datos desde Excel
             try {
-                const r = await fetch(SOURCE);
+                const r = await fetch(SCRIPT_URL);
                 const d = await r.json();
                 d.forEach(i => { if(i.CODIGO) db[i.CODIGO.toString().trim().toUpperCase()] = i.DESCRIPCION; });
-            } catch(e) {}
+                document.getElementById('sync-indicator').classList.add('bg-emerald-500');
+            } catch(e) {
+                document.getElementById('sync-indicator').classList.replace('bg-emerald-500', 'bg-amber-500');
+            }
             
-            const saved = localStorage.getItem('twins_aura_inbound');
+            // Recuperar sesión activa si el usuario cerró el navegador
+            const saved = localStorage.getItem('twins_active_session');
             if(saved) { activeOp = JSON.parse(saved); navTo('ops'); }
             setupSlider();
         }
@@ -160,6 +179,7 @@
         function navTo(v) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
+            window.scrollTo(0,0);
             if(v === 'historial') renderHistory();
             if(v === 'ops' && activeOp) syncTerminal();
         }
@@ -170,7 +190,7 @@
             if(val.length < 2) { res.classList.add('hidden'); return; }
             const matches = Object.entries(db).filter(([k,v]) => k.includes(val) || v.toUpperCase().includes(val)).slice(0, 4);
             res.innerHTML = matches.map(([k,v]) => `
-                <div onclick="pickProd('${k}')" class="aura-card p-5 active:bg-blue-600 active:text-white transition-all">
+                <div onclick="pickProd('${k}')" class="aura-card p-6 active:bg-blue-600 active:text-white transition-all">
                     <p class="font-black text-sm">${k}</p>
                     <p class="text-[10px] font-bold opacity-60 uppercase truncate">${v}</p>
                 </div>
@@ -188,36 +208,38 @@
             const sku = document.getElementById('s-sku').value.toUpperCase();
             const meta = parseInt(document.getElementById('s-meta').value);
             if(!sku || !meta) return;
-            queue.push({ sku, desc: db[sku] || "ITEM_NUEVO", meta, real: 0 });
+            queue.push({ sku, desc: db[sku] || "NUEVO PRODUCTO", meta, real: 0 });
             renderQueue();
             document.getElementById('s-sku').value = ''; document.getElementById('s-meta').value = '';
         }
 
         function renderQueue() {
             document.getElementById('staging-area').innerHTML = queue.map((i, idx) => `
-                <div class="aura-card p-6 flex justify-between items-center bg-white/50">
-                    <div><p class="font-extrabold text-sm text-slate-900">${i.sku}</p><p class="text-[10px] font-bold text-slate-400 uppercase">A INGRESAR: ${i.meta} CAJAS</p></div>
-                    <button onclick="queue.splice(${idx},1);renderQueue()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 font-bold">×</button>
+                <div class="aura-card p-6 flex justify-between items-center bg-white/50 border-none">
+                    <div><p class="font-extrabold text-sm text-slate-900">${i.sku}</p><p class="text-[10px] font-bold text-slate-400 uppercase">CANTIDAD ESPERADA: ${i.meta}</p></div>
+                    <button onclick="queue.splice(${idx},1);renderQueue()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 font-bold">×</button>
                 </div>
             `).join('');
         }
 
         function startSession() {
             if(queue.length === 0) return;
-            const id = document.getElementById('c-id').value.toUpperCase() || "CONT-" + Date.now().toString().slice(-4);
-            activeOp = { id, items: [...queue], date: new Date().toLocaleDateString(), fullDate: new Date().toLocaleString(), status: 'DESCARGA' };
-            localStorage.setItem('twins_aura_inbound', JSON.stringify(activeOp));
-            
-            let h = JSON.parse(localStorage.getItem('twins_aura_hist_inbound')) || [];
-            h.unshift(activeOp);
-            localStorage.setItem('twins_aura_hist_inbound', JSON.stringify(h));
-            
+            const cid = document.getElementById('c-id').value.toUpperCase() || "CONT-" + new Date().getTime().toString().slice(-4);
+            activeOp = { 
+                id: cid, 
+                items: [...queue], 
+                date: new Date().toLocaleDateString(), 
+                fullDate: new Date().toLocaleString(),
+                asistente: "J. Angelo Nuñez Durand", 
+                status: 'EN PROCESO' 
+            };
+            localStorage.setItem('twins_active_session', JSON.stringify(activeOp));
             queue = [];
             navTo('ops');
         }
 
         function syncTerminal() {
-            document.getElementById('op-title').innerText = "CONTENEDOR: " + activeOp.id;
+            document.getElementById('op-title').innerText = "INGRESANDO: " + activeOp.id;
             document.getElementById('sel-sku').innerHTML = activeOp.items.map(i => `<option value="${i.sku}">${i.sku}</option>`).join('');
             renderOpsFeed();
         }
@@ -228,8 +250,10 @@
             const t = activeOp.items.find(i => i.sku === document.getElementById('sel-sku').value);
             if(t) t.real += val;
             document.getElementById('qty-in').value = '';
-            localStorage.setItem('twins_aura_inbound', JSON.stringify(activeOp));
+            localStorage.setItem('twins_active_session', JSON.stringify(activeOp));
             renderOpsFeed();
+            // Feedback vibración (si es móvil)
+            if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
 
         function renderOpsFeed() {
@@ -237,12 +261,15 @@
                 const pc = Math.min(Math.round((i.real / i.meta) * 100), 100);
                 const isSel = i.sku === document.getElementById('sel-sku').value;
                 return `
-                <div class="aura-card p-6 border-l-[12px] transition-all ${isSel ? 'border-blue-600 scale-[1.02]' : 'border-slate-100 opacity-40'}">
-                    <div class="flex justify-between items-end mb-4">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-900">${i.sku}</span>
-                        <span class="text-3xl font-black text-slate-900">${i.real}<span class="text-xs text-slate-300">/${i.meta}</span></span>
+                <div class="aura-card p-8 border-l-[12px] transition-all ${isSel ? 'border-blue-600 scale-[1.02]' : 'border-slate-100 opacity-40'}">
+                    <div class="flex justify-between items-end mb-6">
+                        <div class="max-w-[60%]">
+                            <span class="text-[10px] font-black uppercase text-blue-600 tracking-widest">${i.sku}</span>
+                            <p class="text-[9px] font-bold text-slate-400 truncate">${i.desc}</p>
+                        </div>
+                        <span class="text-4xl font-black text-slate-900">${i.real}<span class="text-xs text-slate-300 ml-1">/${i.meta}</span></span>
                     </div>
-                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 transition-all" style="width:${pc}%"></div></div>
+                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 transition-all duration-500" style="width:${pc}%"></div></div>
                 </div>`;
             }).join('');
         }
@@ -251,7 +278,6 @@
             const handle = document.getElementById('handle');
             const slider = document.getElementById('main-slider');
             let isDragging = false;
-            const onStart = () => isDragging = true;
             const onMove = (e) => {
                 if (!isDragging) return;
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -259,73 +285,106 @@
                 let x = clientX - rect.left - 30;
                 x = Math.max(0, Math.min(x, rect.width - 70));
                 handle.style.transform = `translateX(${x}px)`;
-                if (x >= rect.width - 75) { isDragging = false; finishAudit(); }
+                if (x >= rect.width - 75) { isDragging = false; openClosureModal(); }
             };
-            const onEnd = () => { isDragging = false; handle.style.transform = `translateX(0px)`; };
-            handle.addEventListener('mousedown', onStart); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onEnd);
-            handle.addEventListener('touchstart', onStart); window.addEventListener('touchmove', onMove); window.addEventListener('touchend', onEnd);
+            handle.addEventListener('mousedown', () => isDragging = true);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', () => { isDragging = false; handle.style.transform = `translateX(0px)`; });
+            handle.addEventListener('touchstart', () => isDragging = true);
+            window.addEventListener('touchmove', onMove);
+            window.addEventListener('touchend', () => { isDragging = false; handle.style.transform = `translateX(0px)`; });
         }
 
-        function finishAudit() {
-            let h = JSON.parse(localStorage.getItem('twins_aura_hist_inbound')) || [];
-            const idx = h.findIndex(x => x.id === activeOp.id && x.status !== 'CERRADO');
+        function openClosureModal() {
+            document.getElementById('modal-confirm').classList.remove('hidden');
+            document.getElementById('final-assistant').value = activeOp.asistente;
+        }
+
+        function closeModal() { document.getElementById('modal-confirm').classList.add('hidden'); }
+
+        async function processFinalClosure() {
+            activeOp.asistente = document.getElementById('final-assistant').value;
             activeOp.status = 'CERRADO';
-            if(idx !== -1) h[idx] = activeOp;
-            localStorage.setItem('twins_aura_hist_inbound', JSON.stringify(h));
             
-            // Aquí iría el fetch al Google Apps Script para registrar en Excel
-            syncToExcel(activeOp);
+            // Guardar en historial
+            let h = JSON.parse(localStorage.getItem('twins_history_v2')) || [];
+            h.unshift(activeOp);
+            localStorage.setItem('twins_history_v2', JSON.stringify(h));
             
-            generateAuraPDF(activeOp);
-            localStorage.removeItem('twins_aura_inbound');
+            // Sincronizar con Excel (Asíncrono)
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(activeOp)
+            });
+
+            generatePDF(activeOp);
+            localStorage.removeItem('twins_active_session');
             activeOp = null;
+            closeModal();
             navTo('home');
         }
 
-        function syncToExcel(data) {
-            console.log("Sincronizando contenedor " + data.id + " con Excel...");
-            // fetch(SOURCE, { method: 'POST', body: JSON.stringify(data) });
-        }
-
-        function generateAuraPDF(data) {
+        function generatePDF(data) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            
             doc.setFillColor(0, 122, 255); doc.rect(0, 0, 210, 50, 'F');
             doc.setTextColor(255); doc.setFontSize(26); doc.text("REPORTE DE INGRESO", 14, 30);
-            doc.setFontSize(10); doc.text("TWINS DESPACHOS - CONTROL DE ALMACÉN", 14, 40);
-            doc.setTextColor(40); doc.text(`CONTENEDOR: ${data.id}`, 14, 65);
-            doc.text(`FECHA DE INGRESO: ${data.fullDate}`, 14, 72);
+            doc.setFontSize(10); doc.text("TWINS - GESTIÓN DE ALMACÉN", 14, 40);
+            
+            doc.setTextColor(40);
+            doc.setFontSize(14); doc.text(`CONTENEDOR: ${data.id}`, 14, 65);
+            doc.setFontSize(10); doc.text(`Fecha y Hora: ${data.fullDate}`, 14, 72);
+            doc.text(`Responsable en Muelle: ${data.asistente}`, 14, 79);
+
             doc.autoTable({
-                startY: 80,
-                head: [['SKU', 'META', 'REAL', 'ESTADO']],
-                body: data.items.map(i => [i.sku, i.meta, i.real, (i.real >= i.meta ? 'COMPLETO' : 'DISCREPANCIA')]),
-                theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+                startY: 90,
+                head: [['SKU / PRODUCTO', 'EXPECTATIVA', 'RECIBIDO', 'DIFERENCIA']],
+                body: data.items.map(i => [i.sku, i.meta, i.real, i.real - i.meta]),
+                theme: 'striped',
+                headStyles: { fillColor: [0, 0, 0] },
+                styles: { fontSize: 9 }
             });
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 20);
+
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.setDrawColor(200); doc.line(14, finalY, 80, finalY);
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 10);
+            doc.text("Asist. Inventario Logístico", 14, finalY + 15);
+            
             doc.save(`INGRESO_${data.id}.pdf`);
         }
 
         function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('twins_aura_hist_inbound')) || [];
+            const h = JSON.parse(localStorage.getItem('twins_history_v2')) || [];
             const searchSKU = document.getElementById('h-search-sku').value.toUpperCase();
             const searchDate = document.getElementById('h-search-date').value;
 
             const filtered = h.filter(op => {
-                const matchesSKU = op.items.some(i => i.sku.includes(searchSKU));
+                const matchesSKU = op.items.some(i => i.sku.includes(searchSKU) || i.desc.toUpperCase().includes(searchSKU));
                 const matchesDate = !searchDate || op.fullDate.includes(searchDate.split('-').reverse().join('/'));
                 return matchesSKU && matchesDate;
             });
 
             document.getElementById('hist-feed').innerHTML = filtered.map(x => `
-                <div class="aura-card p-8 border-l-8 ${x.status === 'CERRADO' ? 'border-l-emerald-400' : 'border-l-blue-400'}">
+                <div class="aura-card p-8 border-l-8 border-l-black">
                     <div class="flex justify-between items-start mb-6">
-                        <div><p class="text-[10px] font-bold text-slate-300 mb-1 uppercase">${x.fullDate}</p><h3 class="text-2xl font-black text-slate-900">${x.id}</h3></div>
-                        <span class="text-[9px] font-black px-3 py-1 bg-slate-100 rounded-full text-slate-600">${x.status}</span>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-300 mb-1 uppercase">${x.fullDate}</p>
+                            <h3 class="text-2xl font-black text-slate-900">${x.id}</h3>
+                        </div>
+                        <span class="text-[9px] font-black px-3 py-1 bg-blue-50 text-blue-600 rounded-full">INGRESADO</span>
                     </div>
-                    <div class="mb-4 space-y-1">
-                        ${x.items.map(i => `<p class="text-xs font-bold text-slate-500">${i.sku}: <span class="text-slate-900">${i.real}/${i.meta}</span></p>`).join('')}
+                    <div class="mb-6 space-y-2 border-y border-slate-50 py-4">
+                        ${x.items.map(i => `
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-slate-400">${i.sku}</span>
+                                <span class="${i.real < i.meta ? 'text-red-500' : 'text-slate-900'}">${i.real}/${i.meta}</span>
+                            </div>
+                        `).join('')}
                     </div>
-                    <button onclick='generateAuraPDF(${JSON.stringify(x)})' class="w-full py-4 bg-black text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all">Ver Documento</button>
+                    <button onclick='generatePDF(${JSON.stringify(x)})' class="w-full py-4 bg-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">Exportar PDF</button>
                 </div>
             `).join('');
         }
