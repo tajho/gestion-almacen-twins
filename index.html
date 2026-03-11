@@ -2,116 +2,101 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Pro | Twins Elite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aura Pro | Inbound</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #1e293b; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .view { display: none; min-height: 100vh; flex-direction: column; padding: 20px; padding-top: 80px; }
+        body { font-family: sans-serif; background: #f1f5f9; color: #1e293b; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .view { display: none; height: 100vh; flex-direction: column; padding: 10px; padding-top: 60px; }
         .view.active { display: flex; }
-        .aura-card { background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        input { font-size: 16px !important; border-bottom: 2px solid #e2e8f0; width: 100%; padding: 12px 0; outline: none; transition: 0.3s; }
+        .aura-card { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        input { font-size: 14px !important; border-bottom: 1.5px solid #e2e8f0; width: 100%; padding: 6px 0; outline: none; }
         input:focus { border-bottom-color: #2563eb; }
-        .slider-bg { position: relative; height: 70px; background: #000; border-radius: 35px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .slider-handle { position: absolute; left: 5px; height: 60px; width: 60px; background: #fff; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-size: 20px; }
+        .slider-bg { position: relative; height: 50px; background: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .slider-handle { position: absolute; left: 4px; height: 42px; width: 42px; background: #fff; border-radius: 21px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 left-0 right-0 p-6 z-[100] bg-white/80 backdrop-blur-md flex justify-between items-end">
+    <header class="fixed top-0 left-0 right-0 p-3 z-[100] bg-white/90 backdrop-blur-sm border-b flex justify-between items-center">
         <div>
-            <p class="text-[9px] font-black text-blue-600 tracking-widest uppercase">Aura Pro</p>
-            <h1 class="text-xl font-black">TWINS.</h1>
+            <p class="text-[8px] font-black text-blue-600 tracking-tighter uppercase">Aura Pro</p>
+            <h1 class="text-lg font-black tracking-tighter">TWINS.</h1>
         </div>
     </header>
 
     <div id="view-home" class="view active">
-        <h2 class="text-4xl font-black tracking-tighter mb-8">Gestión de<br>Almacén.</h2>
-        <div class="grid gap-4">
+        <h2 class="text-2xl font-black mb-4">Muelle de Carga</h2>
+        <div class="grid gap-3">
             <button onclick="navTo('crear')" class="aura-card bg-blue-600 text-white text-left active:scale-95 transition-all">
-                <p class="text-[10px] font-bold uppercase opacity-60 mb-8">Nueva descarga</p>
-                <p class="text-2xl font-black">Registrar Contenedor</p>
+                <p class="text-[8px] font-bold uppercase opacity-70 mb-4">Nuevo Ingreso</p>
+                <p class="text-lg font-bold">Registrar Descarga</p>
             </button>
             <button onclick="navTo('historial')" class="aura-card text-left flex justify-between items-center active:scale-95 transition-all">
-                <div>
-                    <p class="text-[10px] font-bold uppercase text-slate-400">Historial</p>
-                    <p class="text-xl font-black">Trazabilidad</p>
-                </div>
-                <span>→</span>
+                <p class="text-sm font-bold">Historial / Trazabilidad</p>
+                <span class="text-blue-600 font-bold">→</span>
             </button>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <button onclick="navTo('home')" class="text-[10px] font-bold text-slate-400 mb-6 uppercase">← Volver</button>
-        <div class="space-y-4">
-            <div class="aura-card">
-                <label class="text-[10px] font-bold text-blue-600 uppercase">Contenedor ID</label>
-                <input type="text" id="c-id" class="uppercase font-bold" placeholder="EJ: CT-9920">
-            </div>
+        <button onclick="navTo('home')" class="text-[9px] font-bold text-slate-400 mb-3">← VOLVER</button>
+        <div class="space-y-3">
             <div class="aura-card relative">
-                <label class="text-[10px] font-bold text-blue-600 uppercase">Producto SKU / Nombre</label>
+                <label class="text-[9px] font-bold text-blue-600 uppercase">Buscar Producto (SKU o Nombre)</label>
                 <input type="text" id="s-sku" oninput="doSearch()" placeholder="Escribe para buscar...">
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-xl rounded-xl mt-1 z-50 hidden max-h-48 overflow-y-auto border border-slate-100"></div>
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-lg mt-1 z-50 hidden max-h-40 overflow-y-auto border"></div>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-2">
                 <div class="aura-card flex-1">
-                    <label class="text-[10px] font-bold text-blue-600 uppercase">Meta</label>
-                    <input type="number" id="s-meta" placeholder="0" class="text-center font-bold">
+                    <label class="text-[9px] font-bold text-blue-600 uppercase">Meta Cajas</label>
+                    <input type="number" id="s-meta" placeholder="0" class="text-center">
                 </div>
-                <button onclick="addToQueue()" class="bg-black text-white w-20 rounded-3xl text-3xl font-light active:scale-90 transition-all">＋</button>
+                <button onclick="addToQueue()" class="bg-black text-white w-14 rounded-xl text-xl active:scale-90">＋</button>
             </div>
         </div>
-        <div id="list-queue" class="mt-6 space-y-2 pb-32"></div>
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white">
-            <button onclick="startInbound()" class="w-full h-16 bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">Iniciar Conteo</button>
+        <div id="list-queue" class="mt-4 space-y-2 overflow-y-auto max-h-40"></div>
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/90 border-t">
+            <button onclick="startInbound()" class="w-full h-12 bg-blue-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md">Confirmar Plan de Descarga</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="aura-card border-t-8 border-blue-600 mb-6">
-            <p id="op-id" class="text-[10px] font-bold text-blue-600 uppercase text-center mb-4"></p>
-            <select id="op-select" onchange="syncUI()" class="w-full text-2xl font-black text-center bg-transparent outline-none mb-6"></select>
-            <div class="flex gap-4">
-                <input type="number" id="op-input" class="flex-1 text-6xl font-black text-center bg-slate-50 rounded-2xl p-4" placeholder="0">
-                <button onclick="sumCount()" class="w-24 bg-black text-white rounded-2xl text-2xl font-bold flex items-center justify-center active:scale-90 transition-all">OK</button>
+        <div class="aura-card border-t-4 border-blue-600 mb-4 text-center">
+            <p id="op-id" class="text-[8px] font-bold text-blue-600 uppercase mb-2"></p>
+            <select id="op-select" onchange="syncUI()" class="w-full text-xl font-black text-center bg-transparent border-none mb-4 outline-none"></select>
+            <div class="flex gap-2">
+                <input type="number" id="op-input" class="flex-1 text-4xl font-black text-center bg-slate-100 rounded-lg p-2" placeholder="0">
+                <button onclick="sumCount()" class="w-16 bg-black text-white rounded-lg font-bold active:scale-90 transition-all">OK</button>
             </div>
         </div>
-        <div id="op-progress" class="space-y-3 pb-32"></div>
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 border-t border-slate-100">
+        <div id="op-progress" class="space-y-2 overflow-y-auto pb-24"></div>
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/95 border-t">
             <div class="slider-bg" id="slider">
-                <div class="text-[9px] font-black text-white/40 uppercase tracking-widest">Desliza para finalizar</div>
+                <div class="text-[8px] font-black text-white/30 uppercase tracking-widest">Desliza para Cerrar</div>
                 <div class="slider-handle" id="handle">→</div>
             </div>
         </div>
     </div>
 
-    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur hidden flex items-center justify-center p-6">
-        <div class="aura-card w-full max-w-sm">
-            <h3 class="text-2xl font-black mb-6">Cerrar Ingreso</h3>
-            <div class="mb-6">
-                <label class="text-[10px] font-bold text-slate-400 uppercase">Responsable (Editable p/ Emergencia)</label>
-                <input type="text" id="final-asist" value="J. Angelo Nuñez Durand" class="font-bold">
-            </div>
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/70 flex items-center justify-center p-6 hidden">
+        <div class="aura-card w-full space-y-4">
+            <h3 class="text-lg font-black">Cerrar Reporte</h3>
+            <input type="text" id="final-asist" value="J. Angelo Nuñez Durand" class="font-bold border-b p-2">
             <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 h-14 bg-slate-100 rounded-xl font-bold text-xs uppercase">Atrás</button>
-                <button onclick="finishAll()" class="flex-1 h-14 bg-black text-white rounded-xl font-bold text-xs uppercase">Confirmar</button>
+                <button onclick="closeModal()" class="flex-1 h-10 bg-slate-100 rounded-lg text-[9px] font-bold">VOLVER</button>
+                <button onclick="finishAll()" class="flex-1 h-10 bg-black text-white rounded-lg text-[9px] font-bold">TERMINAR</button>
             </div>
         </div>
     </div>
 
-    <div id="view-historial" class="view">
-        <button onclick="navTo('home')" class="text-[10px] font-bold text-slate-400 mb-6 uppercase">← Inicio</button>
-        <div id="hist-list" class="space-y-4"></div>
-    </div>
-
     <script>
-        // BASE DE DATOS LOCAL
+        // BASE DE DATOS LOCAL CON TUS PRODUCTOS
         const DB = [
             { sku: "AR-00974", desc: "PIZARRA DE CORCHO 60 X 80 CM TWINS" },
-            { sku: "TAJHO-01", desc: "JERSEY DEPORTIVO TAJHO" }
+            { sku: "0116", desc: "UTILES DE OFICINA" }
         ];
 
         let currentQueue = [];
@@ -123,17 +108,17 @@
             if(v === 'historial') renderHist();
         }
 
-        // BÚSQUEDA (CAPTURA 1 FIX)
+        // BUSCADOR MEJORADO
         function doSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase();
             const box = document.getElementById('res-box');
-            if(val.length < 2) { box.classList.add('hidden'); return; }
+            if(val.length < 1) { box.classList.add('hidden'); return; }
             const hits = DB.filter(x => x.sku.includes(val) || x.desc.includes(val));
             if(hits.length > 0) {
                 box.innerHTML = hits.map(x => `
-                    <div onclick="selectItem('${x.sku}')" class="p-4 border-b border-slate-50 active:bg-blue-50">
-                        <p class="text-xs font-black">${x.sku}</p>
-                        <p class="text-[10px] text-slate-500 uppercase">${x.desc}</p>
+                    <div onclick="selectItem('${x.sku}')" class="p-3 border-b text-[11px] active:bg-blue-50">
+                        <p class="font-black">${x.sku}</p>
+                        <p class="text-[9px] text-slate-500 truncate uppercase">${x.desc}</p>
                     </div>
                 `).join('');
                 box.classList.remove('hidden');
@@ -158,28 +143,31 @@
 
         function renderQueue() {
             document.getElementById('list-queue').innerHTML = currentQueue.map((x, i) => `
-                <div class="aura-card flex justify-between items-center py-4 mb-2">
-                    <p class="text-xs font-black">${x.sku} <span class="text-slate-400 ml-2">(${x.meta})</span></p>
-                    <button onclick="currentQueue.splice(${i},1);renderQueue()" class="text-red-500 font-bold px-2">X</button>
+                <div class="aura-card flex justify-between items-center py-2 px-3 bg-slate-50 border-none shadow-none">
+                    <p class="text-[10px] font-bold">${x.sku} <span class="text-blue-500">(${x.meta})</span></p>
+                    <button onclick="currentQueue.splice(${i},1);renderQueue()" class="text-red-400 font-bold px-2">X</button>
                 </div>
             `).join('');
         }
 
         function startInbound() {
-            if(currentQueue.length === 0) return alert("Agrega productos");
+            if(currentQueue.length === 0) return;
+            // Generación automática del nombre del contenedor
+            const now = new Date();
+            const autoID = "CONT-" + now.getDate() + (now.getMonth()+1) + "-" + now.getHours() + now.getMinutes();
             activeSession = {
-                id: document.getElementById('c-id').value || "S/N",
+                id: autoID,
                 items: [...currentQueue],
-                date: new Date().toLocaleString()
+                date: now.toLocaleString()
             };
             currentQueue = [];
             navTo('ops');
             syncUI();
         }
 
-        // CONTEO (CAPTURA 2 FIX)
+        // LÓGICA DE CONTEO REGISTRO
         function syncUI() {
-            document.getElementById('op-id').innerText = "CONTENEDOR: " + activeSession.id;
+            document.getElementById('op-id').innerText = activeSession.id;
             const sel = document.getElementById('op-select');
             sel.innerHTML = activeSession.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             renderProgress();
@@ -198,29 +186,29 @@
         function renderProgress() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-progress').innerHTML = activeSession.items.map(x => `
-                <div class="aura-card ${x.sku === cur ? 'border-2 border-blue-600' : 'opacity-40'}">
-                    <div class="flex justify-between font-black text-sm mb-2">
+                <div class="aura-card py-2 ${x.sku === cur ? 'border border-blue-600' : 'opacity-50'}">
+                    <div class="flex justify-between font-bold text-[10px] mb-1">
                         <span>${x.sku}</span>
                         <span>${x.real} / ${x.meta}</span>
                     </div>
-                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600 transition-all" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // SLIDER Y CIERRE
+        // SLIDER Y CIERRE FINAL
         const handle = document.getElementById('handle');
         const slider = document.getElementById('slider');
         let isMoving = false;
         const move = (e) => {
             if(!isMoving) return;
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - slider.getBoundingClientRect().left - 30;
-            const max = slider.offsetWidth - 65;
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - slider.getBoundingClientRect().left - 20;
+            const max = slider.offsetWidth - 48;
             const pos = Math.max(0, Math.min(x, max));
             handle.style.transform = `translateX(${pos}px)`;
-            if(pos >= max - 5) { isMoving = false; document.getElementById('modal-end').classList.remove('hidden'); }
+            if(pos >= max - 2) { isMoving = false; document.getElementById('modal-end').classList.remove('hidden'); }
         }
         handle.addEventListener('touchstart', () => isMoving = true);
         window.addEventListener('touchmove', move);
@@ -242,27 +230,29 @@
 
         function makePDF(data) {
             const doc = new jspdf.jsPDF();
-            doc.setFontSize(22); doc.text("REPORTE DE INGRESO", 14, 20);
-            doc.setFontSize(10); doc.text(`CONTENEDOR: ${data.id} | FECHA: ${data.date}`, 14, 30);
+            doc.setFontSize(18); doc.text("REPORTE DE INGRESO", 14, 20);
+            doc.setFontSize(9); doc.text(`CONTENEDOR: ${data.id} | FECHA: ${data.date}`, 14, 30);
             doc.autoTable({
                 startY: 40,
-                head: [['SKU', 'META', 'RECIBIDO', 'DIF']],
-                body: data.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta])
+                head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: data.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                theme: 'grid',
+                styles: { fontSize: 8 }
             });
-            const y = doc.lastAutoTable.finalY + 20;
+            const y = doc.lastAutoTable.finalY + 15;
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, y);
-            doc.save(`INGRESO_${data.id}.pdf`);
+            doc.save(`${data.id}.pdf`);
         }
 
         function renderHist() {
             const hist = JSON.parse(localStorage.getItem('twins_h')) || [];
             document.getElementById('hist-list').innerHTML = hist.map(x => `
-                <div class="aura-card">
-                    <p class="text-[10px] font-bold text-slate-400 mb-1 uppercase">${x.date}</p>
-                    <p class="text-xl font-black mb-4">${x.id}</p>
-                    <button onclick='makePDF(${JSON.stringify(x)})' class="w-full py-3 bg-slate-100 rounded-xl text-[10px] font-black uppercase">Descargar PDF</button>
+                <div class="aura-card py-2">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">${x.date}</p>
+                    <p class="text-sm font-bold">${x.id}</p>
+                    <button onclick='makePDF(${JSON.stringify(x)})' class="w-full mt-2 py-1 bg-slate-100 rounded-lg text-[8px] font-bold">PDF</button>
                 </div>
-            `).join('') || '<p class="text-center text-slate-400 py-10">Sin registros</p>';
+            `).join('') || '<p class="text-center text-slate-400 py-10 text-xs">Vacío</p>';
         }
     </script>
 </body>
