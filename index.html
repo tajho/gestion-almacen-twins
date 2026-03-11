@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Pro | Twins Logistics</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -67,16 +70,14 @@
             box-shadow: 0 0 30px rgba(0,247,255,0.3);
         }
 
-        /* Estilos Sugerencias */
         #suggestions {
-            position: absolute; width: 100%; top: 100%; left: 0; z-index: 50;
-            max-height: 200px; overflow-y: auto; margin-top: 8px;
+            position: absolute; width: calc(100% - 10px); top: 100%; left: 5px; z-index: 100;
+            max-height: 250px; overflow-y: auto; margin-top: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         .suggestion-item {
-            padding: 15px 20px; background: rgba(20, 20, 30, 0.95);
-            border-bottom: 1px solid var(--border); cursor: pointer;
+            padding: 16px 20px; background: rgba(15, 15, 25, 0.98);
+            border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;
         }
-        .suggestion-item:last-child { border: none; }
         .suggestion-item:active { background: var(--accent); color: #000; }
     </style>
 </head>
@@ -90,13 +91,13 @@
     <div id="v-dash" class="view active">
         <header class="pt-10 pb-10 text-center">
             <h1 class="text-5xl font-black tracking-tighter italic">LOGISTICA <span style="color:var(--accent)">TWINS</span></h1>
-            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">By Tajho</p>
+            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">By Tajho Intelligence</p>
         </header>
         <div class="space-y-4">
             <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center active:scale-95 transition-all">
                 <div>
-                    <h3 class="text-2xl font-black">Nueva Carga</h3>
-                    <p class="text-xs text-white/40">Conexión con Sheets activa</p>
+                    <h3 class="text-2xl font-black text-white">Nueva Carga</h3>
+                    <p class="text-xs text-white/40 italic">Sincronizado con Hoja 2</p>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
                     <i class="ph-duotone ph-plus-circle text-2xl"></i>
@@ -111,8 +112,8 @@
             <h2 class="text-4xl font-black mb-8 tracking-tighter">Preparación</h2>
             <div class="glass-panel p-7 space-y-6 relative">
                 <div class="relative">
-                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador Inteligente</label>
-                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full text-xl font-bold" placeholder="Escriba SKU o nombre..." autocomplete="off">
+                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador de Maestra</label>
+                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full text-xl font-bold" placeholder="SKU o Nombre..." autocomplete="off">
                     <div id="suggestions" class="glass-panel hidden overflow-hidden border-accent/20"></div>
                 </div>
                 <div class="flex gap-4">
@@ -125,13 +126,13 @@
             </div>
             <div id="q-list" class="mt-6 space-y-3"></div>
             <button onclick="start()" class="w-full py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest mt-10 text-white" style="background:linear-gradient(90deg, #8b5cf6, #d946ef);">
-                Abrir Terminal de Conteo
+                Iniciar Conteo Activo
             </button>
         </div>
 
         <div id="terminal-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-8">
-                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black">Conteo Tajho</h2></div>
+                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black">Conteo Real</h2></div>
                 <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-duotone ph-power"></i></button>
             </div>
             <div class="glass-panel p-8 mb-6 text-center">
@@ -148,36 +149,32 @@
     <div id="m-final" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-8 text-center">
         <div class="glass-panel p-10 max-w-sm w-full">
             <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-2">Finalizar Operación</h3>
-            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4">Generar Reporte PDF</button>
-            <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Volver</button>
+            <h3 class="text-2xl font-black mb-2">Finalizar Contenedor</h3>
+            <p class="text-[10px] font-bold text-white/30 uppercase mb-8">Los datos se guardarán en la Base de Datos Histórica</p>
+            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4">Generar Reporte y Guardar</button>
+            <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Cancelar</button>
         </div>
     </div>
 
     <script>
-        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbx7c6bHpxn9HWgsgdh7NC5wuZpEcqTh-ta6JqPgH9sBt6vyHpRX1sLpMLHGUp_OS6G1eQ/exec";
+        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let masterProducts = [];
         let q = [], activeOp = null;
 
-        // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
         async function loadProducts() {
             try {
                 const response = await fetch(SHEETS_URL);
-                const data = await response.json();
-                masterProducts = data; // Asume que tu script devuelve un array de objetos
-                console.log("Inventario cargado:", masterProducts.length);
-            } catch (e) { console.error("Error cargando Sheets:", e); }
+                masterProducts = await response.json();
+            } catch (e) { console.error("Error Sheets:", e); }
         }
 
         function searchProduct(query) {
             const div = document.getElementById('suggestions');
             if (query.length < 2) { div.classList.add('hidden'); return; }
-            
             const matches = masterProducts.filter(p => 
                 p.sku.toLowerCase().includes(query.toLowerCase()) || 
                 p.nombre.toLowerCase().includes(query.toLowerCase())
             ).slice(0, 5);
-
             if (matches.length > 0) {
                 div.innerHTML = matches.map(m => `
                     <div class="suggestion-item" onclick="selectProduct('${m.sku}')">
@@ -196,7 +193,8 @@
 
         function genID() {
             const d = new Date();
-            return `AURA-${d.getDate()}${d.getMonth()+1}-${Math.floor(Math.random()*999)}`;
+            const year = d.getFullYear().toString().slice(-2);
+            return `AURA-${d.getDate()}${(d.getMonth()+1)}-${Math.floor(Math.random()*999)}`;
         }
 
         window.onload = () => {
@@ -225,8 +223,8 @@
         function renderQ() {
             document.getElementById('q-list').innerHTML = q.map((x, i) => `
                 <div class="glass-panel p-5 flex justify-between items-center">
-                    <p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">${x.meta}</span></p>
-                    <button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-duotone ph-trash"></i></button>
+                    <p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">META: ${x.meta}</span></p>
+                    <button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-bold ph-trash"></i></button>
                 </div>`).join('');
         }
 
@@ -257,7 +255,7 @@
             const cur = document.getElementById('sku-sel').value;
             document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
                 <div class="glass-panel p-5 ${x.sku === cur ? 'border-accent/40' : 'opacity-30'}">
-                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase tracking-tighter">
+                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase">
                         <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
                     </div>
                     <div class="h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div></div>
@@ -268,123 +266,91 @@
         function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
 
         async function finishAll() {
-    let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-    h.unshift(activeOp);
-    localStorage.setItem('aura_v3_history', JSON.stringify(h));
+            try {
+                // Sincronización con Hoja 2
+                await fetch(SHEETS_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        accion: "guardar_contenedor",
+                        id: activeOp.id,
+                        fecha: activeOp.date,
+                        detalles: activeOp.items
+                    })
+                });
 
-    // NUEVO: Enviar a la Hoja 2 antes de cerrar
-    try {
-        await fetch(SHEETS_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                accion: "guardar_contenedor",
-                id: activeOp.id,
-                fecha: activeOp.date,
-                detalles: activeOp.items // Envía el array completo de SKUs, metas y reales
-            })
-        });
-        console.log("Datos sincronizados con la Base de Datos");
-    } catch (e) {
-        console.error("Error al sincronizar:", e);
-    }
+                let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+                h.unshift(activeOp);
+                localStorage.setItem('aura_v3_history', JSON.stringify(h));
 
-    await makePDF(activeOp);
-    localStorage.removeItem('aura_v3_active');
-    activeOp = null;
-    location.reload();
-}
-
-       async function makePDF(d) {
-    try {
-        // Validación de librerías con acceso global forzado
-        const { jsPDF } = window.jspdf || {};
-        if (!jsPDF) {
-            alert("⚠️ Error: Sistema de impresión no listo. Reintentando...");
-            location.reload();
-            return;
+                await makePDF(activeOp);
+                
+                localStorage.removeItem('aura_v3_active');
+                activeOp = null;
+                location.reload();
+            } catch (e) {
+                alert("Error al finalizar. Verifique su conexión.");
+            }
         }
 
-        const doc = new jsPDF({
-            orientation: 'p',
-            unit: 'mm',
-            format: 'a4'
-        });
+        // SOLUCIÓN DEFINITIVA PDF (MÉTODO BLOB)
+        async function makePDF(d) {
+            try {
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) throw new Error("jsPDF No Ready");
 
-        // DISEÑO DE CABECERA PREMIUM (Twins Logistics)
-        doc.setFillColor(15, 15, 25);
-        doc.rect(0, 0, 210, 45, 'F');
-        
-        doc.setTextColor(0, 247, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(26);
-        doc.text("AURA PRO", 14, 22);
-        
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text("TWINS ELITE LOGISTICS SYSTEM", 14, 30);
-        doc.text(`ID OPERACIÓN: ${d.id}`, 14, 38);
+                const doc = new jsPDF();
+                
+                // Cabecera Premium
+                doc.setFillColor(10, 10, 15);
+                doc.rect(0, 0, 210, 40, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+                
+                doc.setTextColor(150, 150, 150);
+                doc.setFontSize(9);
+                doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
+                doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
+                
+                doc.autoTable({
+                    startY: 65,
+                    head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
+                    body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
+                });
 
-        // CUERPO DEL REPORTE
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(9);
-        doc.text(`FECHA DE EMISIÓN: ${d.date}`, 14, 55);
-        doc.text(`RESPONSABLE: J. Angelo Nuñez Durand`, 14, 60);
+                const finalY = doc.lastAutoTable.finalY + 20;
+                doc.setTextColor(0, 0, 0);
+                doc.text("__________________________", 14, finalY);
+                doc.setFont("helvetica", "bold");
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+                doc.setFont("helvetica", "normal");
+                doc.text("Asist. Inventario Logístico", 14, finalY + 12);
 
-        // TABLA DE DATOS (AutoTable)
-        doc.autoTable({
-            startY: 70,
-            head: [['PRODUCTO SKU', 'META PLAN', 'CANT. REAL', 'DIFERENCIA']],
-            body: d.items.map(x => [
-                x.sku, 
-                x.meta, 
-                x.r, 
-                { content: (x.r - x.meta), styles: { fontStyle: 'bold', textColor: (x.r - x.meta < 0 ? [200, 0, 0] : [0, 150, 0]) } }
-            ]),
-            theme: 'grid',
-            headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0], fontSize: 10 },
-            styles: { fontSize: 9, cellPadding: 4 },
-            alternateRowStyles: { fillColor: [245, 252, 255] }
-        });
+                // Método Blob para descarga blindada
+                const pdfBlob = doc.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = `Reporte_${d.id}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.error(e);
+                alert("Error al generar PDF localmente.");
+            }
+        }
 
-        // FIRMA Y CIERRE
-        const finalY = doc.lastAutoTable.finalY + 25;
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.text("__________________________", 14, finalY);
-        doc.setFont("helvetica", "bold");
-        doc.text("Firma: J. Angelo Nuñez Durand", 14, finalY + 7);
-        doc.setFont("helvetica", "normal");
-        doc.text("Asistente de Inventario Logístico", 14, finalY + 12);
-
-        // SOLUCIÓN DEFINITIVA PARA MÓVILES (Blob Method)
-        const pdfBlob = doc.output('blob');
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        
-        // Crear un enlace invisible y disparar la descarga
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = `Reporte_${d.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Liberar memoria
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-
-    } catch (error) {
-        console.error("Falla en PDF:", error);
-        alert("El PDF no pudo descargarse. Pero no te preocupes, los datos ya están guardados en tu Google Sheets.");
-    }
-}
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
             const feed = document.getElementById('history-feed');
-            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga Activa</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button></div>` : '';
-            html += h.map(x => `<div class="glass-panel p-5 flex justify-between items-center mb-2"><div><p class="text-[7px] text-white/20 uppercase">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button onclick='makePDF(${JSON.stringify(x)})' class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`).join('');
-            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10">Sin reportes</p>';
+            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga en Curso</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button></div>` : '';
+            html += h.map(x => `<div class="glass-panel p-5 flex justify-between items-center mb-2"><div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button onclick='makePDF(${JSON.stringify(x)})' class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`).join('');
+            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10 font-bold">Sin registros recientes</p>';
         }
     </script>
 </body>
