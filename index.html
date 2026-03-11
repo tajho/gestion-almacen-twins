@@ -15,36 +15,30 @@
         :root { --bg: #fdfdfe; --glass: rgba(255, 255, 255, 0.98); --accent: #000000; --border: rgba(0,0,0,0.05); }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; letter-spacing: -0.01em; overflow: hidden; height: 100vh; }
         
-        .view { display: none; height: 100vh; padding: 24px; flex-direction: column; animation: viewIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; padding-bottom: 140px; }
+        .view { display: none; height: 100vh; padding: 20px; flex-direction: column; animation: viewIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; padding-bottom: 140px; }
         .view.active { display: flex; }
         @keyframes viewIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .aura-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 35px; box-shadow: 0 15px 50px -15px rgba(0,0,0,0.03); }
+        .aura-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 30px; box-shadow: 0 15px 50px -15px rgba(0,0,0,0.03); }
         
-        /* Dock de Navegación Estilo iOS */
+        /* Dock de Navegación */
         .nav-dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: rgba(15, 23, 42, 0.03); backdrop-filter: blur(25px); border-radius: 40px; border: 1px solid rgba(255,255,255,0.5); display: flex; justify-content: space-around; padding: 8px; z-index: 2000; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 24px; border-radius: 32px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b; }
-        .nav-btn.active { background: #000; color: #fff; transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-        .nav-btn i { font-size: 26px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 24px; border-radius: 32px; transition: 0.4s; color: #64748b; }
+        .nav-btn.active { background: #000; color: #fff; transform: scale(1.05); }
+        .nav-btn i { font-size: 24px; }
         .nav-btn span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
 
-        input, select { background: #fff!important; border: 1px solid #f1f5f9!important; border-radius: 22px!important; padding: 18px!important; font-weight: 700!important; outline: none!important; transition: 0.3s; font-size: 15px; }
-        input:focus { border-color: #000!important; box-shadow: 0 0 0 5px rgba(0,0,0,0.03); }
-
-        /* Buscador Flotante Superior */
-        #search-results { position: absolute; width: 100%; top: 100%; z-index: 3000; margin-top: 12px; background: white; border-radius: 28px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); max-height: 280px; overflow-y: auto; border: 1px solid #f1f5f9; }
-        .search-item { padding: 18px 22px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: 0.2s; }
-        .search-item:active { background: #f8fafc; }
-
-        /* Lista de Ítems Pulida */
-        .item-row { background: white; border: 1px solid #f1f5f9; border-radius: 24px; padding: 18px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; border-left: 5px solid #000; }
-        .item-row:hover { transform: translateX(5px); }
+        input, select { background: #fff!important; border: 1px solid #f1f5f9!important; border-radius: 20px!important; padding: 16px!important; font-weight: 700!important; outline: none!important; }
         
-        .btn-add { background: #000; color: #fff; padding: 18px 28px; border-radius: 22px; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.3s; }
-        .btn-add:active { transform: scale(0.95); opacity: 0.8; }
+        #search-results { position: absolute; width: 100%; top: 100%; z-index: 3000; margin-top: 10px; background: white; border-radius: 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.15); max-height: 250px; overflow-y: auto; border: 1px solid #f1f5f9; }
+        .search-item { padding: 15px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; }
 
-        .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 24px; }
-        .modal.active { display: flex; }
+        .item-row { background: white; border: 1px solid #f1f5f9; border-radius: 22px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-left: 6px solid #000; }
+        
+        .btn-add { background: #000; color: #fff; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.3s; }
+
+        /* Estilos Estadísticos Work */
+        .stat-badge { background: #f8fafc; padding: 12px; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9; }
         
         ::-webkit-scrollbar { display: none; }
     </style>
@@ -52,89 +46,90 @@
 <body>
 
     <nav class="nav-dock">
-        <button onclick="navTo('dash')" class="nav-btn active" id="btn-dash"><i class="ph-duotone ph-house-line"></i><span>Inicio</span></button>
+        <button onclick="navTo('dash')" class="nav-btn active" id="btn-dash"><i class="ph-duotone ph-house"></i><span>Inicio</span></button>
         <button onclick="navTo('create')" class="nav-btn" id="btn-create"><i class="ph-duotone ph-barcode"></i><span>Carga</span></button>
-        <button onclick="navTo('hist')" class="nav-btn" id="btn-hist"><i class="ph-duotone ph-folder-open"></i><span>Archivo</span></button>
+        <button onclick="navTo('hist')" class="nav-btn" id="btn-hist"><i class="ph-duotone ph-folders"></i><span>Archivo</span></button>
     </nav>
 
     <div id="v-dash" class="view active">
-        <header class="pt-24 pb-16 text-center">
-            <h1 class="text-[10px] font-extrabold tracking-[0.8em] text-slate-300 uppercase mb-5">Twins Elite Logistics</h1>
+        <header class="pt-20 pb-16 text-center">
+            <h1 class="text-[10px] font-extrabold tracking-[0.8em] text-slate-300 uppercase mb-4">Twins Elite Logistics</h1>
             <h2 class="text-5xl font-light italic tracking-tight text-slate-900">Tajho <span class="font-black not-italic tracking-tighter text-black">Prime</span></h2>
         </header>
-        <div class="aura-card p-12 text-center relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-slate-50 rounded-full blur-3xl"></div>
-            <i class="ph-duotone ph-fingerprint text-7xl text-black mb-8 block"></i>
-            <h3 class="font-black text-2xl mb-3">SISTEMA AURA PRO</h3>
-            <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Revisión autorizada: J. Angelo N. Durand</p>
+        <div class="aura-card p-10 text-center">
+            <i class="ph-duotone ph-shield-check text-7xl text-black mb-6 block"></i>
+            <h3 class="font-black text-xl mb-1 uppercase tracking-tighter">Inventory Manager</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">J. Angelo Nuñez Durand</p>
         </div>
     </div>
 
     <div id="v-create" class="view">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-3xl font-black tracking-tighter">Nueva Carga</h2>
-            <span class="bg-black text-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase" id="queue-count">0 ITEMS</span>
-        </div>
-        
-        <div class="aura-card p-6 mb-8 relative" style="z-index: 10;">
-            <div class="relative mb-5">
-                <label class="text-[9px] font-black uppercase text-slate-400 ml-3 mb-2 block">Identificar Producto</label>
-                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Escribe SKU o nombre..." autocomplete="off">
+        <h2 class="text-3xl font-black mb-6 tracking-tighter">Planificar</h2>
+        <div class="aura-card p-6 mb-6 relative" style="z-index: 10;">
+            <div class="relative mb-4">
+                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar SKU..." autocomplete="off">
                 <div id="search-results" class="hidden"></div>
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="text-[9px] font-black uppercase text-slate-400 ml-3 mb-2 block">Meta Cajas</label>
-                    <input type="number" id="meta-in" class="w-full text-center text-xl font-black" placeholder="000">
-                </div>
-                <button onclick="addToQueue()" class="mt-5 btn-add shadow-lg shadow-black/10">Añadir</button>
+            <div class="flex gap-3">
+                <input type="number" id="meta-in" class="flex-1 text-center text-xl font-black" placeholder="Meta">
+                <button onclick="addToQueue()" class="btn-add px-6">Añadir</button>
             </div>
         </div>
-
-        <div id="queue-list" class="space-y-4 flex-1">
-            </div>
-
-        <button onclick="saveContenedor()" id="btn-save-all" class="w-full btn-add !py-6 mt-8 hidden shadow-2xl shadow-black/20">Finalizar Planificación</button>
+        <div id="queue-list" class="space-y-3 flex-1"></div>
+        <button onclick="saveContenedor()" id="btn-save-all" class="w-full btn-add !py-5 mt-6 hidden shadow-xl shadow-black/10">Registrar Contenedor</button>
     </div>
 
     <div id="v-hist" class="view">
-        <h2 class="text-3xl font-black mb-8 tracking-tighter">Historial</h2>
-        <div class="aura-card p-7 mb-8">
-            <div class="flex justify-around mb-8 text-center">
-                <div><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Contenedores</p><p id="stats-cont" class="text-3xl font-black">0</p></div>
-                <div class="w-px h-10 bg-slate-100 mt-2"></div>
-                <div><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Cajas Totales</p><p id="stats-cajas" class="text-3xl font-black">0</p></div>
+        <h2 class="text-3xl font-black mb-6 tracking-tighter">Historial</h2>
+        <div class="aura-card p-6 mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+                <div class="stat-badge"><p class="text-[8px] font-black text-slate-400 uppercase">Envíos</p><p id="stats-cont" class="text-2xl font-black">0</p></div>
+                <div class="stat-badge"><p class="text-[8px] font-black text-slate-400 uppercase">Cajas</p><p id="stats-cajas" class="text-2xl font-black">0</p></div>
             </div>
-            <div class="space-y-3">
-                <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar en historial..." oninput="filterByProduct(this.value)">
-                <select id="month-filter" onchange="filterByProduct(document.getElementById('sku-query').value)" class="w-full text-[10px] font-black uppercase text-slate-500"></select>
-            </div>
+            <select id="month-filter" onchange="filterByProduct('')" class="w-full text-[10px] font-black uppercase mb-4"></select>
+            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar producto..." oninput="filterByProduct(this.value)">
         </div>
-        <div id="product-results" class="space-y-4"></div>
+        <div id="product-results" class="space-y-3"></div>
     </div>
 
     <div id="v-work" class="view">
-        <div class="flex justify-between items-center mb-10">
-            <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Carga Activa</p><h2 class="text-4xl font-black tracking-tighter" id="work-title"></h2></div>
-            <button onclick="showModal('m-finish')" class="w-14 h-14 rounded-3xl bg-red-50 text-red-500 flex items-center justify-center shadow-sm"><i class="ph-bold ph-check-circle text-2xl"></i></button>
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-4xl font-black tracking-tighter" id="work-title"></h2>
+            <button onclick="showModal('m-finish')" class="text-red-500 font-black text-[10px] uppercase tracking-widest">Finalizar</button>
         </div>
-        <div class="aura-card p-10 text-center mb-8">
-            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-8 text-center text-xl font-black border-none bg-slate-50 py-4"></select>
-            <div class="flex items-center justify-center gap-6">
-                <input type="number" id="work-input" class="w-32 text-7xl font-black text-center border-none p-0" placeholder="0">
-                <button onclick="commitCount()" class="w-22 h-22 rounded-[35px] bg-black text-white flex items-center justify-center shadow-xl"><i class="ph-bold ph-plus text-4xl"></i></button>
+
+        <div class="aura-card p-6 mb-6 bg-black text-white">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Progreso General</p>
+                    <p id="work-perc" class="text-4xl font-black tracking-tighter">0%</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">SKU Completados</p>
+                    <p id="work-skus" class="text-xl font-black">0 / 0</p>
+                </div>
+            </div>
+            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div id="work-progress-bar" class="h-full bg-white transition-all duration-700" style="width: 0%"></div>
             </div>
         </div>
-        <div id="work-stats" class="space-y-4"></div>
+
+        <div class="aura-card p-8 text-center mb-6">
+            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-6 text-center text-xl font-black border-none bg-slate-50"></select>
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="work-input" class="w-24 text-5xl font-black text-center border-none" placeholder="0">
+                <button onclick="commitCount()" class="w-20 h-20 rounded-[30px] bg-black text-white flex items-center justify-center shadow-lg"><i class="ph-bold ph-plus text-3xl"></i></button>
+            </div>
+        </div>
+
+        <div id="work-stats" class="space-y-3"></div>
     </div>
 
     <div id="m-finish" class="modal">
-        <div class="aura-card p-12 w-full max-w-sm text-center">
-            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6"><i class="ph-duotone ph-check-circle text-4xl text-black"></i></div>
-            <h3 class="text-2xl font-black mb-3">¿Confirmar Carga?</h3>
-            <p class="text-xs text-slate-400 mb-8 leading-relaxed">Se generará el reporte oficial firmado por J. Angelo Durand.</p>
-            <button onclick="finalizeWork()" class="w-full btn-add mb-4">Confirmar y Cerrar</button>
-            <button onclick="hideModal('m-finish')" class="text-[10px] font-black uppercase text-slate-300 tracking-widest">Volver</button>
+        <div class="aura-card p-10 w-full max-w-sm text-center">
+            <h3 class="text-2xl font-black mb-6">¿Cerrar Descarga?</h3>
+            <button onclick="finalizeWork()" class="w-full btn-add mb-3">Sí, Generar Reporte</button>
+            <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase">Cancelar</button>
         </div>
     </div>
 
@@ -144,52 +139,36 @@
 
         window.onload = async () => { 
             loadMasterData(); 
-            initMonthFilter();
+            const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+            document.getElementById('month-filter').innerHTML = '<option value="all">Ver Todo</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+            document.getElementById('month-filter').value = new Date().getMonth();
             checkSession(); 
         };
-
-        function initMonthFilter() {
-            const select = document.getElementById('month-filter');
-            const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            select.innerHTML = '<option value="all">Todo el Historial</option>' + 
-                months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
-            select.value = new Date().getMonth();
-            filterByProduct('');
-        }
-
-        async function loadMasterData() { try { const res = await fetch(API_URL); master = await res.json(); } catch(e) {} }
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
             if(document.getElementById('btn-' + v)) document.getElementById('btn-' + v).classList.add('active');
-            if(v === 'hist') filterByProduct(document.getElementById('sku-query').value);
+            if(v === 'hist') filterByProduct('');
         }
+
+        async function loadMasterData() { try { const res = await fetch(API_URL); master = await res.json(); } catch(e) {} }
 
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
             if (q.length < 2) { resDiv.classList.add('hidden'); return; }
             const term = q.toLowerCase();
-            const matches = master.filter(row => {
-                const s = String(row.sku || row.SKU || '').toLowerCase();
-                const d = String(row.descripcion || row.DESCRIPCION || '').toLowerCase();
-                return s.includes(term) || d.includes(term);
-            }).slice(0, 6);
-
+            const matches = master.filter(row => String(row.sku || row.SKU || '').toLowerCase().includes(term) || String(row.descripcion || row.DESCRIPCION || '').toLowerCase().includes(term)).slice(0, 5);
             if(matches.length > 0) {
-                resDiv.innerHTML = matches.map(x => `
-                    <div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="search-item">
-                        <p class="font-black text-[13px] text-black">${x.sku || x.SKU}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p>
-                    </div>`).join('');
+                resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="search-item"><p class="font-black text-sm">${x.sku || x.SKU}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p></div>`).join('');
                 resDiv.classList.remove('hidden');
             } else { resDiv.classList.add('hidden'); }
         }
 
         function pickSku(s, d) { 
-            const inp = document.getElementById('sku-in');
-            inp.value = s; inp.dataset.desc = d; 
+            document.getElementById('sku-in').value = s; 
+            document.getElementById('sku-in').dataset.desc = d; 
             document.getElementById('search-results').classList.add('hidden');
             document.getElementById('meta-in').focus();
         }
@@ -203,75 +182,43 @@
         }
 
         function renderQueue() {
-            const list = document.getElementById('queue-list');
-            document.getElementById('queue-count').innerText = `${queue.length} ITEMS`;
             document.getElementById('btn-save-all').classList.toggle('hidden', queue.length === 0);
-            
-            list.innerHTML = queue.map((x, i) => `
-                <div class="item-row animate-in">
-                    <div class="flex-1">
-                        <p class="font-black text-sm mb-1">${x.sku}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase truncate max-w-[200px]">${x.desc}</p>
-                    </div>
-                    <div class="flex items-center gap-6">
-                        <span class="text-xs font-black bg-slate-50 px-3 py-1 rounded-lg">${x.meta}</span>
-                        <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-200 hover:text-red-500 transition-colors"><i class="ph-bold ph-trash-simple text-xl"></i></button>
-                    </div>
-                </div>`).join('');
+            document.getElementById('queue-list').innerHTML = queue.map((x, i) => `<div class="item-row"><div><p class="font-black text-sm">${x.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${x.desc}</p></div><span class="font-black text-xs">${x.meta}</span></div>`).join('');
         }
 
         function saveContenedor() {
-            if(queue.length === 0) return;
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const lastNum = h.length > 0 ? Math.max(...h.map(op => parseInt(op.id.split('-')[1]) || 0)) : 0;
-            const newID = `TWINS-${String(lastNum + 1).padStart(4, '0')}`;
-            const op = { id: newID, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false };
-            h.unshift(op);
+            const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
+            h.unshift({ id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false });
             localStorage.setItem('tajho_v3', JSON.stringify(h));
             queue = []; renderQueue(); navTo('hist');
         }
 
         function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const resultsDiv = document.getElementById('product-results');
             const selectedMonth = document.getElementById('month-filter').value;
             const term = q.toLowerCase();
-            let html = ""; let totalCajas = 0; let totalCont = new Set();
+            let html = "", totalCajas = 0, totalCont = new Set();
 
             history.forEach((op, idx) => {
                 const dateParts = op.date.split(',')[0].split('/');
                 const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
                 const matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
-
-                if (matchesMonth) {
-                    op.items.forEach(it => { totalCajas += (it.r || 0); if(it.r > 0) totalCont.add(op.id); });
-                }
+                if (matchesMonth) { op.items.forEach(it => { totalCajas += it.r; if(it.r > 0) totalCont.add(op.id); }); }
 
                 if (q.length > 0) {
                     op.items.forEach(item => {
-                        const s = item.sku.toLowerCase(); const d = (item.desc || '').toLowerCase();
-                        if ((s.includes(term) || d.includes(term)) && matchesMonth && item.r > 0) {
-                            html += `<div class="aura-card p-6 mb-3 border-l-8 border-black">
-                                <p class="text-[8px] font-black text-slate-300 uppercase mb-2">${op.id} | ${op.date}</p>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex-1"><p class="text-sm font-black">${item.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${item.desc || ''}</p></div>
-                                    <p class="text-2xl font-black ml-4">${item.r}</p>
-                                </div>
-                            </div>`;
+                        if ((item.sku.toLowerCase().includes(term)) && matchesMonth && item.r > 0) {
+                            html += `<div class="aura-card p-5 mb-2 border-l-4 border-black flex justify-between items-center"><div class="flex-1"><p class="text-[8px] font-black text-slate-400 uppercase">${op.id}</p><p class="text-sm font-black">${item.sku}</p></div><p class="text-xl font-black">${item.r}</p></div>`;
                         }
                     });
                 } else if (matchesMonth) {
-                    html += `<div class="aura-card p-6 flex justify-between items-center mb-4">
-                        <div><p class="text-[8px] font-black text-slate-300 uppercase mb-1">${op.date}</p><p class="text-2xl font-black italic tracking-tighter">${op.id}</p></div>
-                        ${op.done ? `<button onclick="genPDF(${idx})" class="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center text-black"><i class="ph-duotone ph-file-pdf text-2xl"></i></button>` : 
-                        `<button onclick="openWork(${idx})" class="btn-add !py-3 !px-6">Contar</button>`}
-                    </div>`;
+                    html += `<div class="aura-card p-6 flex justify-between items-center mb-3"><div><p class="text-[8px] font-black text-slate-300 uppercase">${op.date}</p><p class="text-xl font-black">${op.id}</p></div>${op.done ? `<button onclick="genPDF(${idx})" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center"><i class="ph-bold ph-file-pdf"></i></button>` : `<button onclick="openWork(${idx})" class="btn-add !py-2 !px-5">Contar</button>`}</div>`;
                 }
             });
-
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-            resultsDiv.innerHTML = html || '<p class="text-center py-20 text-slate-300 font-black uppercase text-[10px] tracking-widest">Sin registros</p>';
+            document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 text-[10px] font-black">SIN DATOS</p>';
         }
 
         function checkSession() {
@@ -305,10 +252,26 @@
         }
 
         function refreshWorkStats() {
+            // Lógica Estadística
+            let totalMeta = 0, totalReal = 0, skusCompletos = 0;
+            currentOp.items.forEach(x => {
+                totalMeta += x.meta;
+                totalReal += x.r;
+                if(x.r >= x.meta) skusCompletos++;
+            });
+
+            const porcTotal = Math.min(Math.round((totalReal / totalMeta) * 100), 100);
+            document.getElementById('work-perc').innerText = porcTotal + "%";
+            document.getElementById('work-skus').innerText = `${skusCompletos} / ${currentOp.items.length}`;
+            document.getElementById('work-progress-bar').style.width = porcTotal + "%";
+
             document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
-                <div class="aura-card p-6">
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-4"><span>${x.sku}</span><span class="${x.r >= x.meta ? 'text-green-500' : 'text-slate-400'}">${x.r} / ${x.meta}</span></div>
-                    <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-black transition-all duration-500" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
+                <div class="aura-card p-5">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-3">
+                        <span class="max-w-[150px] truncate">${x.sku}</span>
+                        <span class="${x.r >= x.meta ? 'text-green-500' : 'text-slate-400'}">${x.r} / ${x.meta}</span>
+                    </div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-black transition-all duration-500" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
                 </div>`).join('');
         }
 
@@ -317,10 +280,8 @@
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
             localStorage.removeItem('tajho_active_op');
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'finalizar_conteo', ...currentOp }) });
             genPDF(currentOp.localIdx);
-            hideModal('m-finish');
-            navTo('hist');
+            hideModal('m-finish'); navTo('hist');
         }
 
         function genPDF(idx) {
@@ -328,9 +289,8 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFontSize(22); doc.text("TAJHO PRIME | TWINS ELITE", 14, 25);
             doc.setFontSize(10); doc.text(`REPORTE: ${d.id} | ${d.date}`, 14, 32);
-            doc.autoTable({ startY: 45, head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), headStyles: { fillColor: [0,0,0], fontStyle: 'bold' } });
+            doc.autoTable({ startY: 45, head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), headStyles: { fillColor: [0,0,0] } });
             doc.setFontSize(9); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, doc.lastAutoTable.finalY + 20);
-            doc.text("Asistente de Inventario Logístico", 14, doc.lastAutoTable.finalY + 25);
             doc.save(`Reporte_${d.id}.pdf`);
         }
 
