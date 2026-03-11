@@ -57,7 +57,6 @@
             outline: none!important;
             transition: 0.3s;
         }
-        input:focus { border-color: #000!important; box-shadow: 0 0 0 4px rgba(0,0,0,0.03); }
 
         .btn-prime {
             background: var(--accent);
@@ -70,9 +69,6 @@
             letter-spacing: 0.1em;
             transition: 0.3s;
         }
-
-        .progress-bar { height: 6px; border-radius: 10px; background: #f1f5f9; overflow: hidden; }
-        .progress-fill { height: 100%; background: #000; border-radius: 10px; transition: width 0.6s ease; }
 
         #search-results {
             position: absolute; width: 100%; top: 100%; z-index: 50; margin-top: 10px;
@@ -88,7 +84,7 @@
     <div id="v-dash" class="view active">
         <header class="pt-20 pb-16 text-center">
             <h1 class="text-[10px] font-extrabold tracking-[0.8em] text-slate-300 uppercase mb-4">Logistics Management</h1>
-            <h2 class="text-5xl font-light italic tracking-tight text-slate-900">Tajho <span class="font-black not-italic tracking-tighter">Prime</span></h2>
+            <h2 class="text-5xl font-light italic tracking-tight text-slate-900">Tajho <span class="font-black not-italic tracking-tighter text-black">Prime</span></h2>
         </header>
 
         <div class="grid grid-cols-2 gap-6 px-2">
@@ -97,19 +93,9 @@
                 <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Nuevo<br>Contenedor</span>
             </button>
             <button onclick="navTo('hist')" class="nav-card">
-                <i class="ph-thin ph-stack"></i>
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Historial &<br>Stock SKU</span>
+                <i class="ph-thin ph-magnifying-glass"></i>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Consultar<br>Ingresos</span>
             </button>
-        </div>
-
-        <div class="mt-auto pb-12 text-center">
-            <div class="inline-flex items-center gap-3 px-6 py-3 aura-card rounded-full border-none">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Sincronización Aura Activa</span>
-            </div>
         </div>
     </div>
 
@@ -122,55 +108,45 @@
 
         <div class="aura-card p-8 mb-8 space-y-6">
             <div class="relative">
-                <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Buscador SKU (Hoja 1)</label>
-                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="SKU..." autocomplete="off">
+                <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Buscador SKU</label>
+                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar producto..." autocomplete="off">
                 <div id="search-results" class="hidden"></div>
             </div>
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Meta de Conteo</label>
+                    <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Meta de Cajas</label>
                     <input type="number" id="meta-in" class="w-full text-center text-xl font-bold" placeholder="0">
                 </div>
                 <button onclick="addToQueue()" class="mt-6 px-8 btn-prime !bg-slate-100 !text-black">Añadir</button>
             </div>
         </div>
 
-        <div id="queue-list" class="space-y-3 flex-1 overflow-y-auto pr-2"></div>
-        <button onclick="saveContenedor()" class="w-full btn-prime mt-6">Confirmar Registro</button>
+        <div id="queue-list" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <button onclick="saveContenedor()" class="w-full btn-prime mt-6">Registrar en Historial</button>
     </div>
 
     <div id="v-hist" class="view">
         <nav class="flex items-center justify-between mb-8">
             <button onclick="navTo('dash')" class="w-12 h-12 rounded-full bg-white flex items-center justify-center border border-slate-100"><i class="ph-bold ph-arrow-left"></i></button>
-            <span class="text-xs font-black uppercase tracking-widest">Historial & Stock</span>
+            <span class="text-xs font-black uppercase tracking-widest">Consulta de Ingresos</span>
             <div class="w-12"></div>
         </nav>
 
         <div class="aura-card p-6 mb-8">
-            <p class="text-[9px] font-black uppercase text-slate-400 mb-3 tracking-widest">Consultar Ingresos por SKU</p>
-            <input type="text" id="sku-stock-search" class="w-full !p-4 text-sm" placeholder="Ingrese código para sumar stock..." oninput="queryStock(this.value)">
+            <p class="text-[9px] font-black uppercase text-slate-400 mb-3 tracking-widest">Buscar por Código o Descripción</p>
+            <input type="text" id="sku-query" class="w-full !p-4 text-sm" placeholder="Ej: SKU-001..." oninput="filterByProduct(this.value)">
         </div>
 
-        <div id="stock-results-panel" class="hidden mb-10">
-            <div class="aura-card p-6 border-2 border-slate-100 bg-white">
-                <h3 class="font-black text-[10px] uppercase tracking-widest mb-4 flex justify-between">
-                    Stock Acumulado <span id="total-found" class="text-emerald-500 text-lg"></span>
-                </h3>
-                <div id="stock-detail-list" class="space-y-2"></div>
-            </div>
-        </div>
-
-        <p class="text-[9px] font-black uppercase text-slate-400 mb-4 tracking-widest">Reportes Recientes</p>
-        <div id="history-feed" class="space-y-4 overflow-y-auto flex-1 pr-2"></div>
+        <div id="product-results" class="space-y-4 overflow-y-auto flex-1 pr-2"></div>
     </div>
 
     <div id="v-work" class="view">
         <header class="flex justify-between items-end mb-10">
             <div>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Carga Activa</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Operación</p>
                 <h2 class="text-4xl font-black tracking-tighter" id="work-title"></h2>
             </div>
-            <button onclick="finalizeWork()" class="px-6 py-3 rounded-2xl bg-emerald-50 text-emerald-600 font-bold text-[10px] uppercase">Finalizar</button>
+            <button onclick="finalizeWork()" class="px-6 py-3 rounded-2xl bg-black text-white font-bold text-[10px] uppercase">Finalizar</button>
         </header>
 
         <div class="aura-card p-10 text-center mb-8">
@@ -190,7 +166,7 @@
         let master = [], queue = [], currentOp = null;
 
         window.onload = async () => {
-            renderHistory();
+            filterByProduct('');
             try { 
                 const res = await fetch(API_URL); 
                 master = await res.json(); 
@@ -200,7 +176,7 @@
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
-            if(v === 'hist') renderHistory();
+            if(v === 'hist') filterByProduct('');
         }
 
         // --- CREACIÓN ---
@@ -220,15 +196,16 @@
             document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
             renderQueue();
         }
+
         function renderQueue() {
             document.getElementById('queue-list').innerHTML = queue.map((x, i) => `
-                <div class="aura-card p-5 flex justify-between items-center bg-white/50">
+                <div class="aura-card p-5 flex justify-between items-center bg-white">
                     <span class="font-bold text-sm">${x.sku} <span class="ml-3 text-slate-400">OBJ: ${x.meta}</span></span>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300"><i class="ph-bold ph-x-circle text-xl"></i></button>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300"><i class="ph-bold ph-trash text-xl"></i></button>
                 </div>`).join('');
         }
 
-        async function saveContenedor() {
+        function saveContenedor() {
             if(queue.length === 0) return;
             const op = { id: `TJ-${Math.floor(Math.random()*900+100)}`, date: new Date().toLocaleString(), items: [...queue], done: false };
             let history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
@@ -238,60 +215,53 @@
             queue = []; renderQueue(); navTo('hist');
         }
 
-        // --- HISTORIAL & STOCK SKU ---
-        function renderHistory() {
-            document.getElementById('sku-stock-search').value = '';
-            document.getElementById('stock-results-panel').classList.add('hidden');
-            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            document.getElementById('history-feed').innerHTML = h.map((x, i) => `
-                <div class="aura-card p-6 flex justify-between items-center">
-                    <div>
-                        <p class="text-[8px] font-black text-slate-300 mb-1 uppercase tracking-widest">${x.date}</p>
-                        <p class="text-xl font-extrabold italic tracking-tighter">${x.id}</p>
-                    </div>
-                    ${x.done ? 
-                        `<button onclick="genPDF(${i})" class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center shadow-lg"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
-                        `<button onclick="openWork(${i})" class="px-6 py-3 rounded-2xl bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest">Iniciar</button>`
-                    }
-                </div>`).join('') || '<p class="text-center py-10 text-slate-300 uppercase text-[10px] font-bold">Sin reportes</p>';
-        }
-
-        function queryStock(sku) {
-            const panel = document.getElementById('stock-results-panel');
-            const list = document.getElementById('stock-detail-list');
-            const totalSpan = document.getElementById('total-found');
-            if (sku.length < 2) { panel.classList.add('hidden'); return; }
-
+        // --- BUSCADOR ESPECÍFICO POR PRODUCTO Y FECHA ---
+        function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            let matches = [], totalQty = 0;
+            const resultsDiv = document.getElementById('product-results');
+            let html = "";
 
-            history.forEach(op => {
-                const found = op.items.find(item => item.sku.toLowerCase().includes(sku.toLowerCase()));
-                if (found && found.r > 0) {
-                    matches.push({ id: op.id, date: op.date.split(',')[0], qty: found.r });
-                    totalQty += found.r;
-                }
-            });
-
-            if (matches.length > 0) {
-                panel.classList.remove('hidden');
-                totalSpan.innerText = totalQty;
-                list.innerHTML = matches.map(m => `
-                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-white">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] font-bold text-slate-400">${m.date}</span>
-                            <span class="font-bold text-xs">OP: ${m.id}</span>
-                        </div>
-                        <span class="font-black text-slate-900">+${m.qty}</span>
-                    </div>`).join('');
+            if (q.length > 0) {
+                // Modo búsqueda: Filtrar por producto específico
+                history.forEach(op => {
+                    op.items.forEach(item => {
+                        if (item.sku.toLowerCase().includes(q.toLowerCase()) && item.r > 0) {
+                            html += `
+                            <div class="aura-card p-6 flex justify-between items-center border-l-4 border-black">
+                                <div>
+                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">${op.date}</p>
+                                    <p class="text-sm font-black text-black">${item.sku}</p>
+                                    <p class="text-[10px] text-slate-500 uppercase font-bold">OP: ${op.id}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-black tracking-tighter">${item.r}</p>
+                                    <p class="text-[8px] font-bold text-slate-400 uppercase">Cajas</p>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                });
             } else {
-                panel.classList.remove('hidden');
-                totalSpan.innerText = '0';
-                list.innerHTML = `<p class="text-center py-2 text-[10px] font-bold text-slate-300 uppercase">Sin registros</p>`;
+                // Modo historial: Mostrar reportes generales
+                history.forEach((op, i) => {
+                    html += `
+                    <div class="aura-card p-6 flex justify-between items-center">
+                        <div>
+                            <p class="text-[8px] font-black text-slate-300 mb-1 uppercase tracking-widest">${op.date}</p>
+                            <p class="text-xl font-extrabold italic tracking-tighter">${op.id}</p>
+                        </div>
+                        ${op.done ? 
+                            `<button onclick="genPDF(${i})" class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
+                            `<button onclick="openWork(${i})" class="px-6 py-3 rounded-2xl bg-black text-white font-black text-[9px] uppercase">Contar</button>`
+                        }
+                    </div>`;
+                });
             }
+
+            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 uppercase text-[10px] font-bold">Sin registros encontrados</p>';
         }
 
-        // --- CONTEO ---
+        // --- TERMINAL ---
         function openWork(idx) {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             currentOp = { ...h[idx], localIdx: idx };
@@ -309,7 +279,9 @@
             item.r += val;
             document.getElementById('work-input').value = '';
             refreshWorkStats();
-            updateLocal();
+            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            h[currentOp.localIdx] = currentOp;
+            localStorage.setItem('tajho_v3', JSON.stringify(h));
         }
 
         function refreshWorkStats() {
@@ -317,41 +289,39 @@
                 <div class="aura-card p-5">
                     <div class="flex justify-between text-[10px] font-black uppercase mb-3">
                         <span>${x.sku}</span>
-                        <span class="${x.r >= x.meta ? 'text-emerald-500' : 'text-slate-400'}">${x.r} / ${x.meta}</span>
+                        <span>${x.r} / ${x.meta}</span>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
+                    <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-black transition-all" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
+                    </div>
                 </div>`).join('');
         }
 
-        function updateLocal() {
+        async function finalizeWork() {
+            currentOp.done = true;
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
-        }
-
-        async function finalizeWork() {
-            currentOp.done = true; updateLocal();
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'finalizar_conteo', ...currentOp }) });
             navTo('hist');
         }
 
-        // --- PDF ---
         function genPDF(idx) {
             const d = JSON.parse(localStorage.getItem('tajho_v3') || '[]')[idx];
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(26); doc.text("TAJHO PRIME", 14, 30);
-            doc.setFontSize(9); doc.text(`REPORTE: ${d.id} | FECHA: ${d.date}`, 14, 38);
+            doc.setFontSize(22); doc.text("TAJHO PRIME", 14, 25);
+            doc.setFontSize(9); doc.text(`REPORTE: ${d.id} | ${d.date}`, 14, 32);
             doc.autoTable({
-                startY: 50,
-                head: [['SKU', 'META', 'REAL', 'DIF.']],
+                startY: 40,
+                head: [['PRODUCTO', 'META', 'REAL', 'DIF.']],
                 body: d.items.map(it => [it.sku, it.meta, it.r, (it.r - it.meta)]),
                 headStyles: { fillColor: [0,0,0] }
             });
-            const finalY = doc.lastAutoTable.finalY + 20;
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY);
-            doc.text("Asist. Inventario Logístico", 14, finalY + 5);
-            doc.save(`Tajho_Prime_${d.id}.pdf`);
+            const y = doc.lastAutoTable.finalY + 20;
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, y);
+            doc.text("Asistente de Inventario Logístico", 14, y + 5);
+            doc.save(`Reporte_${d.id}.pdf`);
         }
     </script>
 </body>
