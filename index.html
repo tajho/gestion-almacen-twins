@@ -10,134 +10,148 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f2f2f7; color: #1c1c1e; overflow: hidden; }
-        .aura-card { background: white; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); }
-        .view { display: none; height: 100vh; flex-direction: column; padding: 10px; padding-top: 55px; }
+        .aura-card { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); }
+        .view { display: none; height: 100vh; flex-direction: column; padding: 10px; padding-top: 55px; padding-bottom: 80px; }
         .view.active { display: flex; }
-        .aura-input { background: transparent; border: none; font-size: 13px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 2px 0; }
+        .aura-input { background: transparent; border: none; font-size: 14px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 4px 0; }
         .aura-input:focus { border-bottom-color: #007AFF; }
-        .finish-slider { position: relative; height: 50px; background: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; }
-        .slider-handle { position: absolute; left: 4px; height: 42px; width: 42px; background: #fff; border-radius: 21px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
+        
+        /* Navegación Inferior */
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; border-top: 1px solid #e5e5ea; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.4; transition: 0.3s; background: none; border: none; }
+        .nav-item.active { opacity: 1; color: #007AFF; }
+        .nav-text { font-size: 9px; font-weight: 800; uppercase; letter-spacing: 0.5px; }
+
+        .finish-slider { position: relative; height: 54px; background: #000; border-radius: 27px; display: flex; align-items: center; justify-content: center; }
+        .slider-handle { position: absolute; left: 4px; height: 46px; width: 46px; background: #fff; border-radius: 23px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center pointer-events-none">
-        <div class="pointer-events-auto">
+    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center bg-white/80 backdrop-blur-md">
+        <div>
             <p class="text-[7px] font-black text-blue-600 tracking-widest uppercase">Aura Pro</p>
             <h1 class="text-base font-black tracking-tighter">TWINS.</h1>
         </div>
+        <p id="status-label" class="text-[8px] font-black bg-slate-100 px-2 py-1 rounded-full uppercase text-slate-400">En espera</p>
     </header>
 
-    <div id="view-home" class="view active">
-        <h2 class="text-xl font-black tracking-tighter mt-2 mb-1">¿Qué hacemos hoy, Tajho?</h2>
-        <p class="text-[10px] text-slate-400 mb-6 font-bold uppercase">Gestión de Inventario Logístico</p>
-        <div class="grid gap-2">
-            <button onclick="navTo('crear')" class="aura-card p-4 bg-blue-600 text-white text-left active:scale-95 transition-all">
-                <p class="text-[7px] font-bold uppercase opacity-60 mb-4">Módulo de Ingresos</p>
-                <p class="text-base font-extrabold">Crear Contenedor</p>
-            </button>
-            <button onclick="navTo('historial')" class="aura-card p-4 flex items-center justify-between active:scale-95 transition-all">
-                <p class="text-xs font-extrabold text-slate-900">Historial de Reportes</p>
-                <span class="text-blue-600">→</span>
-            </button>
-        </div>
-    </div>
-
-    <div id="view-crear" class="view">
-        <div class="flex justify-between items-center mb-3">
-            <button onclick="navTo('home')" class="text-[8px] font-black text-slate-400 uppercase">← INICIO</button>
-            <p class="text-[8px] font-black text-blue-600 uppercase" id="auto-id-display"></p>
-        </div>
-        <div class="space-y-2">
-            <div class="aura-card p-3 relative">
-                <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Buscar en Base de Datos Real</label>
-                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Escribe SKU o Nombre...">
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-xl rounded-xl mt-1 z-50 hidden max-h-40 overflow-y-auto border border-slate-100"></div>
+    <div id="view-crear" class="view active">
+        <h2 class="text-xl font-black tracking-tighter mt-2 mb-4">¿Qué hacemos hoy, Tajho?</h2>
+        <div class="space-y-3">
+            <div class="aura-card p-4 relative">
+                <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">ID Contenedor</label>
+                <input type="text" id="auto-id-input" class="aura-input" placeholder="Ej: CT-9920">
+            </div>
+            <div class="aura-card p-4 relative">
+                <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Producto SKU / Nombre</label>
+                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Escribe para buscar...">
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-1 z-[110] hidden max-h-40 overflow-y-auto border border-slate-100"></div>
             </div>
             <div class="flex gap-2">
-                <div class="aura-card p-3 flex-1">
-                    <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Meta Cajas</label>
+                <div class="aura-card p-4 flex-1">
+                    <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Meta</label>
                     <input type="number" id="s-meta" class="aura-input text-center" placeholder="0">
                 </div>
-                <button onclick="addToQueue()" class="w-12 aura-card bg-black text-white flex items-center justify-center text-xl active:scale-90">＋</button>
+                <button onclick="addToQueue()" class="w-14 aura-card bg-black text-white flex items-center justify-center text-2xl active:scale-90 transition-all">＋</button>
             </div>
         </div>
-        
-        <div id="list-queue" class="mt-3 space-y-1 overflow-y-auto max-h-40"></div>
-
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
-            <button onclick="confirmarPlan()" class="w-full h-12 bg-black text-white rounded-xl font-black text-[9px] uppercase tracking-widest active:scale-95">Fijar Plan de Trabajo</button>
+        <div id="list-queue" class="mt-4 space-y-2 overflow-y-auto"></div>
+        <div class="mt-4">
+            <button onclick="startConteo()" class="w-full h-14 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-lg shadow-blue-200">Iniciar Trabajo</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="aura-card p-4 mb-3 border-t-4 border-t-blue-600">
-            <p id="op-title" class="text-[7px] font-extrabold text-blue-600 uppercase text-center mb-1"></p>
-            <select id="op-select" onchange="renderOps()" class="w-full text-lg font-black text-center outline-none mb-3 bg-transparent border-none"></select>
-            <div class="flex gap-2">
-                <input type="number" id="op-qty" class="flex-1 text-3xl font-black text-center bg-slate-50 rounded-lg p-2 outline-none" placeholder="0">
-                <button onclick="addCount()" class="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center text-lg font-bold active:scale-90">OK</button>
+        <div class="aura-card p-5 mb-4 border-t-4 border-t-blue-600">
+            <p id="op-title" class="text-[8px] font-black text-blue-600 uppercase text-center mb-1"></p>
+            <select id="op-select" onchange="renderOps()" class="w-full text-xl font-black text-center outline-none mb-4 bg-transparent border-none appearance-none"></select>
+            <div class="flex gap-3">
+                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center bg-slate-50 rounded-2xl p-4 outline-none" placeholder="0">
+                <button onclick="addCount()" class="w-20 h-20 bg-black text-white rounded-3xl flex items-center justify-center text-xl font-bold active:scale-90 transition-all">OK</button>
             </div>
         </div>
-        <div id="op-list" class="space-y-1 pb-24 overflow-y-auto"></div>
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/95 border-t">
+        <div id="op-list" class="space-y-2 overflow-y-auto"></div>
+        <div class="mt-auto pt-4">
             <div class="finish-slider" id="main-slider">
-                <div class="text-[7px] font-black text-white/40 uppercase tracking-widest">Desliza para generar PDF</div>
+                <div class="text-[8px] font-black text-white/40 uppercase tracking-widest">Desliza para finalizar</div>
                 <div class="slider-handle" id="handle">→</div>
             </div>
         </div>
     </div>
 
-    <div id="modal-end" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-6">
-        <div class="aura-card w-full max-w-sm p-5 space-y-4 text-center">
-            <h3 class="text-base font-black">Autorizar Reporte</h3>
-            <p class="text-[10px] text-slate-400 font-bold uppercase">Revisión: J. Angelo Nuñez Durand</p>
-            <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 h-10 bg-slate-100 rounded-lg font-bold text-[8px]">VOLVER</button>
-                <button onclick="processEnd()" class="flex-1 h-10 bg-black text-white rounded-xl font-bold text-[8px]">GENERAR PDF</button>
+    <div id="view-historial" class="view">
+        <h2 class="text-xl font-black tracking-tighter mt-2 mb-4">Historial</h2>
+        <div id="hist-feed" class="space-y-3"></div>
+    </div>
+
+    <nav class="nav-bar">
+        <button onclick="navTo('crear')" id="nav-crear" class="nav-item active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="nav-text">CONTENEDOR</span>
+        </button>
+        <button onclick="navTo('historial')" id="nav-historial" class="nav-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="nav-text">HISTORIAL</span>
+        </button>
+    </nav>
+
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="aura-card w-full max-w-sm p-8 space-y-6 text-center shadow-2xl">
+            <h3 class="text-xl font-black tracking-tighter">Autorizar Reporte</h3>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">REVISIÓN: J. ANGELO NUÑEZ DURAND</p>
+            <div class="flex gap-3 pt-4">
+                <button onclick="closeModal()" class="flex-1 h-14 bg-slate-100 rounded-2xl font-black text-[10px] uppercase">VOLVER</button>
+                <button onclick="processPDF()" class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-black/20">GENERAR PDF</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ESTE ES TU LINK OFICIAL DEL CHAT
         const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
-
         let queue = [];
         let activeOp = null;
+        let isWorking = false;
+
+        // ALERTA DE ACTUALIZACIÓN
+        window.addEventListener('beforeunload', (e) => {
+            if (isWorking || queue.length > 0) {
+                e.preventDefault();
+                e.returnValue = ''; // Muestra el diálogo estándar del navegador
+            }
+        });
 
         function navTo(v) {
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.getElementById('view-' + v).classList.add('active');
-            if(v === 'crear') {
-                const now = new Date();
-                document.getElementById('auto-id-display').innerText = "CT-" + now.getTime().toString().slice(-6);
+            if (v === 'crear' && isWorking) {
+                v = 'ops'; // Si ya está trabajando, forzar vista de operaciones
             }
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            document.getElementById('view-' + v).classList.add('active');
+            document.getElementById('nav-' + v).classList.add('active');
+            if (v === 'historial') renderHistorial();
         }
 
-        // BUSCADOR CONEXIÓN REAL
         async function doSearch() {
             const val = document.getElementById('s-sku').value.toUpperCase();
             const box = document.getElementById('res-box');
             if(val.length < 2) { box.classList.add('hidden'); return; }
-
             try {
                 const res = await fetch(`${APP_URL}?action=buscar&term=${val}`);
                 const data = await res.json();
-                
                 if(data.length > 0) {
                     box.innerHTML = data.map(x => `
-                        <div onclick="pick('${x.sku}')" class="p-2 border-b active:bg-blue-50">
-                            <p class="text-[9px] font-black">${x.sku}</p>
-                            <p class="text-[7px] text-slate-400 uppercase truncate">${x.descripcion}</p>
+                        <div onclick="selectProduct('${x.sku}', '${x.descripcion}')" class="p-4 border-b active:bg-blue-50">
+                            <p class="text-[10px] font-black">${x.sku}</p>
+                            <p class="text-[8px] text-slate-400 uppercase truncate">${x.descripcion}</p>
                         </div>
                     `).join('');
                     box.classList.remove('hidden');
                 }
-            } catch (e) { console.error("Error base de datos"); }
+            } catch(e) { console.error("Error en búsqueda"); }
         }
 
-        function pick(sku) {
+        function selectProduct(sku, desc) {
             document.getElementById('s-sku').value = sku;
             document.getElementById('res-box').classList.add('hidden');
             document.getElementById('s-meta').focus();
@@ -155,17 +169,21 @@
 
         function renderQueue() {
             document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
-                <div class="aura-card p-2 flex justify-between items-center border-l-4 border-blue-600 mb-1">
-                    <p class="text-[9px] font-extrabold">${x.sku} <span class="text-blue-500">[META: ${x.meta}]</span></p>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-400 font-bold px-2">×</button>
+                <div class="aura-card p-4 flex justify-between items-center shadow-sm">
+                    <p class="text-[10px] font-black">${x.sku} <span class="text-blue-500 ml-2">META: ${x.meta}</span></p>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 font-bold px-2 text-lg">×</button>
                 </div>
             `).join('');
         }
 
-        function confirmarPlan() {
-            if(queue.length === 0) return;
-            activeOp = { id: document.getElementById('auto-id-display').innerText, items: [...queue], date: new Date().toLocaleString() };
+        function startConteo() {
+            const cid = document.getElementById('auto-id-input').value;
+            if(!cid || queue.length === 0) return alert("Completa el ID y productos");
+            isWorking = true;
+            activeOp = { id: cid, items: [...queue], date: new Date().toLocaleString() };
             queue = [];
+            document.getElementById('status-label').innerText = "En curso";
+            document.getElementById('status-label').classList.replace('text-slate-400', 'text-blue-600');
             navTo('ops');
             syncTerminal();
         }
@@ -180,7 +198,8 @@
         function addCount() {
             const val = parseInt(document.getElementById('op-qty').value);
             if(!val) return;
-            const item = activeOp.items.find(x => x.sku === document.getElementById('op-select').value);
+            const sku = document.getElementById('op-select').value;
+            const item = activeOp.items.find(x => x.sku === sku);
             if(item) item.real += val;
             document.getElementById('op-qty').value = '';
             renderOps();
@@ -189,44 +208,82 @@
         function renderOps() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
-                <div class="aura-card p-2 ${x.sku === cur ? 'border border-blue-600' : 'opacity-40'} mb-1">
-                    <div class="flex justify-between font-black text-[8px] mb-1">
+                <div class="aura-card p-4 ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-lg' : 'opacity-40'} transition-all">
+                    <div class="flex justify-between font-black text-[9px] mb-2 uppercase">
                         <span>${x.sku}</span>
                         <span>${x.real} / ${x.meta}</span>
                     </div>
-                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
+                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600 transition-all duration-500" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // PDF CORREGIDO
-        async function processEnd() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(14); doc.text("REPORTE DE INGRESO LOGÍSTICO", 14, 20);
-            doc.setFontSize(8); doc.text(`ID: ${activeOp.id} | FECHA: ${activeOp.date}`, 14, 28);
-            doc.autoTable({
-                startY: 35,
-                head: [['SKU', 'META', 'REAL', 'DIF']],
-                body: activeOp.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                theme: 'grid', styles: { fontSize: 7 }
-            });
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
-            doc.save(`Tajho_Reporte_${activeOp.id}.pdf`);
-            activeOp = null; closeModal(); navTo('home');
+        // PDF Y CIERRE
+        async function processPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont("helvetica", "bold");
+                doc.text("REPORTE DE INGRESO LOGÍSTICO", 14, 20);
+                doc.setFontSize(9);
+                doc.text(`CONTENEDOR: ${activeOp.id}`, 14, 30);
+                doc.text(`FECHA: ${activeOp.date}`, 14, 35);
+                
+                doc.autoTable({
+                    startY: 45,
+                    head: [['SKU PRODUCTO', 'META', 'RECIBIDO', 'DIFERENCIA']],
+                    body: activeOp.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                    theme: 'grid',
+                    styles: { fontSize: 8, font: 'helvetica' },
+                    headStyles: { fillColor: [0, 122, 255] }
+                });
+
+                const finalY = doc.lastAutoTable.finalY + 15;
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
+                
+                doc.save(`Tajho_${activeOp.id}.pdf`);
+                
+                let h = JSON.parse(localStorage.getItem('thist')) || [];
+                h.unshift(activeOp);
+                localStorage.setItem('thist', JSON.stringify(h));
+                
+                resetApp();
+            } catch(e) { alert("Error al generar PDF. Verifica tu conexión."); }
         }
 
-        // SLIDER
+        function resetApp() {
+            isWorking = false;
+            activeOp = null;
+            document.getElementById('status-label').innerText = "En espera";
+            document.getElementById('status-label').classList.replace('text-blue-600', 'text-slate-400');
+            closeModal();
+            navTo('crear');
+        }
+
+        function renderHistorial() {
+            const h = JSON.parse(localStorage.getItem('thist')) || [];
+            document.getElementById('hist-feed').innerHTML = h.map(x => `
+                <div class="aura-card p-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p>
+                        <p class="text-xs font-black">${x.id}</p>
+                    </div>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[8px] font-black uppercase">PDF</button>
+                </div>
+            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400">Sin reportes aún</p>';
+        }
+
+        // SLIDER LOGIC
         const handle = document.getElementById('handle');
         const slider = document.getElementById('main-slider');
         let isMoving = false;
         handle.addEventListener('touchstart', () => isMoving = true);
         window.addEventListener('touchmove', (e) => {
             if(!isMoving) return;
-            let x = e.touches[0].clientX - slider.getBoundingClientRect().left - 21;
-            let max = slider.offsetWidth - 48;
+            let x = e.touches[0].clientX - slider.getBoundingClientRect().left - 23;
+            let max = slider.offsetWidth - 52;
             handle.style.transform = `translateX(${Math.max(0, Math.min(x, max))}px)`;
             if(x >= max - 2) { isMoving = false; document.getElementById('modal-end').classList.remove('hidden'); }
         });
