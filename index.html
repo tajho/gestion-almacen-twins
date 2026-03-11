@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Pro | Twins Logistics</title>
+    <title>Twins Logistics | Aura Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,31 +14,36 @@
     <style>
         :root { --accent: #00f7ff; --surface: #0a0a0f; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--surface); color: #fff; overflow-y: auto; min-height: 100vh; }
+        
         .view { display: none; min-height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 140px; }
-        .view.active { display: flex; animation: viewIn 0.4s ease-out; }
-        @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: flex; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .glass-panel { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 28px; }
-        .dock { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); padding: 8px; border-radius: 40px; border: 1px solid var(--border); display: flex; gap: 8px; z-index: 1000; }
+        
+        .dock { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); padding: 8px; border-radius: 40px; border: 1px solid var(--border); display: flex; gap: 8px; z-index: 1000; }
         .dock-item { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.4); }
         .dock-item.active { background: #fff; color: #000; }
-        input { background: rgba(255,255,255,0.05)!important; border: 1px solid var(--border)!important; color: #fff!important; border-radius: 16px!important; padding: 16px!important; outline: none!important; }
-        .orb-btn { width: 70px; height: 70px; background: var(--accent); color: #000; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,247,255,0.2); }
-        #suggestions { position: absolute; width: 100%; top: 100%; z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+
+        input, select { background: rgba(255,255,255,0.05)!important; border: 1px solid var(--border)!important; color: #fff!important; border-radius: 16px!important; padding: 16px!important; outline: none!important; }
+        #suggestions { position: absolute; width: 100%; top: 100%; z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .suggestion-item { padding: 14px; background: #16161e; border-bottom: 1px solid var(--border); cursor: pointer; }
     </style>
 </head>
 <body>
 
     <nav class="dock">
-        <button onclick="navTo('dash')" class="dock-item active" id="n-dash"><i class="ph-duotone ph-house"></i> Dash</button>
+        <button onclick="navTo('dash')" class="dock-item active" id="n-dash"><i class="ph-duotone ph-house"></i> Hoy</button>
         <button onclick="navTo('work')" class="dock-item" id="n-work"><i class="ph-duotone ph-scan"></i> Carga</button>
     </nav>
 
     <div id="v-dash" class="view active">
         <header class="pt-10 pb-8 text-center">
             <h1 class="text-4xl font-black italic">TWINS <span style="color:var(--accent)">LOGISTICS</span></h1>
-            <p class="text-[8px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1">Inventory Management System</p>
+            <p class="text-[8px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1">Revisión Autorizada por J. Angelo</p>
         </header>
+        
+        <h3 class="text-[10px] font-black uppercase text-white/20 mb-4 ml-2">Historial de Descargas</h3>
         <div id="history-feed" class="space-y-3">
             </div>
     </div>
@@ -48,30 +53,42 @@
             <h2 class="text-3xl font-black mb-6">Nuevo Contenedor</h2>
             <div class="glass-panel p-6 space-y-4 relative">
                 <div class="relative">
-                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full font-bold" placeholder="Buscar SKU..." autocomplete="off">
+                    <label class="text-[9px] font-black uppercase text-white/30 ml-2 mb-2 block">Buscar en Maestra (Hoja 1)</label>
+                    <input type="text" id="sku-in" oninput="searchInSheet1(this.value)" class="w-full font-bold" placeholder="Escribe SKU..." autocomplete="off">
                     <div id="suggestions" class="glass-panel hidden overflow-hidden"></div>
                 </div>
                 <div class="flex gap-3">
-                    <input type="number" id="meta-in" class="w-full text-center font-black" placeholder="Meta">
-                    <button onclick="addItem()" class="px-6 rounded-xl bg-white text-black font-bold uppercase text-[10px]">Añadir</button>
+                    <div class="flex-1">
+                        <label class="text-[9px] font-black uppercase text-white/30 ml-2 mb-2 block">Meta de Carga</label>
+                        <input type="number" id="meta-in" class="w-full text-center font-black" placeholder="0">
+                    </div>
+                    <button onclick="addItem()" class="mt-6 px-6 rounded-xl bg-white text-black font-black uppercase text-[10px]">Añadir</button>
                 </div>
             </div>
             <div id="q-list" class="mt-6 space-y-2"></div>
-            <button onclick="startOp()" class="w-full py-4 rounded-2xl font-black text-xs uppercase mt-8 text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg">
-                Iniciar Conteo de Carga
+            <button onclick="startCounting()" class="w-full py-5 rounded-2xl font-black text-xs uppercase mt-8 text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg">
+                Iniciar Conteo de Contenedor
             </button>
         </div>
 
         <div id="terminal-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-6">
-                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase mb-1"></p><h2 class="text-2xl font-black">Conteo Real</h2></div>
-                <button onclick="openFinalModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-bold ph-check"></i></button>
+                <div>
+                    <p id="disp-id" class="text-[10px] font-bold text-accent uppercase mb-1"></p>
+                    <h2 class="text-2xl font-black">Descarga en Curso</h2>
+                </div>
+                <button onclick="openSaveModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-green-400">
+                    <i class="ph-bold ph-floppy-disk"></i>
+                </button>
             </div>
+            
             <div class="glass-panel p-6 mb-6 text-center">
-                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-4 text-xl font-black outline-none"></select>
+                <select id="sku-sel" onchange="updateUI()" class="bg-transparent text-white w-full p-2 mb-4 text-xl font-black outline-none"></select>
                 <div class="flex items-center gap-4 justify-center">
                     <input type="number" id="count-in" class="w-28 p-4 rounded-xl text-4xl font-black text-center" placeholder="0">
-                    <button onclick="commitCount()" class="orb-btn"><i class="ph-bold ph-plus text-3xl"></i></button>
+                    <button onclick="addCount()" class="w-16 h-16 rounded-2xl bg-accent text-black flex items-center justify-center shadow-lg">
+                        <i class="ph-bold ph-plus text-2xl"></i>
+                    </button>
                 </div>
             </div>
             <div id="stat-list" class="space-y-2 overflow-y-auto"></div>
@@ -80,49 +97,44 @@
 
     <div id="m-final" class="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6 text-center">
         <div class="glass-panel p-8 max-w-sm w-full">
-            <i class="ph-duotone ph-cloud-arrow-up text-5xl text-accent mb-4 block"></i>
-            <h3 class="text-xl font-black mb-2">¿Finalizar Carga?</h3>
-            <p class="text-[10px] text-white/40 mb-6 uppercase">Los datos se enviarán a la base de datos central</p>
-            <button id="save-btn" onclick="saveData()" class="w-full py-4 rounded-xl bg-white text-black font-black uppercase text-xs mb-3">Guardar Registro</button>
-            <button onclick="closeFinalModal()" class="text-white/30 text-[10px] font-bold uppercase">Volver al conteo</button>
+            <i class="ph-duotone ph-database text-5xl text-accent mb-4 block"></i>
+            <h3 class="text-xl font-black mb-2 text-white">¿Guardar y Finalizar?</h3>
+            <p class="text-[10px] text-white/40 mb-6 uppercase">Se registrará en el historial y Hoja 2</p>
+            <button id="save-btn" onclick="saveToHoja2()" class="w-full py-4 rounded-xl bg-white text-black font-black uppercase text-xs mb-3">Guardar Registro</button>
+            <button onclick="closeSaveModal()" class="text-white/30 text-[10px] font-bold uppercase">Continuar Conteo</button>
         </div>
     </div>
 
     <script>
-        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let masterProducts = [];
-        let tempItems = [], activeOp = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let hoja1Products = [];
+        let checklist = [], currentOp = null;
 
-        // CARGA INICIAL
+        // INICIO
         window.onload = async () => {
-            const savedOp = localStorage.getItem('aura_active');
-            if(savedOp) { activeOp = JSON.parse(savedOp); showTerminal(); }
+            const saved = localStorage.getItem('aura_current');
+            if(saved) { currentOp = JSON.parse(saved); showTerminal(); }
             renderHistory();
-            try {
-                const res = await fetch(SHEETS_URL);
-                masterProducts = await res.json();
-            } catch(e) { console.error("Error cargando maestra"); }
+            loadSheet1();
         };
 
-        // NAVEGACIÓN
-        function navTo(v) {
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-' + v).classList.add('active');
-            document.getElementById('n-' + v).classList.add('active');
-            if(v === 'dash') renderHistory();
+        async function loadSheet1() {
+            try {
+                const res = await fetch(API_URL);
+                hoja1Products = await res.json();
+            } catch(e) { console.error("Error Hoja 1"); }
         }
 
-        // BÚSQUEDA Y CREACIÓN
-        function searchProduct(query) {
+        // BUSCADOR (HOJA 1)
+        function searchInSheet1(query) {
             const div = document.getElementById('suggestions');
             if (query.length < 2) { div.classList.add('hidden'); return; }
-            const matches = masterProducts.filter(p => p.sku.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
-            div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectItem('${m.sku}')"><p class="font-bold text-accent text-sm">${m.sku}</p></div>`).join('');
+            const matches = hoja1Products.filter(p => p.sku.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
+            div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectSku('${m.sku}')"><p class="font-bold text-accent text-sm">${m.sku}</p></div>`).join('');
             div.classList.toggle('hidden', matches.length === 0);
         }
 
-        function selectItem(sku) {
+        function selectSku(sku) {
             document.getElementById('sku-in').value = sku;
             document.getElementById('suggestions').classList.add('hidden');
         }
@@ -131,51 +143,51 @@
             const sku = document.getElementById('sku-in').value;
             const meta = parseInt(document.getElementById('meta-in').value);
             if(!sku || !meta) return;
-            tempItems.push({ sku, meta, r: 0 });
+            checklist.push({ sku, meta, r: 0 });
             document.getElementById('sku-in').value = '';
             document.getElementById('meta-in').value = '';
-            renderTempList();
+            renderChecklist();
         }
 
-        function renderTempList() {
-            document.getElementById('q-list').innerHTML = tempItems.map((it, i) => `
+        function renderChecklist() {
+            document.getElementById('q-list').innerHTML = checklist.map((it, i) => `
                 <div class="glass-panel p-4 flex justify-between items-center text-sm font-bold">
                     <span>${it.sku} <span class="text-accent ml-2">META: ${it.meta}</span></span>
-                    <button onclick="tempItems.splice(${i},1);renderTempList()" class="text-red-500"><i class="ph-bold ph-x"></i></button>
+                    <button onclick="checklist.splice(${i},1);renderChecklist()" class="text-red-500"><i class="ph-bold ph-trash"></i></button>
                 </div>`).join('');
         }
 
-        // OPERACIÓN DE CONTEO
-        function startOp() {
-            if(tempItems.length === 0) return alert("Agrega al menos un SKU");
-            activeOp = { 
-                id: `OP-${Date.now().toString().slice(-4)}`, 
-                items: [...tempItems], 
+        // PÁGINA 3: CONTEO
+        function startCounting() {
+            if(checklist.length === 0) return alert("Agrega ítems");
+            currentOp = { 
+                id: `TW-${Date.now().toString().slice(-4)}`, 
+                items: [...checklist], 
                 date: new Date().toLocaleString() 
             };
-            tempItems = [];
-            localStorage.setItem('aura_active', JSON.stringify(activeOp));
+            checklist = [];
+            localStorage.setItem('aura_current', JSON.stringify(currentOp));
             showTerminal();
         }
 
         function showTerminal() {
             document.getElementById('setup-panel').classList.add('hidden');
             document.getElementById('terminal-panel').classList.remove('hidden');
-            document.getElementById('disp-id').innerText = activeOp.id;
-            document.getElementById('sku-sel').innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
-            upUI();
+            document.getElementById('disp-id').innerText = currentOp.id;
+            document.getElementById('sku-sel').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+            updateUI();
         }
 
-        function commitCount() {
+        function addCount() {
             const val = parseInt(document.getElementById('count-in').value);
             if(!val && val !== 0) return;
             const sku = document.getElementById('sku-sel').value;
-            const it = activeOp.items.find(x => x.sku === sku);
-            if(it) { it.r += val; document.getElementById('count-in').value = ''; upUI(); localStorage.setItem('aura_active', JSON.stringify(activeOp)); }
+            const item = currentOp.items.find(x => x.sku === sku);
+            if(item) { item.r += val; document.getElementById('count-in').value = ''; updateUI(); localStorage.setItem('aura_current', JSON.stringify(currentOp)); }
         }
 
-        function upUI() {
-            document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
+        function updateUI() {
+            document.getElementById('stat-list').innerHTML = currentOp.items.map(x => `
                 <div class="glass-panel p-4 mb-2">
                     <div class="flex justify-between text-[10px] font-black uppercase mb-2">
                         <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
@@ -184,32 +196,32 @@
                 </div>`).join('');
         }
 
-        // GUARDADO (SOLO GUARDA)
-        function openFinalModal() { document.getElementById('m-final').classList.remove('hidden'); }
-        function closeFinalModal() { document.getElementById('m-final').classList.add('hidden'); }
+        // GUARDAR (HOJA 2)
+        function openSaveModal() { document.getElementById('m-final').classList.remove('hidden'); }
+        function closeSaveModal() { document.getElementById('m-final').classList.add('hidden'); }
 
-        async function saveData() {
+        async function saveToHoja2() {
             const btn = document.getElementById('save-btn');
-            btn.innerText = "ENVIANDO...";
+            btn.innerText = "REGISTRANDO EN HOJA 2...";
             btn.disabled = true;
 
             try {
-                await fetch(SHEETS_URL, {
+                await fetch(API_URL, {
                     method: "POST", mode: "no-cors",
-                    body: JSON.stringify({ accion: "guardar_contenedor", id: activeOp.id, fecha: activeOp.date, detalles: activeOp.items })
+                    body: JSON.stringify({ accion: "guardar_contenedor", id: currentOp.id, fecha: currentOp.date, detalles: currentOp.items })
                 });
 
                 let history = JSON.parse(localStorage.getItem('aura_history') || '[]');
-                history.unshift(activeOp);
+                history.unshift(currentOp);
                 localStorage.setItem('aura_history', JSON.stringify(history));
-                localStorage.removeItem('aura_active');
+                localStorage.removeItem('aura_current');
                 
-                alert("Guardado correctamente. Revisa el historial para tu PDF.");
+                alert("Guardado en Hoja 2. Ve al historial para descargar el PDF.");
                 location.reload();
-            } catch(e) { alert("Error al guardar"); btn.disabled = false; btn.innerText = "Guardar Registro"; }
+            } catch(e) { alert("Error de conexión"); btn.disabled = false; btn.innerText = "Guardar Registro"; }
         }
 
-        // HISTORIAL Y GENERACIÓN DE PDF
+        // PÁGINA 1: HISTORIAL Y PDF
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
             const feed = document.getElementById('history-feed');
@@ -220,58 +232,57 @@
                         <p class="text-[8px] text-white/20 font-black uppercase">${h.date}</p>
                         <p class="font-black text-sm">${h.id}</p>
                     </div>
-                    <button onclick='generatePDF(${i})' class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center">
-                        <i class="ph-duotone ph-file-pdf text-2xl"></i>
+                    <button onclick='createPDF(${i})' class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
+                        <i class="ph-bold ph-file-pdf text-xl"></i>
                     </button>
-                </div>`).join('') || '<p class="text-center py-20 text-white/20 font-bold uppercase text-xs">Sin registros</p>';
+                </div>`).join('') || '<p class="text-center py-10 text-white/10 uppercase font-bold text-xs">Sin registros</p>';
         }
 
-        function generatePDF(index) {
+        function createPDF(index) {
             const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
             const d = history[index];
-            if(!d) return;
-
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Cabecera
+            // Estética del PDF
             doc.setFillColor(15, 15, 25);
             doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(22);
-            doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+            doc.text("TWINS LOGISTICS", 14, 25);
+            doc.setFontSize(8);
+            doc.text("SISTEMA DE GESTIÓN DE INVENTARIOS", 14, 32);
 
-            doc.setTextColor(100);
-            doc.setFontSize(9);
-            doc.text(`REPORTE DE CARGA: ${d.id}`, 14, 48);
-            doc.text(`FECHA: ${d.date}`, 14, 53);
+            doc.setTextColor(0);
+            doc.setFontSize(10);
+            doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
+            doc.text(`FECHA DE REPORTE: ${d.date}`, 14, 55);
 
-            // Tabla de datos
             doc.autoTable({
-                startY: 60,
-                head: [['SKU', 'META', 'CONTEO REAL', 'DIFERENCIA']],
+                startY: 65,
+                head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
                 body: d.items.map(it => [it.sku, it.meta, it.r, (it.r - it.meta)]),
                 theme: 'grid',
                 headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
             });
 
-            // Firma obligatoria
             const finalY = doc.lastAutoTable.finalY + 20;
-            doc.setTextColor(0);
-            doc.text("__________________________________", 14, finalY);
+            doc.text("_______________________________________", 14, finalY);
             doc.setFont("helvetica", "bold");
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
             doc.setFont("helvetica", "normal");
             doc.text("Asist. Inventario Logístico", 14, finalY + 12);
 
-            // Descarga por clic forzado (Blob)
-            const blob = doc.output('blob');
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Reporte_${d.id}.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
+            // Descarga segura
+            doc.save(`Twins_${d.id}.pdf`);
+        }
+
+        function navTo(v) {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
+            document.getElementById('v-' + v).classList.add('active');
+            document.getElementById('n-' + v).classList.add('active');
+            if(v === 'dash') renderHistory();
         }
     </script>
 </body>
