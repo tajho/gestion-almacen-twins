@@ -3,263 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Logistics | Aura Pro</title>
+    <title>Tajho Logistics | Aura Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #00f7ff; --surface: #0a0a0f; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--surface); color: #fff; overflow-y: auto; min-height: 100vh; }
-        
-        .view { display: none; min-height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 140px; }
-        .view.active { display: flex; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .glass-panel { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 28px; }
-        
-        .dock { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); padding: 8px; border-radius: 40px; border: 1px solid var(--border); display: flex; gap: 8px; z-index: 1000; }
-        .dock-item { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.4); }
-        .dock-item.active { background: #fff; color: #000; }
-
-        input, select { background: rgba(255,255,255,0.05)!important; border: 1px solid var(--border)!important; color: #fff!important; border-radius: 16px!important; padding: 16px!important; outline: none!important; }
-        #suggestions { position: absolute; width: 100%; top: 100%; z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .suggestion-item { padding: 14px; background: #16161e; border-bottom: 1px solid var(--border); cursor: pointer; }
+        :root { --accent: #00f7ff; --surface: #050508; --panel: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface); color: #fff; overflow-x: hidden; }
+        .view { display: none; min-height: 100vh; padding: 24px; padding-bottom: 120px; flex-direction: column; }
+        .view.active { display: flex; animation: slideUp 0.4s cubic-bezier(0.2, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; }
+        .btn-main { background: #fff; color: #000; font-weight: 800; text-transform: uppercase; border-radius: 20px; transition: all 0.3s; }
+        input, select { background: rgba(255,255,255,0.05)!important; border: 1px solid rgba(255,255,255,0.1)!important; color: #fff!important; border-radius: 18px!important; padding: 18px!important; outline: none!important; }
+        .tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; border-radius: 32px; background: var(--panel); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .tab-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <nav class="dock">
-        <button onclick="navTo('dash')" class="dock-item active" id="n-dash"><i class="ph-duotone ph-house"></i> Hoy</button>
-        <button onclick="navTo('work')" class="dock-item" id="n-work"><i class="ph-duotone ph-scan"></i> Carga</button>
-    </nav>
-
     <div id="v-dash" class="view active">
-        <header class="pt-10 pb-8 text-center">
-            <h1 class="text-4xl font-black italic">TWINS <span style="color:var(--accent)">LOGISTICS</span></h1>
-            <p class="text-[8px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1">Revisión Autorizada por J. Angelo</p>
+        <header class="pt-12 pb-10">
+            <h1 class="text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-2">Tajho Intelligence</h1>
+            <h2 class="text-4xl font-black italic">¿QUÉ HACEMOS <span class="text-accent">HOY?</span></h2>
         </header>
+
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="navTo('create')" class="tab-btn">
+                <i class="ph-duotone ph-truck text-5xl text-accent mb-4"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Crear<br>Contenedor</span>
+            </button>
+            <button onclick="navTo('hist')" class="tab-btn">
+                <i class="ph-duotone ph-clipboard-text text-5xl text-purple-400 mb-4"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Historial<br>Reportes</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="v-create" class="view">
+        <div class="flex items-center gap-4 mb-8" onclick="navTo('dash')">
+            <i class="ph-bold ph-arrow-left text-xl"></i>
+            <h2 class="text-2xl font-black italic uppercase">Nuevo Contenedor</h2>
+        </div>
         
-        <h3 class="text-[10px] font-black uppercase text-white/20 mb-4 ml-2">Historial de Descargas</h3>
-        <div id="history-feed" class="space-y-3">
+        <div class="glass p-6 space-y-4">
+            <div class="relative">
+                <input type="text" id="sku-search" oninput="searchSku(this.value)" class="w-full font-bold" placeholder="Buscar SKU (Hoja 1)...">
+                <div id="results" class="absolute w-full mt-2 glass z-50 hidden overflow-hidden"></div>
             </div>
+            <div class="flex gap-2">
+                <input type="number" id="sku-meta" class="w-full text-center font-black" placeholder="Meta">
+                <button onclick="addToList()" class="px-6 btn-main text-[10px]">Añadir</button>
+            </div>
+        </div>
+
+        <div id="pre-list" class="mt-6 space-y-2 flex-1"></div>
+        
+        <button onclick="saveAndGoHist()" class="w-full py-5 btn-main bg-accent border-none mt-4 shadow-xl shadow-cyan-500/20">
+            Guardar Contenedor
+        </button>
+    </div>
+
+    <div id="v-hist" class="view">
+        <div class="flex items-center gap-4 mb-8" onclick="navTo('dash')">
+            <i class="ph-bold ph-arrow-left text-xl"></i>
+            <h2 class="text-2xl font-black italic uppercase">Historial</h2>
+        </div>
+        <div id="history-list" class="space-y-3"></div>
     </div>
 
     <div id="v-work" class="view">
-        <div id="setup-panel">
-            <h2 class="text-3xl font-black mb-6">Nuevo Contenedor</h2>
-            <div class="glass-panel p-6 space-y-4 relative">
-                <div class="relative">
-                    <label class="text-[9px] font-black uppercase text-white/30 ml-2 mb-2 block">Buscar en Maestra (Hoja 1)</label>
-                    <input type="text" id="sku-in" oninput="searchInSheet1(this.value)" class="w-full font-bold" placeholder="Escribe SKU..." autocomplete="off">
-                    <div id="suggestions" class="glass-panel hidden overflow-hidden"></div>
-                </div>
-                <div class="flex gap-3">
-                    <div class="flex-1">
-                        <label class="text-[9px] font-black uppercase text-white/30 ml-2 mb-2 block">Meta de Carga</label>
-                        <input type="number" id="meta-in" class="w-full text-center font-black" placeholder="0">
-                    </div>
-                    <button onclick="addItem()" class="mt-6 px-6 rounded-xl bg-white text-black font-black uppercase text-[10px]">Añadir</button>
-                </div>
-            </div>
-            <div id="q-list" class="mt-6 space-y-2"></div>
-            <button onclick="startCounting()" class="w-full py-5 rounded-2xl font-black text-xs uppercase mt-8 text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg">
-                Iniciar Conteo de Contenedor
-            </button>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-black italic uppercase text-accent" id="active-id"></h2>
+            <button onclick="finishWork()" class="px-4 py-2 glass text-[10px] font-black text-green-400">FINALIZAR</button>
         </div>
-
-        <div id="terminal-panel" class="hidden flex-1 flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <p id="disp-id" class="text-[10px] font-bold text-accent uppercase mb-1"></p>
-                    <h2 class="text-2xl font-black">Descarga en Curso</h2>
-                </div>
-                <button onclick="openSaveModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-green-400">
-                    <i class="ph-bold ph-floppy-disk"></i>
+        
+        <div class="glass p-8 text-center mb-6">
+            <select id="work-sel" onchange="renderStats()" class="w-full mb-6 font-black text-xl text-center"></select>
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="work-val" class="w-24 text-4xl font-black text-center" placeholder="0">
+                <button onclick="doCount()" class="w-16 h-16 rounded-2xl bg-white text-black flex items-center justify-center shadow-lg">
+                    <i class="ph-bold ph-plus text-2xl"></i>
                 </button>
             </div>
-            
-            <div class="glass-panel p-6 mb-6 text-center">
-                <select id="sku-sel" onchange="updateUI()" class="bg-transparent text-white w-full p-2 mb-4 text-xl font-black outline-none"></select>
-                <div class="flex items-center gap-4 justify-center">
-                    <input type="number" id="count-in" class="w-28 p-4 rounded-xl text-4xl font-black text-center" placeholder="0">
-                    <button onclick="addCount()" class="w-16 h-16 rounded-2xl bg-accent text-black flex items-center justify-center shadow-lg">
-                        <i class="ph-bold ph-plus text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="stat-list" class="space-y-2 overflow-y-auto"></div>
         </div>
-    </div>
-
-    <div id="m-final" class="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6 text-center">
-        <div class="glass-panel p-8 max-w-sm w-full">
-            <i class="ph-duotone ph-database text-5xl text-accent mb-4 block"></i>
-            <h3 class="text-xl font-black mb-2 text-white">¿Guardar y Finalizar?</h3>
-            <p class="text-[10px] text-white/40 mb-6 uppercase">Se registrará en el historial y Hoja 2</p>
-            <button id="save-btn" onclick="saveToHoja2()" class="w-full py-4 rounded-xl bg-white text-black font-black uppercase text-xs mb-3">Guardar Registro</button>
-            <button onclick="closeSaveModal()" class="text-white/30 text-[10px] font-bold uppercase">Continuar Conteo</button>
-        </div>
+        <div id="work-stats" class="space-y-2"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
-        let hoja1Products = [];
-        let checklist = [], currentOp = null;
+        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let master = [], preItems = [], workingOp = null;
 
-        // INICIO
         window.onload = async () => {
-            const saved = localStorage.getItem('aura_current');
-            if(saved) { currentOp = JSON.parse(saved); showTerminal(); }
             renderHistory();
-            loadSheet1();
+            try { 
+                const res = await fetch(SHEETS_URL); 
+                master = await res.json(); 
+            } catch(e) {}
         };
 
-        async function loadSheet1() {
-            try {
-                const res = await fetch(API_URL);
-                hoja1Products = await res.json();
-            } catch(e) { console.error("Error Hoja 1"); }
+        function navTo(v) {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.getElementById('v-' + v).classList.add('active');
+            if(v === 'hist') renderHistory();
         }
 
-        // BUSCADOR (HOJA 1)
-        function searchInSheet1(query) {
-            const div = document.getElementById('suggestions');
-            if (query.length < 2) { div.classList.add('hidden'); return; }
-            const matches = hoja1Products.filter(p => p.sku.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
-            div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectSku('${m.sku}')"><p class="font-bold text-accent text-sm">${m.sku}</p></div>`).join('');
-            div.classList.toggle('hidden', matches.length === 0);
+        // --- LÓGICA CREACIÓN ---
+        function searchSku(q) {
+            const div = document.getElementById('results');
+            if (q.length < 2) { div.classList.add('hidden'); return; }
+            const m = master.filter(p => p.sku.toLowerCase().includes(q.toLowerCase())).slice(0, 5);
+            div.innerHTML = m.map(x => `<div onclick="setSku('${x.sku}')" class="p-4 border-b border-white/5 font-bold text-sm">${x.sku}</div>`).join('');
+            div.classList.remove('hidden');
+        }
+        function setSku(s) { document.getElementById('sku-search').value = s; document.getElementById('results').classList.add('hidden'); }
+        
+        function addToList() {
+            const s = document.getElementById('sku-search').value, m = parseInt(document.getElementById('sku-meta').value);
+            if(!s || !m) return;
+            preItems.push({ sku: s, meta: m, r: 0, status: 'pending' });
+            document.getElementById('sku-search').value = ''; document.getElementById('sku-meta').value = '';
+            renderPre();
+        }
+        function renderPre() {
+            document.getElementById('pre-list').innerHTML = preItems.map((x, i) => `<div class="glass p-4 flex justify-between text-xs font-bold"><span>${x.sku} (META: ${x.meta})</span><button onclick="preItems.splice(${i},1);renderPre()"><i class="ph-bold ph-trash text-red-500"></i></button></div>`).join('');
         }
 
-        function selectSku(sku) {
-            document.getElementById('sku-in').value = sku;
-            document.getElementById('suggestions').classList.add('hidden');
+        async function saveAndGoHist() {
+            if(preItems.length === 0) return;
+            const op = { id: `CONT-${Date.now().toString().slice(-4)}`, date: new Date().toLocaleString(), items: [...preItems], completed: false };
+            let h = JSON.parse(localStorage.getItem('tj_hist') || '[]');
+            h.unshift(op);
+            localStorage.setItem('tj_hist', JSON.stringify(h));
+            
+            // Sync invisible
+            fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'guardar_contenedor', ...op }) });
+            
+            preItems = [];
+            document.getElementById('pre-list').innerHTML = '';
+            navTo('hist');
         }
 
-        function addItem() {
-            const sku = document.getElementById('sku-in').value;
-            const meta = parseInt(document.getElementById('meta-in').value);
-            if(!sku || !meta) return;
-            checklist.push({ sku, meta, r: 0 });
-            document.getElementById('sku-in').value = '';
-            document.getElementById('meta-in').value = '';
-            renderChecklist();
-        }
-
-        function renderChecklist() {
-            document.getElementById('q-list').innerHTML = checklist.map((it, i) => `
-                <div class="glass-panel p-4 flex justify-between items-center text-sm font-bold">
-                    <span>${it.sku} <span class="text-accent ml-2">META: ${it.meta}</span></span>
-                    <button onclick="checklist.splice(${i},1);renderChecklist()" class="text-red-500"><i class="ph-bold ph-trash"></i></button>
-                </div>`).join('');
-        }
-
-        // PÁGINA 3: CONTEO
-        function startCounting() {
-            if(checklist.length === 0) return alert("Agrega ítems");
-            currentOp = { 
-                id: `TW-${Date.now().toString().slice(-4)}`, 
-                items: [...checklist], 
-                date: new Date().toLocaleString() 
-            };
-            checklist = [];
-            localStorage.setItem('aura_current', JSON.stringify(currentOp));
-            showTerminal();
-        }
-
-        function showTerminal() {
-            document.getElementById('setup-panel').classList.add('hidden');
-            document.getElementById('terminal-panel').classList.remove('hidden');
-            document.getElementById('disp-id').innerText = currentOp.id;
-            document.getElementById('sku-sel').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
-            updateUI();
-        }
-
-        function addCount() {
-            const val = parseInt(document.getElementById('count-in').value);
-            if(!val && val !== 0) return;
-            const sku = document.getElementById('sku-sel').value;
-            const item = currentOp.items.find(x => x.sku === sku);
-            if(item) { item.r += val; document.getElementById('count-in').value = ''; updateUI(); localStorage.setItem('aura_current', JSON.stringify(currentOp)); }
-        }
-
-        function updateUI() {
-            document.getElementById('stat-list').innerHTML = currentOp.items.map(x => `
-                <div class="glass-panel p-4 mb-2">
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-2">
-                        <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
+        // --- LÓGICA HISTORIAL ---
+        function renderHistory() {
+            const h = JSON.parse(localStorage.getItem('tj_hist') || '[]');
+            document.getElementById('history-list').innerHTML = h.map((x, i) => `
+                <div class="glass p-5 flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-white/30 mb-1 uppercase">${x.date}</p>
+                        <p class="text-sm font-black italic">${x.id}</p>
                     </div>
+                    ${x.completed ? 
+                        `<button onclick="genPDF(${i})" class="w-12 h-12 rounded-2xl bg-accent text-black flex items-center justify-center shadow-lg shadow-cyan-500/30"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
+                        `<button onclick="startWork(${i})" class="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center font-black text-[9px] italic uppercase">INICIAR</button>`
+                    }
+                </div>`).join('') || '<p class="text-center py-20 text-white/10 font-bold uppercase text-[10px]">Sin contenedores</p>';
+        }
+
+        // --- LÓGICA TRABAJO/DESCARGA ---
+        function startWork(idx) {
+            const h = JSON.parse(localStorage.getItem('tj_hist') || '[]');
+            workingOp = { ...h[idx], globalIndex: idx };
+            navTo('work');
+            document.getElementById('active-id').innerText = workingOp.id;
+            document.getElementById('work-sel').innerHTML = workingOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+            renderStats();
+        }
+
+        function doCount() {
+            const val = parseInt(document.getElementById('work-val').value);
+            if(!val && val !== 0) return;
+            const sku = document.getElementById('work-sel').value;
+            const it = workingOp.items.find(x => x.sku === sku);
+            it.r += val;
+            document.getElementById('work-val').value = '';
+            renderStats();
+        }
+
+        function renderStats() {
+            document.getElementById('work-stats').innerHTML = workingOp.items.map(x => `
+                <div class="glass p-4">
+                    <div class="flex justify-between text-[9px] font-black uppercase mb-2"><span>${x.sku}</span><span class="${x.r >= x.meta ? 'text-green-400' : 'text-accent'}">${x.r} / ${x.meta}</span></div>
                     <div class="h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
                 </div>`).join('');
         }
 
-        // GUARDAR (HOJA 2)
-        function openSaveModal() { document.getElementById('m-final').classList.remove('hidden'); }
-        function closeSaveModal() { document.getElementById('m-final').classList.add('hidden'); }
-
-        async function saveToHoja2() {
-            const btn = document.getElementById('save-btn');
-            btn.innerText = "REGISTRANDO EN HOJA 2...";
-            btn.disabled = true;
-
-            try {
-                await fetch(API_URL, {
-                    method: "POST", mode: "no-cors",
-                    body: JSON.stringify({ accion: "guardar_contenedor", id: currentOp.id, fecha: currentOp.date, detalles: currentOp.items })
-                });
-
-                let history = JSON.parse(localStorage.getItem('aura_history') || '[]');
-                history.unshift(currentOp);
-                localStorage.setItem('aura_history', JSON.stringify(history));
-                localStorage.removeItem('aura_current');
-                
-                alert("Guardado en Hoja 2. Ve al historial para descargar el PDF.");
-                location.reload();
-            } catch(e) { alert("Error de conexión"); btn.disabled = false; btn.innerText = "Guardar Registro"; }
-        }
-
-        // PÁGINA 1: HISTORIAL Y PDF
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
-            const feed = document.getElementById('history-feed');
+        async function finishWork() {
+            workingOp.completed = true;
+            let h = JSON.parse(localStorage.getItem('tj_hist') || '[]');
+            h[workingOp.globalIndex] = workingOp;
+            localStorage.setItem('tj_hist', JSON.stringify(h));
             
-            feed.innerHTML = history.map((h, i) => `
-                <div class="glass-panel p-5 flex justify-between items-center">
-                    <div>
-                        <p class="text-[8px] text-white/20 font-black uppercase">${h.date}</p>
-                        <p class="font-black text-sm">${h.id}</p>
-                    </div>
-                    <button onclick='createPDF(${i})' class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
-                        <i class="ph-bold ph-file-pdf text-xl"></i>
-                    </button>
-                </div>`).join('') || '<p class="text-center py-10 text-white/10 uppercase font-bold text-xs">Sin registros</p>';
+            // Sync invisible
+            fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'finalizar_conteo', ...workingOp }) });
+            
+            alert("Descarga Completada. PDF habilitado en historial.");
+            navTo('hist');
         }
 
-        function createPDF(index) {
-            const history = JSON.parse(localStorage.getItem('aura_history') || '[]');
-            const d = history[index];
+        // --- PDF ---
+        function genPDF(idx) {
+            const d = JSON.parse(localStorage.getItem('tj_hist') || '[]')[idx];
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            // Estética del PDF
-            doc.setFillColor(15, 15, 25);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text("TWINS LOGISTICS", 14, 25);
-            doc.setFontSize(8);
-            doc.text("SISTEMA DE GESTIÓN DE INVENTARIOS", 14, 32);
-
-            doc.setTextColor(0);
-            doc.setFontSize(10);
-            doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-            doc.text(`FECHA DE REPORTE: ${d.date}`, 14, 55);
+            
+            doc.setFillColor(10, 10, 15); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("TAJHO LOGISTICS | REPORTE", 14, 25);
+            doc.setTextColor(120); doc.setFontSize(9); doc.text(`ID: ${d.id} | ${d.date}`, 14, 48);
 
             doc.autoTable({
-                startY: 65,
+                startY: 55,
                 head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
                 body: d.items.map(it => [it.sku, it.meta, it.r, (it.r - it.meta)]),
                 theme: 'grid',
@@ -267,22 +223,11 @@
             });
 
             const finalY = doc.lastAutoTable.finalY + 20;
-            doc.text("_______________________________________", 14, finalY);
-            doc.setFont("helvetica", "bold");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-            doc.setFont("helvetica", "normal");
-            doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-
-            // Descarga segura
-            doc.save(`Twins_${d.id}.pdf`);
-        }
-
-        function navTo(v) {
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-' + v).classList.add('active');
-            document.getElementById('n-' + v).classList.add('active');
-            if(v === 'dash') renderHistory();
+            doc.setTextColor(0); doc.text("__________________________________", 14, finalY);
+            doc.setFont("helvetica", "bold"); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+            
+            doc.save(`Reporte_${d.id}.pdf`);
         }
     </script>
 </body>
