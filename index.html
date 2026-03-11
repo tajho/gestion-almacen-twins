@@ -9,100 +9,130 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f2f2f7; color: #1c1c1e; overflow: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f2f2f7; color: #1c1c1e; overflow-y: auto; }
         .aura-card { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); }
-        .view { display: none; height: 100vh; flex-direction: column; padding: 10px; padding-top: 55px; padding-bottom: 80px; }
+        .view { display: none; min-height: 100vh; flex-direction: column; padding: 15px; padding-top: 60px; padding-bottom: 90px; }
         .view.active { display: flex; }
-        .aura-input { background: transparent; border: none; font-size: 14px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 4px 0; }
+        .aura-input { background: transparent; border: none; font-size: 14px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 6px 0; }
         .aura-input:focus { border-bottom-color: #007AFF; }
         
-        /* Navegación Inferior */
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; border-top: 1px solid #e5e5ea; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.4; transition: 0.3s; background: none; border: none; }
-        .nav-item.active { opacity: 1; color: #007AFF; }
-        .nav-text { font-size: 9px; font-weight: 800; uppercase; letter-spacing: 0.5px; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(255,255,255,0.9); backdrop-blur: 10px; border-top: 1px solid #e5e5ea; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #8e8e93; transition: 0.3s; background: none; border: none; }
+        .nav-item.active { color: #007AFF; }
+        .nav-text { font-size: 10px; font-weight: 800; text-transform: uppercase; }
 
-        .finish-slider { position: relative; height: 54px; background: #000; border-radius: 27px; display: flex; align-items: center; justify-content: center; }
-        .slider-handle { position: absolute; left: 4px; height: 46px; width: 46px; background: #fff; border-radius: 23px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
+        .btn-action { transition: all 0.2s active:scale-95; }
+        .badge-status { font-size: 8px; font-weight: 900; padding: 2px 8px; rounded-full: 99px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center bg-white/80 backdrop-blur-md">
-        <div>
+    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center pointer-events-none">
+        <div class="pointer-events-auto bg-white/50 backdrop-blur px-3 py-1 rounded-full border border-white/20">
             <p class="text-[7px] font-black text-blue-600 tracking-widest uppercase">Aura Pro</p>
-            <h1 class="text-base font-black tracking-tighter">TWINS.</h1>
+            <h1 class="text-xs font-black tracking-tighter">TWINS.</h1>
         </div>
-        <p id="status-label" class="text-[8px] font-black bg-slate-100 px-2 py-1 rounded-full uppercase text-slate-400">En espera</p>
     </header>
 
-    <div id="view-crear" class="view active">
-        <h2 class="text-xl font-black tracking-tighter mt-2 mb-4">¿Qué hacemos hoy, Tajho?</h2>
-        <div class="space-y-3">
-            <div class="aura-card p-4 relative">
-                <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">ID Contenedor</label>
-                <input type="text" id="auto-id-input" class="aura-input" placeholder="Ej: CT-9920">
+    <div id="view-home" class="view active">
+        <div class="mt-8 mb-8">
+            <h2 class="text-3xl font-black tracking-tighter">¿Qué hacemos hoy, Tajho?</h2>
+            <p class="text-xs text-slate-400 font-bold">Selecciona una tarea para iniciar</p>
+        </div>
+
+        <div class="grid gap-4">
+            <button onclick="navTo('crear')" class="aura-card p-6 text-left border-l-8 border-blue-600 shadow-xl shadow-blue-500/10">
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-blue-600 font-black">＋</div>
+                <p class="text-lg font-black tracking-tight">Nuevo Contenedor</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Registrar ingreso de mercadería</p>
+            </button>
+
+            <button onclick="navTo('historial')" class="aura-card p-6 text-left border-l-8 border-slate-900 shadow-xl shadow-slate-500/10">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-4 text-slate-900 font-black">📋</div>
+                <p class="text-lg font-black tracking-tight">Historial / Continuar</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Ver reportes o seguir conteos</p>
+            </button>
+        </div>
+    </div>
+
+    <div id="view-crear" class="view">
+        <div class="flex items-center gap-2 mb-6">
+            <button onclick="navTo('home')" class="text-lg">←</button>
+            <h2 class="text-xl font-black tracking-tighter">Nuevo Plan</h2>
+        </div>
+        <div class="space-y-4">
+            <div class="aura-card p-4">
+                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">ID Contenedor</label>
+                <input type="text" id="auto-id-input" class="aura-input" placeholder="Nombre del contenedor...">
             </div>
             <div class="aura-card p-4 relative">
-                <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Producto SKU / Nombre</label>
-                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Escribe para buscar...">
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-1 z-[110] hidden max-h-40 overflow-y-auto border border-slate-100"></div>
+                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Buscar SKU</label>
+                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Buscar en base de datos...">
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden max-h-48 overflow-y-auto border border-slate-100"></div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-3">
                 <div class="aura-card p-4 flex-1">
-                    <label class="text-[7px] font-bold text-blue-600 uppercase block mb-1">Meta</label>
+                    <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Meta Cajas</label>
                     <input type="number" id="s-meta" class="aura-input text-center" placeholder="0">
                 </div>
-                <button onclick="addToQueue()" class="w-14 aura-card bg-black text-white flex items-center justify-center text-2xl active:scale-90 transition-all">＋</button>
+                <button onclick="addToQueue()" class="w-16 aura-card bg-black text-white flex items-center justify-center text-3xl font-light">＋</button>
             </div>
         </div>
-        <div id="list-queue" class="mt-4 space-y-2 overflow-y-auto"></div>
-        <div class="mt-4">
-            <button onclick="startConteo()" class="w-full h-14 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-lg shadow-blue-200">Iniciar Trabajo</button>
+        <div id="list-queue" class="mt-6 space-y-2"></div>
+        <div class="mt-auto">
+            <button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/30">Iniciar Conteo</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="aura-card p-5 mb-4 border-t-4 border-t-blue-600">
-            <p id="op-title" class="text-[8px] font-black text-blue-600 uppercase text-center mb-1"></p>
-            <select id="op-select" onchange="renderOps()" class="w-full text-xl font-black text-center outline-none mb-4 bg-transparent border-none appearance-none"></select>
-            <div class="flex gap-3">
-                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center bg-slate-50 rounded-2xl p-4 outline-none" placeholder="0">
-                <button onclick="addCount()" class="w-20 h-20 bg-black text-white rounded-3xl flex items-center justify-center text-xl font-bold active:scale-90 transition-all">OK</button>
+        <div class="flex justify-between items-center mb-4">
+            <p id="op-id-display" class="text-xs font-black text-blue-600"></p>
+            <button onclick="alert('Se guardó automáticamente')" class="text-[9px] font-black bg-green-100 text-green-600 px-3 py-1 rounded-full uppercase">Autoguardado</button>
+        </div>
+        
+        <div class="aura-card p-5 mb-4 shadow-xl border-t-4 border-blue-600">
+            <select id="op-select" onchange="renderOps()" class="w-full text-2xl font-black text-center outline-none mb-4 bg-transparent border-none appearance-none"></select>
+            <div class="flex gap-4">
+                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center bg-slate-50 rounded-2xl p-5 outline-none" placeholder="0">
+                <button onclick="addCount()" class="w-20 h-20 bg-black text-white rounded-3xl flex items-center justify-center text-2xl active:scale-90">OK</button>
             </div>
         </div>
-        <div id="op-list" class="space-y-2 overflow-y-auto"></div>
-        <div class="mt-auto pt-4">
-            <div class="finish-slider" id="main-slider">
-                <div class="text-[8px] font-black text-white/40 uppercase tracking-widest">Desliza para finalizar</div>
-                <div class="slider-handle" id="handle">→</div>
-            </div>
+
+        <div id="op-list" class="space-y-2"></div>
+        
+        <div class="mt-8 grid grid-cols-2 gap-3">
+            <button onclick="descargarPDF(activeOp)" class="h-12 border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase">Descargar Borrador</button>
+            <button onclick="openFinalModal()" class="h-12 bg-black text-white rounded-xl font-black text-[10px] uppercase">Finalizar Todo</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-xl font-black tracking-tighter mt-2 mb-4">Historial</h2>
+        <h2 class="text-2xl font-black tracking-tighter mb-6">Historial y Pendientes</h2>
         <div id="hist-feed" class="space-y-3"></div>
     </div>
 
     <nav class="nav-bar">
-        <button onclick="navTo('crear')" id="nav-crear" class="nav-item active">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <button onclick="navTo('home')" class="nav-item" id="nav-home">
+            <span class="text-xl">🏠</span>
+            <span class="nav-text">TAJHO</span>
+        </button>
+        <button onclick="navTo('crear')" class="nav-item" id="nav-crear">
+            <span class="text-xl">📦</span>
             <span class="nav-text">CONTENEDOR</span>
         </button>
-        <button onclick="navTo('historial')" id="nav-historial" class="nav-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <button onclick="navTo('historial')" class="nav-item" id="nav-historial">
+            <span class="text-xl">📋</span>
             <span class="nav-text">HISTORIAL</span>
         </button>
     </nav>
 
-    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-6">
-        <div class="aura-card w-full max-w-sm p-8 space-y-6 text-center shadow-2xl">
-            <h3 class="text-xl font-black tracking-tighter">Autorizar Reporte</h3>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">REVISIÓN: J. ANGELO NUÑEZ DURAND</p>
-            <div class="flex gap-3 pt-4">
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="aura-card w-full max-w-sm p-8 text-center">
+            <h3 class="text-xl font-black mb-2">¿Cerrar Contenedor?</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase mb-6">Revisión: J. Angelo Nuñez Durand</p>
+            <div class="flex gap-3">
                 <button onclick="closeModal()" class="flex-1 h-14 bg-slate-100 rounded-2xl font-black text-[10px] uppercase">VOLVER</button>
-                <button onclick="processPDF()" class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-black/20">GENERAR PDF</button>
+                <button onclick="finalizarDefinitivo()" class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-[10px] uppercase">CERRAR Y PDF</button>
             </div>
         </div>
     </div>
@@ -111,25 +141,25 @@
         const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
         let queue = [];
         let activeOp = null;
-        let isWorking = false;
 
-        // ALERTA DE ACTUALIZACIÓN
-        window.addEventListener('beforeunload', (e) => {
-            if (isWorking || queue.length > 0) {
-                e.preventDefault();
-                e.returnValue = ''; // Muestra el diálogo estándar del navegador
+        // PERMITIR ACTUALIZACIÓN (SIN BLOQUEO)
+        // Guardamos en LocalStorage para no perder datos al actualizar
+        window.onload = () => {
+            const saved = localStorage.getItem('active_tajho');
+            if(saved) {
+                activeOp = JSON.parse(saved);
+                navTo('ops');
+                syncTerminal();
             }
-        });
+        };
 
         function navTo(v) {
-            if (v === 'crear' && isWorking) {
-                v = 'ops'; // Si ya está trabajando, forzar vista de operaciones
-            }
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
-            document.getElementById('nav-' + v).classList.add('active');
-            if (v === 'historial') renderHistorial();
+            const nav = document.getElementById('nav-' + v);
+            if(nav) nav.classList.add('active');
+            if(v === 'historial') renderHistorial();
         }
 
         async function doSearch() {
@@ -139,20 +169,18 @@
             try {
                 const res = await fetch(`${APP_URL}?action=buscar&term=${val}`);
                 const data = await res.json();
-                if(data.length > 0) {
-                    box.innerHTML = data.map(x => `
-                        <div onclick="selectProduct('${x.sku}', '${x.descripcion}')" class="p-4 border-b active:bg-blue-50">
-                            <p class="text-[10px] font-black">${x.sku}</p>
-                            <p class="text-[8px] text-slate-400 uppercase truncate">${x.descripcion}</p>
-                        </div>
-                    `).join('');
-                    box.classList.remove('hidden');
-                }
-            } catch(e) { console.error("Error en búsqueda"); }
+                box.innerHTML = data.map(x => `
+                    <div onclick="selectProd('${x.sku}')" class="p-4 border-b active:bg-blue-50">
+                        <p class="text-[10px] font-black">${x.sku}</p>
+                        <p class="text-[8px] text-slate-400 uppercase truncate">${x.descripcion}</p>
+                    </div>
+                `).join('');
+                box.classList.remove('hidden');
+            } catch(e) {}
         }
 
-        function selectProduct(sku, desc) {
-            document.getElementById('s-sku').value = sku;
+        function selectProd(s) {
+            document.getElementById('s-sku').value = s;
             document.getElementById('res-box').classList.add('hidden');
             document.getElementById('s-meta').focus();
         }
@@ -169,27 +197,24 @@
 
         function renderQueue() {
             document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
-                <div class="aura-card p-4 flex justify-between items-center shadow-sm">
+                <div class="aura-card p-4 flex justify-between items-center shadow-sm border-l-4 border-blue-600">
                     <p class="text-[10px] font-black">${x.sku} <span class="text-blue-500 ml-2">META: ${x.meta}</span></p>
                     <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 font-bold px-2 text-lg">×</button>
                 </div>
             `).join('');
         }
 
-        function startConteo() {
-            const cid = document.getElementById('auto-id-input').value;
-            if(!cid || queue.length === 0) return alert("Completa el ID y productos");
-            isWorking = true;
-            activeOp = { id: cid, items: [...queue], date: new Date().toLocaleString() };
-            queue = [];
-            document.getElementById('status-label').innerText = "En curso";
-            document.getElementById('status-label').classList.replace('text-slate-400', 'text-blue-600');
+        function iniciarOContinuar() {
+            const id = document.getElementById('auto-id-input').value;
+            if(!id || queue.length === 0) return alert("Completa los datos");
+            activeOp = { id, items: [...queue], date: new Date().toLocaleString(), status: 'pendiente' };
+            saveLocal();
             navTo('ops');
             syncTerminal();
         }
 
         function syncTerminal() {
-            document.getElementById('op-title').innerText = activeOp.id;
+            document.getElementById('op-id-display').innerText = "CONTEO: " + activeOp.id;
             const sel = document.getElementById('op-select');
             sel.innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             renderOps();
@@ -198,97 +223,96 @@
         function addCount() {
             const val = parseInt(document.getElementById('op-qty').value);
             if(!val) return;
-            const sku = document.getElementById('op-select').value;
-            const item = activeOp.items.find(x => x.sku === sku);
+            const item = activeOp.items.find(x => x.sku === document.getElementById('op-select').value);
             if(item) item.real += val;
             document.getElementById('op-qty').value = '';
+            saveLocal();
             renderOps();
         }
 
         function renderOps() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
-                <div class="aura-card p-4 ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-lg' : 'opacity-40'} transition-all">
-                    <div class="flex justify-between font-black text-[9px] mb-2 uppercase">
+                <div class="aura-card p-4 ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-xl' : 'opacity-40'}">
+                    <div class="flex justify-between font-black text-[9px] mb-2">
                         <span>${x.sku}</span>
                         <span>${x.real} / ${x.meta}</span>
                     </div>
                     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600 transition-all duration-500" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
+                        <div class="h-full bg-blue-600" style="width:${(x.real/x.meta)*100}%"></div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // PDF Y CIERRE
-        async function processPDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.setFont("helvetica", "bold");
-                doc.text("REPORTE DE INGRESO LOGÍSTICO", 14, 20);
-                doc.setFontSize(9);
-                doc.text(`CONTENEDOR: ${activeOp.id}`, 14, 30);
-                doc.text(`FECHA: ${activeOp.date}`, 14, 35);
-                
-                doc.autoTable({
-                    startY: 45,
-                    head: [['SKU PRODUCTO', 'META', 'RECIBIDO', 'DIFERENCIA']],
-                    body: activeOp.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                    theme: 'grid',
-                    styles: { fontSize: 8, font: 'helvetica' },
-                    headStyles: { fillColor: [0, 122, 255] }
-                });
-
-                const finalY = doc.lastAutoTable.finalY + 15;
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-                
-                doc.save(`Tajho_${activeOp.id}.pdf`);
-                
-                let h = JSON.parse(localStorage.getItem('thist')) || [];
-                h.unshift(activeOp);
-                localStorage.setItem('thist', JSON.stringify(h));
-                
-                resetApp();
-            } catch(e) { alert("Error al generar PDF. Verifica tu conexión."); }
+        function saveLocal() {
+            localStorage.setItem('active_tajho', JSON.stringify(activeOp));
         }
 
-        function resetApp() {
-            isWorking = false;
+        function openFinalModal() { document.getElementById('modal-end').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal-end').classList.add('hidden'); }
+
+        function finalizarDefinitivo() {
+            activeOp.status = 'finalizado';
+            let h = JSON.parse(localStorage.getItem('thist_v2')) || [];
+            h.unshift(activeOp);
+            localStorage.setItem('thist_v2', JSON.stringify(h));
+            descargarPDF(activeOp);
+            localStorage.removeItem('active_tajho');
             activeOp = null;
-            document.getElementById('status-label').innerText = "En espera";
-            document.getElementById('status-label').classList.replace('text-blue-600', 'text-slate-400');
             closeModal();
-            navTo('crear');
+            navTo('home');
+        }
+
+        function descargarPDF(d) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16); doc.text("REPORTE DE LOGISTICA - TAJHO", 14, 20);
+            doc.setFontSize(9); doc.text(`CONTENEDOR: ${d.id} | FECHA: ${d.date}`, 14, 30);
+            doc.autoTable({
+                startY: 40,
+                head: [['SKU', 'META', 'RECIBIDO', 'DIF']],
+                body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                theme: 'grid', styles: { fontSize: 8 }
+            });
+            doc.text("Autorizado por: J. Angelo Nuñez Durand Asist. Inventario", 14, doc.lastAutoTable.finalY + 15);
+            doc.save(`${d.id}.pdf`);
         }
 
         function renderHistorial() {
-            const h = JSON.parse(localStorage.getItem('thist')) || [];
-            document.getElementById('hist-feed').innerHTML = h.map(x => `
-                <div class="aura-card p-4 flex justify-between items-center">
+            const h = JSON.parse(localStorage.getItem('thist_v2')) || [];
+            const act = localStorage.getItem('active_tajho');
+            let html = "";
+            
+            if(act) {
+                const a = JSON.parse(act);
+                html += `
+                    <div class="aura-card p-4 border-2 border-blue-600 mb-6 bg-blue-50/50">
+                        <p class="text-[8px] font-black text-blue-600 uppercase mb-1">TRABAJO EN CURSO</p>
+                        <p class="text-lg font-black">${a.id}</p>
+                        <button onclick="continuarPendiente()" class="w-full mt-4 h-10 bg-blue-600 text-white rounded-xl font-black text-[9px] uppercase">Continuar Conteo</button>
+                    </div>
+                `;
+            }
+
+            html += h.map(x => `
+                <div class="aura-card p-4 flex justify-between items-center shadow-sm">
                     <div>
                         <p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p>
                         <p class="text-xs font-black">${x.id}</p>
                     </div>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[8px] font-black uppercase">PDF</button>
+                    <button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-100 p-2 rounded-xl text-[8px] font-black uppercase">PDF</button>
                 </div>
-            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400">Sin reportes aún</p>';
+            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400">No hay registros</p>';
+            
+            document.getElementById('hist-feed').innerHTML = html;
         }
 
-        // SLIDER LOGIC
-        const handle = document.getElementById('handle');
-        const slider = document.getElementById('main-slider');
-        let isMoving = false;
-        handle.addEventListener('touchstart', () => isMoving = true);
-        window.addEventListener('touchmove', (e) => {
-            if(!isMoving) return;
-            let x = e.touches[0].clientX - slider.getBoundingClientRect().left - 23;
-            let max = slider.offsetWidth - 52;
-            handle.style.transform = `translateX(${Math.max(0, Math.min(x, max))}px)`;
-            if(x >= max - 2) { isMoving = false; document.getElementById('modal-end').classList.remove('hidden'); }
-        });
-        window.addEventListener('touchend', () => { isMoving = false; handle.style.transform = 'translateX(0)'; });
-        function closeModal() { document.getElementById('modal-end').classList.add('hidden'); }
+        function continuarPendiente() {
+            activeOp = JSON.parse(localStorage.getItem('active_tajho'));
+            navTo('ops');
+            syncTerminal();
+        }
     </script>
 </body>
 </html>
