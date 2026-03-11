@@ -13,42 +13,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --accent: #00f7ff;
-            --surface: #0a0a0f;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
+        :root { --accent: #00f7ff; --surface: #0a0a0f; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--surface);
             color: #fff;
-            overflow: auto;
-            height: 100vh;
+            overflow-y: auto;
+            min-height: 100vh;
             background-image: 
                 radial-gradient(circle at 0% 0%, rgba(0, 247, 255, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
         }
 
-        /* Ajuste para que el scroll lo mande el body y no solo el div */
-.view { 
-    display: none; 
-    min-height: 100vh; 
-    flex-direction: column; 
-    padding: 24px; 
-    padding-bottom: 140px; 
-}
+        .view { display: none; min-height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 140px; }
         .view.active { display: flex; animation: viewIn 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
         @keyframes viewIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
-            border-radius: 32px;
-        }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 32px; }
 
         .dock {
             position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
@@ -63,29 +45,13 @@
         }
         .dock-item.active { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
 
-        input {
-            background: rgba(255,255,255,0.05) !important;
-            border: 1px solid var(--border) !important;
-            color: #fff !important; border-radius: 20px !important;
-            padding: 20px !important; outline: none !important;
-        }
+        input { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--border) !important; color: #fff !important; border-radius: 20px !important; padding: 20px !important; outline: none !important; }
         input:focus { border-color: var(--accent) !important; }
 
-        .orb-btn {
-            width: 80px; height: 80px; background: var(--accent); color: #000;
-            border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(0,247,255,0.3);
-        }
+        .orb-btn { width: 80px; height: 80px; background: var(--accent); color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0,247,255,0.3); }
 
-        #suggestions {
-            position: absolute; width: calc(100% - 10px); top: 100%; left: 5px; z-index: 100;
-            max-height: 250px; overflow-y: auto; margin-top: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .suggestion-item {
-            padding: 16px 20px; background: rgba(15, 15, 25, 0.98);
-            border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;
-        }
-        .suggestion-item:active { background: var(--accent); color: #000; }
+        #suggestions { position: absolute; width: calc(100% - 10px); top: 100%; left: 5px; z-index: 100; max-height: 250px; overflow-y: auto; margin-top: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .suggestion-item { padding: 16px 20px; background: rgba(15, 15, 25, 0.98); border-bottom: 1px solid var(--border); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -97,26 +63,26 @@
 
     <div id="v-dash" class="view active">
         <header class="pt-10 pb-10 text-center">
-            <h1 class="text-5xl font-black tracking-tighter italic">LOGISTICA <span style="color:var(--accent)">TWINS</span></h1>
-            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">By Tajho Intelligence</p>
+            <h1 class="text-5xl font-black tracking-tighter italic text-white">LOGISTICA <span style="color:var(--accent)">TWINS</span></h1>
+            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2 text-white">By Tajho Intelligence</p>
         </header>
         <div class="space-y-4">
-            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center active:scale-95 transition-all">
+            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center active:scale-95 transition-all cursor-pointer">
                 <div>
                     <h3 class="text-2xl font-black text-white">Nueva Carga</h3>
                     <p class="text-xs text-white/40 italic">Sincronizado con Hoja 2</p>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
-                    <i class="ph-duotone ph-plus-circle text-2xl"></i>
+                    <i class="ph-duotone ph-plus-circle text-2xl text-black"></i>
                 </div>
             </div>
             <div id="history-feed" class="mt-8 space-y-3"></div>
         </div>
     </div>
 
-    <div id="v-work" class="view">
+    <div id="v-work" class="view text-white">
         <div id="setup-panel">
-            <h2 class="text-4xl font-black mb-8 tracking-tighter">Preparación</h2>
+            <h2 class="text-4xl font-black mb-8 tracking-tighter text-white">Preparación</h2>
             <div class="glass-panel p-7 space-y-6 relative">
                 <div class="relative">
                     <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador de Maestra</label>
@@ -132,21 +98,21 @@
                 </div>
             </div>
             <div id="q-list" class="mt-6 space-y-3"></div>
-            <button onclick="start()" class="w-full py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest mt-10 text-white" style="background:linear-gradient(90deg, #8b5cf6, #d946ef);">
+            <button onclick="start()" class="w-full py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest mt-10 text-white shadow-lg" style="background:linear-gradient(90deg, #8b5cf6, #d946ef);">
                 Iniciar Conteo Activo
             </button>
         </div>
 
         <div id="terminal-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-8">
-                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black">Conteo Real</h2></div>
+                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black text-white">Conteo Real</h2></div>
                 <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-duotone ph-power"></i></button>
             </div>
             <div class="glass-panel p-8 mb-6 text-center">
                 <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-6 text-2xl font-black uppercase outline-none"></select>
                 <div class="flex items-center gap-6 justify-center">
-                    <input type="number" id="count-in" class="w-32 p-6 rounded-3xl text-6xl font-black text-center" placeholder="0">
-                    <button onclick="commit()" class="orb-btn"><i class="ph-duotone ph-check-circle text-4xl"></i></button>
+                    <input type="number" id="count-in" class="w-32 p-6 rounded-3xl text-6xl font-black text-center text-white" placeholder="0">
+                    <button onclick="commit()" class="orb-btn"><i class="ph-duotone ph-check-circle text-4xl text-black"></i></button>
                 </div>
             </div>
             <div id="stat-list" class="space-y-3 flex-1 overflow-y-auto"></div>
@@ -155,11 +121,13 @@
 
     <div id="m-final" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-8 text-center">
         <div class="glass-panel p-10 max-w-sm w-full">
-            <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-2">Finalizar Contenedor</h3>
-            <p class="text-[10px] font-bold text-white/30 uppercase mb-8">Los datos se guardarán en la Base de Datos Histórica</p>
-            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4">Generar Reporte y Guardar</button>
-            <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Cancelar</button>
+            <div id="modal-dynamic-content">
+                <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
+                <h3 class="text-2xl font-black mb-2 text-white">Finalizar Contenedor</h3>
+                <p class="text-[10px] font-bold text-white/30 uppercase mb-8">Se guardará en Google Sheets y Base de Datos</p>
+                <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4 shadow-xl">Guardar y Generar</button>
+                <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -178,16 +146,9 @@
         function searchProduct(query) {
             const div = document.getElementById('suggestions');
             if (query.length < 2) { div.classList.add('hidden'); return; }
-            const matches = masterProducts.filter(p => 
-                p.sku.toLowerCase().includes(query.toLowerCase()) || 
-                p.nombre.toLowerCase().includes(query.toLowerCase())
-            ).slice(0, 5);
+            const matches = masterProducts.filter(p => p.sku.toLowerCase().includes(query.toLowerCase()) || p.nombre.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
             if (matches.length > 0) {
-                div.innerHTML = matches.map(m => `
-                    <div class="suggestion-item" onclick="selectProduct('${m.sku}')">
-                        <p class="font-bold text-sm text-accent">${m.sku}</p>
-                        <p class="text-[10px] text-white/50">${m.nombre}</p>
-                    </div>`).join('');
+                div.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectProduct('${m.sku}')"><p class="font-bold text-sm text-accent">${m.sku}</p><p class="text-[10px] text-white/50">${m.nombre}</p></div>`).join('');
                 div.classList.remove('hidden');
             } else { div.classList.add('hidden'); }
         }
@@ -200,7 +161,6 @@
 
         function genID() {
             const d = new Date();
-            const year = d.getFullYear().toString().slice(-2);
             return `AURA-${d.getDate()}${(d.getMonth()+1)}-${Math.floor(Math.random()*999)}`;
         }
 
@@ -228,11 +188,7 @@
         }
 
         function renderQ() {
-            document.getElementById('q-list').innerHTML = q.map((x, i) => `
-                <div class="glass-panel p-5 flex justify-between items-center">
-                    <p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">META: ${x.meta}</span></p>
-                    <button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-bold ph-trash"></i></button>
-                </div>`).join('');
+            document.getElementById('q-list').innerHTML = q.map((x, i) => `<div class="glass-panel p-5 flex justify-between items-center"><p class="text-xs font-black">${x.sku} <span class="text-accent ml-2">META: ${x.meta}</span></p><button onclick="q.splice(${i},1);renderQ()" class="text-red-500"><i class="ph-bold ph-trash"></i></button></div>`).join('');
         }
 
         function start() {
@@ -253,7 +209,7 @@
 
         function commit() {
             const i = document.getElementById('count-in'), v = parseInt(i.value);
-            if(!v) return;
+            if(!v && v !== 0) return;
             const item = activeOp.items.find(x => x.sku === document.getElementById('sku-sel').value);
             if(item) { item.r += v; i.value = ''; localStorage.setItem('aura_v3_active', JSON.stringify(activeOp)); upUI(); }
         }
@@ -262,144 +218,88 @@
             const cur = document.getElementById('sku-sel').value;
             document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
                 <div class="glass-panel p-5 ${x.sku === cur ? 'border-accent/40' : 'opacity-30'}">
-                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase">
-                        <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
-                    </div>
+                    <div class="flex justify-between font-black text-[9px] mb-3 uppercase"><span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span></div>
                     <div class="h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div></div>
                 </div>`).join('');
         }
 
-        function openCloseModal() { document.getElementById('m-final').classList.remove('hidden'); }
+        function openCloseModal() { 
+            document.getElementById('modal-dynamic-content').innerHTML = `
+                <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
+                <h3 class="text-2xl font-black mb-2 text-white">Finalizar Contenedor</h3>
+                <p class="text-[10px] font-bold text-white/30 uppercase mb-8 text-white">Se guardará en Google Sheets y Base de Datos</p>
+                <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4 shadow-xl text-black">Guardar y Generar</button>
+                <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase text-white">Cancelar</button>
+            `;
+            document.getElementById('m-final').classList.remove('hidden'); 
+        }
         function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
 
         async function finishAll() {
-    try {
-        // 1. Enviar a Google Sheets
-        const response = await fetch(SHEETS_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                accion: "guardar_contenedor",
-                id: activeOp.id,
-                fecha: activeOp.date,
-                detalles: activeOp.items
-            })
-        });
+            const content = document.getElementById('modal-dynamic-content');
+            content.innerHTML = `<i class="ph-duotone ph-cloud-arrow-up text-6xl text-accent animate-bounce mb-6 block"></i><h3 class="text-xl font-black text-white">GUARDANDO...</h3>`;
+            
+            try {
+                await fetch(SHEETS_URL, {
+                    method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ accion: "guardar_contenedor", id: activeOp.id, fecha: activeOp.date, detalles: activeOp.items })
+                });
 
-        // 2. Guardar en historial local
-        let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-        h.unshift(activeOp);
-        localStorage.setItem('aura_v3_history', JSON.stringify(h));
+                let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+                h.unshift(activeOp);
+                localStorage.setItem('aura_v3_history', JSON.stringify(h));
 
-        // 3. CAMBIO CLAVE: Cambiar el contenido del modal por un botón real de descarga
-        const modalContent = document.querySelector('#m-final .glass-panel');
-        modalContent.innerHTML = `
-            <i class="ph-duotone ph-check-circle text-6xl text-green-400 mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-2">¡DATOS GUARDADOS!</h3>
-            <p class="text-[10px] font-bold text-white/30 uppercase mb-8">El registro en Sheets fue exitoso. Presiona abajo para obtener tu PDF.</p>
-            <button onclick='descargarPDFManual()' class="w-full py-5 rounded-2xl bg-accent text-black font-black uppercase text-xs mb-4 shadow-[0_0_20px_rgba(0,247,255,0.4)]">
-                📥 DESCARGAR REPORTE AHORA
-            </button>
-            <button onclick="location.reload()" class="text-white/40 text-[10px] font-bold uppercase">Finalizar y Limpiar</button>
-        `;
-
-    } catch (e) {
-        alert("Error de conexión. Los datos no se guardaron.");
-    }
-}
-        // SOLUCIÓN DEFINITIVA PDF (MÉTODO BLOB)
-       async function makePDF(d) {
-    try {
-        const { jsPDF } = window.jspdf;
-        if (!jsPDF) {
-            alert("⚠️ Error: Sistema de impresión no detectado.");
-            return;
+                const copyData = JSON.parse(JSON.stringify(activeOp));
+                content.innerHTML = `
+                    <i class="ph-duotone ph-check-circle text-6xl text-green-400 mb-6 block"></i>
+                    <h3 class="text-2xl font-black mb-2 text-white">¡GUARDADO!</h3>
+                    <button id="btnRealPDF" class="w-full py-5 rounded-2xl bg-accent text-black font-black uppercase text-xs mb-4 shadow-xl">📥 DESCARGAR PDF AHORA</button>
+                    <button onclick="location.reload()" class="text-white/40 text-[10px] font-bold uppercase text-white">Finalizar y Limpiar</button>
+                `;
+                document.getElementById('btnRealPDF').onclick = () => masterPDF(copyData);
+                localStorage.removeItem('aura_v3_active');
+            } catch (e) { alert("Error al conectar"); location.reload(); }
         }
 
-        const doc = new jsPDF();
-        
-        // Cabecera Twins Elite
-        doc.setFillColor(15, 15, 25);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22);
-        doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
-        
-        doc.setTextColor(150, 150, 150);
-        doc.setFontSize(9);
-        doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-        doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
-        
-        doc.autoTable({
-            startY: 65,
-            head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
-            body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
-            theme: 'grid',
-            headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
-        });
+        function masterPDF(d) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFillColor(15, 15, 25); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+            doc.setTextColor(150); doc.setFontSize(9); doc.text(`ID: ${d.id} | FECHA: ${d.date}`, 14, 48);
+            
+            doc.autoTable({
+                startY: 55, head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
+                theme: 'grid', headStyles: { fillColor: [0, 247, 255], textColor: [0,0,0] }
+            });
 
-        const finalY = doc.lastAutoTable.finalY + 20;
-        doc.setTextColor(0, 0, 0);
-        doc.text("__________________________", 14, finalY);
-        doc.setFont("helvetica", "bold");
-        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-        doc.setFont("helvetica", "normal");
-        doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setTextColor(0); doc.text("__________________________", 14, finalY);
+            doc.setFont("helvetica", "bold"); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 12);
 
-        // --- MÉTODO DE COMPATIBILIDAD TOTAL ---
-        // Generar el PDF como una cadena Base64
-        const string = doc.output('datauristring');
-        
-        // Abrir en una nueva pestaña (Ideal para iOS/Safari)
-        const newTab = window.open();
-        if(!newTab || newTab.closed || typeof newTab.closed=='undefined') {
-            // Si el bloqueador de pop-ups detiene la pestaña, forzamos descarga directa
-            doc.save(`Reporte_${d.id}.pdf`);
-        } else {
-            newTab.document.write('<iframe width="100%" height="100%" src="' + string + '"></iframe>');
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; link.download = `Reporte_${d.id}.pdf`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
-    } catch (e) {
-        console.error("Falla crítica:", e);
-        alert("El PDF no pudo abrirse. Los datos ya están en tu Google Sheets.");
-    }
-}
-function descargarPDFManual() {
-    if (!activeOp) return;
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Configuración estética rápida
-    doc.setFillColor(10, 10, 15);
-    doc.rect(0, 0, 210, 40, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text("REPORTE TWINS LOGISTICS", 14, 25);
-    
-    doc.autoTable({
-        startY: 50,
-        head: [['SKU', 'META', 'REAL', 'DIF']],
-        body: activeOp.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
-        theme: 'grid',
-        headStyles: { fillColor: [0, 247, 255], textColor: [0,0,0] }
-    });
-    
-    const finalY = doc.lastAutoTable.finalY + 15;
-    doc.setTextColor(0,0,0);
-    doc.setFontSize(10);
-    doc.text("Revisión: J. Angelo Nuñez Durand", 14, finalY);
-
-    // EL TRUCO FINAL: Forzar descarga con nombre dinámico
-    doc.save(`Twins_${activeOp.id}.pdf`);
-}
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
             const feed = document.getElementById('history-feed');
-            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga en Curso</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button></div>` : '';
-            html += h.map(x => `<div class="glass-panel p-5 flex justify-between items-center mb-2"><div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button onclick='makePDF(${JSON.stringify(x)})' class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`).join('');
-            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10 font-bold">Sin registros recientes</p>';
+            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center text-white"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga en Curso</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right text-black"></i></button></div>` : '';
+            
+            h.forEach((x, i) => {
+                html += `<div class="glass-panel p-5 flex justify-between items-center mb-2 text-white"><div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button id="hbtn-${i}" class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`;
+            });
+            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10 font-bold">Sin registros</p>';
+            h.forEach((x, i) => { 
+                const btn = document.getElementById(`hbtn-${i}`);
+                if(btn) btn.onclick = () => masterPDF(x);
+            });
         }
     </script>
 </body>
