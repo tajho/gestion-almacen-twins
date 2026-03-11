@@ -71,11 +71,12 @@
         }
 
         #search-results {
-            position: absolute; width: 100%; top: 100%; z-index: 50; margin-top: 10px;
-            background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-height: 200px; overflow-y: auto;
+            position: absolute; width: 100%; top: 100%; z-index: 100; margin-top: 10px;
+            background: white; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            max-height: 280px; overflow-y: auto; border: 1px solid #eee;
         }
-        .search-item { padding: 16px; border-bottom: 1px solid #f8fafc; font-weight: 700; font-size: 14px; }
+        .search-item { padding: 16px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; }
+        .search-item:hover { background: #f8fafc; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -108,8 +109,8 @@
 
         <div class="aura-card p-8 mb-8 space-y-6">
             <div class="relative">
-                <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Buscador SKU</label>
-                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar producto..." autocomplete="off">
+                <label class="text-[9px] font-extrabold uppercase text-slate-400 ml-2 mb-2 block">Buscador SKU o Descripción</label>
+                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Escriba código o nombre..." autocomplete="off">
                 <div id="search-results" class="hidden"></div>
             </div>
             <div class="flex gap-4">
@@ -133,8 +134,8 @@
         </nav>
 
         <div class="aura-card p-6 mb-8">
-            <p class="text-[9px] font-black uppercase text-slate-400 mb-3 tracking-widest">Buscar por Código o Descripción</p>
-            <input type="text" id="sku-query" class="w-full !p-4 text-sm" placeholder="Ej: SKU-001..." oninput="filterByProduct(this.value)">
+            <p class="text-[9px] font-black uppercase text-slate-400 mb-3 tracking-widest">Filtrar por Código o Descripción</p>
+            <input type="text" id="sku-query" class="w-full !p-4 text-sm" placeholder="Ej: Polo, SKU-100..." oninput="filterByProduct(this.value)">
         </div>
 
         <div id="product-results" class="space-y-4 overflow-y-auto flex-1 pr-2"></div>
@@ -165,12 +166,18 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
         let master = [], queue = [], currentOp = null;
 
-        window.onload = async () => {
-            filterByProduct('');
+        // Carga inicial de datos de Hoja 1
+        async function loadMasterData() {
             try { 
                 const res = await fetch(API_URL); 
                 master = await res.json(); 
-            } catch(e) { console.error("Error Master"); }
+                console.log("Datos cargados:", master.length);
+            } catch(e) { console.error("Error cargando Hoja 1"); }
+        }
+
+        window.onload = () => {
+            loadMasterData();
+            filterByProduct('');
         };
 
         function navTo(v) {
@@ -179,35 +186,56 @@
             if(v === 'hist') filterByProduct('');
         }
 
-        // --- CREACIÓN ---
+        // --- BÚSQUEDA CORREGIDA (Lee SKU y Descripción) ---
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
             if (q.length < 2) { resDiv.classList.add('hidden'); return; }
-            const m = master.filter(p => p.sku.toLowerCase().includes(q.toLowerCase())).slice(0, 5);
-            resDiv.innerHTML = m.map(x => `<div onclick="pickSku('${x.sku}')" class="search-item">${x.sku}</div>`).join('');
-            resDiv.classList.remove('hidden');
+            
+            const term = q.toLowerCase();
+            // Busca en todas las propiedades de cada fila (SKU, Descripción, etc)
+            const matches = master.filter(row => {
+                return Object.values(row).some(val => 
+                    String(val).toLowerCase().includes(term)
+                );
+            }).slice(0, 8); // Mostrar hasta 8 sugerencias
+
+            if(matches.length > 0) {
+                resDiv.innerHTML = matches.map(x => `
+                    <div onclick="pickSku('${x.sku || x.SKU || Object.values(x)[0]}')" class="search-item">
+                        <p class="font-black text-sm text-black">${x.sku || x.SKU || 'Sin SKU'}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">${x.descripcion || x.DESCRIPCION || ''}</p>
+                    </div>`).join('');
+                resDiv.classList.remove('hidden');
+            } else {
+                resDiv.classList.add('hidden');
+            }
         }
-        function pickSku(s) { document.getElementById('sku-in').value = s; document.getElementById('search-results').classList.add('hidden'); }
+
+        function pickSku(s) { 
+            document.getElementById('sku-in').value = s; 
+            document.getElementById('search-results').classList.add('hidden'); 
+        }
 
         function addToQueue() {
             const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
             if(!s || !m) return;
             queue.push({ sku: s, meta: m, r: 0 });
-            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
+            document.getElementById('sku-in').value = ''; 
+            document.getElementById('meta-in').value = '';
             renderQueue();
         }
 
         function renderQueue() {
             document.getElementById('queue-list').innerHTML = queue.map((x, i) => `
                 <div class="aura-card p-5 flex justify-between items-center bg-white">
-                    <span class="font-bold text-sm">${x.sku} <span class="ml-3 text-slate-400">OBJ: ${x.meta}</span></span>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300"><i class="ph-bold ph-trash text-xl"></i></button>
+                    <span class="font-bold text-sm">${x.sku} <span class="ml-3 text-slate-400">META: ${x.meta}</span></span>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
                 </div>`).join('');
         }
 
         function saveContenedor() {
             if(queue.length === 0) return;
-            const op = { id: `TJ-${Math.floor(Math.random()*900+100)}`, date: new Date().toLocaleString(), items: [...queue], done: false };
+            const op = { id: `TJ-${Math.floor(Math.random()*900+100)}`, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false };
             let history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             history.unshift(op);
             localStorage.setItem('tajho_v3', JSON.stringify(history));
@@ -215,53 +243,51 @@
             queue = []; renderQueue(); navTo('hist');
         }
 
-        // --- BUSCADOR ESPECÍFICO POR PRODUCTO Y FECHA ---
+        // --- FILTRO HISTORIAL ---
         function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const resultsDiv = document.getElementById('product-results');
             let html = "";
+            const term = q.toLowerCase();
 
             if (q.length > 0) {
-                // Modo búsqueda: Filtrar por producto específico
                 history.forEach(op => {
                     op.items.forEach(item => {
-                        if (item.sku.toLowerCase().includes(q.toLowerCase()) && item.r > 0) {
+                        if (item.sku.toLowerCase().includes(term) && item.r > 0) {
                             html += `
                             <div class="aura-card p-6 flex justify-between items-center border-l-4 border-black">
                                 <div>
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">${op.date}</p>
+                                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">${op.date}</p>
                                     <p class="text-sm font-black text-black">${item.sku}</p>
-                                    <p class="text-[10px] text-slate-500 uppercase font-bold">OP: ${op.id}</p>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase">OP: ${op.id}</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-2xl font-black tracking-tighter">${item.r}</p>
-                                    <p class="text-[8px] font-bold text-slate-400 uppercase">Cajas</p>
+                                    <p class="text-2xl font-black">${item.r}</p>
+                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Cajas</p>
                                 </div>
                             </div>`;
                         }
                     });
                 });
             } else {
-                // Modo historial: Mostrar reportes generales
                 history.forEach((op, i) => {
                     html += `
                     <div class="aura-card p-6 flex justify-between items-center">
                         <div>
-                            <p class="text-[8px] font-black text-slate-300 mb-1 uppercase tracking-widest">${op.date}</p>
+                            <p class="text-[8px] font-black text-slate-300 mb-1 uppercase">${op.date}</p>
                             <p class="text-xl font-extrabold italic tracking-tighter">${op.id}</p>
                         </div>
                         ${op.done ? 
-                            `<button onclick="genPDF(${i})" class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
+                            `<button onclick="genPDF(${i})" class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
                             `<button onclick="openWork(${i})" class="px-6 py-3 rounded-2xl bg-black text-white font-black text-[9px] uppercase">Contar</button>`
                         }
                     </div>`;
                 });
             }
-
-            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 uppercase text-[10px] font-bold">Sin registros encontrados</p>';
+            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 uppercase text-[10px] font-bold">Sin registros</p>';
         }
 
-        // --- TERMINAL ---
+        // --- LÓGICA DE CONTEO ---
         function openWork(idx) {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             currentOp = { ...h[idx], localIdx: idx };
@@ -273,7 +299,7 @@
 
         function commitCount() {
             const val = parseInt(document.getElementById('work-input').value);
-            if(!val && val !== 0) return;
+            if(isNaN(val)) return;
             const sku = document.getElementById('work-select').value;
             const item = currentOp.items.find(x => x.sku === sku);
             item.r += val;
