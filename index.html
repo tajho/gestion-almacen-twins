@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Pro | Exclusive Logistics</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     
     <style>
@@ -33,107 +30,50 @@
                               radial-gradient(at 90% 90%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
         }
 
-        /* Efecto Glassmorphism */
         .glass-card {
             background: var(--bg-frost);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-frost);
             border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .view {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            padding: 24px;
-            padding-bottom: 110px; /* Espacio para el nav */
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        .view { display: none; height: 100vh; flex-direction: column; padding: 24px; padding-bottom: 110px; overflow-y: auto; }
+        .view.active { display: flex; animation: fadeIn 0.4s ease-out; }
 
-        .view.active {
-            display: flex;
-            animation: fadeIn 0.4s ease-out;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Navegación Flotante Exclusiva */
         .nav-orb {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            padding: 8px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 40px;
-            border: 1px solid var(--border-frost);
-            z-index: 100;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; padding: 8px; background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px); border-radius: 40px; border: 1px solid var(--border-frost); z-index: 100;
         }
 
         .nav-btn {
-            padding: 12px 24px;
-            border-radius: 32px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            transition: all 0.3s ease;
+            padding: 12px 24px; border-radius: 32px; border: none; background: transparent;
+            color: var(--text-muted); font-size: 11px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 0.15em; transition: all 0.3s ease;
         }
 
-        .nav-btn.active {
-            color: var(--text-main);
-            background: var(--bg-frost);
-            box-shadow: 0 0 15px rgba(0, 247, 255, 0.2);
-        }
+        .nav-btn.active { color: var(--text-main); background: var(--bg-frost); box-shadow: 0 0 15px rgba(0, 247, 255, 0.2); }
 
-        /* Estilos de inputs exclusivos */
-        input, select {
+        input {
             background: rgba(255, 255, 255, 0.03) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
             color: var(--text-main) !important;
             border-radius: 16px !important;
-            font-weight: 600 !important;
-        }
-        input:focus, select:focus {
-            border-color: var(--neon-cyan) !important;
-            box-shadow: 0 0 10px rgba(0, 247, 255, 0.2) !important;
             outline: none !important;
         }
+        input:focus { border-color: var(--neon-cyan) !important; box-shadow: 0 0 10px rgba(0, 247, 255, 0.2) !important; }
 
-        /* Botón OK Orbe */
         .btn-orb {
-            width: 80px; height: 80px;
-            background: #000;
-            border: 2px solid var(--neon-cyan);
-            border-radius: 40px;
-            color: var(--neon-cyan);
-            font-size: 24px;
-            font-weight: 900;
+            width: 80px; height: 80px; background: #000; border: 2px solid var(--neon-cyan);
+            border-radius: 40px; color: var(--neon-cyan); font-size: 24px; font-weight: 900;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .btn-orb:active {
-            transform: scale(0.92);
-            box-shadow: 0 0 5px rgba(0, 247, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4); cursor: pointer;
         }
 
-        /* Barras de progreso neon */
-        .progress-container { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .progress-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet)); transition: width 0.4s ease; }
     </style>
 </head>
@@ -146,71 +86,67 @@
 
     <div id="v-dash" class="view active">
         <header class="py-10">
-            <p class="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] mb-2">Exclusive Logistics</p>
-            <h1 class="text-5xl font-black tracking-tighter leading-none">AURA <span class="style-neon-cyan" style="color:var(--neon-cyan);">PRO</span></h1>
-            <div class="h-1 w-16 bg-white rounded-full mt-4"></div>
+            <p class="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] mb-2">Aura Intelligence</p>
+            <h1 class="text-5xl font-black tracking-tighter leading-none">AURA <span style="color:var(--neon-cyan);">PRO</span></h1>
         </header>
 
         <div class="grid gap-4">
-            <div onclick="navTo('conteo')" class="glass-card p-8 flex justify-between items-center cursor-pointer active:scale-95 transition-all">
+            <div onclick="navTo('conteo')" class="glass-card p-8 flex justify-between items-center cursor-pointer active:scale-95 transition-all border-l-4 border-cyan-500">
                 <div>
                     <h3 class="text-2xl font-black tracking-tight">Nuevo Ingreso</h3>
-                    <p class="text-sm text-white/50">Configurar operación de contenedor</p>
+                    <p class="text-xs text-white/50 uppercase font-bold mt-1">ID automático habilitado</p>
                 </div>
-                <span class="text-4xl style-neon-cyan" style="color:var(--neon-cyan);">📦</span>
+                <span class="text-3xl">＋</span>
             </div>
 
             <div id="historial-feed" class="mt-8 space-y-4">
-                <p class="text-[11px] font-black text-white/30 uppercase tracking-[0.3em] mb-4">Reportes Recientes</p>
-                </div>
+                <p class="text-[11px] font-black text-white/30 uppercase tracking-[0.3em] mb-4">Actividad Logística</p>
+            </div>
         </div>
     </div>
 
     <div id="v-conteo" class="view">
-        
-        <div id="setup-panel" class="space-y-6">
-            <h2 class="text-3xl font-black tracking-tighter mb-8">Configuración Carga</h2>
-            
-            <div class="glass-card p-6 space-y-4">
+        <div id="setup-panel">
+            <div class="flex justify-between items-end mb-8">
                 <div>
-                    <label class="text-[10px] font-black uppercase text-white/30 ml-2">ID Contenedor</label>
-                    <input type="text" id="setup-id" class="w-full p-4 mt-1 text-lg" placeholder="Ej: CT-LIMA-01">
+                    <h2 class="text-3xl font-black tracking-tighter">Preparar Carga</h2>
+                    <p id="auto-id-label" class="text-[10px] font-black uppercase text-cyan-400 mt-1 tracking-widest"></p>
+                </div>
+            </div>
+            
+            <div class="glass-card p-6 space-y-5">
+                <div>
+                    <label class="text-[10px] font-black uppercase text-white/30 ml-2">Buscar Producto / SKU</label>
+                    <input type="text" id="setup-sku" class="w-full p-4 mt-1 text-lg font-black" placeholder="Ej: SKU-10293">
                 </div>
                 
-                <div class="flex gap-2">
+                <div class="flex gap-3">
                     <div class="flex-1">
-                        <label class="text-[10px] font-black uppercase text-white/30 ml-2">Producto SKU</label>
-                        <input type="text" id="setup-sku" class="w-full p-4 mt-1" placeholder="Buscar producto...">
+                        <label class="text-[10px] font-black uppercase text-white/30 ml-2">Cantidad Meta</label>
+                        <input type="number" id="setup-meta" class="w-full p-4 mt-1 text-center font-black text-xl" placeholder="0">
                     </div>
-                    <div class="w-28">
-                        <label class="text-[10px] font-black uppercase text-white/30 ml-2">Meta</label>
-                        <input type="number" id="setup-meta" class="w-full p-4 mt-1 text-center font-black" placeholder="0">
-                    </div>
-                    <button onclick="addProducto()" class="mt-5 px-6 font-black text-lg text-black rounded-2xl transition-all" style="background:var(--neon-cyan);">＋</button>
+                    <button onclick="addProducto()" class="mt-5 px-8 font-black text-black rounded-2xl transition-all" style="background:var(--neon-cyan);">AÑADIR</button>
                 </div>
             </div>
 
-            <div id="queue-list" class="space-y-3 max-h-48 overflow-y-auto"></div>
+            <div id="queue-list" class="mt-6 space-y-3 max-h-48 overflow-y-auto pr-2"></div>
 
-            <button onclick="startOperation()" class="w-full h-16 rounded-2xl font-black text-xs uppercase tracking-widest mt-10 shadow-2xl transition-all text-white" style="background:var(--neon-violet); box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);">Iniciar Operación en Terminal</button>
+            <button onclick="startOperation()" class="w-full h-16 rounded-2xl font-black text-xs uppercase tracking-widest mt-10 text-white shadow-2xl" style="background:var(--neon-violet); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);">Abrir Terminal de Conteo</button>
         </div>
 
         <div id="active-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <p id="active-id-display" class="text-[10px] font-black uppercase" style="color:var(--neon-cyan);"></p>
-                    <h2 class="text-3xl font-black tracking-tighter">Terminal Tajho</h2>
+                    <p id="active-id-display" class="text-[10px] font-black uppercase text-cyan-400"></p>
+                    <h2 class="text-3xl font-black tracking-tighter">Conteo en Vivo</h2>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="hacerPDF(activeOperation)" class="p-3 glass-card rounded-xl">📄</button>
-                    <button onclick="openFinalModal()" class="p-3 rounded-xl font-black text-[10px] uppercase bg-red-500/10 text-red-500 border border-red-500/20">Cerrar</button>
-                </div>
+                <button onclick="openFinalModal()" class="px-5 py-2 rounded-xl font-black text-[10px] uppercase bg-red-500/10 text-red-500 border border-red-500/20">Finalizar</button>
             </div>
 
-            <div class="glass-card p-6 mb-6">
-                <select id="sku-selector" onchange="renderStats()" class="w-full p-4 mb-5 text-xl font-black uppercase appearance-none text-center"></select>
-                <div class="flex items-center gap-5 justify-center">
-                    <input type="number" id="count-input" class="w-40 p-6 rounded-3xl text-7xl font-black text-center" placeholder="0">
+            <div class="glass-card p-6 mb-6 text-center">
+                <select id="sku-selector" onchange="renderStats()" class="bg-transparent text-white w-full p-2 mb-4 text-2xl font-black uppercase outline-none"></select>
+                <div class="flex items-center gap-6 justify-center">
+                    <input type="number" id="count-input" class="w-36 p-6 rounded-3xl text-6xl font-black text-center" placeholder="0">
                     <button onclick="commitCount()" class="btn-orb">OK</button>
                 </div>
             </div>
@@ -219,44 +155,51 @@
         </div>
     </div>
 
-    <div id="modal-final" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6">
-        <div class="glass-card w-full max-w-sm p-10 text-center shadow-2xl border-white/10">
-            <div class="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl border border-green-500/20">✓</div>
-            <h3 class="text-2xl font-black tracking-tight mb-2">Finalizar Operación</h3>
-            <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-10">AUTORIZA: J. ANGELO NUÑEZ DURAND</p>
+    <div id="modal-final" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-sm p-10 text-center border-white/10">
+            <h3 class="text-2xl font-black tracking-tight mb-2">Cerrar Operación</h3>
+            <p id="modal-id-info" class="text-[10px] text-cyan-400 font-bold uppercase mb-8"></p>
             <div class="flex flex-col gap-3">
-                <button onclick="closeModal()" class="h-14 glass-card font-black text-[10px] uppercase">Volver</button>
-                <button onclick="confirmFinalClose()" class="h-16 rounded-2xl font-black text-xs uppercase tracking-widest text-black" style="background:var(--neon-cyan);">Confirmar y Generar PDF</button>
+                <button onclick="closeModal()" class="h-14 glass-card font-black text-[10px] uppercase">Cancelar</button>
+                <button onclick="confirmFinalClose()" class="h-16 rounded-2xl font-black text-xs uppercase tracking-widest text-black" style="background:var(--neon-cyan);">Generar Reporte PDF</button>
             </div>
         </div>
     </div>
 
     <script>
-        const APP_URL = "https://script.google.com/macros/s/AKfycbwNlrpjV8BS3z0t3liodNkxpiO4HvrowLf9BtEta5cDSUZy_IL-0aPMLnMIhpzCRuwM/exec";
         let tempQueue = [];
         let activeOperation = null;
 
-        // INICIALIZACIÓN
+        // GENERADOR DE ID AUTOMÁTICO
+        function generateAutoID() {
+            const date = new Date();
+            const year = date.getFullYear().toString().slice(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+            return `AURA-${year}${month}${day}-${random}`;
+        }
+
         window.onload = () => {
             const savedOp = localStorage.getItem('aura_exclusive_active');
             if(savedOp) {
                 activeOperation = JSON.parse(savedOp);
                 navTo('conteo');
                 loadActiveTerminal();
+            } else {
+                document.getElementById('auto-id-label').innerText = generateAutoID();
             }
         };
 
-        // NAVEGACIÓN
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
-            const navBtn = document.getElementById('n-' + v);
-            if(navBtn) navBtn.classList.add('active');
+            if(document.getElementById('n-' + v)) document.getElementById('n-' + v).classList.add('active');
             if(v === 'dash') renderHistory();
+            if(v === 'conteo' && !activeOperation) document.getElementById('auto-id-label').innerText = generateAutoID();
         }
 
-        // --- FASE SETUP ---
         function addProducto() {
             const sku = document.getElementById('setup-sku').value;
             const meta = parseInt(document.getElementById('setup-meta').value);
@@ -269,27 +212,25 @@
 
         function renderTempQueue() {
             document.getElementById('queue-list').innerHTML = tempQueue.map((x, i) => `
-                <div class="glass-card p-4 flex justify-between items-center bg-white/5 border border-white/5 shadow-inner">
-                    <p class="text-xs font-black">${x.sku} <span style="color:var(--neon-cyan);" class="ml-2">Meta: ${x.meta} Pcs</span></p>
-                    <button onclick="tempQueue.splice(${i},1);renderTempQueue()" class="text-red-500 font-bold px-2 text-xl">×</button>
+                <div class="glass-card p-4 flex justify-between items-center bg-white/5 border-white/5">
+                    <p class="text-xs font-black">${x.sku} <span class="text-cyan-400 ml-2">META: ${x.meta}</span></p>
+                    <button onclick="tempQueue.splice(${i},1);renderTempQueue()" class="text-red-500 font-bold px-2">✕</button>
                 </div>`).join('');
         }
 
         function startOperation() {
-            const id = document.getElementById('setup-id').value;
-            if(!id || tempQueue.length === 0) return alert("Completa ID y Productos");
+            if(tempQueue.length === 0) return alert("Añade productos primero");
+            const id = document.getElementById('auto-id-label').innerText;
             activeOperation = { id, items: [...tempQueue], date: new Date().toLocaleString() };
             tempQueue = [];
             localStorage.setItem('aura_exclusive_active', JSON.stringify(activeOperation));
             loadActiveTerminal();
         }
 
-        // --- FASE TERMINAL ACTIVA ---
         function loadActiveTerminal() {
             document.getElementById('setup-panel').classList.add('hidden');
             document.getElementById('active-panel').classList.remove('hidden');
             document.getElementById('active-id-display').innerText = activeOperation.id;
-            
             const picker = document.getElementById('sku-selector');
             picker.innerHTML = activeOperation.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             renderStats();
@@ -305,115 +246,68 @@
                 input.value = '';
                 localStorage.setItem('aura_exclusive_active', JSON.stringify(activeOperation));
                 renderStats();
-                if(window.navigator.vibrate) window.navigator.vibrate(50);
             }
         }
 
         function renderStats() {
             const cur = document.getElementById('sku-selector').value;
             document.getElementById('active-stats-list').innerHTML = activeOperation.items.map(x => `
-                <div class="glass-card p-5 ${x.sku === cur ? 'ring-2 ring-cyan-500 shadow-lg' : 'opacity-40'} transition-all duration-300">
-                    <div class="flex justify-between font-black text-[10px] mb-2 uppercase tracking-tight">
+                <div class="glass-card p-5 ${x.sku === cur ? 'ring-2 ring-cyan-500' : 'opacity-30'} transition-all">
+                    <div class="flex justify-between font-black text-[10px] mb-2 uppercase">
                         <span>${x.sku}</span>
-                        <span style="color:var(--neon-cyan);">${x.real} / ${x.meta}</span>
+                        <span class="text-cyan-400">${x.real} / ${x.meta}</span>
                     </div>
-                    <div class="progress-container">
-                        <div class="progress-fill" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
-                    </div>
+                    <div class="progress-container"><div class="progress-fill" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div></div>
                 </div>`).join('');
         }
 
-        // --- PDF Y CIERRE (BLINDADO) ---
-        function openFinalModal() { document.getElementById('modal-final').classList.remove('hidden'); }
+        function openFinalModal() {
+            document.getElementById('modal-id-info').innerText = activeOperation.id;
+            document.getElementById('modal-final').classList.remove('hidden');
+        }
         function closeModal() { document.getElementById('modal-final').classList.add('hidden'); }
 
         function confirmFinalClose() {
-            if (!activeOperation) return;
             let history = JSON.parse(localStorage.getItem('aura_exclusive_history') || '[]');
             history.unshift(activeOperation);
             localStorage.setItem('aura_exclusive_history', JSON.stringify(history));
-            
-            hacerPDF(activeOperation); // Llamada infalible
-            
+            hacerPDF(activeOperation);
             localStorage.removeItem('aura_exclusive_active');
             activeOperation = null;
-            closeModal();
-            location.reload(); // Recarga para limpiar estado
+            location.reload();
         }
 
         function hacerPDF(d) {
-            if(!d) return;
-            try {
-                // Validación estricta de librerías
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) throw new Error("jsPDF no cargado");
-                
-                const doc = new jsPDF();
-                
-                // Diseño de reporte profesional
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(18);
-                doc.text("REPORTE LOGÍSTICO EXCLUSIVO TAJHO", 14, 20);
-                
-                doc.setFontSize(10);
-                doc.text(`CONTENEDOR ID: ${d.id}`, 14, 30);
-                doc.text(`FECHA DE REGISTRO: ${d.date}`, 14, 35);
-                
-                doc.autoTable({
-                    startY: 40,
-                    head: [['SKU PRODUCTO', 'PLANIFICADO', 'REAL', 'DIFERENCIA']],
-                    body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                    theme: 'striped',
-                    headStyles: { fillColor: [15, 15, 25] }, // Gris frost profundo
-                    styles: { fontSize: 8, font: "helvetica" }
-                });
-
-                const finalY = doc.lastAutoTable.finalY + 15;
-                doc.setFontSize(9);
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
-                
-                doc.save(`Tajho_Exclusive_${d.id}.pdf`);
-            } catch(e) {
-                console.error(e);
-                alert("Error técnico al generar PDF. Asegúrate de tener conexión.");
-            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFont("helvetica", "bold");
+            doc.text("REPORTE LOGÍSTICO AURA PRO", 14, 20);
+            doc.setFontSize(10);
+            doc.text(`ID OPERACIÓN: ${d.id}`, 14, 30);
+            doc.text(`FECHA: ${d.date}`, 14, 35);
+            doc.autoTable({
+                startY: 40,
+                head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
+                theme: 'striped',
+                headStyles: { fillColor: [15, 15, 25] }
+            });
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 15);
+            doc.save(`Reporte_${d.id}.pdf`);
         }
 
-        // --- HISTORIAL ---
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_exclusive_history') || '[]');
             const feed = document.getElementById('historial-feed');
-            
-            if(h.length === 0 && !activeOperation) {
-                feed.innerHTML = '<p class="text-center py-10 text-[10px] text-white/30 font-bold uppercase tracking-widest">Sin registros previos</p>';
-                return;
-            }
-
             let html = '';
-            
-            // Mostrar operación activa en el feed si existe
             if(activeOperation) {
-                html += `
-                    <div class="glass-card p-5 border-2 border-cyan-500 mb-6 bg-cyan-950/20">
-                        <p class="text-[8px] font-black uppercase tracking-widest text-cyan-400 mb-1">En curso</p>
-                        <p class="text-xl font-black mb-4">${activeOperation.id}</p>
-                        <button onclick="navTo('conteo')" class="w-full py-3 h-12 rounded-xl font-black text-[9px] uppercase tracking-widest text-black" style="background:var(--neon-cyan);">Continuar Conteo</button>
-                    </div>`;
+                html += `<div class="glass-card p-5 border-2 border-cyan-500 mb-6"><p class="text-[8px] font-black uppercase text-cyan-400">En curso</p><p class="text-xl font-black">${activeOperation.id}</p><button onclick="navTo('conteo')" class="w-full py-3 mt-4 rounded-xl font-black text-[9px] uppercase bg-cyan-500 text-black">Continuar</button></div>`;
             }
-
-            html += h.map(x => `
-                <div class="glass-card p-5 flex justify-between items-center border-white/5 shadow-sm">
-                    <div>
-                        <p class="text-[7px] font-black text-white/30 uppercase tracking-widest">${x.date}</p>
-                        <p class="text-xs font-black">${x.id}</p>
-                    </div>
-                    <button onclick='hacerPDF(${JSON.stringify(x)})' class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-xl">📄</button>
-                </div>`).join('');
-            
-            feed.innerHTML = html;
+            html += h.map(x => `<div class="glass-card p-5 flex justify-between items-center mb-2"><div><p class="text-[7px] text-white/30 uppercase">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button onclick='hacerPDF(${JSON.stringify(x)})' class="text-xl">📄</button></div>`).join('');
+            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/30">Sin registros</p>';
         }
 
-        renderHistory(); // Carga inicial
+        renderHistory();
     </script>
 </body>
 </html>
