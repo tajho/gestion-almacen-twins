@@ -3,35 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho | Luxury Logistics</title>
+    <title>Tajho Robust Elite | Inventory</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --main: #ffffff; --accent: #000000; --soft: #f4f7f9; --shadow: rgba(0,0,0,0.05); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--soft); color: var(--accent); overflow-x: hidden; }
-        
-        .view { display: none; min-height: 100vh; padding: 24px; flex-direction: column; animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        .view.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        :root { 
+            --bg: #f0f4f8; /* Blanco azulado muy suave para contraste */
+            --panel: #ffffff; 
+            --accent: #000000; 
+            --text-main: #1a202c;
+            --text-sub: #718096;
+            
+            /* Sombras Neumórficas */
+            --shadow-out: 10px 10px 20px #d1d9e6, -10px -10px 20px #ffffff;
+            --shadow-in: inset 5px 5px 10px #d1d9e6, inset -5px -5px 10px #ffffff;
+            --shadow-btn: 5px 5px 10px rgba(0,0,0,0.2);
+        }
 
-        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid white; border-radius: 32px; box-shadow: 0 20px 40px var(--shadow); }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            letter-spacing: -0.02em;
+        }
         
-        .btn-luxury { background: var(--accent); color: white; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .btn-luxury:active { transform: scale(0.96); }
+        /* Vistas con transiciones suaves */
+        .view { display: none; min-height: 100vh; padding: 24px; padding-bottom: 60px; flex-direction: column; transition: all 0.5s ease; opacity: 0; transform: translateY(20px); }
+        .view.active { display: flex; opacity: 1; transform: translateY(0); }
 
-        input, select { background: white!important; border: 1px solid #e2e8f0!important; border-radius: 20px!important; padding: 18px!important; font-weight: 600!important; outline: none!important; transition: 0.3s; }
-        input:focus { border-color: var(--accent)!important; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); }
+        /* Paneles Robustos (Glass + Neumorfismo) */
+        .robust-card { 
+            background: var(--panel); 
+            border-radius: 35px; 
+            box-shadow: var(--shadow-out); 
+            border: 1px solid rgba(255,255,255,0.6);
+        }
 
-        .tab-button { background: white; border-radius: 35px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px var(--shadow); transition: 0.4s; border: 1px solid transparent; }
-        .tab-button:active { transform: translateY(5px); box-shadow: 0 5px 15px var(--shadow); }
-        .tab-button i { font-size: 3rem; margin-bottom: 1rem; color: #1a1a1a; }
+        /* Botones Principales Elegantes */
+        .btn-elite { 
+            background: var(--accent); 
+            color: white; 
+            border-radius: 24px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            font-size: 11px;
+            transition: all 0.3s ease; 
+            box-shadow: var(--shadow-btn);
+        }
+        .btn-elite:active { transform: scale(0.97); box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+        .btn-elite:disabled { opacity: 0.5; background: #a0aec0; }
+
+        /* Inputs Robustos Neumórficos */
+        input, select { 
+            background: var(--bg)!important; 
+            border: none!important;
+            box-shadow: var(--shadow-in)!important;
+            border-radius: 20px!important; 
+            padding: 20px!important; 
+            font-weight: 700!important; 
+            font-size: 16px!important;
+            outline: none!important; 
+            transition: 0.3s; 
+            color: var(--text-main)!important;
+        }
+        input::placeholder { color: var(--text-sub); font-weight: 400; }
+
+        /* Botones de Dashboard (Interactividad Máxima) */
+        .dash-button { 
+            background: var(--panel); 
+            border-radius: 40px; 
+            height: 200px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: var(--shadow-out); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border: 2px solid transparent;
+        }
+        .dash-button:active { box-shadow: var(--shadow-in); transform: scale(0.96); }
+        .dash-button i { font-size: 3.5rem; margin-bottom: 1.2rem; color: var(--accent); transition: 0.3s; }
+        .dash-button:active i { transform: scale(0.9); opacity: 0.7; }
         
+        /* Lista de sugerencias robusta */
+        #suggestions { position: absolute; width: 100%; top: 100%; z-index: 100; max-height: 250px; overflow-y: auto; margin-top: 12px; box-shadow: var(--shadow-out); background: white; border-radius: 20px; }
+        .suggestion-item { padding: 18px; border-bottom: 1px solid #f0f4f8; cursor: pointer; font-weight: 700; color: var(--text-main); }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:active { bg: #f0f4f8; }
+
+        /* Animaciones para listas */
+        .list-item-enter { animation: listItemEnter 0.4s ease forwards; opacity: 0; transform: translateX(-10px); }
+        @keyframes listItemEnter { to { opacity: 1; transform: translateX(0); } }
+
         /* Ocultar barra de scroll */
         ::-webkit-scrollbar { display: none; }
     </style>
@@ -39,88 +110,101 @@
 <body>
 
     <div id="v-dash" class="view active">
-        <header class="pt-16 pb-12 text-center">
-            <h1 class="text-[10px] font-extrabold tracking-[0.6em] text-black/30 uppercase mb-3">Intelligent Inventory</h1>
-            <h2 class="text-5xl font-light italic tracking-tighter">Tajho <span class="font-black not-italic">Elite</span></h2>
+        <header class="pt-16 pb-14 text-center">
+            <h1 class="text-[11px] font-extrabold tracking-[0.7em] text-gray-400 uppercase mb-4">Tajho Logistics System</h1>
+            <h2 class="text-6xl font-extralight tracking-tighter text-black">Tajho<span class="font-extrabold text-black">Elite</span></h2>
         </header>
 
-        <div class="grid grid-cols-2 gap-6 mt-4">
-            <button onclick="navTo('create')" class="tab-button">
-                <i class="ph-thin ph-truck"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Crear<br>Contenedor</span>
+        <div class="grid grid-cols-2 gap-8 mt-6 flex-1 px-2">
+            <button onclick="navTo('create')" class="dash-button">
+                <i class="ph-duotone ph-truck"></i>
+                <span class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-gray-700">Crear<br>Contenedor</span>
             </button>
-            <button onclick="navTo('hist')" class="tab-button">
-                <i class="ph-thin ph-notebook"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Historial<br>Reportes</span>
+            <button onclick="navTo('hist')" class="dash-button">
+                <i class="ph-duotone ph-folders"></i>
+                <span class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-gray-700">Historial<br>Reportes</span>
             </button>
         </div>
 
-        <footer class="mt-auto pb-10 text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100">
-                <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                <span class="text-[9px] font-bold uppercase opacity-40">Sincronización Activa</span>
+        <footer class="pb-8 pt-10 text-center">
+            <div class="inline-flex items-center gap-3 px-5 py-3 robust-card rounded-full shadow-inner bg-white/50">
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Sincronización Inteligente Activa</span>
             </div>
         </footer>
     </div>
 
     <div id="v-create" class="view">
-        <div class="flex items-center justify-between mb-10">
-            <button onclick="navTo('dash')" class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100"><i class="ph-bold ph-caret-left"></i></button>
-            <h2 class="text-xl font-black uppercase italic tracking-tighter">Nueva Operación</h2>
-            <div class="w-12"></div>
+        <div class="flex items-center justify-between mb-12">
+            <button onclick="navTo('dash')" class="w-14 h-14 rounded-full robust-card flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl"></i></button>
+            <h2 class="text-2xl font-extrabold uppercase tracking-tighter text-black">Nueva Operación</h2>
+            <div class="w-14"></div>
         </div>
 
-        <div class="glass-card p-8 space-y-6">
+        <div class="robust-card p-9 space-y-8">
             <div class="relative">
-                <p class="text-[9px] font-black uppercase opacity-30 ml-2 mb-2">Maestra de Productos (Hoja 1)</p>
-                <input type="text" id="sku-search" oninput="searchInMaster(this.value)" class="w-full text-lg" placeholder="Escribe SKU...">
-                <div id="results" class="absolute w-full mt-2 glass-card z-50 hidden overflow-hidden border-none shadow-2xl"></div>
+                <p class="text-[10px] font-extrabold uppercase text-gray-400 ml-3 mb-3 tracking-widest">Maestra de Productos (Hoja 1)</p>
+                <input type="text" id="sku-search" oninput="searchInMaster(this.value)" class="w-full text-lg" placeholder="Buscar por SKU...">
+                <div id="results" class="absolute w-full mt-3 glass-card z-50 hidden overflow-hidden border-none shadow-2xl"></div>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-4 items-end">
                 <div class="flex-1">
-                    <p class="text-[9px] font-black uppercase opacity-30 ml-2 mb-2">Meta Cantidad</p>
-                    <input type="number" id="sku-meta" class="w-full text-center text-xl font-bold" placeholder="0">
+                    <p class="text-[10px] font-extrabold uppercase text-gray-400 ml-3 mb-3 tracking-widest">Meta Cantidad</p>
+                    <input type="number" id="sku-meta" class="w-full text-center text-3xl font-extrabold" placeholder="0">
                 </div>
-                <button onclick="addSku()" class="mt-6 px-8 btn-luxury text-[10px]">Añadir</button>
+                <button onclick="addSku()" class="h-[74px] px-10 btn-elite text-[11px]">Añadir</button>
             </div>
         </div>
 
-        <div id="pre-list" class="mt-8 space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="pre-list" class="mt-10 space-y-4 flex-1 overflow-y-auto pr-2">
+            </div>
 
-        <button onclick="confirmAndSave()" class="w-full py-6 btn-luxury bg-black text-white mt-6 rounded-[28px]">
-            Registrar Contenedor
+        <button onclick="confirmAndSave()" class="w-full py-7 btn-elite bg-black text-white mt-8 rounded-[30px] text-xs shadow-2xl">
+            Registrar Contenedor en Historial
         </button>
     </div>
 
     <div id="v-hist" class="view">
-        <div class="flex items-center justify-between mb-10">
-            <button onclick="navTo('dash')" class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100"><i class="ph-bold ph-caret-left"></i></button>
-            <h2 class="text-xl font-black uppercase italic tracking-tighter">Historial Elite</h2>
-            <div class="w-12"></div>
+        <div class="flex items-center justify-between mb-12">
+            <button onclick="navTo('dash')" class="w-14 h-14 rounded-full robust-card flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl"></i></button>
+            <h2 class="text-2xl font-extrabold uppercase tracking-tighter text-black">Historial</h2>
+            <div class="w-14"></div>
         </div>
-        <div id="history-list" class="space-y-4"></div>
+        <div id="history-list" class="space-y-5 flex-1 overflow-y-auto pr-2">
+            </div>
     </div>
 
     <div id="v-work" class="view">
-        <div class="flex justify-between items-center mb-10">
+        <div class="flex justify-between items-center mb-12">
             <div>
-                <h2 class="text-3xl font-black italic tracking-tighter" id="work-id"></h2>
-                <p class="text-[9px] font-bold text-black/30 uppercase tracking-[0.3em]">Operación en tiempo real</p>
+                <h2 class="text-4xl font-extrabold italic tracking-tighter text-black" id="work-id"></h2>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">Panel de Control de Descarga</p>
             </div>
-            <button onclick="finishProcess()" class="px-6 py-3 btn-luxury bg-green-500 text-white border-none text-[9px]">FINALIZAR</button>
+            <button onclick="finishProcess()" class="px-8 py-4 btn-elite bg-green-600 text-white border-none text-[10px]">FINALIZAR</button>
         </div>
 
-        <div class="glass-card p-10 text-center mb-8">
-            <select id="work-sel" onchange="refreshWorkUI()" class="w-full mb-8 font-extrabold text-2xl text-center border-none bg-gray-50"></select>
-            <div class="flex items-center justify-center gap-6">
-                <input type="number" id="work-val" class="w-32 text-5xl font-black text-center border-none" placeholder="0">
-                <button onclick="commitValue()" class="w-20 h-20 rounded-3xl bg-black text-white flex items-center justify-center shadow-xl">
-                    <i class="ph-bold ph-plus text-3xl"></i>
+        <div class="robust-card p-12 text-center mb-10">
+            <p class="text-[10px] font-extrabold uppercase text-gray-400 mb-4 tracking-widest">Seleccionar Ítem</p>
+            <select id="work-sel" onchange="refreshWorkUI()" class="w-full mb-10 font-extrabold text-2xl text-center shadow-inner bg-gray-50 border-gray-100"></select>
+            
+            <p class="text-[10px] font-extrabold uppercase text-gray-400 mb-4 tracking-widest">Cantidad a Sumar</p>
+            <div class="flex items-center justify-center gap-8">
+                <input type="number" id="work-val" class="w-40 text-7xl font-extrabold text-center border-none shadow-inner" placeholder="0">
+                <button onclick="commitValue()" class="w-24 h-24 rounded-full bg-black text-white flex items-center justify-center shadow-2xl active:scale-95 transition-all">
+                    <i class="ph-bold ph-plus text-4xl"></i>
                 </button>
             </div>
         </div>
 
-        <div id="work-stats" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="work-stats" class="space-y-4 flex-1 overflow-y-auto pr-2">
+            </div>
+    </div>
+
+    <div id="m-loading" class="fixed inset-0 z-[3000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center">
+        <div class="robust-card p-10 flex flex-col items-center">
+            <i class="ph-duotone ph-spinner-gap text-6xl text-black animate-spin mb-5"></i>
+            <p class="text-sm font-bold uppercase tracking-widest text-black">Sincronizando...</p>
+        </div>
     </div>
 
     <script>
@@ -128,25 +212,42 @@
         let masterItems = [], queue = [], currentOp = null;
 
         window.onload = async () => {
-            renderHistory();
+            // Verificar si hay una operación en curso
+            const savedOp = localStorage.getItem('tajho_elite_current');
+            if(savedOp) {
+                currentOp = JSON.parse(savedOp);
+                // Si la operación no está finalizada, ir directo al conteo
+                if(!currentOp.done) {
+                    showTerminal();
+                } else {
+                    renderHistory();
+                }
+            } else {
+                renderHistory();
+            }
+            
+            // Carga de maestra silenciosa
             try { 
                 const res = await fetch(SHEETS_URL); 
                 masterItems = await res.json(); 
-            } catch(e) { console.error("Error Maestra"); }
+            } catch(e) { console.error("Error cargando Maestra"); }
         };
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-' + v).classList.add('active');
+            // Pequeño delay para la animación
+            setTimeout(() => {
+                document.getElementById('v-' + v).classList.add('active');
+            }, 50);
             if(v === 'hist') renderHistory();
         }
 
-        // --- CREACIÓN ---
+        // --- GESTIÓN DE CREACIÓN (HOJA 1) ---
         function searchInMaster(q) {
             const resDiv = document.getElementById('results');
             if (q.length < 2) { resDiv.classList.add('hidden'); return; }
             const m = masterItems.filter(p => p.sku.toLowerCase().includes(q.toLowerCase())).slice(0, 5);
-            resDiv.innerHTML = m.map(x => `<div onclick="selectFromMaster('${x.sku}')" class="p-5 border-b border-gray-50 font-bold text-sm hover:bg-gray-50">${x.sku}</div>`).join('');
+            resDiv.innerHTML = m.map(x => `<div onclick="selectFromMaster('${x.sku}')" class="suggestion-item">${x.sku}</div>`).join('');
             resDiv.classList.remove('hidden');
         }
         function selectFromMaster(s) { document.getElementById('sku-search').value = s; document.getElementById('results').classList.add('hidden'); }
@@ -160,46 +261,68 @@
         }
         function renderQueue() {
             document.getElementById('pre-list').innerHTML = queue.map((x, i) => `
-                <div class="glass-card p-5 flex justify-between items-center animate-pulse">
-                    <span class="font-bold text-sm">${x.sku} <span class="ml-3 opacity-30 text-[10px]">META: ${x.meta}</span></span>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-400 w-10 h-10 flex items-center justify-center"><i class="ph-bold ph-trash"></i></button>
+                <div class="robust-card p-6 flex justify-between items-center list-item-enter bg-white/70">
+                    <span class="font-extrabold text-lg">${x.sku} <span class="ml-4 text-gray-400 text-xs font-semibold tracking-wider">META: ${x.meta}</span></span>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 w-12 h-12 rounded-full robust-card flex items-center justify-center shadow-inner"><i class="ph-bold ph-trash"></i></button>
                 </div>`).join('');
         }
 
         async function confirmAndSave() {
             if(queue.length === 0) return;
-            const op = { id: `TJ-${Math.floor(Math.random()*9000+1000)}`, date: new Date().toLocaleString(), items: [...queue], done: false };
-            let history = JSON.parse(localStorage.getItem('tajho_elite_v1') || '[]');
-            history.unshift(op);
-            localStorage.setItem('tajho_elite_v1', JSON.stringify(history));
+            // Ocultar modal si estaba abierto
+            closeModal('m-loading');
             
-            // Invisible Background Sync (Hoja 2)
-            fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'guardar_contenedor', ...op }) });
+            const op = { 
+                id: `TJ${Math.floor(Math.random()*9000+1000)}`, 
+                date: new Date().toLocaleString(), 
+                items: [...queue], 
+                done: false 
+            };
+            
+            // Guardado Local
+            let history = JSON.parse(localStorage.getItem('tajho_elite_v2') || '[]');
+            history.unshift(op);
+            localStorage.setItem('tajho_elite_v2', JSON.stringify(history));
+            
+            // Sincronización Invisible (Hoja 2)
+            fetch(SHEETS_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({ accion: 'guardar_contenedor', ...op }) 
+            });
 
+            // Limpieza y navegación
             queue = []; renderQueue();
             navTo('hist');
         }
 
-        // --- HISTORIAL ---
+        // --- GESTIÓN DE HISTORIAL ---
         function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('tajho_elite_v1') || '[]');
-            document.getElementById('history-list').innerHTML = h.map((x, i) => `
-                <div class="glass-card p-6 flex justify-between items-center">
+            const h = JSON.parse(localStorage.getItem('tajho_elite_v2') || '[]');
+            const listFeed = document.getElementById('history-list');
+            
+            listFeed.innerHTML = h.map((x, i) => `
+                <div class="robust-card p-7 flex justify-between items-center list-item-enter">
                     <div>
-                        <p class="text-[8px] font-black text-black/20 mb-1 uppercase">${x.date}</p>
-                        <p class="text-lg font-black italic tracking-tighter">${x.id}</p>
+                        <p class="text-[9px] font-black text-gray-400 mb-1.5 uppercase tracking-widest">${x.date}</p>
+                        <p class="text-xl font-extrabold italic tracking-tighter text-black">${x.id}</p>
                     </div>
                     ${x.done ? 
-                        `<button onclick="downloadPDF(${i})" class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center shadow-lg"><i class="ph-bold ph-file-pdf text-xl"></i></button>` : 
-                        `<button onclick="openProcess(${i})" class="px-6 py-3 rounded-2xl bg-gray-100 text-black font-black text-[9px] uppercase tracking-widest">Descargar</button>`
+                        `<button onclick="downloadPDF(${i})" class="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center shadow-2xl active:scale-95 transition-all"><i class="ph-bold ph-file-pdf text-2xl"></i></button>` : 
+                        `<button onclick="openProcess(${i})" class="px-8 py-4 rounded-full bg-gray-100 text-black font-extrabold text-[10px] uppercase tracking-wider shadow-inner active:scale-95 transition-all">INICIAR CONTEO</button>`
                     }
-                </div>`).join('') || '<div class="text-center py-20 opacity-20 font-bold uppercase text-xs tracking-[0.5em]">Limpio</div>';
+                </div>`).join('') || '<div class="text-center py-24 robust-card bg-white/50 shadow-inner"><i class="ph-duotone ph-folder-open text-6xl text-gray-300 mb-4 block mx-auto"></i><p class="font-bold uppercase text-xs tracking-[0.3em] text-gray-400">Sin Registros</p></div>';
         }
 
-        // --- TRABAJO REAL ---
+        // --- GESTIÓN DE TRABAJO (DESCARGA) ---
         function openProcess(idx) {
-            const h = JSON.parse(localStorage.getItem('tajho_elite_v1') || '[]');
+            const h = JSON.parse(localStorage.getItem('tajho_elite_v2') || '[]');
             currentOp = { ...h[idx], localIdx: idx };
+            localStorage.setItem('tajho_elite_current', JSON.stringify(currentOp));
+            showTerminal();
+        }
+
+        function showTerminal() {
             navTo('work');
             document.getElementById('work-id').innerText = currentOp.id;
             document.getElementById('work-sel').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
@@ -214,67 +337,115 @@
             item.r += val;
             document.getElementById('work-val').value = '';
             refreshWorkUI();
-            // Guardado automático local
-            updateLocalStorage();
+            
+            // Guardado automático local y en current
+            updateLocalStorageAndCurrent();
         }
 
         function refreshWorkUI() {
             document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
-                <div class="glass-card p-5">
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-3">
+                <div class="robust-card p-6 bg-white/80">
+                    <div class="flex justify-between text-[11px] font-extrabold uppercase mb-3.5 tracking-wider">
                         <span>${x.sku}</span>
-                        <span class="opacity-40 tracking-widest">${x.r} / ${x.meta}</span>
+                        <span class="${x.r >= x.meta ? 'text-green-600' : 'text-gray-500'} font-black text-xs">${x.r} / ${x.meta}</span>
                     </div>
-                    <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-black" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                        <div class="h-full bg-black rounded-full" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
                     </div>
                 </div>`).join('');
         }
 
-        function updateLocalStorage() {
-            let h = JSON.parse(localStorage.getItem('tajho_elite_v1') || '[]');
+        function updateLocalStorageAndCurrent() {
+            // Actualizar currentOp en storage
+            localStorage.setItem('tajho_elite_current', JSON.stringify(currentOp));
+            
+            // Actualizar en el historial global
+            let h = JSON.parse(localStorage.getItem('tajho_elite_v2') || '[]');
             h[currentOp.localIdx] = currentOp;
-            localStorage.setItem('tajho_elite_v1', JSON.stringify(h));
+            localStorage.setItem('tajho_elite_v2', JSON.stringify(h));
         }
 
         async function finishProcess() {
+            if(!confirm("¿Desea finalizar el conteo?")) return;
+            
+            // Mostrar modal de carga elegante
+            showModal('m-loading');
+            
             currentOp.done = true;
-            updateLocalStorage();
-            // Invisible Sync Final
-            fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: 'finalizar_conteo', ...currentOp }) });
-            alert("Operación completada satisfactoriamente.");
-            navTo('hist');
+            updateLocalStorageAndCurrent();
+            
+            // Borrar de current
+            localStorage.removeItem('tajho_elite_current');
+            
+            // Invisible Sync Final a Hoja 2
+            try {
+                await fetch(SHEETS_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ accion: 'finalizar_conteo', ...currentOp }) 
+                });
+            } catch(e) { console.error("Error sync final"); }
+            
+            // Ocultar modal y navegar
+            setTimeout(() => {
+                closeModal('m-loading');
+                navTo('hist');
+            }, 500);
         }
 
-        // --- PDF ---
+        // --- GENERACIÓN DE PDF PROFESIONAL ---
         function downloadPDF(idx) {
-            const d = JSON.parse(localStorage.getItem('tajho_elite_v1') || '[]')[idx];
+            const d = JSON.parse(localStorage.getItem('tajho_elite_v2') || '[]')[idx];
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4'
+            });
             
-            // Header Minimalista
-            doc.setFillColor(245, 247, 249); doc.rect(0, 0, 210, 297, 'F');
-            doc.setTextColor(0); doc.setFontSize(28); doc.setFont("helvetica", "bold"); doc.text("TAJHO ELITE", 14, 30);
-            doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.text(`REPORTE DE LOGÍSTICA • ${d.id}`, 14, 38);
-            doc.text(`FECHA: ${d.date}`, 14, 43);
+            // Diseño de Página y Header Robusto
+            doc.setFillColor(240, 244, 248); doc.rect(0, 0, 210, 297, 'F');
+            doc.setFillColor(255, 255, 255); doc.roundedRect(10, 10, 190, 45, 5, 5, 'F');
+            
+            doc.setTextColor(0); doc.setFontSize(26); doc.setFont("helvetica", "bold"); doc.text("TAJHO ELITE", 20, 30);
+            doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("LOGISTICS MANAGEMENT REPORT", 20, 38);
+            
+            doc.setFontSize(9); doc.setTextColor(100);
+            doc.text(`Nº DE OPERACIÓN: ${d.id}`, 140, 28);
+            doc.text(`FECHA REGISTRO: ${d.date}`, 140, 33);
+            doc.text(`ESTADO: COMPLETADO`, 140, 38);
 
+            // Tabla de Datos
             doc.autoTable({
-                startY: 55,
-                head: [['PRODUCTO SKU', 'META', 'CONTEO REAL', 'DIFERENCIA']],
-                body: d.items.map(it => [it.sku, it.meta, it.r, (it.r - it.meta)]),
+                startY: 60,
+                head: [['PRODUCTO SKU', 'META DE CARGA', 'CONTEO REAL', 'DIFERENCIA']],
+                body: d.items.map(it => [
+                    it.sku, 
+                    it.meta, 
+                    it.r, 
+                    {content: (it.r - it.meta), styles: {fontStyle: 'bold', textColor: (it.r < it.meta ? [200, 0, 0] : [0, 150, 0])}}
+                ]),
                 theme: 'striped',
-                headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
-                styles: { font: 'helvetica', fontSize: 9 }
+                headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 10, halign: 'center' },
+                styles: { font: 'helvetica', fontSize: 9, cellPadding: 5, halign: 'center' },
+                columnStyles: { 0: {halign: 'left', fontStyle: 'bold'} },
+                margin: { left: 10, right: 10 }
             });
 
+            // Firma y Footer
             const finalY = doc.lastAutoTable.finalY + 30;
-            doc.setDrawColor(200); doc.line(14, finalY, 100, finalY);
-            doc.setFontSize(9); doc.setFont("helvetica", "bold");
-            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 8);
-            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 13);
+            doc.setDrawColor(180); doc.line(20, finalY, 120, finalY);
+            doc.setFontSize(10); doc.setTextColor(0); doc.setFont("helvetica", "bold");
+            doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 20, finalY + 8);
+            doc.setFont("helvetica", "normal"); doc.text("Asistente de Inventario Logístico", 20, finalY + 13);
             
-            doc.save(`Tajho_${d.id}.pdf`);
+            // Descarga Segura
+            doc.save(`Tajho_Elite_${d.id}.pdf`);
         }
+
+        // Helpers de Modal
+        function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     </script>
 </body>
 </html>
