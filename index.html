@@ -26,7 +26,6 @@
         .btn-ok { width: 60px; height: 60px; background: #000; color: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
         .btn-ok:active { transform: scale(0.9); }
         
-        /* Ajuste para que los cuadros de conteo no se salgan */
         #op-list { max-height: 35vh; overflow-y: auto; padding-right: 4px; }
     </style>
 </head>
@@ -194,8 +193,9 @@
 
         function descargarPDF(d) {
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const lib = window.jspdf;
+                if (!lib) throw new Error();
+                const doc = new lib.jsPDF();
                 doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
                 doc.setFontSize(10); doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
                 doc.autoTable({
@@ -206,7 +206,7 @@
                 });
                 doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
                 doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { alert("Error al generar PDF. Asegúrate de estar conectado a internet."); }
+            } catch(e) { alert("Error al generar PDF. Asegúrate de que las librerías se hayan cargado."); }
         }
 
         function renderHistorial() {
