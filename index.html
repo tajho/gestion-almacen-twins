@@ -7,132 +7,144 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f2f2f7; color: #1c1c1e; overflow-y: auto; }
-        .aura-card { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); }
-        .view { display: none; min-height: 100vh; flex-direction: column; padding: 15px; padding-top: 60px; padding-bottom: 90px; }
-        .view.active { display: flex; }
-        .aura-input { background: transparent; border: none; font-size: 14px; font-weight: 800; width: 100%; border-bottom: 2px solid #e5e5ea; outline: none; padding: 6px 0; }
-        .aura-input:focus { border-bottom-color: #007AFF; }
+        :root { --accent: #007AFF; --bg: #F2F2F7; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1c1c1e; touch-action: manipulation; }
         
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(255,255,255,0.9); backdrop-blur: 10px; border-top: 1px solid #e5e5ea; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #8e8e93; transition: 0.3s; background: none; border: none; }
-        .nav-item.active { color: #007AFF; }
-        .nav-text { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        /* Contenedores de inputs optimizados */
+        .data-field { 
+            background: #fff; 
+            border: 1px solid rgba(0,0,0,0.08); 
+            border-radius: 14px; 
+            padding: 8px 12px;
+            transition: all 0.2s ease;
+        }
+        .data-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
+        .data-label { font-size: 8px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .data-input { background: transparent; border: none; font-size: 15px; font-weight: 600; width: 100%; outline: none; color: #000; }
+        .data-input::placeholder { color: #c7c7cc; font-size: 13px; }
 
-        .btn-action { transition: all 0.2s active:scale-95; }
-        .badge-status { font-size: 8px; font-weight: 900; padding: 2px 8px; rounded-full: 99px; text-transform: uppercase; }
+        /* Vistas y Navegación */
+        .view { display: none; min-height: 100vh; flex-direction: column; padding: 16px; padding-bottom: 100px; }
+        .view.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-pill { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); backdrop-blur: 15px; padding: 6px; border-radius: 30px; display: flex; gap: 4px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .nav-btn { padding: 10px 18px; border-radius: 25px; border: none; background: transparent; color: #fff; font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .nav-btn.active { background: var(--accent); }
+
+        /* Botón OK de Conteo Estilo Industrial */
+        .btn-ok { width: 70px; height: 70px; background: #000; color: #fff; border-radius: 22px; display: flex; items-center: center; justify-content: center; font-size: 20px; font-weight: 800; box-shadow: 0 8px 15px rgba(0,0,0,0.2); active:scale-90; }
     </style>
 </head>
 <body>
 
-    <header class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center pointer-events-none">
-        <div class="pointer-events-auto bg-white/50 backdrop-blur px-3 py-1 rounded-full border border-white/20">
-            <p class="text-[7px] font-black text-blue-600 tracking-widest uppercase">Aura Pro</p>
-            <h1 class="text-xs font-black tracking-tighter">TWINS.</h1>
-        </div>
-    </header>
+    <nav class="nav-pill">
+        <button onclick="navTo('home')" class="nav-btn active" id="btn-home"><span>🏠</span> Tajho</button>
+        <button onclick="navTo('crear')" class="nav-btn" id="btn-crear"><span>📦</span> Nuevo</button>
+        <button onclick="navTo('historial')" class="nav-btn" id="btn-historial"><span>📋</span> Historial</button>
+    </nav>
 
     <div id="view-home" class="view active">
-        <div class="mt-8 mb-8">
-            <h2 class="text-3xl font-black tracking-tighter">¿Qué hacemos hoy, Tajho?</h2>
-            <p class="text-xs text-slate-400 font-bold">Selecciona una tarea para iniciar</p>
+        <div class="py-10">
+            <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Bienvenido</p>
+            <h2 class="text-4xl font-black tracking-tighter leading-none mb-2">¿Qué hacemos hoy, <span class="text-blue-600">Tajho?</span></h2>
+            <div class="h-1 w-12 bg-black rounded-full"></div>
         </div>
 
-        <div class="grid gap-4">
-            <button onclick="navTo('crear')" class="aura-card p-6 text-left border-l-8 border-blue-600 shadow-xl shadow-blue-500/10">
-                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-blue-600 font-black">＋</div>
-                <p class="text-lg font-black tracking-tight">Nuevo Contenedor</p>
-                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Registrar ingreso de mercadería</p>
-            </button>
+        <div class="grid gap-3">
+            <div onclick="navTo('crear')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="p-3 bg-blue-50 rounded-2xl text-blue-600">📦</div>
+                    <span class="text-[8px] font-black bg-blue-100 text-blue-600 px-2 py-1 rounded-full uppercase">Ingresos</span>
+                </div>
+                <p class="text-xl font-black tracking-tight">Crear Contenedor</p>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase">Registra entrada de productos</p>
+            </div>
 
-            <button onclick="navTo('historial')" class="aura-card p-6 text-left border-l-8 border-slate-900 shadow-xl shadow-slate-500/10">
-                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-4 text-slate-900 font-black">📋</div>
-                <p class="text-lg font-black tracking-tight">Historial / Continuar</p>
-                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Ver reportes o seguir conteos</p>
-            </button>
+            <div onclick="navTo('historial')" class="bg-white p-5 rounded-[28px] border border-black/5 shadow-sm active:scale-95 transition-all">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="p-3 bg-slate-50 rounded-2xl text-slate-900">📋</div>
+                    <span class="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-full uppercase">Registros</span>
+                </div>
+                <p class="text-xl font-black tracking-tight">Historial & Pendientes</p>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase">Revisar o continuar trabajos</p>
+            </div>
         </div>
     </div>
 
     <div id="view-crear" class="view">
-        <div class="flex items-center gap-2 mb-6">
-            <button onclick="navTo('home')" class="text-lg">←</button>
-            <h2 class="text-xl font-black tracking-tighter">Nuevo Plan</h2>
-        </div>
-        <div class="space-y-4">
-            <div class="aura-card p-4">
-                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">ID Contenedor</label>
-                <input type="text" id="auto-id-input" class="aura-input" placeholder="Nombre del contenedor...">
+        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Configurar Operación</h3>
+        
+        <div class="space-y-2">
+            <div class="data-field">
+                <p class="data-label">ID Contenedor</p>
+                <input type="text" id="auto-id-input" class="data-input" placeholder="Ej: CT-LIMA-001">
             </div>
-            <div class="aura-card p-4 relative">
-                <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Buscar SKU</label>
-                <input type="text" id="s-sku" oninput="doSearch()" class="aura-input" placeholder="Buscar en base de datos...">
-                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden max-h-48 overflow-y-auto border border-slate-100"></div>
-            </div>
-            <div class="flex gap-3">
-                <div class="aura-card p-4 flex-1">
-                    <label class="text-[8px] font-black text-blue-600 uppercase mb-1 block">Meta Cajas</label>
-                    <input type="number" id="s-meta" class="aura-input text-center" placeholder="0">
+
+            <div class="relative">
+                <div class="data-field">
+                    <p class="data-label">Producto (Google Sheets)</p>
+                    <input type="text" id="s-sku" oninput="doSearch()" class="data-input" placeholder="Escribe SKU o Nombre...">
                 </div>
-                <button onclick="addToQueue()" class="w-16 aura-card bg-black text-white flex items-center justify-center text-3xl font-light">＋</button>
+                <div id="res-box" class="absolute left-0 right-0 bg-white shadow-2xl rounded-2xl mt-2 z-[110] hidden border border-slate-100 overflow-hidden"></div>
+            </div>
+
+            <div class="flex gap-2">
+                <div class="data-field flex-1">
+                    <p class="data-label">Meta Cajas</p>
+                    <input type="number" id="s-meta" class="data-input text-lg font-black" placeholder="0">
+                </div>
+                <button onclick="addToQueue()" class="bg-black text-white px-8 rounded-2xl font-black text-xl active:scale-90 transition-all">＋</button>
             </div>
         </div>
+
         <div id="list-queue" class="mt-6 space-y-2"></div>
+
         <div class="mt-auto">
-            <button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/30">Iniciar Conteo</button>
+            <button onclick="iniciarOContinuar()" class="w-full h-16 bg-blue-600 text-white rounded-[22px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all">Iniciar Conteo en Terminal</button>
         </div>
     </div>
 
     <div id="view-ops" class="view">
-        <div class="flex justify-between items-center mb-4">
-            <p id="op-id-display" class="text-xs font-black text-blue-600"></p>
-            <button onclick="alert('Se guardó automáticamente')" class="text-[9px] font-black bg-green-100 text-green-600 px-3 py-1 rounded-full uppercase">Autoguardado</button>
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <p id="op-id-display" class="text-[10px] font-black text-blue-600 uppercase"></p>
+                <p class="text-2xl font-black tracking-tighter">Terminal Tajho</p>
+            </div>
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
         </div>
-        
-        <div class="aura-card p-5 mb-4 shadow-xl border-t-4 border-blue-600">
-            <select id="op-select" onchange="renderOps()" class="w-full text-2xl font-black text-center outline-none mb-4 bg-transparent border-none appearance-none"></select>
-            <div class="flex gap-4">
-                <input type="number" id="op-qty" class="flex-1 text-5xl font-black text-center bg-slate-50 rounded-2xl p-5 outline-none" placeholder="0">
-                <button onclick="addCount()" class="w-20 h-20 bg-black text-white rounded-3xl flex items-center justify-center text-2xl active:scale-90">OK</button>
+
+        <div class="bg-white rounded-[32px] p-6 shadow-2xl border border-black/5 mb-6">
+            <select id="op-select" onchange="renderOps()" class="w-full text-center text-sm font-black uppercase text-slate-400 mb-4 bg-slate-50 py-2 rounded-xl border-none outline-none appearance-none"></select>
+            <div class="flex items-center gap-4">
+                <input type="number" id="op-qty" class="flex-1 text-7xl font-black text-center outline-none bg-transparent" placeholder="0">
+                <button onclick="addCount()" class="btn-ok">OK</button>
             </div>
         </div>
 
-        <div id="op-list" class="space-y-2"></div>
-        
-        <div class="mt-8 grid grid-cols-2 gap-3">
-            <button onclick="descargarPDF(activeOp)" class="h-12 border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase">Descargar Borrador</button>
-            <button onclick="openFinalModal()" class="h-12 bg-black text-white rounded-xl font-black text-[10px] uppercase">Finalizar Todo</button>
+        <div id="op-list" class="space-y-3"></div>
+
+        <div class="grid grid-cols-2 gap-3 mt-6">
+            <button onclick="descargarPDF(activeOp)" class="h-14 rounded-2xl border-2 border-slate-200 font-black text-[9px] uppercase text-slate-500 active:bg-slate-50">Vista Previa</button>
+            <button onclick="openFinalModal()" class="h-14 rounded-2xl bg-black text-white font-black text-[9px] uppercase shadow-lg active:scale-95">Finalizar Reporte</button>
         </div>
     </div>
 
     <div id="view-historial" class="view">
-        <h2 class="text-2xl font-black tracking-tighter mb-6">Historial y Pendientes</h2>
+        <h2 class="text-3xl font-black tracking-tighter mb-6">Actividad</h2>
         <div id="hist-feed" class="space-y-3"></div>
     </div>
 
-    <nav class="nav-bar">
-        <button onclick="navTo('home')" class="nav-item" id="nav-home">
-            <span class="text-xl">🏠</span>
-            <span class="nav-text">TAJHO</span>
-        </button>
-        <button onclick="navTo('crear')" class="nav-item" id="nav-crear">
-            <span class="text-xl">📦</span>
-            <span class="nav-text">CONTENEDOR</span>
-        </button>
-        <button onclick="navTo('historial')" class="nav-item" id="nav-historial">
-            <span class="text-xl">📋</span>
-            <span class="nav-text">HISTORIAL</span>
-        </button>
-    </nav>
-
-    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6">
-        <div class="aura-card w-full max-w-sm p-8 text-center">
-            <h3 class="text-xl font-black mb-2">¿Cerrar Contenedor?</h3>
-            <p class="text-[10px] text-slate-400 font-bold uppercase mb-6">Revisión: J. Angelo Nuñez Durand</p>
-            <div class="flex gap-3">
-                <button onclick="closeModal()" class="flex-1 h-14 bg-slate-100 rounded-2xl font-black text-[10px] uppercase">VOLVER</button>
-                <button onclick="finalizarDefinitivo()" class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-[10px] uppercase">CERRAR Y PDF</button>
+    <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[35px] p-8 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
+            <h3 class="text-2xl font-black tracking-tight mb-2">¿Cerrar Operación?</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-8">Revisión: J. Angelo Nuñez Durand</p>
+            <div class="flex flex-col gap-2">
+                <button onclick="finalizarDefinitivo()" class="h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest">Confirmar y Generar PDF</button>
+                <button onclick="closeModal()" class="h-14 text-slate-400 font-bold text-xs">Cancelar</button>
             </div>
         </div>
     </div>
@@ -142,10 +154,8 @@
         let queue = [];
         let activeOp = null;
 
-        // PERMITIR ACTUALIZACIÓN (SIN BLOQUEO)
-        // Guardamos en LocalStorage para no perder datos al actualizar
         window.onload = () => {
-            const saved = localStorage.getItem('active_tajho');
+            const saved = localStorage.getItem('active_tajho_v3');
             if(saved) {
                 activeOp = JSON.parse(saved);
                 navTo('ops');
@@ -155,10 +165,9 @@
 
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
-            const nav = document.getElementById('nav-' + v);
-            if(nav) nav.classList.add('active');
+            document.getElementById('btn-' + v).classList.add('active');
             if(v === 'historial') renderHistorial();
         }
 
@@ -170,9 +179,9 @@
                 const res = await fetch(`${APP_URL}?action=buscar&term=${val}`);
                 const data = await res.json();
                 box.innerHTML = data.map(x => `
-                    <div onclick="selectProd('${x.sku}')" class="p-4 border-b active:bg-blue-50">
-                        <p class="text-[10px] font-black">${x.sku}</p>
-                        <p class="text-[8px] text-slate-400 uppercase truncate">${x.descripcion}</p>
+                    <div onclick="selectProd('${x.sku}')" class="p-4 border-b last:border-0 active:bg-blue-50">
+                        <p class="text-xs font-black">${x.sku}</p>
+                        <p class="text-[9px] text-slate-400 uppercase truncate font-bold">${x.descripcion}</p>
                     </div>
                 `).join('');
                 box.classList.remove('hidden');
@@ -197,16 +206,19 @@
 
         function renderQueue() {
             document.getElementById('list-queue').innerHTML = queue.map((x, i) => `
-                <div class="aura-card p-4 flex justify-between items-center shadow-sm border-l-4 border-blue-600">
-                    <p class="text-[10px] font-black">${x.sku} <span class="text-blue-500 ml-2">META: ${x.meta}</span></p>
-                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-red-500 font-bold px-2 text-lg">×</button>
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center border border-black/5 shadow-sm">
+                    <div>
+                        <p class="text-[10px] font-black">${x.sku}</p>
+                        <p class="text-[9px] font-bold text-blue-600 uppercase">Meta: ${x.meta} Cajas</p>
+                    </div>
+                    <button onclick="queue.splice(${i},1);renderQueue()" class="text-slate-300 hover:text-red-500 font-bold px-2 text-xl">×</button>
                 </div>
             `).join('');
         }
 
         function iniciarOContinuar() {
             const id = document.getElementById('auto-id-input').value;
-            if(!id || queue.length === 0) return alert("Completa los datos");
+            if(!id || queue.length === 0) return alert("Falta ID o Productos");
             activeOp = { id, items: [...queue], date: new Date().toLocaleString(), status: 'pendiente' };
             saveLocal();
             navTo('ops');
@@ -214,7 +226,7 @@
         }
 
         function syncTerminal() {
-            document.getElementById('op-id-display').innerText = "CONTEO: " + activeOp.id;
+            document.getElementById('op-id-display').innerText = activeOp.id;
             const sel = document.getElementById('op-select');
             sel.innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             renderOps();
@@ -228,25 +240,27 @@
             document.getElementById('op-qty').value = '';
             saveLocal();
             renderOps();
+            // Vibración táctil si el dispositivo lo permite
+            if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
 
         function renderOps() {
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
-                <div class="aura-card p-4 ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-xl' : 'opacity-40'}">
-                    <div class="flex justify-between font-black text-[9px] mb-2">
+                <div class="bg-white p-4 rounded-2xl ${x.sku === cur ? 'ring-2 ring-blue-600 shadow-lg' : 'opacity-40'} transition-all duration-300">
+                    <div class="flex justify-between font-black text-[10px] mb-2 uppercase tracking-tighter">
                         <span>${x.sku}</span>
-                        <span>${x.real} / ${x.meta}</span>
+                        <span class="${x.real >= x.meta ? 'text-green-500' : 'text-blue-600'}">${x.real} / ${x.meta}</span>
                     </div>
                     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600" style="width:${(x.real/x.meta)*100}%"></div>
+                        <div class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width:${Math.min((x.real/x.meta)*100, 100)}%"></div>
                     </div>
                 </div>
             `).join('');
         }
 
         function saveLocal() {
-            localStorage.setItem('active_tajho', JSON.stringify(activeOp));
+            localStorage.setItem('active_tajho_v3', JSON.stringify(activeOp));
         }
 
         function openFinalModal() { document.getElementById('modal-end').classList.remove('hidden'); }
@@ -254,11 +268,11 @@
 
         function finalizarDefinitivo() {
             activeOp.status = 'finalizado';
-            let h = JSON.parse(localStorage.getItem('thist_v2')) || [];
+            let h = JSON.parse(localStorage.getItem('thist_v3')) || [];
             h.unshift(activeOp);
-            localStorage.setItem('thist_v2', JSON.stringify(h));
+            localStorage.setItem('thist_v3', JSON.stringify(h));
             descargarPDF(activeOp);
-            localStorage.removeItem('active_tajho');
+            localStorage.removeItem('active_tajho_v3');
             activeOp = null;
             closeModal();
             navTo('home');
@@ -267,51 +281,44 @@
         function descargarPDF(d) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(16); doc.text("REPORTE DE LOGISTICA - TAJHO", 14, 20);
-            doc.setFontSize(9); doc.text(`CONTENEDOR: ${d.id} | FECHA: ${d.date}`, 14, 30);
+            doc.setFont("helvetica", "bold");
+            doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
+            doc.setFontSize(10);
+            doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
+            doc.text(`FECHA: ${d.date}`, 14, 35);
             doc.autoTable({
                 startY: 40,
-                head: [['SKU', 'META', 'RECIBIDO', 'DIF']],
+                head: [['SKU', 'PLAN', 'REAL', 'DIF']],
                 body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                theme: 'grid', styles: { fontSize: 8 }
+                theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
             });
             doc.text("Autorizado por: J. Angelo Nuñez Durand Asist. Inventario", 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`${d.id}.pdf`);
+            doc.save(`Reporte_${d.id}.pdf`);
         }
 
         function renderHistorial() {
-            const h = JSON.parse(localStorage.getItem('thist_v2')) || [];
-            const act = localStorage.getItem('active_tajho');
+            const h = JSON.parse(localStorage.getItem('thist_v3')) || [];
+            const act = localStorage.getItem('active_tajho_v3');
             let html = "";
-            
             if(act) {
                 const a = JSON.parse(act);
                 html += `
-                    <div class="aura-card p-4 border-2 border-blue-600 mb-6 bg-blue-50/50">
-                        <p class="text-[8px] font-black text-blue-600 uppercase mb-1">TRABAJO EN CURSO</p>
-                        <p class="text-lg font-black">${a.id}</p>
-                        <button onclick="continuarPendiente()" class="w-full mt-4 h-10 bg-blue-600 text-white rounded-xl font-black text-[9px] uppercase">Continuar Conteo</button>
-                    </div>
-                `;
+                    <div class="bg-blue-600 p-5 rounded-[28px] text-white shadow-xl mb-6">
+                        <p class="text-[8px] font-black uppercase opacity-60 mb-1">Operación Activa</p>
+                        <p class="text-xl font-black mb-4">${a.id}</p>
+                        <button onclick="navTo('ops')" class="w-full h-12 bg-white text-blue-600 rounded-xl font-black text-[10px] uppercase">Continuar Conteo</button>
+                    </div>`;
             }
-
             html += h.map(x => `
-                <div class="aura-card p-4 flex justify-between items-center shadow-sm">
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-black/5">
                     <div>
                         <p class="text-[7px] font-black text-slate-400 uppercase">${x.date}</p>
                         <p class="text-xs font-black">${x.id}</p>
                     </div>
-                    <button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-100 p-2 rounded-xl text-[8px] font-black uppercase">PDF</button>
+                    <button onclick='descargarPDF(${JSON.stringify(x)})' class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg shadow-inner">📄</button>
                 </div>
-            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400">No hay registros</p>';
-            
+            `).join('') || '<p class="text-center py-10 text-[10px] text-slate-400 font-bold">SIN REGISTROS</p>';
             document.getElementById('hist-feed').innerHTML = html;
-        }
-
-        function continuarPendiente() {
-            activeOp = JSON.parse(localStorage.getItem('active_tajho'));
-            navTo('ops');
-            syncTerminal();
         }
     </script>
 </body>
