@@ -94,7 +94,7 @@
     </div>
 
     <div id="modal-end" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
+        <div class="bg-white w-full max-xs rounded-3xl p-6 text-center shadow-2xl">
             <h3 class="text-lg font-black mb-1">¿Cerrar Operación?</h3>
             <p class="text-[8px] text-slate-400 font-bold uppercase mb-6">J. Angelo Nuñez Durand</p>
             <div class="flex flex-col gap-2">
@@ -154,6 +154,7 @@
         }
 
         function syncTerminal() {
+            if(!activeOp) return;
             document.getElementById('op-id-display').innerText = activeOp.id;
             const sel = document.getElementById('op-select');
             sel.innerHTML = activeOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
@@ -168,6 +169,7 @@
         }
 
         function renderOps() {
+            if(!activeOp) return;
             const cur = document.getElementById('op-select').value;
             document.getElementById('op-list').innerHTML = activeOp.items.map(x => `
                 <div class="bg-white p-3 rounded-xl ${x.sku === cur ? 'ring-2 ring-blue-600' : 'opacity-50'}">
@@ -191,30 +193,79 @@
             activeOp = null; closeModal(); navTo('home');
         }
 
+        // CONEXIÓN TÉCNICA REFORZADA PARA PDF
         function descargarPDF(d) {
+            if(!d) return alert("No hay datos");
             try {
-                const lib = window.jspdf;
-                if (!lib) throw new Error();
-                const doc = new lib.jsPDF();
-                doc.setFont("helvetica", "bold"); doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
-                doc.setFontSize(10); doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
+                // Forzar detección de la librería jspdf desde el espacio de nombres de la ventana
+                const { jsPDF } = window.jspdf || {};
+                if (!jsPDF) {
+                    alert("Cargando librerías... reintenta en 2 segundos.");
+                    return;
+                }
+
+                const doc = new jsPDF();
+                
+                // Configuración de encabezado
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.text("REPORTE LOGÍSTICO TAJHO", 14, 20);
+                
+                doc.setFontSize(10);
+                doc.text(`CONTENEDOR: ${d.id}`, 14, 30);
+                doc.text(`FECHA: ${d.date}`, 14, 35);
+                
+                // Generación de tabla
                 doc.autoTable({
-                    startY: 35,
+                    startY: 40,
                     head: [['SKU', 'PLAN', 'REAL', 'DIF']],
                     body: d.items.map(x => [x.sku, x.meta, x.real, x.real - x.meta]),
-                    theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+                    theme: 'striped',
+                    headStyles: { fillColor: [0, 122, 255] }, // Azul oficial Aura
+                    styles: { fontSize: 8, font: "helvetica" }
                 });
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, doc.lastAutoTable.finalY + 10);
-                doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { alert("Error al generar PDF. Asegúrate de que las librerías se hayan cargado."); }
+
+                // Pie de página oficial
+                const finalY = doc.lastAutoTable.finalY + 15;
+                doc.setFontSize(9);
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.", 14, finalY);
+                
+                // Descarga
+                doc.save(`Reporte_Tajho_${d.id}.pdf`);
+            } catch(e) {
+                console.error(e);
+                alert("Error técnico al generar el PDF. Verifica tu conexión.");
+            }
         }
 
         function renderHistorial() {
             const h = JSON.parse(localStorage.getItem('thist_v3')) || [];
             const act = localStorage.getItem('active_tajho_v3');
-            let html = act ? `<div class="bg-blue-600 p-4 rounded-2xl text-white mb-4"><p class="text-xs font-black">${JSON.parse(act).id}</p><button onclick="navTo('ops')" class="w-full mt-2 py-2 bg-white text-blue-600 rounded-lg text-[10px] font-black uppercase">Continuar</button></div>` : '';
-            html += h.map(x => `<div class="bg-white p-3 rounded-xl flex justify-between items-center border mb-2"><div class="text-[10px] font-black">${x.id}</div><button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-50 p-2 rounded-lg">📄</button></div>`).join('');
-            document.getElementById('hist-feed').innerHTML = html || '<p class="text-center text-[10px]">Sin registros</p>';
+            let html = '';
+            
+            // Sección de continuar pendiente
+            if(act) {
+                const pend = JSON.parse(act);
+                html += `<div class="bg-blue-600 p-4 rounded-2xl text-white mb-4 shadow-lg shadow-blue-200">
+                            <p class="text-[8px] font-black uppercase opacity-70">En curso</p>
+                            <p class="text-sm font-black">${pend.id}</p>
+                            <button onclick="navTo('ops')" class="w-full mt-3 py-2 bg-white text-blue-600 rounded-lg text-[10px] font-black uppercase">Continuar Conteo</button>
+                         </div>`;
+            }
+
+            // Lista de cerrados
+            html += h.map(x => `
+                <div class="bg-white p-3 rounded-xl flex justify-between items-center border border-black/5 mb-2 shadow-sm">
+                    <div>
+                        <p class="text-[10px] font-black">${x.id}</p>
+                        <p class="text-[7px] text-slate-400 font-bold uppercase">${x.date}</p>
+                    </div>
+                    <button onclick='descargarPDF(${JSON.stringify(x)})' class="bg-slate-50 w-10 h-10 flex items-center justify-center rounded-lg active:bg-slate-200">
+                        📄
+                    </button>
+                </div>`).join('');
+            
+            document.getElementById('hist-feed').innerHTML = html || '<p class="text-center text-[10px] py-10 text-slate-400 font-bold">Sin registros en el historial</p>';
         }
     </script>
 </body>
