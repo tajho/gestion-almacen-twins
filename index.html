@@ -273,34 +273,41 @@
         function closeCloseModal() { document.getElementById('m-final').classList.add('hidden'); }
 
         async function finishAll() {
-            try {
-                // Sincronización con Hoja 2
-                await fetch(SHEETS_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        accion: "guardar_contenedor",
-                        id: activeOp.id,
-                        fecha: activeOp.date,
-                        detalles: activeOp.items
-                    })
-                });
+    try {
+        // 1. Enviar a Google Sheets
+        const response = await fetch(SHEETS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                accion: "guardar_contenedor",
+                id: activeOp.id,
+                fecha: activeOp.date,
+                detalles: activeOp.items
+            })
+        });
 
-                let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
-                h.unshift(activeOp);
-                localStorage.setItem('aura_v3_history', JSON.stringify(h));
+        // 2. Guardar en historial local
+        let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
+        h.unshift(activeOp);
+        localStorage.setItem('aura_v3_history', JSON.stringify(h));
 
-                await makePDF(activeOp);
-                
-                localStorage.removeItem('aura_v3_active');
-                activeOp = null;
-                location.reload();
-            } catch (e) {
-                alert("Error al finalizar. Verifique su conexión.");
-            }
-        }
+        // 3. CAMBIO CLAVE: Cambiar el contenido del modal por un botón real de descarga
+        const modalContent = document.querySelector('#m-final .glass-panel');
+        modalContent.innerHTML = `
+            <i class="ph-duotone ph-check-circle text-6xl text-green-400 mb-6 block"></i>
+            <h3 class="text-2xl font-black mb-2">¡DATOS GUARDADOS!</h3>
+            <p class="text-[10px] font-bold text-white/30 uppercase mb-8">El registro en Sheets fue exitoso. Presiona abajo para obtener tu PDF.</p>
+            <button onclick='descargarPDFManual()' class="w-full py-5 rounded-2xl bg-accent text-black font-black uppercase text-xs mb-4 shadow-[0_0_20px_rgba(0,247,255,0.4)]">
+                📥 DESCARGAR REPORTE AHORA
+            </button>
+            <button onclick="location.reload()" class="text-white/40 text-[10px] font-bold uppercase">Finalizar y Limpiar</button>
+        `;
 
+    } catch (e) {
+        alert("Error de conexión. Los datos no se guardaron.");
+    }
+}
         // SOLUCIÓN DEFINITIVA PDF (MÉTODO BLOB)
        async function makePDF(d) {
     try {
@@ -358,7 +365,35 @@
         alert("El PDF no pudo abrirse. Los datos ya están en tu Google Sheets.");
     }
 }
+function descargarPDFManual() {
+    if (!activeOp) return;
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Configuración estética rápida
+    doc.setFillColor(10, 10, 15);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.text("REPORTE TWINS LOGISTICS", 14, 25);
+    
+    doc.autoTable({
+        startY: 50,
+        head: [['SKU', 'META', 'REAL', 'DIF']],
+        body: activeOp.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
+        theme: 'grid',
+        headStyles: { fillColor: [0, 247, 255], textColor: [0,0,0] }
+    });
+    
+    const finalY = doc.lastAutoTable.finalY + 15;
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(10);
+    doc.text("Revisión: J. Angelo Nuñez Durand", 14, finalY);
 
+    // EL TRUCO FINAL: Forzar descarga con nombre dinámico
+    doc.save(`Twins_${activeOp.id}.pdf`);
+}
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
             const feed = document.getElementById('history-feed');
