@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Pro | Elite Logistics</title>
+    <title>Aura Pro | Twins Logistics</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
-    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <link href="https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -45,7 +43,6 @@
             border-radius: 32px;
         }
 
-        /* NAVEGACIÓN ELITE */
         .dock {
             position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
@@ -57,25 +54,33 @@
             border-radius: 32px; font-size: 11px; font-weight: 800; text-transform: uppercase;
             color: rgba(255,255,255,0.4); transition: all 0.3s;
         }
-        .dock-item i { font-size: 20px; }
         .dock-item.active { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
 
-        /* INPUTS MODERNOS */
         input {
             background: rgba(255,255,255,0.05) !important;
             border: 1px solid var(--border) !important;
             color: #fff !important; border-radius: 20px !important;
             padding: 20px !important; outline: none !important;
         }
-        input:focus { border-color: var(--accent) !important; box-shadow: 0 0 20px rgba(0,247,255,0.1); }
+        input:focus { border-color: var(--accent) !important; }
 
-        /* BOTÓN ORBE CONFIRMACIÓN */
         .orb-btn {
             width: 80px; height: 80px; background: var(--accent); color: #000;
             border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(0,247,255,0.3); transition: all 0.2s;
+            box-shadow: 0 0 30px rgba(0,247,255,0.3);
         }
-        .orb-btn:active { transform: scale(0.9); }
+
+        /* Estilos Sugerencias */
+        #suggestions {
+            position: absolute; width: 100%; top: 100%; left: 0; z-index: 50;
+            max-height: 200px; overflow-y: auto; margin-top: 8px;
+        }
+        .suggestion-item {
+            padding: 15px 20px; background: rgba(20, 20, 30, 0.95);
+            border-bottom: 1px solid var(--border); cursor: pointer;
+        }
+        .suggestion-item:last-child { border: none; }
+        .suggestion-item:active { background: var(--accent); color: #000; }
     </style>
 </head>
 <body>
@@ -86,35 +91,32 @@
     </nav>
 
     <div id="v-dash" class="view active">
-        <header class="pt-10 pb-10">
+        <header class="pt-10 pb-10 text-center">
             <h1 class="text-5xl font-black tracking-tighter italic">LOGISTICA <span style="color:var(--accent)">TWINS</span></h1>
-            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">By Tajho/p>
+            <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.6em] mt-2">By Tajho</p>
         </header>
-
         <div class="space-y-4">
-            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center group active:scale-95 transition-all">
+            <div onclick="navTo('work')" class="glass-panel p-8 flex justify-between items-center active:scale-95 transition-all">
                 <div>
                     <h3 class="text-2xl font-black">Nueva Carga</h3>
-                    <p class="text-xs text-white/40">ID Automático Inteligente</p>
+                    <p class="text-xs text-white/40">Conexión con Sheets activa</p>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
                     <i class="ph-duotone ph-plus-circle text-2xl"></i>
                 </div>
             </div>
-
-            <div id="history-feed" class="mt-8 space-y-3">
-                <p class="text-[10px] font-black text-white/20 uppercase tracking-widest mb-4">Reportes Recientes</p>
-            </div>
+            <div id="history-feed" class="mt-8 space-y-3"></div>
         </div>
     </div>
 
     <div id="v-work" class="view">
         <div id="setup-panel">
             <h2 class="text-4xl font-black mb-8 tracking-tighter">Preparación</h2>
-            <div class="glass-panel p-7 space-y-6">
-                <div>
-                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador de Producto</label>
-                    <input type="text" id="sku-in" class="w-full text-xl font-bold" placeholder="Escriba SKU aquí...">
+            <div class="glass-panel p-7 space-y-6 relative">
+                <div class="relative">
+                    <label class="text-[10px] font-bold uppercase text-white/30 ml-2 block mb-2">Buscador Inteligente</label>
+                    <input type="text" id="sku-in" oninput="searchProduct(this.value)" class="w-full text-xl font-bold" placeholder="Escriba SKU o nombre..." autocomplete="off">
+                    <div id="suggestions" class="glass-panel hidden overflow-hidden border-accent/20"></div>
                 </div>
                 <div class="flex gap-4">
                     <div class="flex-1">
@@ -132,23 +134,16 @@
 
         <div id="terminal-panel" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-8">
-                <div>
-                    <p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p>
-                    <h2 class="text-3xl font-black">Conteo Tajho</h2>
-                </div>
-                <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500">
-                    <i class="ph-duotone ph-power"></i>
-                </button>
+                <div><p id="disp-id" class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1"></p><h2 class="text-3xl font-black">Conteo Tajho</h2></div>
+                <button onclick="openCloseModal()" class="w-12 h-12 glass-panel flex items-center justify-center text-red-500"><i class="ph-duotone ph-power"></i></button>
             </div>
-
-            <div class="glass-panel p-8 mb-6">
-                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-6 text-3xl font-black uppercase outline-none"></select>
+            <div class="glass-panel p-8 mb-6 text-center">
+                <select id="sku-sel" onchange="upUI()" class="bg-transparent text-white w-full p-2 mb-6 text-2xl font-black uppercase outline-none"></select>
                 <div class="flex items-center gap-6 justify-center">
                     <input type="number" id="count-in" class="w-32 p-6 rounded-3xl text-6xl font-black text-center" placeholder="0">
                     <button onclick="commit()" class="orb-btn"><i class="ph-duotone ph-check-circle text-4xl"></i></button>
                 </div>
             </div>
-
             <div id="stat-list" class="space-y-3 flex-1 overflow-y-auto"></div>
         </div>
     </div>
@@ -157,15 +152,50 @@
         <div class="glass-panel p-10 max-w-sm w-full">
             <i class="ph-duotone ph-file-pdf text-6xl text-accent mb-6 block"></i>
             <h3 class="text-2xl font-black mb-2">Finalizar Operación</h3>
-            <p class="text-[10px] font-bold text-white/30 uppercase mb-10 tracking-widest">Se generará el reporte PDF para J. Angelo Nuñez Durand</p>
-            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-widest mb-4">Generar Reporte PDF</button>
+            <button onclick="finishAll()" class="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs mb-4">Generar Reporte PDF</button>
             <button onclick="closeCloseModal()" class="text-white/40 text-[10px] font-bold uppercase">Volver</button>
         </div>
     </div>
 
     <script>
-        let q = [];
-        let activeOp = null;
+        const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let masterProducts = [];
+        let q = [], activeOp = null;
+
+        // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+        async function loadProducts() {
+            try {
+                const response = await fetch(SHEETS_URL);
+                const data = await response.json();
+                masterProducts = data; // Asume que tu script devuelve un array de objetos
+                console.log("Inventario cargado:", masterProducts.length);
+            } catch (e) { console.error("Error cargando Sheets:", e); }
+        }
+
+        function searchProduct(query) {
+            const div = document.getElementById('suggestions');
+            if (query.length < 2) { div.classList.add('hidden'); return; }
+            
+            const matches = masterProducts.filter(p => 
+                p.sku.toLowerCase().includes(query.toLowerCase()) || 
+                p.nombre.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 5);
+
+            if (matches.length > 0) {
+                div.innerHTML = matches.map(m => `
+                    <div class="suggestion-item" onclick="selectProduct('${m.sku}')">
+                        <p class="font-bold text-sm text-accent">${m.sku}</p>
+                        <p class="text-[10px] text-white/50">${m.nombre}</p>
+                    </div>`).join('');
+                div.classList.remove('hidden');
+            } else { div.classList.add('hidden'); }
+        }
+
+        function selectProduct(sku) {
+            document.getElementById('sku-in').value = sku;
+            document.getElementById('suggestions').classList.add('hidden');
+            document.getElementById('meta-in').focus();
+        }
 
         function genID() {
             const d = new Date();
@@ -173,6 +203,7 @@
         }
 
         window.onload = () => {
+            loadProducts();
             const s = localStorage.getItem('aura_v3_active');
             if(s) { activeOp = JSON.parse(s); navTo('work'); loadTerm(); }
             renderHistory();
@@ -230,12 +261,9 @@
             document.getElementById('stat-list').innerHTML = activeOp.items.map(x => `
                 <div class="glass-panel p-5 ${x.sku === cur ? 'border-accent/40' : 'opacity-30'}">
                     <div class="flex justify-between font-black text-[9px] mb-3 uppercase tracking-tighter">
-                        <span>${x.sku}</span>
-                        <span class="text-accent">${x.r} / ${x.meta}</span>
+                        <span>${x.sku}</span><span class="text-accent">${x.r} / ${x.meta}</span>
                     </div>
-                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div>
-                    </div>
+                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100, 100)}%"></div></div>
                 </div>`).join('');
         }
 
@@ -246,80 +274,43 @@
             let h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
             h.unshift(activeOp);
             localStorage.setItem('aura_v3_history', JSON.stringify(h));
-            
-            await makePDF(activeOp); // Espera la generación
-            
+            await makePDF(activeOp);
             localStorage.removeItem('aura_v3_active');
             activeOp = null;
             location.reload();
         }
 
-        // FUNCIÓN PDF BLINDADA (SIN FALLOS)
         async function makePDF(d) {
-            try {
-                // Re-verificación de librería
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) throw new Error("jsPDF No Ready");
-
-                const doc = new jsPDF();
-                
-                // Header Negro Premium
-                doc.setFillColor(10, 10, 15);
-                doc.rect(0, 0, 210, 40, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22);
-                doc.text("AURA PRO | ELITE REPORT", 14, 25);
-                
-                doc.setTextColor(150, 150, 150);
-                doc.setFontSize(9);
-                doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-                doc.text(`FECHA: ${d.date}`, 14, 55);
-                
-                doc.autoTable({
-                    startY: 65,
-                    head: [['PRODUCTO SKU', 'META', 'RECIBIDO', 'DIF']],
-                    body: d.items.map(x => [x.sku, x.meta, x.r, x.r - x.meta]),
-                    theme: 'grid',
-                    headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] },
-                    styles: { fontSize: 8, font: 'helvetica' }
-                });
-
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.setTextColor(0, 0, 0);
-                doc.text("__________________________", 14, finalY);
-                doc.text("Autorizado por J. Angelo Nuñez Durand", 14, finalY + 7);
-                doc.text("Asistente Inventario Logístico", 14, finalY + 12);
-
-                doc.save(`Reporte_Aura_${d.id}.pdf`);
-            } catch (e) {
-                console.error(e);
-                alert("Error crítico. Reporte guardado en historial.");
-            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFillColor(10, 10, 15);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+            doc.setTextColor(150, 150, 150);
+            doc.setFontSize(9);
+            doc.text(`ID: ${d.id}`, 14, 50);
+            doc.autoTable({
+                startY: 65,
+                head: [['SKU', 'META', 'REAL', 'DIF']],
+                body: d.items.map(x => [x.sku, x.meta, x.r, x.r - x.meta]),
+                theme: 'grid',
+                headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
+            });
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setTextColor(0,0,0);
+            doc.text("Autorizado por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.save(`Reporte_Twins_${d.id}.pdf`);
         }
 
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
             const feed = document.getElementById('history-feed');
-            let html = '';
-            
-            if(activeOp) {
-                html += `
-                <div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5">
-                    <div class="flex justify-between items-center">
-                        <div><p class="text-[8px] font-bold text-accent uppercase mb-1">Activo</p><p class="text-sm font-black">${activeOp.id}</p></div>
-                        <button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button>
-                    </div>
-                </div>`;
-            }
-
-            html += h.map(x => `
-                <div class="glass-panel p-5 flex justify-between items-center">
-                    <div><p class="text-[7px] text-white/20 uppercase font-black">${x.date}</p><p class="text-xs font-black">${x.id}</p></div>
-                    <button onclick='makePDF(${JSON.stringify(x)})' class="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-accent"><i class="ph-duotone ph-file-pdf"></i></button>
-                </div>`).join('');
-            
-            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase font-black py-10">Sin reportes</p>';
+            let html = activeOp ? `<div class="glass-panel p-5 border border-accent/30 mb-6 bg-accent/5 flex justify-between items-center"><div><p class="text-[8px] font-bold text-accent uppercase mb-1">Carga Activa</p><p class="text-sm font-black">${activeOp.id}</p></div><button onclick="navTo('work')" class="w-10 h-10 rounded-full bg-accent text-black flex items-center justify-center"><i class="ph-bold ph-arrow-right"></i></button></div>` : '';
+            html += h.map(x => `<div class="glass-panel p-5 flex justify-between items-center mb-2"><div><p class="text-[7px] text-white/20 uppercase">${x.date}</p><p class="text-xs font-black">${x.id}</p></div><button onclick='makePDF(${JSON.stringify(x)})' class="text-accent"><i class="ph-duotone ph-file-pdf text-2xl"></i></button></div>`).join('');
+            feed.innerHTML = html || '<p class="text-center text-[10px] text-white/10 uppercase py-10">Sin reportes</p>';
         }
     </script>
 </body>
-</html>
+</html>a
