@@ -295,55 +295,62 @@
         }
 
         // SOLUCIÓN DEFINITIVA PDF (MÉTODO BLOB)
-        async function makePDF(d) {
-            try {
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) throw new Error("jsPDF No Ready");
-
-                const doc = new jsPDF();
-                
-                // Cabecera Premium
-                doc.setFillColor(10, 10, 15);
-                doc.rect(0, 0, 210, 40, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22);
-                doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
-                
-                doc.setTextColor(150, 150, 150);
-                doc.setFontSize(9);
-                doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
-                doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
-                
-                doc.autoTable({
-                    startY: 65,
-                    head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
-                    body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
-                    theme: 'grid',
-                    headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
-                });
-
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.setTextColor(0, 0, 0);
-                doc.text("__________________________", 14, finalY);
-                doc.setFont("helvetica", "bold");
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
-                doc.setFont("helvetica", "normal");
-                doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-
-                // Método Blob para descarga blindada
-                const pdfBlob = doc.output('blob');
-                const pdfUrl = URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.href = pdfUrl;
-                link.download = `Reporte_${d.id}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (e) {
-                console.error(e);
-                alert("Error al generar PDF localmente.");
-            }
+       async function makePDF(d) {
+    try {
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF) {
+            alert("⚠️ Error: Sistema de impresión no detectado.");
+            return;
         }
+
+        const doc = new jsPDF();
+        
+        // Cabecera Twins Elite
+        doc.setFillColor(15, 15, 25);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.text("AURA PRO | TWINS LOGISTICS", 14, 25);
+        
+        doc.setTextColor(150, 150, 150);
+        doc.setFontSize(9);
+        doc.text(`ID OPERACIÓN: ${d.id}`, 14, 50);
+        doc.text(`FECHA REGISTRO: ${d.date}`, 14, 55);
+        
+        doc.autoTable({
+            startY: 65,
+            head: [['SKU', 'META', 'REAL', 'DIFERENCIA']],
+            body: d.items.map(x => [x.sku, x.meta, x.r, (x.r - x.meta)]),
+            theme: 'grid',
+            headStyles: { fillColor: [0, 247, 255], textColor: [0, 0, 0] }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 20;
+        doc.setTextColor(0, 0, 0);
+        doc.text("__________________________", 14, finalY);
+        doc.setFont("helvetica", "bold");
+        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+        doc.setFont("helvetica", "normal");
+        doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+
+        // --- MÉTODO DE COMPATIBILIDAD TOTAL ---
+        // Generar el PDF como una cadena Base64
+        const string = doc.output('datauristring');
+        
+        // Abrir en una nueva pestaña (Ideal para iOS/Safari)
+        const newTab = window.open();
+        if(!newTab || newTab.closed || typeof newTab.closed=='undefined') {
+            // Si el bloqueador de pop-ups detiene la pestaña, forzamos descarga directa
+            doc.save(`Reporte_${d.id}.pdf`);
+        } else {
+            newTab.document.write('<iframe width="100%" height="100%" src="' + string + '"></iframe>');
+        }
+
+    } catch (e) {
+        console.error("Falla crítica:", e);
+        alert("El PDF no pudo abrirse. Los datos ya están en tu Google Sheets.");
+    }
+}
 
         function renderHistory() {
             const h = JSON.parse(localStorage.getItem('aura_v3_history') || '[]');
