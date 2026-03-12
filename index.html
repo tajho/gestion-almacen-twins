@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyl2k5hAjd-3_j19rEamBRpvviw5YZuT4KmzLefyIwc-RYRZkY6rzgw5zNJlhcPGXP-DQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbz7wIqCdRPxH3s___-UbQPxef_tnJzKsbyfgAdLEZpECXPip6plg_KaFmNhko_pEJZRzg/exec";
         let master = [], queue = [], currentOp = null, master_history = [];
 
         function toggleMenu() {
@@ -202,20 +202,19 @@ async function loadMasterData() {
 // Para cargar el historial (Hoja 2)
 async function refreshHistory() {
     try {
-        // Forzamos que no use caché
+        // Usamos la URL que copiaste arriba. El Date.now() evita que el celular use datos viejos.
         const res = await fetch(API_URL + "?t=" + Date.now());
         const data = await res.json();
         
-        // Guardamos solo lo que viene de la Hoja 2
+        // Aquí está el cambio: leemos 'data.historial'
         master_history = data.historial || [];
         
-        // Si hay un término de búsqueda en el input, filtramos, si no, mostramos todo
-        const q = document.getElementById('sku-query').value || '';
-        filterByProduct(q);
+        console.log("Registros encontrados en Excel:", master_history.length);
         
-        console.log("Sincronizado con Hoja 2:", master_history.length, "filas");
+        // Forzamos al buscador a mostrar todo lo que encontró
+        filterByProduct(document.getElementById('sku-query').value || '');
     } catch(e) {
-        console.error("Error de conexión:", e);
+        console.error("Error al leer el Excel:", e);
     }
 }
         function searchMaster(q) {
