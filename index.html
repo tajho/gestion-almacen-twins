@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz7wIqCdRPxH3s___-UbQPxef_tnJzKsbyfgAdLEZpECXPip6plg_KaFmNhko_pEJZRzg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw0RuZMVNBGi0OsbB3ASFsZdCcNtT1rwNBjFzM6SMmsm3u75LM4sa0xEgSIpVDaH_7vtg/exec";
         let master = [], queue = [], currentOp = null, master_history = [];
 
         function toggleMenu() {
@@ -191,14 +191,27 @@
         };
 
        // Para cargar los productos al inicio (Hoja 1)
+// CARGA INICIAL (Hoja 1 para el buscador)
 async function loadMasterData() { 
     try { 
-        const res = await fetch(API_URL); 
+        const res = await fetch(API_URL + "?t=" + Date.now()); 
         const data = await res.json(); 
-        master = data.productos; // <--- Lee solo productos
-    } catch(e) {} 
+        master = data.productos || []; // <--- Entra a la carpeta productos
+        console.log("Productos vinculados:", master.length);
+    } catch(e) { console.error("Error Hoja 1:", e); } 
 }
 
+// REFRESCAR HISTORIAL (Hoja 2)
+async function refreshHistory() {
+    try {
+        const res = await fetch(API_URL + "?t=" + Date.now());
+        const data = await res.json();
+        master_history = data.historial || []; // <--- Entra a la carpeta historial
+        
+        console.log("Historial vinculado:", master_history.length);
+        filterByProduct(document.getElementById('sku-query').value || '');
+    } catch(e) { console.error("Error Hoja 2:", e); }
+}
 // Para cargar el historial (Hoja 2)
 async function refreshHistory() {
     try {
@@ -218,16 +231,29 @@ async function refreshHistory() {
     }
 }
         function searchMaster(q) {
-            const resDiv = document.getElementById('search-results');
-            if (q.length < 2) { resDiv.classList.add('hidden'); return; }
-            const term = q.toLowerCase();
-            const matches = master.filter(row => String(row.sku || row.SKU || '').toLowerCase().includes(term) || String(row.descripcion || row.DESCRIPCION || '').toLowerCase().includes(term)).slice(0, 10);
-            if(matches.length > 0) {
-                resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="p-4 border-b last:border-0 active:bg-slate-50"><p class="font-black text-sm text-accent">${x.sku || x.SKU}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p></div>`).join('');
-                resDiv.classList.remove('hidden');
-            } else { resDiv.classList.add('hidden'); }
-        }
+    const resDiv = document.getElementById('search-results');
+    if (q.length < 1) { resDiv.classList.add('hidden'); return; }
+    const term = q.toLowerCase().trim();
+    
+    // Filtramos en 'master' que ahora tiene los datos de la Hoja 1
+    const matches = master.filter(row => {
+        const sku = String(row.sku || "").toLowerCase();
+        const desc = String(row.descripcion || row.desc || "").toLowerCase();
+        return sku.includes(term) || desc.includes(term);
+    }).slice(0, 10);
 
+    if(matches.length > 0) {
+        resDiv.innerHTML = matches.map(x => `
+            <div onclick="pickSku('${x.sku}', '${x.descripcion || x.desc || ''}')" class="p-4 border-b active:bg-slate-50 cursor-pointer">
+                <p class="font-black text-sm text-accent">${x.sku}</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.desc || ''}</p>
+            </div>
+        `).join('');
+        resDiv.classList.remove('hidden');
+    } else {
+        resDiv.classList.add('hidden');
+    }
+}
         function pickSku(s, d) { 
             document.getElementById('sku-in').value = s; 
             document.getElementById('sku-in').dataset.desc = d; 
