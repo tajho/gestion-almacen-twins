@@ -297,19 +297,13 @@ async function refreshHistory() {
             
             let html = "", totalCajas = 0, totalCont = new Set();
 
-            // Agrupamos filas basándonos EXACTAMENTE en tu captura de Excel
             const grouped = master_history.reduce((acc, curr) => {
-                // Usamos 'operacion' porque así está en tu columna B
                 const idOp = curr.operacion || curr.id || curr.idoperacion;
-                
                 if (!idOp || !idOp.toString().includes('TWINS')) return acc;
 
                 if (!acc[idOp]) {
-                    // Columna A del Excel
                     const fechaRaw = curr.fecha || curr.date || "";
-                    // Columna G del Excel
                     const estadoRaw = (curr.estado || "").toString().toUpperCase();
-                    
                     acc[idOp] = { 
                         id: idOp, 
                         date: fechaRaw, 
@@ -317,8 +311,6 @@ async function refreshHistory() {
                         done: estadoRaw === 'COMPLETADO'
                     };
                 }
-                
-                // Sumamos los items usando 'real' (Columna F)
                 acc[idOp].items.push({ 
                     sku: curr.sku || "", 
                     desc: curr.descripcion || "", 
@@ -328,7 +320,10 @@ async function refreshHistory() {
                 return acc;
             }, {});
 
-            const operaciones = Object.values(grouped);
+            // ORDENAR: El más reciente siempre primero al inicio de la lista
+            const operaciones = Object.values(grouped).sort((a, b) => {
+                return new Date(b.date) - new Date(a.date);
+            });
 
             operaciones.forEach(op => {
                 let matchesMonth = true;
@@ -345,20 +340,43 @@ async function refreshHistory() {
                     op.items.forEach(it => { totalCajas += it.r; });
                     totalCont.add(op.id);
 
+                    // BUSCAMOS EL INDICE LOCAL PARA "CONTINUAR" SI EXISTE EN LOCALSTORAGE
+                    const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+                    const localIdx = localH.findIndex(lh => lh.id === op.id);
+
                     html += `
-                    <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
+                    <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase">${op.date || 'Registro Reciente'}</p>
-                                <h4 class="text-xl font-black">${op.id}</h4>
+                                <p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p>
+                                <h4 class="text-xl font-black text-slate-900">${op.id}</h4>
                             </div>
                             <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">
                                 ${op.done ? 'Finalizado' : 'Pendiente'}
                             </span>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
-                            <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            ${!op.done && localIdx !== -1 ? 
+                                `<button onclick="openWork(${localIdx})" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-blue-600 text-white transition-active active:scale-95">
+                                    <i class="ph-bold ph-play text-lg mb-1"></i>
+                                    <span class="text-[8px] font-black uppercase">Continuar</span>
+                                </button>` :
+                                `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-400 opacity-50">
+                                    <i class="ph-bold ph-check-circle text-lg mb-1"></i>
+                                    <span class="text-[8px] font-black uppercase">Cerrado</span>
+                                </button>`
+                            }
+
+                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700 active:bg-slate-200">
+                                <i class="ph-bold ph-list-bullets text-lg mb-1"></i>
+                                <span class="text-[8px] font-black uppercase">Lista</span>
+                            </button>
+
+                            <button onclick="genPDFFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-red-50 text-red-600 border border-red-100 active:bg-red-600 active:text-white transition-colors">
+                                <i class="ph-bold ph-file-pdf text-lg mb-1"></i>
+                                <span class="text-[8px] font-black uppercase">PDF</span>
+                            </button>
                         </div>
                     </div>`;
                 }
@@ -366,7 +384,7 @@ async function refreshHistory() {
 
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">NO SE ENCONTRARON REGISTROS</p>';
+            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
         }
 
 
