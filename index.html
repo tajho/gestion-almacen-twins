@@ -247,64 +247,45 @@
             queue = []; renderQueue(); navTo('hist');
         }
 
-        function filterByProduct(q) {
+        async function filterByProduct(q) {
     const term = q.toLowerCase();
-    const selectedMonth = document.getElementById('month-filter').value;
+    const resultsDiv = document.getElementById('product-results');
+    
+    // 1. Forzamos actualización desde el Excel
+    await refreshHistory(); 
+
     let html = "", totalCajas = 0, totalCont = new Set();
 
-    // Agrupamos las filas del Excel con nombres flexibles
+    // 2. Agrupamos por ID de operación (usando la columna 'id' o 'operacion')
     const grouped = master_history.reduce((acc, curr) => {
-        // Buscamos el ID en cualquier variante: operacion, id, ID, OPERACION
-        const idOp = curr.operacion || curr.id || curr.ID || curr.OPERACION;
-        if (!idOp) return acc; // Si no hay ID, saltamos la fila
-
-        // Buscamos la fecha en cualquier variante
-        const fechaOp = curr.fecha || curr.date || curr.FECHA || curr.DATE || "";
-        
-        // Buscamos el estado
-        const estadoOp = (curr.estado || curr.status || curr.ESTADO || "").toString().toUpperCase();
+        const idOp = curr.id || curr.operacion || curr.idoperacion;
+        if (!idOp || !idOp.toString().includes('TWINS')) return acc;
 
         if (!acc[idOp]) {
             acc[idOp] = { 
                 id: idOp, 
-                date: fechaOp, 
+                date: curr.fecha || curr.date || "", 
                 items: [], 
-                done: estadoOp === 'COMPLETADO' 
+                done: (curr.estado || "").toString().toUpperCase() === 'COMPLETADO'
             };
         }
-
-        // Buscamos SKU, Descripcion, Meta y Real con flexibilidad
         acc[idOp].items.push({ 
-            sku: curr.sku || curr.SKU || "", 
-            desc: curr.descripcion || curr.desc || curr.DESCRIPCION || "", 
-            meta: parseInt(curr.meta || curr.META || 0), 
-            r: parseInt(curr.real || curr.r || curr.REAL || 0) 
+            sku: curr.sku, 
+            desc: curr.descripcion || curr.desc || "", 
+            meta: parseInt(curr.meta || 0), 
+            r: parseInt(curr.real || curr.r || 0) 
         });
         return acc;
     }, {});
 
-    Object.values(grouped).forEach((op) => {
-        const dateStr = String(op.date);
-        let matchesMonth = true;
+    // 3. Generamos el HTML
+    Object.values(grouped).forEach(op => {
+        if (op.id.toLowerCase().includes(term)) {
+            op.items.forEach(it => { totalCajas += it.r; });
+            totalCont.add(op.id);
 
-        // Intentamos filtrar por mes si hay fecha válida
-        if (dateStr && dateStr.includes('/')) {
-            const dateParts = dateStr.split(',')[0].split('/');
-            if (dateParts.length >= 2) {
-                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
-                matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
-            }
-        }
-        
-        const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
-
-        if (matchesMonth) { 
-            op.items.forEach(it => { totalCajas += it.r; }); 
-            totalCont.add(op.id); 
-        }
-
-        if (opMatches && matchesMonth) {
-            html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
+            html += `
+            <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
                 <div class="flex justify-between items-start mb-4">
                     <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
                     <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
@@ -319,7 +300,7 @@
 
     document.getElementById('stats-cont').innerText = totalCont.size;
     document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-    document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS (REVISA LOS ENCABEZADOS DE TU EXCEL)</p>';
+    resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">NO SE ENCONTRARON REGISTROS EN HOJA 2</p>';
 }
 
 
