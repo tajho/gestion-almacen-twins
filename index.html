@@ -115,39 +115,36 @@
     </div>
 
     <div id="v-work" class="view">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-black tracking-tighter" id="work-title"></h2>
-            <span id="work-perc-title" class="bg-accent text-white px-3 py-1 rounded-full text-[10px] font-black">0%</span>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black tracking-tighter" id="work-title"></h2>
+            <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
         </div>
         
-        <div class="aura-card p-4 mb-4 bg-slate-900 text-white flex justify-between items-center">
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase">Progreso Total</p>
-                <p id="work-cajas-total" class="text-lg font-black leading-none">0 / 0</p>
+        <div class="aura-card p-6 mb-4 bg-slate-900 text-white">
+            <div class="flex justify-between mb-2 font-black text-xl">
+                <span id="work-cajas-total">0 / 0</span>
+                <span id="work-skus">0 / 0</span>
             </div>
-            <div class="text-right">
-                <p id="work-skus" class="text-[10px] font-black text-accent">0/0 SKU</p>
-                <div class="w-24 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
-                    <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
-                </div>
+            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
             </div>
         </div>
 
-        <div class="aura-card p-4 mb-4 border-2 border-accent/20">
-            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-3 text-sm font-black text-slate-700 border-slate-200"></select>
-            <div class="flex gap-3">
-                <input type="number" id="work-input" class="flex-1 text-3xl font-black text-center bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-accent" placeholder="0">
-                <button onclick="commitCount()" class="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform">
-                    <i class="ph-bold ph-plus text-3xl"></i>
+        <div class="aura-card p-4 text-center mb-4 border-2 border-accent/20">
+            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-3 text-sm font-bold border-none"></select>
+            <div class="flex items-center gap-2">
+                <input type="number" id="work-input" class="flex-1 text-2xl font-black text-center bg-slate-50 border-none" placeholder="Cant.">
+                <button onclick="commitCount()" class="w-14 h-14 bg-accent text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                    <i class="ph-bold ph-package text-2xl"></i>
                 </button>
             </div>
         </div>
 
-        <div id="work-stats" class="space-y-2 overflow-y-auto max-h-[45vh] pb-4"></div>
-
+        <div id="work-stats" class="space-y-2 overflow-y-auto mb-6"></div>
+        
         <div class="sticky-action">
-            <button onclick="showModal('m-finish')" class="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
-                Finalizar y Cerrar
+            <button onclick="showModal('m-finish')" class="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
+                Completar Descarga
             </button>
         </div>
     </div>
@@ -172,12 +169,20 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbw0RuZMVNBGi0OsbB3ASFsZdCcNtT1rwNBjFzM6SMmsm3u75LM4sa0xEgSIpVDaH_7vtg/exec";
         let master = [], queue = [], currentOp = null, master_history = [];
 
+        // ALERTA DE SALIDA/ACTUALIZACION
+        window.onbeforeunload = function() {
+            if (currentOp || queue.length > 0) {
+                return "Tienes un proceso activo. ¿Seguro que quieres salir?";
+            }
+        };
+
         function toggleMenu() {
             document.getElementById('side-menu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
         async function navTo(v) {
+            localStorage.setItem('tajho_last_view', v); // Guardar vista actual
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
@@ -188,19 +193,22 @@
             toggleMenu();
         }
 
-        // CARGA ULTRA RAPIDA: Inicializa el mes actual y carga en paralelo
         window.onload = async () => { 
-            const now = new Date();
+            await loadMasterData(); 
+            await refreshHistory();
             const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            const selectMonth = document.getElementById('month-filter');
+            document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+            document.getElementById('month-filter').value = new Date().getMonth();
             
-            selectMonth.innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
-            selectMonth.value = now.getMonth();
+            // Recuperar Cola de Creación si existe
+            const savedQueue = localStorage.getItem('tajho_queue');
+            if(savedQueue) { queue = JSON.parse(savedQueue); renderQueue(); }
 
-            // Carga paralela de datos para máxima velocidad
-            Promise.all([loadMasterData(), refreshHistory()]).then(() => {
-                checkSession(); 
-            });
+            checkSession(); 
+
+            // Volver a la última vista si se actualizó
+            const lastView = localStorage.getItem('tajho_last_view');
+            if(lastView && lastView !== 'work') navTo(lastView);
         };
 
         async function loadMasterData() { 
@@ -215,7 +223,7 @@
             try {
                 const res = await fetch(API_URL + "?t=" + Date.now());
                 const data = await res.json();
-                master_history = data.historial || []; 
+                master_history = data.historial || [];
                 filterByProduct(document.getElementById('sku-query').value || '');
             } catch(e) { console.error("Error Hoja 2:", e); }
         }
@@ -252,6 +260,7 @@
             const s = document.getElementById('sku-in').value, d = document.getElementById('sku-in').dataset.desc || '', m = parseInt(document.getElementById('meta-in').value);
             if(!s || isNaN(m) || m <= 0) { alert("Completa SKU y Meta"); return; }
             queue.push({ sku: s, desc: d, meta: m, r: 0 });
+            localStorage.setItem('tajho_queue', JSON.stringify(queue));
             document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
             renderQueue();
         }
@@ -274,7 +283,9 @@
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'REGISTER', id: id, date: fecha, items: JSON.stringify(queue) })
             });
-            queue = []; renderQueue(); navTo('hist');
+            queue = []; 
+            localStorage.removeItem('tajho_queue');
+            renderQueue(); navTo('hist');
         }
 
         async function filterByProduct(q) {
@@ -282,7 +293,6 @@
             const resultsDiv = document.getElementById('product-results');
             const selectedMonth = document.getElementById('month-filter').value;
             let html = "", totalCajas = 0, totalCont = new Set();
-
             const grouped = master_history.reduce((acc, curr) => {
                 const idOp = curr.operacion || curr.id || curr.idoperacion;
                 if (!idOp || !idOp.toString().includes('TWINS')) return acc;
@@ -294,9 +304,7 @@
                 acc[idOp].items.push({ sku: curr.sku || "", desc: curr.descripcion || "", meta: parseInt(curr.meta || 0), r: parseInt(curr.real || 0) });
                 return acc;
             }, {});
-
             const operaciones = Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
-
             operaciones.forEach(op => {
                 let matchesMonth = true;
                 if (selectedMonth !== 'all' && op.date && op.date.includes('/')) {
@@ -305,48 +313,24 @@
                     matchesMonth = monthPart.toString() === selectedMonth;
                 }
                 const matchesTerm = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
-
                 if (matchesTerm && matchesMonth) {
                     op.items.forEach(it => { totalCajas += it.r; });
                     totalCont.add(op.id);
                     const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                     const localIdx = localH.findIndex(lh => lh.id === op.id);
-
-                    html += `
-                    <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4 shadow-sm">
+                    html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p>
-                                <h4 class="text-xl font-black text-slate-900">${op.id}</h4>
-                            </div>
-                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">
-                                ${op.done ? 'Finalizado' : 'Pendiente'}
-                            </span>
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black text-slate-900">${op.id}</h4></div>
+                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Pendiente'}</span>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
-                            ${!op.done && localIdx !== -1 ? 
-                                `<button onclick="openWork(${localIdx})" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-blue-600 text-white active:scale-95 transition-transform">
-                                    <i class="ph-bold ph-play text-lg mb-1"></i>
-                                    <span class="text-[8px] font-black uppercase">Continuar</span>
-                                </button>` :
-                                `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-400 opacity-50">
-                                    <i class="ph-bold ph-check-circle text-lg mb-1"></i>
-                                    <span class="text-[8px] font-black uppercase">Cerrado</span>
-                                </button>`
-                            }
-                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700 active:bg-slate-200">
-                                <i class="ph-bold ph-list-bullets text-lg mb-1"></i>
-                                <span class="text-[8px] font-black uppercase">Lista</span>
-                            </button>
-                            <button onclick="genPDFFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-red-50 text-red-600 border border-red-100 active:bg-red-600 active:text-white transition-colors">
-                                <i class="ph-bold ph-file-pdf text-lg mb-1"></i>
-                                <span class="text-[8px] font-black uppercase">PDF</span>
-                            </button>
+                            ${!op.done && localIdx !== -1 ? `<button onclick="openWork(${localIdx})" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-blue-600 text-white"><i class="ph-bold ph-play text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Continuar</span></button>` : `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-400 opacity-50"><i class="ph-bold ph-check-circle text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Cerrado</span></button>`}
+                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700"><i class="ph-bold ph-list-bullets text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Lista</span></button>
+                            <button onclick="genPDFFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-red-50 text-red-600 border border-red-100"><i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[8px] font-black uppercase">PDF</span></button>
                         </div>
                     </div>`;
                 }
             });
-
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
             resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
@@ -374,13 +358,34 @@
         }
 
         function commitCount() {
-            const val = parseInt(document.getElementById('work-input').value); if(isNaN(val)) return;
-            const item = currentOp.items.find(x => x.sku === document.getElementById('work-select').value);
-            item.r += val; document.getElementById('work-input').value = '';
-            localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
-            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
+            const val = parseInt(document.getElementById('work-input').value); if(isNaN(val) || val === 0) return;
+            const sku = document.getElementById('work-select').value;
+            const item = currentOp.items.find(x => x.sku === sku);
+            
+            // Registrar acción para Deshacer
+            currentOp.lastAction = { sku: sku, amount: val };
+            
+            item.r += val; 
+            document.getElementById('work-input').value = '';
+            saveWorkState();
             refreshWorkStats();
+        }
+
+        function undoLast() {
+            if(!currentOp.lastAction) return;
+            const item = currentOp.items.find(x => x.sku === currentOp.lastAction.sku);
+            item.r -= currentOp.lastAction.amount;
+            if(item.r < 0) item.r = 0;
+            currentOp.lastAction = null;
+            saveWorkState();
+            refreshWorkStats();
+        }
+
+        function saveWorkState() {
+            localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
+            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); 
+            h[currentOp.localIdx] = currentOp;
+            localStorage.setItem('tajho_v3', JSON.stringify(h));
         }
 
         function refreshWorkStats() {
@@ -391,13 +396,32 @@
             document.getElementById('work-skus').innerText = `${skusCompletos}/${currentOp.items.length} SKU`;
             document.getElementById('work-cajas-total').innerText = `${totalReal}/${totalMeta}`;
             document.getElementById('work-progress-bar').style.width = porcTotal + "%";
-            document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `<div class="aura-card p-4 border-l-4 ${x.r >= x.meta ? 'border-success' : 'border-accent'} mb-2"><div class="flex justify-between text-[10px] font-black uppercase mb-2"><span>${x.sku}</span><span>${x.r} / ${x.meta}</span></div><div class="h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div></div>`).join('');
+            
+            let html = currentOp.items.map(x => `
+                <div class="aura-card p-4 border-l-4 ${x.r >= x.meta ? 'border-success' : 'border-accent'} mb-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                        <span>${x.sku}</span>
+                        <div class="flex items-center gap-2">
+                            ${currentOp.lastAction && currentOp.lastAction.sku === x.sku ? 
+                                `<button onclick="undoLast()" class="text-red-500 bg-red-50 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                    <i class="ph-bold ph-arrow-u-up-left"></i> DESHACER
+                                </button>` : ''}
+                            <span class="${x.r > x.meta ? 'text-danger' : ''}">${x.r} / ${x.meta}</span>
+                        </div>
+                    </div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
+                    </div>
+                </div>`).join('');
+            document.getElementById('work-stats').innerHTML = html;
         }
 
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
             if (savedOp) {
-                currentOp = JSON.parse(savedOp); navTo('work');
+                currentOp = JSON.parse(savedOp); 
+                document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+                document.getElementById('v-work').classList.add('active');
                 document.getElementById('work-title').innerText = currentOp.id;
                 document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
                 refreshWorkStats();
@@ -406,11 +430,10 @@
 
         async function finalizeWork() {
             currentOp.done = true;
-            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); 
-            h[currentOp.localIdx] = currentOp;
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
+            saveWorkState();
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'FINALIZE', id: currentOp.id, items: JSON.stringify(currentOp.items) }) });
             localStorage.removeItem('tajho_active_op');
+            currentOp = null; // Limpiar para que la alerta de salida no moleste
             hideModal('m-finish'); navTo('hist');
         }
 
@@ -436,11 +459,9 @@
                 doc.text("__________________________", 14, finalY);
                 doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
                 doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-                
                 const blob = doc.output('blob');
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = `Reporte_${opId}.pdf`; a.click();
+                const a = document.createElement('a'); a.href = url; a.download = `Reporte_${opId}.pdf`; a.click();
             } catch(e) { alert("Error PDF: " + e.message); }
         }
 
