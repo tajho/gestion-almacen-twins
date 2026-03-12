@@ -108,11 +108,17 @@
                     <p id="stats-cont" class="text-2xl font-black text-accent">0</p>
                 </div>
                 <div class="bg-slate-50 p-4 rounded-2xl">
-                    <p class="text-[8px] font-black text-slate-400 uppercase">Cajas</p>
+                    <p class="text-[8px] font-black text-slate-400 uppercase">Cajas Totales</p>
                     <p id="stats-cajas" class="text-2xl font-black text-success">0</p>
                 </div>
             </div>
-            <select id="month-filter" onchange="filterByProduct('')" class="w-full text-xs font-bold mb-3"></select>
+            <div class="flex gap-2 mb-3">
+                <select id="month-filter" onchange="filterByProduct('')" class="flex-1 text-xs font-bold"></select>
+                <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                    <i class="ph-bold ph-file-csv text-lg"></i>
+                    <span class="text-[9px] font-black uppercase">Exportar</span>
+                </button>
+            </div>
             <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar por SKU o ID..." oninput="filterByProduct(this.value)">
         </div>
         <div id="product-results" class="space-y-4"></div>
@@ -248,7 +254,10 @@
                 const matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
                 const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
 
-                if (matchesMonth) { op.items.forEach(it => { totalCajas += it.r; if(it.r > 0) totalCont.add(op.id); }); }
+                if (matchesMonth) { 
+                    op.items.forEach(it => { totalCajas += it.r; });
+                    totalCont.add(op.id);
+                }
 
                 if (opMatches && matchesMonth) {
                     html += `
@@ -270,6 +279,38 @@
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
             document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
+        }
+
+        // FUNCIÓN PARA EXPORTAR A EXCEL (CSV)
+        function exportToExcel() {
+            const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            const selectedMonth = document.getElementById('month-filter').value;
+            const monthLabel = selectedMonth === 'all' ? 'Anual' : document.getElementById('month-filter').options[document.getElementById('month-filter').selectedIndex].text;
+            
+            let csvContent = "\uFEFF"; // BOM para caracteres especiales (tildes)
+            csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
+
+            history.forEach(op => {
+                const dateParts = op.date.split(',')[0].split('/');
+                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
+                
+                if (selectedMonth === 'all' || opMonth.toString() === selectedMonth) {
+                    op.items.forEach(it => {
+                        const diff = it.r - it.meta;
+                        csvContent += `"${op.id}","${op.date}","${it.sku}","${it.desc.replace(/"/g, '""')}","${it.meta}","${it.r}","${diff}"\n`;
+                    });
+                }
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Reporte_Logistico_Tajho_${monthLabel}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function viewQuickList(idx) {
@@ -338,15 +379,31 @@
 
         function genPDF(idx) {
             try {
-                const d = JSON.parse(localStorage.getItem('tajho_v3') || '[]')[idx];
+                const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+                const d = history[idx];
+                if(!d) return;
+
                 const { jsPDF } = window.jspdf; 
                 const doc = new jsPDF();
-                doc.setFontSize(20); doc.text("REPORTE DE CARGA - TAJHO PRIME", 14, 22);
+                
+                doc.setFontSize(18); doc.text("REPORTE DE CARGA - TAJHO PRIME", 14, 22);
                 doc.setFontSize(10); doc.text(`OPERACIÓN: ${d.id} | FECHA: ${d.date}`, 14, 30);
-                doc.autoTable({ startY: 40, head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), headStyles: { fillColor: [0, 0, 0] } });
-                doc.setFontSize(9); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", 14, doc.lastAutoTable.finalY + 20);
+                
+                doc.autoTable({ 
+                    startY: 35, 
+                    head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], 
+                    body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), 
+                    headStyles: { fillColor: [0, 122, 255] },
+                    theme: 'striped'
+                });
+                
+                doc.setFontSize(9); 
+                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", 14, doc.lastAutoTable.finalY + 15);
                 doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { alert("Error al generar PDF. Intente nuevamente."); }
+            } catch(e) { 
+                console.error(e);
+                alert("Error al generar PDF. Asegúrate de que el historial tenga datos."); 
+            }
         }
 
         function showModal(id) { document.getElementById(id).classList.add('active'); }
