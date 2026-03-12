@@ -13,7 +13,7 @@
     
     <style>
         :root { --bg: #f8fafc; --accent: #007AFF; --success: #34C759; --danger: #FF3B30; --header-h: 70px; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: auto; height: 100vh; }
         .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 40px 20px; }
         .side-menu.active { left: 0; }
@@ -327,52 +327,67 @@
             const lastIdx = currentOp.localIdx;
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
-            setTimeout(() => genPDF(lastIdx), 500);
+            // Retardo para asegurar la carga del historial antes de disparar el PDF
+            setTimeout(() => genPDF(lastIdx), 800);
         }
 
-        // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF ---
+        // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF (CORREGIDA) ---
         function genPDF(idx) {
             try {
-                if (!window.jspdf || !window.jspdf.jsPDF) { alert("Librería PDF no cargada. Reintenta en 2 segundos."); return; }
+                // Validación de librerías para móviles
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) { alert("Herramientas de PDF no listas. Reintenta en breve."); return; }
+
                 const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                 const d = history[idx];
-                if (!d || !d.items) { alert("No hay datos para esta operación."); return; }
-
-                const doc = new window.jspdf.jsPDF();
                 
-                // Título y Datos Generales
+                // Solo permitir PDF si la descarga está finalizada (done === true)
+                if (!d.done) { 
+                    alert("Debes completar la descarga primero para generar el reporte."); 
+                    return; 
+                }
+
+                const doc = new jsPDF();
+                
+                // Encabezado Profesional
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(16); doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
                 doc.setFontSize(10);
-                doc.text(`OPERACIÓN: ${d.id}`, 14, 30);
-                doc.text(`FECHA: ${d.date}`, 14, 35);
+                doc.text(`OPERACIÓN: ${d.id}`, 14, 32);
+                doc.text(`FECHA: ${d.date}`, 14, 38);
                 
                 // Tabla Estilo Excel (Grid)
                 doc.autoTable({ 
-                    startY: 42, 
-                    head: [['CÓDIGO', 'DESCRIPCIÓN', 'CANT. CAJAS', 'ESTADO']], 
+                    startY: 45, 
+                    head: [['SKU / CÓDIGO', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']], 
                     body: d.items.map(it => [
                         it.sku, 
                         it.desc, 
+                        it.meta,
                         it.r, 
-                        (it.r >= it.meta) ? "APROBADO" : "PENDIENTE"
+                        (it.r >= it.meta) ? "OK" : "PENDIENTE"
                     ]), 
-                    headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
-                    styles: { cellPadding: 3, fontSize: 9, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
-                    columnStyles: { 3: { fontStyle: 'bold' } },
+                    headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    styles: { cellPadding: 3, fontSize: 8, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
                     theme: 'grid'
                 });
                 
-                // Firma Solicitada por Angelo
+                // Firma Autorizada Solicitada
                 const finalY = doc.lastAutoTable.finalY + 25;
                 doc.setFontSize(10); doc.setFont("helvetica", "bold");
-                doc.text("REVISIÓN Y CONTEO", 14, finalY);
-                doc.text("J. ANGELO NUÑEZ DURAND", 14, finalY + 6);
+                doc.text("__________________________", 14, finalY);
+                doc.text("Revisión autorizada por:", 14, finalY + 7);
+                doc.text("J. Angelo Nuñez Durand", 14, finalY + 12);
                 doc.setFont("helvetica", "normal");
-                doc.text("Asist. Logístico", 14, finalY + 11);
+                doc.text("Asist. Inventario Logístico", 14, finalY + 17);
                 
-                doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { console.error(e); alert("Error crítico al generar PDF. Asegúrate de tener conexión."); }
+                // Descarga Directa
+                doc.save(`Tajho_Report_${d.id}.pdf`);
+                
+            } catch(e) { 
+                console.error("PDF Error:", e);
+                alert("Error al procesar el archivo. Revisa los permisos de descarga de tu navegador.");
+            }
         }
 
         function showModal(id) { document.getElementById(id).classList.add('active'); }
