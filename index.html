@@ -169,18 +169,21 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function navTo(v) {
+        async function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
             if(document.getElementById('m-' + v)) document.getElementById('m-' + v).classList.add('active');
-            if(v === 'hist') refreshHistory().then(() => filterByProduct(document.getElementById('sku-query').value));
+            if(v === 'hist') {
+                await refreshHistory();
+                filterByProduct(document.getElementById('sku-query').value);
+            }
             toggleMenu();
         }
 
         window.onload = async () => { 
-            loadMasterData(); 
-            refreshHistory();
+            await loadMasterData(); 
+            await refreshHistory();
             const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
             document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
             document.getElementById('month-filter').value = new Date().getMonth();
@@ -191,10 +194,10 @@
 
         async function refreshHistory() {
             try {
-                const res = await fetch(API_URL);
+                const res = await fetch(API_URL + "?t=" + Date.now());
                 const data = await res.json();
-                master_history = data.filter(row => row.operacion || (row.id && row.id.includes('TWINS')));
-            } catch(e) {}
+                master_history = data.filter(row => row.operacion || row.id || row.fecha);
+            } catch(e) { console.error("Error cargando historial del Excel"); }
         }
 
         function searchMaster(q) {
@@ -248,18 +251,21 @@
             const term = q.toLowerCase();
             const selectedMonth = document.getElementById('month-filter').value;
             let html = "", totalCajas = 0, totalCont = new Set();
+            
             const grouped = master_history.reduce((acc, curr) => {
                 const idOp = curr.operacion || curr.id;
-                if (!acc[idOp]) acc[idOp] = { id: idOp, date: curr.fecha || curr.date, items: [], done: curr.estado === 'COMPLETADO' };
-                acc[idOp].items.push({ sku: curr.sku, desc: curr.descripcion || curr.desc, meta: parseInt(curr.meta), r: parseInt(curr.real || curr.r) });
+                if (!idOp) return acc;
+                if (!acc[idOp]) acc[idOp] = { id: idOp, date: curr.fecha || curr.date, items: [], done: (curr.estado || '').includes('COMPLE') };
+                acc[idOp].items.push({ sku: curr.sku, desc: curr.descripcion || curr.desc, meta: parseInt(curr.meta || 0), r: parseInt(curr.real || curr.r || 0) });
                 return acc;
             }, {});
+
             Object.values(grouped).forEach((op) => {
-                const dateStr = String(op.date);
-                const dateParts = dateStr.split(',')[0].split('/');
-                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
+                const dateParts = String(op.date).split(',')[0].split('/');
+                const opMonth = dateParts.length > 1 ? new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth() : -1;
                 const matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
-                const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
+                const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => String(it.sku).toLowerCase().includes(term));
+                
                 if (matchesMonth) { op.items.forEach(it => { totalCajas += it.r; }); totalCont.add(op.id); }
                 if (opMatches && matchesMonth) {
                     html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
@@ -274,6 +280,7 @@
                     </div>`;
                 }
             });
+
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
             document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS EN EXCEL</p>';
@@ -283,7 +290,7 @@
             let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
             master_history.forEach(it => { csvContent += `"${it.operacion || it.id}","${it.fecha || it.date}","${it.sku}","${(it.descripcion || it.desc || '').replace(/"/g, '""')}","${it.meta}","${it.real || it.r}","${(it.real || it.r) - it.meta}"\n`; });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `Reporte_Logistico_Excel.csv`; link.click();
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `Reporte_Tajho.csv`; link.click();
         }
 
         function openWork(idx) {
@@ -337,7 +344,6 @@
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'FINALIZE', id: currentOp.id, items: JSON.stringify(currentOp.items) }) });
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
-            setTimeout(() => genPDFFromExcel(idPdf), 1000);
         }
 
         function genPDFFromExcel(opId) {
@@ -359,7 +365,11 @@
                 doc.text("__________________________", 14, finalY);
                 doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
                 doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-                doc.save(`Reporte_${opId}.pdf`);
+                
+                const blob = doc.output('blob');
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `Reporte_${opId}.pdf`; a.click();
             } catch(e) { alert("Error PDF: " + e.message); }
         }
 
