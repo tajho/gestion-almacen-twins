@@ -202,15 +202,20 @@ async function loadMasterData() {
 // Para cargar el historial (Hoja 2)
 async function refreshHistory() {
     try {
-        const res = await fetch(API_URL);
+        // Forzamos que no use caché
+        const res = await fetch(API_URL + "?t=" + Date.now());
         const data = await res.json();
         
-        // <--- AQUÍ ESTÁ EL TRUCO: Lee solo la lista de historial
-        master_history = data.historial; 
+        // Guardamos solo lo que viene de la Hoja 2
+        master_history = data.historial || [];
         
-        console.log("Historial de Hoja 2 cargado:", master_history.length);
+        // Si hay un término de búsqueda en el input, filtramos, si no, mostramos todo
+        const q = document.getElementById('sku-query').value || '';
+        filterByProduct(q);
+        
+        console.log("Sincronizado con Hoja 2:", master_history.length, "filas");
     } catch(e) {
-        console.error("Error al sincronizar:", e);
+        console.error("Error de conexión:", e);
     }
 }
         function searchMaster(q) {
