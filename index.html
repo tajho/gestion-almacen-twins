@@ -115,31 +115,39 @@
     </div>
 
     <div id="v-work" class="view">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black tracking-tighter" id="work-title"></h2>
-            <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-black tracking-tighter" id="work-title"></h2>
+            <span id="work-perc-title" class="bg-accent text-white px-3 py-1 rounded-full text-[10px] font-black">0%</span>
         </div>
-        <div class="aura-card p-6 mb-4 bg-slate-900 text-white">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso</p>
-            <div class="flex justify-between mb-2 font-black text-xl">
-                <span id="work-cajas-total">0 / 0</span>
-                <span id="work-skus">0 / 0</span>
+        
+        <div class="aura-card p-4 mb-4 bg-slate-900 text-white flex justify-between items-center">
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase">Progreso Total</p>
+                <p id="work-cajas-total" class="text-lg font-black leading-none">0 / 0</p>
             </div>
-            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
-            </div>
-        </div>
-        <div class="aura-card p-6 text-center mb-4">
-            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-4 text-center font-black text-accent border-none"></select>
-            <div class="flex items-center justify-center gap-4">
-                <input type="number" id="work-input" class="w-24 text-4xl font-black text-center border-none p-0 bg-transparent" placeholder="0">
-                <button onclick="commitCount()" class="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-lg"><i class="ph-bold ph-plus text-3xl"></i></button>
+            <div class="text-right">
+                <p id="work-skus" class="text-[10px] font-black text-accent">0/0 SKU</p>
+                <div class="w-24 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
+                    <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
+                </div>
             </div>
         </div>
-        <div id="work-stats" class="space-y-2 overflow-y-auto mb-6"></div>
+
+        <div class="aura-card p-4 mb-4 border-2 border-accent/20">
+            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-3 text-sm font-black text-slate-700 border-slate-200"></select>
+            <div class="flex gap-3">
+                <input type="number" id="work-input" class="flex-1 text-3xl font-black text-center bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-accent" placeholder="0">
+                <button onclick="commitCount()" class="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+                    <i class="ph-bold ph-plus text-3xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="work-stats" class="space-y-2 overflow-y-auto max-h-[45vh] pb-4"></div>
+
         <div class="sticky-action">
-            <button onclick="showModal('m-finish')" class="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
-                Completar Descarga
+            <button onclick="showModal('m-finish')" class="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
+                Finalizar y Cerrar
             </button>
         </div>
     </div>
@@ -176,84 +184,63 @@
             if(document.getElementById('m-' + v)) document.getElementById('m-' + v).classList.add('active');
             if(v === 'hist') {
                 await refreshHistory();
-                await filterByProduct(document.getElementById('sku-query').value);
             }
             toggleMenu();
         }
 
+        // CARGA ULTRA RAPIDA: Inicializa el mes actual y carga en paralelo
         window.onload = async () => { 
-            await loadMasterData(); 
-            await refreshHistory();
+            const now = new Date();
             const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
-            document.getElementById('month-filter').value = new Date().getMonth();
-            checkSession(); 
+            const selectMonth = document.getElementById('month-filter');
+            
+            selectMonth.innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+            selectMonth.value = now.getMonth();
+
+            // Carga paralela de datos para máxima velocidad
+            Promise.all([loadMasterData(), refreshHistory()]).then(() => {
+                checkSession(); 
+            });
         };
 
-       // Para cargar los productos al inicio (Hoja 1)
-// CARGA INICIAL (Hoja 1 para el buscador)
-async function loadMasterData() { 
-    try { 
-        const res = await fetch(API_URL + "?t=" + Date.now()); 
-        const data = await res.json(); 
-        master = data.productos || []; // <--- Entra a la carpeta productos
-        console.log("Productos vinculados:", master.length);
-    } catch(e) { console.error("Error Hoja 1:", e); } 
-}
+        async function loadMasterData() { 
+            try { 
+                const res = await fetch(API_URL + "?t=" + Date.now()); 
+                const data = await res.json(); 
+                master = data.productos || [];
+            } catch(e) { console.error("Error Hoja 1:", e); } 
+        }
 
-// REFRESCAR HISTORIAL (Hoja 2)
-async function refreshHistory() {
-    try {
-        const res = await fetch(API_URL + "?t=" + Date.now());
-        const data = await res.json();
-        master_history = data.historial || []; // <--- Entra a la carpeta historial
-        
-        console.log("Historial vinculado:", master_history.length);
-        filterByProduct(document.getElementById('sku-query').value || '');
-    } catch(e) { console.error("Error Hoja 2:", e); }
-}
-// Para cargar el historial (Hoja 2)
-async function refreshHistory() {
-    try {
-        // Usamos la URL que copiaste arriba. El Date.now() evita que el celular use datos viejos.
-        const res = await fetch(API_URL + "?t=" + Date.now());
-        const data = await res.json();
-        
-        // Aquí está el cambio: leemos 'data.historial'
-        master_history = data.historial || [];
-        
-        console.log("Registros encontrados en Excel:", master_history.length);
-        
-        // Forzamos al buscador a mostrar todo lo que encontró
-        filterByProduct(document.getElementById('sku-query').value || '');
-    } catch(e) {
-        console.error("Error al leer el Excel:", e);
-    }
-}
+        async function refreshHistory() {
+            try {
+                const res = await fetch(API_URL + "?t=" + Date.now());
+                const data = await res.json();
+                master_history = data.historial || []; 
+                filterByProduct(document.getElementById('sku-query').value || '');
+            } catch(e) { console.error("Error Hoja 2:", e); }
+        }
+
         function searchMaster(q) {
-    const resDiv = document.getElementById('search-results');
-    if (q.length < 1) { resDiv.classList.add('hidden'); return; }
-    const term = q.toLowerCase().trim();
-    
-    // Filtramos en 'master' que ahora tiene los datos de la Hoja 1
-    const matches = master.filter(row => {
-        const sku = String(row.sku || "").toLowerCase();
-        const desc = String(row.descripcion || row.desc || "").toLowerCase();
-        return sku.includes(term) || desc.includes(term);
-    }).slice(0, 10);
+            const resDiv = document.getElementById('search-results');
+            if (q.length < 1) { resDiv.classList.add('hidden'); return; }
+            const term = q.toLowerCase().trim();
+            const matches = master.filter(row => {
+                const sku = String(row.sku || "").toLowerCase();
+                const desc = String(row.descripcion || row.desc || "").toLowerCase();
+                return sku.includes(term) || desc.includes(term);
+            }).slice(0, 10);
 
-    if(matches.length > 0) {
-        resDiv.innerHTML = matches.map(x => `
-            <div onclick="pickSku('${x.sku}', '${x.descripcion || x.desc || ''}')" class="p-4 border-b active:bg-slate-50 cursor-pointer">
-                <p class="font-black text-sm text-accent">${x.sku}</p>
-                <p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.desc || ''}</p>
-            </div>
-        `).join('');
-        resDiv.classList.remove('hidden');
-    } else {
-        resDiv.classList.add('hidden');
-    }
-}
+            if(matches.length > 0) {
+                resDiv.innerHTML = matches.map(x => `
+                    <div onclick="pickSku('${x.sku}', '${x.descripcion || x.desc || ''}')" class="p-4 border-b active:bg-slate-50 cursor-pointer">
+                        <p class="font-black text-sm text-accent">${x.sku}</p>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.desc || ''}</p>
+                    </div>
+                `).join('');
+                resDiv.classList.remove('hidden');
+            } else { resDiv.classList.add('hidden'); }
+        }
+
         function pickSku(s, d) { 
             document.getElementById('sku-in').value = s; 
             document.getElementById('sku-in').dataset.desc = d; 
@@ -290,40 +277,25 @@ async function refreshHistory() {
             queue = []; renderQueue(); navTo('hist');
         }
 
-                        async function filterByProduct(q) {
+        async function filterByProduct(q) {
             const term = q.toLowerCase();
             const resultsDiv = document.getElementById('product-results');
             const selectedMonth = document.getElementById('month-filter').value;
-            
             let html = "", totalCajas = 0, totalCont = new Set();
 
             const grouped = master_history.reduce((acc, curr) => {
                 const idOp = curr.operacion || curr.id || curr.idoperacion;
                 if (!idOp || !idOp.toString().includes('TWINS')) return acc;
-
                 if (!acc[idOp]) {
                     const fechaRaw = curr.fecha || curr.date || "";
                     const estadoRaw = (curr.estado || "").toString().toUpperCase();
-                    acc[idOp] = { 
-                        id: idOp, 
-                        date: fechaRaw, 
-                        items: [], 
-                        done: estadoRaw === 'COMPLETADO'
-                    };
+                    acc[idOp] = { id: idOp, date: fechaRaw, items: [], done: estadoRaw === 'COMPLETADO' };
                 }
-                acc[idOp].items.push({ 
-                    sku: curr.sku || "", 
-                    desc: curr.descripcion || "", 
-                    meta: parseInt(curr.meta || 0), 
-                    r: parseInt(curr.real || 0) 
-                });
+                acc[idOp].items.push({ sku: curr.sku || "", desc: curr.descripcion || "", meta: parseInt(curr.meta || 0), r: parseInt(curr.real || 0) });
                 return acc;
             }, {});
 
-            // ORDENAR: El más reciente siempre primero al inicio de la lista
-            const operaciones = Object.values(grouped).sort((a, b) => {
-                return new Date(b.date) - new Date(a.date);
-            });
+            const operaciones = Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
 
             operaciones.forEach(op => {
                 let matchesMonth = true;
@@ -332,15 +304,11 @@ async function refreshHistory() {
                     const monthPart = parseInt(parts[1]) - 1; 
                     matchesMonth = monthPart.toString() === selectedMonth;
                 }
-
-                const matchesTerm = op.id.toLowerCase().includes(term) || 
-                                   op.items.some(it => it.sku.toLowerCase().includes(term));
+                const matchesTerm = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
 
                 if (matchesTerm && matchesMonth) {
                     op.items.forEach(it => { totalCajas += it.r; });
                     totalCont.add(op.id);
-
-                    // BUSCAMOS EL INDICE LOCAL PARA "CONTINUAR" SI EXISTE EN LOCALSTORAGE
                     const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                     const localIdx = localH.findIndex(lh => lh.id === op.id);
 
@@ -355,10 +323,9 @@ async function refreshHistory() {
                                 ${op.done ? 'Finalizado' : 'Pendiente'}
                             </span>
                         </div>
-                        
                         <div class="grid grid-cols-3 gap-2">
                             ${!op.done && localIdx !== -1 ? 
-                                `<button onclick="openWork(${localIdx})" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-blue-600 text-white transition-active active:scale-95">
+                                `<button onclick="openWork(${localIdx})" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-blue-600 text-white active:scale-95 transition-transform">
                                     <i class="ph-bold ph-play text-lg mb-1"></i>
                                     <span class="text-[8px] font-black uppercase">Continuar</span>
                                 </button>` :
@@ -367,12 +334,10 @@ async function refreshHistory() {
                                     <span class="text-[8px] font-black uppercase">Cerrado</span>
                                 </button>`
                             }
-
                             <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700 active:bg-slate-200">
                                 <i class="ph-bold ph-list-bullets text-lg mb-1"></i>
                                 <span class="text-[8px] font-black uppercase">Lista</span>
                             </button>
-
                             <button onclick="genPDFFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-red-50 text-red-600 border border-red-100 active:bg-red-600 active:text-white transition-colors">
                                 <i class="ph-bold ph-file-pdf text-lg mb-1"></i>
                                 <span class="text-[8px] font-black uppercase">PDF</span>
@@ -386,8 +351,6 @@ async function refreshHistory() {
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
             resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
         }
-
-
 
         function exportToExcel() {
             let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
@@ -446,7 +409,6 @@ async function refreshHistory() {
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); 
             h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
-            const idPdf = currentOp.id;
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'FINALIZE', id: currentOp.id, items: JSON.stringify(currentOp.items) }) });
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
@@ -497,4 +459,3 @@ async function refreshHistory() {
     </script>
 </body>
 </html>
-
