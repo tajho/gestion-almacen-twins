@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyrsDNwch3V9Qsk3l9ffkV8F9eWR2_tZqnxyFPv0zO14cpnC6y-dcvX5pH7cy7sAFFmUA/exec";
         let master = [], queue = [], currentOp = null;
 
         function toggleMenu() {
@@ -222,31 +222,29 @@
 
            // --- FUNCIÓN PARA GUARDAR EN EL CELULAR Y EN EXCEL ---
                 async function saveContenedor() {
-            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
-            const fecha = new Date().toLocaleString('es-PE');
-            
-            // Guardar localmente
-            h.unshift({ id, date: fecha, items: [...queue], done: false });
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
+    const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+    const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
+    const fecha = new Date().toLocaleString('es-PE');
+    const nuevo = { id, date: fecha, items: [...queue], done: false };
+    
+    h.unshift(nuevo);
+    localStorage.setItem('tajho_v3', JSON.stringify(h));
 
-            // Enviar al Excel (Google Sheets)
-            const payload = {
-                action: 'REGISTER',
-                id: id,
-                date: fecha,
-                items: JSON.stringify(queue)
-            };
+    // ENVÍO AL EXCEL
+    fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({
+            action: 'REGISTER',
+            id: id,
+            date: fecha,
+            items: JSON.stringify(queue)
+        })
+    });
 
-            fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(() => console.log("Registrado en Excel")).catch(e => console.error(e));
+    queue = []; renderQueue(); navTo('hist');
+}
 
-            queue = []; renderQueue(); navTo('hist');
-        }
 
         function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
@@ -372,63 +370,48 @@
         // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF (CORREGIDA) ---
                 // --- FUNCIÓN SOLUCIÓN DEFINITIVA REPORTE PDF ---
                 function genPDF(idx) {
-            try {
-                const { jsPDF } = window.jspdf;
-                const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-                const d = history[idx];
-                if (!d) return;
+    try {
+        const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+        const d = history[idx];
+        if (!d) return;
 
-                const doc = new jsPDF();
-                
-                // Títulos y Datos
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(16);
-                doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
-                doc.setFontSize(10);
-                doc.text(`OPERACIÓN: ${d.id}`, 14, 32);
-                doc.text(`FECHA: ${d.date}`, 14, 38);
-                
-                // Tabla Formato Grid
-                doc.autoTable({ 
-                    startY: 45, 
-                    head: [['SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']], 
-                    body: d.items.map(it => [
-                        it.sku, 
-                        it.desc, 
-                        it.meta,
-                        it.r, 
-                        (it.r >= it.meta) ? "OK" : "PENDIENTE"
-                    ]), 
-                    theme: 'grid',
-                    headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] },
-                    styles: { fontSize: 8 }
-                });
-                
-                // Pie de página con tu firma
-                const finalY = doc.lastAutoTable.finalY + 25;
-                doc.setFont("helvetica", "bold");
-                doc.text("__________________________", 14, finalY);
-                doc.text("Revisión autorizada por:", 14, finalY + 7);
-                doc.text("J. Angelo Nuñez Durand", 14, finalY + 12);
-                doc.setFont("helvetica", "normal");
-                doc.text("Asist. Inventario Logístico", 14, finalY + 17);
-                
-                // Descarga compatible con móviles (Blob)
-                const blob = doc.output('blob');
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Reporte_Tajho_${d.id}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-            } catch(e) { 
-                console.error(e);
-                alert("Error al generar el PDF del reporte."); 
-            }
-        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(16);
+        doc.text("REPORTE DE CARGA - TWINS ELITE", 105, 20, { align: "center" });
+        
+        doc.setFontSize(10);
+        doc.text(`ID: ${d.id} | FECHA: ${d.date}`, 14, 30);
+        
+        doc.autoTable({
+            startY: 40,
+            head: [['SKU', 'DESCRIPCION', 'META', 'REAL']],
+            body: d.items.map(it => [it.sku, it.desc, it.meta, it.r]),
+            theme: 'grid',
+            headStyles: { fillColor: [0, 122, 255] }
+        });
+
+        // Firma Autorizada
+        const finalY = doc.lastAutoTable.finalY + 20;
+        doc.text("__________________________", 14, finalY);
+        doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+        doc.text("Asist. Inventario Logístico", 14, finalY + 12);
+
+        // ESTO ES LO QUE SOLUCIONA EL ERROR EN MÓVIL:
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Reporte_${d.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch(e) {
+        alert("Error al generar PDF: " + e.message);
+    }
+}
+
 
 
 
