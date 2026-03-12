@@ -31,13 +31,10 @@
         .sticky-action { position: sticky; bottom: 0; background: linear-gradient(to top, var(--bg) 70%, transparent); padding: 20px 0; margin-top: auto; z-index: 100; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        .progress-ring__circle { transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .count-badge { animation: pop 0.4s ease-out; }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
         
-        /* Mejoras de Botones */
-        .btn-continue { background: linear-gradient(135deg, #007AFF, #0056b3); color: white; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); }
-        .btn-pdf { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        /* Progress Circle */
+        .progress-ring__circle { transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .btn-continue { background: linear-gradient(135deg, #007AFF, #005BBF); color: white; box-shadow: 0 4px 15px rgba(0,122,255,0.3); }
     </style>
 </head>
 <body>
@@ -113,10 +110,6 @@
             </div>
             <div class="flex gap-2 mb-3">
                 <select id="month-filter" onchange="filterByProduct('')" class="flex-1 text-xs font-bold"></select>
-                <button onclick="refreshHistory()" class="bg-slate-800 text-white px-4 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-transform">
-                    <i class="ph-bold ph-arrows-clockwise text-lg"></i>
-                    <span class="text-[9px] font-black uppercase">Refrescar</span>
-                </button>
             </div>
             <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar por SKU o ID..." oninput="filterByProduct(this.value)">
         </div>
@@ -138,20 +131,20 @@
                 <span id="work-cajas-total">0 / 0 CAJAS</span>
             </div>
             <div class="h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
-                <div id="work-progress-bar" class="progress-fill h-full bg-accent rounded-full" style="width: 0%"></div>
+                <div id="work-progress-bar" class="progress-fill h-full bg-accent rounded-full shadow-[0_0_10px_rgba(0,122,255,0.3)]" style="width: 0%"></div>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-2 mb-6 p-2 bg-white rounded-3xl border border-blue-50 shadow-lg sticky top-[80px] z-[90]">
             <div class="col-span-8">
-                <select id="work-select" onchange="refreshWorkStats()" class="w-full h-12 text-sm font-black border-2 border-slate-100"></select>
+                <select id="work-select" onchange="refreshWorkStats()" class="w-full h-12 text-sm font-black"></select>
             </div>
             <div class="col-span-2">
-                <input type="number" id="work-input" class="w-full h-12 text-lg font-black text-center border-2 border-slate-100 bg-slate-50" placeholder="0">
+                <input type="number" id="work-input" class="w-full h-12 text-lg font-black text-center" placeholder="0">
             </div>
             <div class="col-span-2">
-                <button onclick="commitCount()" class="w-full h-12 bg-accent text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                    <i class="ph-bold ph-package text-xl"></i>
+                <button onclick="commitCount()" class="w-full h-12 bg-accent text-white rounded-xl flex items-center justify-center active:scale-90 transition-all">
+                    <i class="ph-bold ph-plus text-xl"></i>
                 </button>
             </div>
         </div>
@@ -167,7 +160,7 @@
 
     <div id="m-list" class="modal">
         <div class="aura-card p-6 w-full max-w-sm max-h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center mb-4"><h3 id="list-modal-title" class="font-black text-lg">Detalle</h3><button onclick="hideModal('m-list')" class="active:scale-90 p-1"><i class="ph-bold ph-x text-2xl text-slate-400"></i></button></div>
+            <div class="flex justify-between items-center mb-4"><h3 id="list-modal-title" class="font-black text-lg">Detalle</h3><button onclick="hideModal('m-list')"><i class="ph-bold ph-x text-2xl text-slate-400"></i></button></div>
             <div id="list-modal-content" class="overflow-y-auto flex-1 space-y-2 pr-2"></div>
         </div>
     </div>
@@ -176,8 +169,8 @@
         <div class="aura-card p-10 w-full max-w-sm text-center">
             <i class="ph-duotone ph-warning-circle text-7xl text-amber-500 mb-6 block"></i>
             <h3 class="text-2xl font-black mb-6 uppercase text-slate-950">¿Cerrar Descarga?</h3>
-            <button onclick="finalizeWork()" class="w-full py-5 bg-slate-900 text-white rounded-xl font-black text-xs uppercase mb-4 active:scale-95 transition-transform">SÍ, GENERAR PDF</button>
-            <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest active:scale-95">REGRESAR AL CONTEO</button>
+            <button onclick="finalizeWork()" class="w-full py-5 bg-slate-900 text-white rounded-xl font-black text-xs uppercase mb-4 active:scale-95 transition-transform">SÍ, CERRAR OPERACIÓN</button>
+            <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">REGRESAR</button>
         </div>
     </div>
 
@@ -185,9 +178,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbw0RuZMVNBGi0OsbB3ASFsZdCcNtT1rwNBjFzM6SMmsm3u75LM4sa0xEgSIpVDaH_7vtg/exec";
         let master = [], queue = [], currentOp = null, master_history = [];
 
-        window.onbeforeunload = function() {
-            if (currentOp || queue.length > 0) return "Hay un proceso activo.";
-        };
+        window.onbeforeunload = function() { if (currentOp || queue.length > 0) return "Hay un proceso activo."; };
 
         function toggleMenu() {
             document.getElementById('side-menu').classList.toggle('active');
@@ -206,33 +197,18 @@
 
         window.onload = async () => { 
             await loadMasterData(); 
+            await refreshHistory();
             const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
             document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
             document.getElementById('month-filter').value = new Date().getMonth();
             
             const savedQueue = localStorage.getItem('tajho_queue');
             if(savedQueue) { queue = JSON.parse(savedQueue); renderQueue(); }
-
             checkSession(); 
-            const lastView = localStorage.getItem('tajho_last_view');
-            if(lastView && lastView !== 'work') navTo(lastView);
-            else if(!lastView) navTo('dash');
         };
 
         async function loadMasterData() { try { const res = await fetch(API_URL + "?t=" + Date.now()); const data = await res.json(); master = data.productos || []; } catch(e) {}}
-        
-        async function refreshHistory() { 
-            const resultsDiv = document.getElementById('product-results');
-            resultsDiv.innerHTML = '<div class="text-center py-10"><i class="ph-bold ph-circle-notch animate-spin text-4xl text-accent"></i><p class="text-[10px] font-black mt-2">SINCRONIZANDO...</p></div>';
-            try { 
-                const res = await fetch(API_URL + "?t=" + Date.now()); 
-                const data = await res.json(); 
-                master_history = data.historial || []; 
-                filterByProduct(document.getElementById('sku-query').value || ''); 
-            } catch(e) {
-                resultsDiv.innerHTML = '<p class="text-center py-10 text-red-400 font-black">ERROR DE CARGA</p>';
-            }
-        }
+        async function refreshHistory() { try { const res = await fetch(API_URL + "?t=" + Date.now()); const data = await res.json(); master_history = data.historial || []; filterByProduct(document.getElementById('sku-query').value || ''); } catch(e) {}}
 
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
@@ -278,14 +254,15 @@
             const resultsDiv = document.getElementById('product-results');
             const selectedMonth = document.getElementById('month-filter').value;
             let html = "", totalCajas = 0, totalCont = new Set();
+            
             const grouped = master_history.reduce((acc, curr) => {
                 const idOp = curr.operacion || curr.id || curr.idoperacion;
                 if (!idOp || !idOp.toString().includes('TWINS')) return acc;
                 if (!acc[idOp]) acc[idOp] = { id: idOp, date: curr.fecha || curr.date || "", items: [], done: (curr.estado || "").toUpperCase() === 'COMPLETADO' };
-                acc[idOp].items.push({ sku: curr.sku, meta: parseInt(curr.meta), r: parseInt(curr.real || 0) });
+                acc[idOp].items.push({ sku: curr.sku, meta: parseInt(curr.meta), r: parseInt(curr.real || 0), desc: curr.descripcion || '' });
                 return acc;
             }, {});
-            
+
             Object.values(grouped).sort((a,b) => new Date(b.date)-new Date(a.date)).forEach(op => {
                 let matchesMonth = (selectedMonth === 'all') || (op.date && (parseInt(op.date.split('/')[1])-1).toString() === selectedMonth);
                 if (op.id.toLowerCase().includes(term) && matchesMonth) {
@@ -296,25 +273,19 @@
                     html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4 shadow-sm bg-white">
                         <div class="flex justify-between items-start mb-4">
                             <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black text-slate-950">${op.id}</h4></div>
-                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-green-50 text-success' : 'bg-blue-50 text-accent'}">${op.done ? 'Cerrado' : 'Abierto'}</span>
+                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-green-50 text-success' : 'bg-blue-50 text-accent'}">${op.done ? 'Terminado' : 'Activo'}</span>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
-                            ${!op.done && localIdx !== -1 ? 
-                                `<button onclick="openWork(${localIdx})" class="btn-continue flex flex-col items-center justify-center py-3 rounded-2xl active:scale-95 transition-transform"><i class="ph-bold ph-play text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Seguir</span></button>` : 
-                                `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-50 text-slate-300 border border-slate-100"><i class="ph-bold ph-check-circle text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Terminado</span></button>`}
-                            
-                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700 active:scale-95 transition-all"><i class="ph-bold ph-list-bullets text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Items</span></button>
-                            
-                            ${op.done ? 
-                                `<button onclick="genPDFFromExcel('${op.id}')" class="btn-pdf flex flex-col items-center justify-center py-3 rounded-2xl active:scale-95 transition-all"><i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Descargar</span></button>` : 
-                                `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-50 text-slate-200"><i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Cerrar para PDF</span></button>`}
+                            ${!op.done && localIdx !== -1 ? `<button onclick="openWork(${localIdx})" class="btn-continue flex flex-col items-center justify-center py-3 rounded-2xl active:scale-95 transition-all"><i class="ph-bold ph-play text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Seguir</span></button>` : `<button disabled class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-50 text-slate-300"><i class="ph-bold ph-check-circle text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Cerrado</span></button>`}
+                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-100 text-slate-700 active:scale-95 transition-all"><i class="ph-bold ph-list-bullets text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Ver Items</span></button>
+                            ${op.done ? `<button onclick="genPDFFromExcel('${op.id}')" class="flex flex-col items-center justify-center py-3 rounded-2xl bg-red-50 text-red-600 border border-red-100 active:scale-95 transition-all"><i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[8px] font-black uppercase">Generar PDF</span></button>` : `<button disabled class="opacity-20 flex flex-col items-center justify-center py-3 rounded-2xl bg-slate-50"><i class="ph-bold ph-lock text-lg mb-1"></i><span class="text-[8px] font-black uppercase">PDF</span></button>`}
                         </div>
                     </div>`;
                 }
             });
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">NO HAY REGISTROS</p>';
+            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
         }
 
         function openWork(idx) {
@@ -332,7 +303,6 @@
             const val = parseInt(document.getElementById('work-input').value); if(isNaN(val) || val === 0) return;
             const sku = document.getElementById('work-select').value;
             const item = currentOp.items.find(x => x.sku === sku);
-            currentOp.lastAction = { sku, amount: val };
             item.r += val; 
             document.getElementById('work-input').value = '';
             saveWorkState(); refreshWorkStats();
@@ -345,34 +315,18 @@
         }
 
         function refreshWorkStats() {
-            let totalMeta = 0, totalReal = 0, skusCompletos = 0;
-            currentOp.items.forEach(x => { totalMeta += x.meta; totalReal += x.r; if(x.r >= x.meta) skusCompletos++; });
+            let totalMeta = 0, totalReal = 0;
+            currentOp.items.forEach(x => { totalMeta += x.meta; totalReal += x.r; });
             const porcTotal = totalMeta > 0 ? Math.min(Math.round((totalReal / totalMeta) * 100), 100) : 0;
-            
             document.getElementById('work-perc-title').innerText = porcTotal + "%";
-            document.getElementById('work-skus').innerText = `${skusCompletos} / ${currentOp.items.length} SKU COMPLETOS`;
-            document.getElementById('work-cajas-total').innerText = `${totalReal} / ${totalMeta} TOTAL`;
             document.getElementById('work-progress-bar').style.width = porcTotal + "%";
-            
-            document.getElementById('work-stats').innerHTML = currentOp.items.map(x => {
-                const itemPorc = Math.min((x.r/x.meta)*100, 100);
-                const strokeDashoffset = 100 - itemPorc;
-                return `<div class="aura-card p-5 border border-slate-100 bg-white">
-                    <div class="grid grid-cols-12 gap-3 items-center">
-                        <div class="col-span-3 flex flex-col items-center justify-center relative">
-                            <svg width="60" height="60" viewBox="0 0 40 40" class="progress-ring">
-                                <circle stroke="#e2e8f0" stroke-width="4" fill="transparent" r="16" cx="20" cy="20"/>
-                                <circle stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="transparent" r="16" cx="20" cy="20" style="stroke-dasharray: 100 100; stroke-dashoffset: ${strokeDashoffset};"/>
-                            </svg>
-                            <div class="absolute"><i class="ph-bold ${x.r >= x.meta ? 'ph-check-circle text-success' : 'ph-package text-accent'} text-xl"></i></div>
-                        </div>
-                        <div class="col-span-9 flex justify-between items-center">
-                            <div><p class="font-black text-sm text-slate-950">${x.sku}</p><p class="text-[9px] font-bold text-slate-400 uppercase">${x.desc || 'Sin descripción'}</p></div>
-                            <div class="text-right"><p class="font-black text-2xl text-accent">${x.r}</p><p class="text-[10px] font-bold text-slate-300">/ ${x.meta}</p></div>
-                        </div>
+            document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
+                <div class="aura-card p-4 border border-slate-100 mb-2">
+                    <div class="flex justify-between items-center">
+                        <div><p class="font-black text-sm">${x.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${x.desc || ''}</p></div>
+                        <div class="text-right"><p class="font-black text-xl text-accent">${x.r} / ${x.meta}</p></div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
         }
 
         function checkSession() {
@@ -391,20 +345,39 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             const items = master_history.filter(it => (it.operacion || it.id || it.idoperacion) === opId);
             if (items.length === 0) return;
-            doc.setFontSize(16); doc.text("REPORTE DE CARGA - TWINS ELITE", 105, 20, { align: "center" });
-            doc.setFontSize(10); doc.text(`ID: ${opId} | FECHA: ${items[0].fecha || items[0].date}`, 14, 30);
-            doc.autoTable({ startY: 40, head: [['SKU', 'DESCRIPCION', 'META', 'REAL']], body: items.map(it => [it.sku, it.descripcion || '', it.meta, it.real || 0]), theme: 'grid', headStyles: { fillColor: [0, 122, 255] } });
-            const finalY = doc.lastAutoTable.finalY + 20;
-            doc.text("__________________________", 14, finalY);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18); doc.text("REPORTE DE CARGA", 105, 20, { align: "center" });
+            doc.setFontSize(14); doc.text("TWINS ELITE - TAJHO OFFICIAL", 105, 28, { align: "center" });
+            
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            doc.text(`OPERACIÓN ID: ${opId}`, 14, 40);
+            doc.text(`FECHA DE EMISIÓN: ${items[0].fecha || items[0].date}`, 14, 45);
+            doc.text(`ENCARGADO: J. Angelo Nuñez Durand`, 14, 50);
+
+            doc.autoTable({ 
+                startY: 55, 
+                head: [['SKU PRODUCTO', 'DESCRIPCIÓN', 'META CAJAS', 'REAL RECIBIDO']], 
+                body: items.map(it => [it.sku, it.descripcion || '', it.meta, it.real || 0]), 
+                theme: 'striped',
+                headStyles: { fillColor: [0, 122, 255], textColor: 255, fontStyle: 'bold' },
+                styles: { fontSize: 9, cellPadding: 3 }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 30;
+            doc.line(14, finalY, 80, finalY);
+            doc.setFont("helvetica", "bold");
             doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, finalY + 7);
+            doc.setFont("helvetica", "normal");
             doc.text("Asist. Inventario Logístico", 14, finalY + 12);
-            doc.save(`Reporte_${opId}.pdf`);
+            
+            doc.save(`Reporte_Tajho_${opId}.pdf`);
         }
 
         function viewQuickListFromExcel(opId) {
             const items = master_history.filter(it => (it.operacion || it.id || it.idoperacion) === opId);
             document.getElementById('list-modal-title').innerText = opId;
-            document.getElementById('list-modal-content').innerHTML = items.map(it => `<div class="bg-slate-50 p-3 rounded-xl flex justify-between"><p class="font-black text-xs text-slate-900">${it.sku}</p><p class="text-xs font-black text-accent">${it.real || 0} / ${it.meta}</p></div>`).join('');
+            document.getElementById('list-modal-content').innerHTML = items.map(it => `<div class="bg-slate-50 p-3 rounded-xl flex justify-between"><p class="font-black text-xs">${it.sku}</p><p class="text-xs font-black text-accent">${it.real || 0} / ${it.meta}</p></div>`).join('');
             showModal('m-list');
         }
 
