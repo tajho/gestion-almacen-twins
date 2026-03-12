@@ -220,14 +220,26 @@
             document.getElementById('queue-list').innerHTML = queue.map((x, i) => `<div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm border border-slate-100"><div><p class="font-black text-xs">${x.sku}</p><p class="text-[8px] text-slate-400 font-bold uppercase">${x.desc}</p></div><span class="font-black text-accent bg-blue-50 px-3 py-1 rounded-lg">${x.meta}</span></div>`).join('');
         }
 
-        function saveContenedor() {
+           // --- FUNCIÓN PARA GUARDAR EN EL CELULAR Y EN EXCEL ---
+        async function saveContenedor() {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
-            h.unshift({ id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false });
+            const nuevoContenedor = { id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false };
+            
+            h.unshift(nuevoContenedor);
             localStorage.setItem('tajho_v3', JSON.stringify(h));
+
+            // Enviar a Google Sheets (Excel)
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(nuevoContenedor)
+                });
+            } catch(e) { console.log("Error al sincronizar con Excel"); }
+
             queue = []; renderQueue(); navTo('hist');
         }
-
         function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const selectedMonth = document.getElementById('month-filter').value;
@@ -322,15 +334,28 @@
 
         async function finalizeWork() {
             currentOp.done = true;
-            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
+            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); 
+            h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
+            
             const lastIdx = currentOp.localIdx;
+            const dataFinal = currentOp;
+
+            // Enviar actualización final al Excel
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ ...dataFinal, action: 'FINALIZE' })
+                });
+            } catch(e) { console.log("Error al cerrar en Excel"); }
+
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
-            // Retardo para asegurar la carga del historial antes de disparar el PDF
+            
+            // Disparo del PDF con los datos ya asegurados
             setTimeout(() => genPDF(lastIdx), 800);
         }
-
         // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF (CORREGIDA) ---
                 // --- FUNCIÓN SOLUCIÓN DEFINITIVA REPORTE PDF ---
         function genPDF(idx) {
