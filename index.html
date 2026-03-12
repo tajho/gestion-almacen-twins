@@ -15,29 +15,21 @@
         :root { --bg: #f4f7fa; --accent: #007AFF; --success: #34C759; --warning: #F59E0B; --header-h: 70px; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1e293b; margin: 0; }
         
-        /* Header y Menú */
         .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.98); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 40px 20px; }
         .side-menu.active { transform: translateX(100%); }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
         .menu-overlay.active { display: block; }
         
-        /* Estilos de Modal Corregidos */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 4000; padding: 20px; }
-
-        /* Vistas y Tarjetas */
         .view { display: none; min-height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 10px); flex-direction: column; animation: fadeIn 0.3s ease; }
         .view.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .aura-card { background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 2px 10px rgba(0,0,0,0.01); }
         
-        /* Conteo y Carga */
         .progress-ring__circle { transition: stroke-dashoffset 0.4s ease; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .btn-add-box { background: linear-gradient(135deg, #007AFF, #0056b3); box-shadow: 0 4px 15px rgba(0,122,255,0.3); }
-        
+        .btn-add-box { background: linear-gradient(135deg, #007AFF, #0056b3); }
         input, select { border: 1px solid #e2e8f0!important; border-radius: 12px!important; padding: 10px!important; font-weight: 700!important; outline: none!important; }
-        .count-badge { animation: pop 0.3s ease-out; }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -93,7 +85,7 @@
                 <div class="bg-blue-50 p-3 rounded-xl text-center"><p class="text-[8px] font-black text-blue-400 uppercase">CONT.</p><p id="stats-cont" class="text-xl font-black text-accent">0</p></div>
                 <div class="bg-green-50 p-3 rounded-xl text-center"><p class="text-[8px] font-black text-green-400 uppercase">CAJAS</p><p id="stats-cajas" class="text-xl font-black text-success">0</p></div>
             </div>
-            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar por SKU o ID..." oninput="filterByProduct(this.value)">
+            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar por ID..." oninput="filterByProduct(this.value)">
         </div>
         <div id="product-results" class="space-y-3 pb-20"></div>
     </div>
@@ -103,17 +95,14 @@
             <div><p id="work-title" class="text-xl font-black tracking-tighter">--</p></div>
             <div class="bg-white px-4 py-1 rounded-full border border-slate-100 shadow-sm"><span id="work-perc-title" class="text-lg font-black text-accent">0%</span></div>
         </div>
-
         <div class="grid grid-cols-12 gap-2 mb-6 p-3 bg-white rounded-2xl border border-blue-100 shadow-md sticky top-[130px] z-[80]">
             <div class="col-span-8"><select id="work-select" onchange="refreshWorkStats()" class="w-full h-10 text-sm font-black bg-slate-50 border-none"></select></div>
             <div class="col-span-2"><input type="number" id="work-input" class="w-full h-10 text-lg font-black text-center bg-slate-50 border-none" placeholder="0"></div>
             <div class="col-span-2"><button onclick="commitCount()" class="btn-add-box w-full h-10 text-white rounded-xl flex items-center justify-center active:scale-90 transition-transform"><i class="ph-bold ph-package text-xl"></i></button></div>
         </div>
-
         <div id="work-stats" class="space-y-2"></div>
-        
         <div class="py-10">
-            <button onclick="showModal('m-finish')" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase shadow-xl active:scale-95 transition-transform">Finalizar y Firmar Reporte</button>
+            <button onclick="showModal('m-finish')" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase shadow-xl">Finalizar y Firmar Reporte</button>
         </div>
     </div>
 
@@ -131,30 +120,29 @@
         let master = [], queue = [], currentOp = null, master_history = [];
 
         function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            menu.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.getElementById('side-menu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
         }
 
         async function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
             if(v === 'hist') await refreshHistory();
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            menu.classList.remove('active');
-            overlay.classList.remove('active');
+            document.getElementById('side-menu').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
         }
 
-        window.onload = async () => { 
-            await loadMasterData(); 
-            await refreshHistory();
-            checkSession(); 
-        };
+        window.onload = async () => { await loadMasterData(); await refreshHistory(); checkSession(); };
 
-        async function loadMasterData() { try { const res = await fetch(API_URL); const data = await res.json(); master = data.productos || []; } catch(e) { console.error("Error cargando maestro:", e); }}
-        async function refreshHistory() { try { const res = await fetch(API_URL); const data = await res.json(); master_history = data.historial || []; filterByProduct(''); } catch(e) { console.error("Error cargando historial:", e); }}
+        async function loadMasterData() { try { const res = await fetch(API_URL); const data = await res.json(); master = data.productos || []; } catch(e) {}}
+        async function refreshHistory() { 
+            try { 
+                const res = await fetch(API_URL); 
+                const data = await res.json(); 
+                master_history = data.historial || []; 
+                filterByProduct(''); 
+            } catch(e) {}
+        }
 
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
@@ -168,20 +156,15 @@
 
         function pickSku(s, d) { 
             const input = document.getElementById('sku-in');
-            input.value = s; 
-            input.dataset.desc = d; 
+            input.value = s; input.dataset.desc = d; 
             document.getElementById('search-results').classList.add('hidden'); 
         }
 
         function addToQueue() {
-            const input = document.getElementById('sku-in');
-            const s = input.value, m = parseInt(document.getElementById('meta-in').value);
-            if(!s || isNaN(m) || m <= 0) return;
-            
-            queue.push({ sku: s, desc: input.dataset.desc || '', meta: m, r: 0 });
-            input.value = ''; 
-            document.getElementById('meta-in').value = '';
-            delete input.dataset.desc;
+            const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
+            if(!s || isNaN(m)) return;
+            queue.push({ sku: s, desc: document.getElementById('sku-in').dataset.desc || '', meta: m, r: 0 });
+            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
             renderQueue();
         }
 
@@ -192,8 +175,7 @@
 
         function saveContenedor() {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            // ID único basado en timestamp para evitar duplicados al borrar caché
-            const id = `TW-${Date.now().toString().slice(-4)}`; 
+            const id = `TWINS-${Date.now().toString().slice(-4)}`;
             const nuevo = { id, date: new Date().toLocaleString(), items: [...queue], done: false };
             h.unshift(nuevo);
             localStorage.setItem('tajho_v3', JSON.stringify(h));
@@ -201,29 +183,42 @@
         }
 
         function filterByProduct(q) {
-            const grouped = master_history.reduce((acc, curr) => {
-                const idOp = curr.operacion || curr.id || 'TW-000';
-                if (!acc[idOp]) acc[idOp] = { id: idOp, date: curr.fecha || "", items: [], done: (curr.estado || "").toUpperCase() === 'COMPLETADO' };
-                acc[idOp].items.push(curr); return acc;
-            }, {});
+            const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const resultsDiv = document.getElementById('product-results');
-            resultsDiv.innerHTML = Object.values(grouped).map(op => {
-                const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-                const localIdx = localH.findIndex(lh => lh.id === op.id);
-                return `
+            
+            // Stats rápidos
+            document.getElementById('stats-cont').innerText = localH.length;
+            document.getElementById('stats-cajas').innerText = localH.reduce((acc, curr) => acc + curr.items.reduce((a, b) => a + b.r, 0), 0);
+
+            resultsDiv.innerHTML = localH.filter(op => op.id.includes(q.toUpperCase())).map((op, idx) => `
                 <div class="aura-card p-4 border-l-4 ${op.done ? 'border-success' : 'border-accent'}">
-                    <div class="flex justify-between mb-3"><h4 class="font-black text-sm">${op.id}</h4><span class="text-[9px] font-bold uppercase">${op.done ? 'Cerrado' : 'Abierto'}</span></div>
-                    <div class="flex gap-2">
-                        ${!op.done && localIdx !== -1 ? `<button onclick="openWork(${localIdx})" class="flex-1 bg-accent text-white py-2 rounded-lg text-[10px] font-bold">SEGUIR</button>` : ''}
-                        <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 bg-amber-50 text-amber-600 border border-amber-100 py-2 rounded-lg text-[10px] font-bold">PDF</button>
+                    <div class="flex justify-between mb-1">
+                        <h4 class="font-black text-sm">${op.id}</h4>
+                        <span class="text-[9px] font-bold uppercase ${op.done ? 'text-success' : 'text-accent'}">${op.done ? 'Cerrado' : 'Abierto'}</span>
                     </div>
-                </div>`;
-            }).join('');
+                    <p class="text-[9px] text-slate-400 font-bold mb-4">${op.date}</p>
+                    
+                    <div class="flex gap-2">
+                        ${!op.done ? `<button onclick="openWork(${idx})" class="flex-1 bg-accent text-white py-3 rounded-xl text-[10px] font-black uppercase shadow-sm">Continuar</button>` : ''}
+                        
+                        <button onclick="verLista(${idx})" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl text-[10px] font-black uppercase">Ver Lista</button>
+                        
+                        ${op.done ? `<button onclick="genPDFFromExcel('${op.id}')" class="flex-1 bg-amber-500 text-white py-3 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 shadow-md">
+                            <i class="ph-bold ph-file-pdf text-sm"></i> PDF
+                        </button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function verLista(idx) {
+            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            const items = h[idx].items.map(x => `${x.sku}: ${x.r}/${x.meta}`).join('\n');
+            alert(`Resumen de Carga ${h[idx].id}:\n\n${items}`);
         }
 
         function openWork(idx) {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            if(!h[idx]) return;
             currentOp = { ...h[idx], localIdx: idx };
             localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
             navTo('work');
@@ -252,13 +247,11 @@
             currentOp.items.forEach(x => { totalMeta += x.meta; totalReal += x.r; });
             const porcTotal = totalMeta > 0 ? Math.min(Math.round((totalReal / totalMeta) * 100), 100) : 0;
             document.getElementById('work-perc-title').innerText = porcTotal + "%";
-            
             document.getElementById('work-stats').innerHTML = currentOp.items.map(x => {
                 const itemPorc = Math.min((x.r/x.meta)*100, 100);
                 const strokeDashoffset = 100 - itemPorc;
                 const isComplete = x.r >= x.meta;
                 const color = x.r > x.meta ? 'var(--warning)' : (isComplete ? 'var(--success)' : 'var(--accent)');
-
                 return `
                 <div class="aura-card p-3 flex items-center gap-4 ${isComplete ? 'bg-green-50/20' : ''}">
                     <div class="relative flex items-center justify-center">
@@ -283,20 +276,14 @@
 
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
-            if (savedOp) { 
-                const op = JSON.parse(savedOp);
-                const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-                const idx = h.findIndex(x => x.id === op.id);
-                if(idx !== -1) openWork(idx);
-            }
+            if (savedOp) { currentOp = JSON.parse(savedOp); openWork(currentOp.localIdx); }
         }
 
         function showModal(id) { document.getElementById(id).style.display = 'flex'; }
         function hideModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Función PDF Placeholder para evitar error de consola
         function genPDFFromExcel(id) {
-            alert("Generando reporte PDF para: " + id + "\nRevisión autorizada por J. Angelo Nuñez Durand");
+            alert(`Generando reporte PDF...\nRevisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.`);
         }
 
         async function finalizeWork() {
