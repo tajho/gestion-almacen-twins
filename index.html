@@ -3,150 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho Prime | Twins Elite</title>
+    <title>Tajho Aura Prime | Twins Elite</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg: #f8fafc; --accent: #007AFF; --header-h: 70px; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
+        :root { --bg: #f8fafc; --accent: #007AFF; --success: #34C759; --danger: #FF3B30; --header-h: 70px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: auto; height: 100vh; }
         .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; padding-bottom: 100px; }
+        .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 40px 20px; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
+        .menu-overlay.active { display: block; }
+        .menu-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 20px; color: #64748b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; border: none; background: transparent; width: 100%; text-align: left; }
+        .menu-link.active { background: var(--accent); color: #fff; }
+        .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; animation: viewIn 0.4s ease; padding-bottom: 120px; }
         .view.active { display: flex; }
-        .aura-card { background: #fff; border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .btn-pdf-active { background-color: #0f172a !important; color: white !important; opacity: 1 !important; }
-        .btn-pdf-disabled { background-color: #e2e8f0 !important; color: #94a3b8 !important; cursor: not-allowed; }
+        @keyframes viewIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        .aura-card { background: #fff; border-radius: 30px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        input, select { background: #fff!important; border: 1px solid #e2e8f0!important; border-radius: 18px!important; padding: 15px!important; font-weight: 700!important; outline: none!important; }
+        .sticky-action { position: sticky; bottom: 0; background: linear-gradient(to top, var(--bg) 80%, transparent); padding: 20px 0; margin-top: auto; z-index: 100; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <button onclick="navTo('dash')" class="text-2xl"><i class="ph-bold ph-house"></i></button>
-        <h2 class="text-xl font-black italic">Tajho <span class="text-blue-600">Prime</span></h2>
-        <button onclick="navTo('hist')" class="text-2xl"><i class="ph-bold ph-clock-counter-clockwise"></i></button>
+        <button onclick="toggleMenu()" class="text-3xl text-slate-900 p-2"><i class="ph-bold ph-list"></i></button>
+        <h2 class="text-xl font-black italic tracking-tighter">Tajho <span class="text-accent not-italic">Prime</span></h2>
+        <div class="w-10"></div>
     </header>
 
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="side-menu">
+        <div class="mb-10 px-4">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Menú Principal</p>
+        </div>
+        <button onclick="navTo('dash')" class="menu-link active" id="m-dash"><i class="ph-duotone ph-house text-2xl"></i><span>Inicio</span></button>
+        <button onclick="navTo('create')" class="menu-link" id="m-create"><i class="ph-duotone ph-package text-2xl"></i><span>Nueva Carga</span></button>
+        <button onclick="navTo('hist')" class="menu-link" id="m-hist"><i class="ph-duotone ph-folders text-2xl"></i><span>Historial</span></button>
+        <div class="mt-auto border-t pt-6 text-center">
+            <p class="text-[9px] font-black text-slate-400 uppercase leading-relaxed">
+                J. Angelo Nuñez Durand<br>Asist. Inventario Logístico
+            </p>
+        </div>
+    </nav>
+
     <div id="v-dash" class="view active">
-        <div class="aura-card p-8 text-center mt-4">
-            <i class="ph-duotone ph-package text-6xl text-blue-600 mb-4 block"></i>
-            <h3 class="font-black text-xl uppercase">Gestión de Inventario</h3>
-            <button onclick="navTo('create')" class="w-full mt-6 py-4 bg-blue-600 text-white rounded-2xl font-bold">NUEVA CARGA</button>
+        <div class="aura-card p-10 text-center mt-6">
+            <i class="ph-duotone ph-identification-card text-7xl text-accent mb-6 block"></i>
+            <h3 class="font-black text-2xl uppercase tracking-tighter">Inventory Manager</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Twins Elite | Tajho Official</p>
         </div>
     </div>
 
     <div id="v-create" class="view">
-        <h2 class="text-2xl font-black mb-4">Planificar</h2>
-        <div class="aura-card p-6 mb-4">
-            <input type="text" id="sku-in" class="w-full p-4 border rounded-xl mb-3" placeholder="Buscar SKU...">
-            <input type="number" id="meta-in" class="w-full p-4 border rounded-xl mb-3" placeholder="Meta de cajas">
-            <button onclick="addToQueue()" class="w-full py-4 bg-blue-600 text-white rounded-xl font-bold">AÑADIR A LISTA</button>
+        <h2 class="text-2xl font-black mb-6 tracking-tighter">Planificar Carga</h2>
+        <div class="aura-card p-6 mb-6">
+            <div class="relative mb-4">
+                <label class="text-[9px] font-black uppercase text-slate-400 ml-2 mb-1 block">Producto / SKU</label>
+                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar SKU..." autocomplete="off">
+                <div id="search-results" class="hidden absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border z-[2000] max-h-60 overflow-y-auto"></div>
+            </div>
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <label class="text-[9px] font-black uppercase text-slate-400 ml-2 mb-1 block">Meta Cajas</label>
+                    <input type="number" id="meta-in" class="w-full text-center text-xl font-black" placeholder="0">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addToQueue()" class="h-[54px] px-8 bg-blue-600 text-white rounded-2xl font-bold uppercase text-[10px]">Añadir</button>
+                </div>
+            </div>
         </div>
         <div id="queue-list" class="space-y-2"></div>
-        <button onclick="saveAndGoHist()" id="btn-save-main" class="hidden w-full mt-4 py-4 bg-black text-white rounded-xl font-bold">GUARDAR Y REGISTRAR</button>
+        <div class="sticky-action">
+            <button onclick="saveContenedor()" id="btn-save-all" class="w-full py-5 bg-black text-white rounded-2xl font-black text-xs uppercase hidden shadow-xl">
+                Registrar Contenedor
+            </button>
+        </div>
     </div>
 
     <div id="v-hist" class="view">
-        <h2 class="text-2xl font-black mb-4">Historial</h2>
-        <div id="hist-list" class="space-y-4"></div>
+        <h2 class="text-2xl font-black mb-6 tracking-tighter">Historial</h2>
+        <div class="aura-card p-6 mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-4 text-center">
+                <div class="bg-slate-50 p-4 rounded-2xl">
+                    <p class="text-[8px] font-black text-slate-400 uppercase">Envíos</p>
+                    <p id="stats-cont" class="text-2xl font-black text-accent">0</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl">
+                    <p class="text-[8px] font-black text-slate-400 uppercase">Cajas Totales</p>
+                    <p id="stats-cajas" class="text-2xl font-black text-success">0</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mb-3">
+                <select id="month-filter" onchange="filterByProduct('')" class="flex-1 text-xs font-bold"></select>
+                <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                    <i class="ph-bold ph-file-csv text-lg"></i>
+                    <span class="text-[9px] font-black uppercase">Exportar</span>
+                </button>
+            </div>
+            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar por SKU o ID..." oninput="filterByProduct(this.value)">
+        </div>
+        <div id="product-results" class="space-y-4"></div>
+    </div>
+
+    <div id="v-work" class="view">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black tracking-tighter" id="work-title"></h2>
+            <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
+        </div>
+        <div class="aura-card p-6 mb-4 bg-slate-900 text-white">
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso</p>
+            <div class="flex justify-between mb-2 font-black text-xl">
+                <span id="work-cajas-total">0 / 0</span>
+                <span id="work-skus">0 / 0</span>
+            </div>
+            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="aura-card p-6 text-center mb-4">
+            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-4 text-center font-black text-accent border-none"></select>
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="work-input" class="w-24 text-4xl font-black text-center border-none p-0 bg-transparent" placeholder="0">
+                <button onclick="commitCount()" class="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-lg"><i class="ph-bold ph-plus text-3xl"></i></button>
+            </div>
+        </div>
+        <div id="work-stats" class="space-y-2 overflow-y-auto mb-6"></div>
+        <div class="sticky-action">
+            <button onclick="showModal('m-finish')" class="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
+                Completar Descarga
+            </button>
+        </div>
+    </div>
+
+    <div id="m-list" class="modal">
+        <div class="aura-card p-6 w-full max-w-sm max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4"><h3 id="list-modal-title" class="font-black text-lg">Detalle</h3><button onclick="hideModal('m-list')"><i class="ph-bold ph-x text-2xl"></i></button></div>
+            <div id="list-modal-content" class="overflow-y-auto flex-1 space-y-2 pr-2"></div>
+        </div>
+    </div>
+
+    <div id="m-finish" class="modal">
+        <div class="aura-card p-10 w-full max-w-sm text-center">
+            <i class="ph-duotone ph-warning-circle text-7xl text-danger mb-6 block"></i>
+            <h3 class="text-2xl font-black mb-6 uppercase">¿Cerrar Descarga?</h3>
+            <button onclick="finalizeWork()" class="w-full py-5 bg-red-600 text-white rounded-xl font-black text-xs uppercase mb-4">SÍ, GENERAR PDF</button>
+            <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CANCELAR</button>
+        </div>
     </div>
 
     <script>
-        let queue = [];
-        
+        const API_URL = "https://script.google.com/macros/s/AKfycbzspD7G0ahM5Ahed3n2fHf_GWTXW4WahI5HMcVlixpEd3kpFTWCL9BICWdSqcUIuwL1Wg/exec";
+        let master = [], queue = [], currentOp = null;
+
+        function toggleMenu() {
+            document.getElementById('side-menu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
         function navTo(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
             document.getElementById('v-' + v).classList.add('active');
-            if(v === 'hist') renderHistory();
+            if(document.getElementById('m-' + v)) document.getElementById('m-' + v).classList.add('active');
+            if(v === 'hist') filterByProduct(document.getElementById('sku-query').value);
+            toggleMenu();
+        }
+
+        window.onload = async () => { 
+            loadMasterData(); 
+            const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+            document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+            document.getElementById('month-filter').value = new Date().getMonth();
+            checkSession(); 
+        };
+
+        async function loadMasterData() { try { const res = await fetch(API_URL); master = await res.json(); } catch(e) {} }
+
+        function searchMaster(q) {
+            const resDiv = document.getElementById('search-results');
+            if (q.length < 2) { resDiv.classList.add('hidden'); return; }
+            const term = q.toLowerCase();
+            const matches = master.filter(row => String(row.sku || row.SKU || '').toLowerCase().includes(term) || String(row.descripcion || row.DESCRIPCION || '').toLowerCase().includes(term)).slice(0, 10);
+            if(matches.length > 0) {
+                resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="p-4 border-b last:border-0 active:bg-slate-50"><p class="font-black text-sm text-accent">${x.sku || x.SKU}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p></div>`).join('');
+                resDiv.classList.remove('hidden');
+            } else { resDiv.classList.add('hidden'); }
+        }
+
+        function pickSku(s, d) { 
+            document.getElementById('sku-in').value = s; 
+            document.getElementById('sku-in').dataset.desc = d; 
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('meta-in').focus();
         }
 
         function addToQueue() {
-            const s = document.getElementById('sku-in').value, m = document.getElementById('meta-in').value;
-            if(!s || !m) return;
-            queue.push({ sku: s, meta: parseInt(m), r: 0 });
+            const s = document.getElementById('sku-in').value, d = document.getElementById('sku-in').dataset.desc || '', m = parseInt(document.getElementById('meta-in').value);
+            if(!s || isNaN(m) || m <= 0) { alert("Completa SKU y Meta"); return; }
+            queue.push({ sku: s, desc: d, meta: m, r: 0 });
             document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
-            document.getElementById('btn-save-main').classList.remove('hidden');
             renderQueue();
         }
 
         function renderQueue() {
-            document.getElementById('queue-list').innerHTML = queue.map(x => `
-                <div class="bg-white p-4 rounded-xl border flex justify-between items-center font-bold">
-                    <span>${x.sku}</span><span class="text-blue-600">${x.meta}</span>
-                </div>`).join('');
+            const btn = document.getElementById('btn-save-all');
+            btn.classList.toggle('hidden', queue.length === 0);
+            document.getElementById('queue-list').innerHTML = queue.map((x, i) => `<div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm border border-slate-100"><div><p class="font-black text-xs">${x.sku}</p><p class="text-[8px] text-slate-400 font-bold uppercase">${x.desc}</p></div><span class="font-black text-accent bg-blue-50 px-3 py-1 rounded-lg">${x.meta}</span></div>`).join('');
         }
 
-        function saveAndGoHist() {
-            const h = JSON.parse(localStorage.getItem('tajho_final') || '[]');
+        function saveContenedor() {
+            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
-            // Simulamos que al guardar ya está FINALIZADO para tu reporte
-            h.unshift({ id, date: new Date().toLocaleString(), items: [...queue], done: true });
-            localStorage.setItem('tajho_final', JSON.stringify(h));
-            queue = []; navTo('hist');
+            h.unshift({ id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false });
+            localStorage.setItem('tajho_v3', JSON.stringify(h));
+            queue = []; renderQueue(); navTo('hist');
         }
 
-        function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('tajho_final') || '[]');
-            document.getElementById('hist-list').innerHTML = h.map((op, idx) => `
-                <div class="aura-card p-5">
-                    <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-[10px] font-bold text-slate-400">${op.date}</p><h4 class="text-lg font-black">${op.id}</h4></div>
-                        <span class="px-3 py-1 rounded-lg text-[10px] font-bold bg-green-100 text-green-700">FINALIZADO</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="flex-1 py-3 bg-slate-100 rounded-xl font-bold text-xs">LISTA</button>
-                        <button onclick="generateSafePDF(${idx})" class="flex-1 py-3 btn-pdf-active rounded-xl font-bold text-xs">PDF</button>
-                    </div>
+        function filterByProduct(q) {
+            const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            const selectedMonth = document.getElementById('month-filter').value;
+            const term = q.toLowerCase();
+            let html = "", totalCajas = 0, totalCont = new Set();
+            history.forEach((op, idx) => {
+                const dateParts = op.date.split(',')[0].split('/');
+                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
+                const matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
+                const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
+                if (matchesMonth) { op.items.forEach(it => { totalCajas += it.r; }); totalCont.add(op.id); }
+                if (opMatches && matchesMonth) {
+                    html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
+                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="${op.done ? '' : `openWork(${idx})`}" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase ${op.done ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white'}" ${op.done ? 'disabled' : ''}>${op.done ? 'Cerrado' : 'Continuar'}</button>
+                            <button onclick="viewQuickList(${idx})" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
+                            <button onclick="genPDF(${idx})" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                        </div>
+                    </div>`;
+                }
+            });
+            document.getElementById('stats-cont').innerText = totalCont.size;
+            document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
+            document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
+        }
+
+        function exportToExcel() {
+            const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            const selectedMonth = document.getElementById('month-filter').value;
+            const monthLabel = selectedMonth === 'all' ? 'Anual' : document.getElementById('month-filter').options[document.getElementById('month-filter').selectedIndex].text;
+            let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
+            history.forEach(op => {
+                const dateParts = op.date.split(',')[0].split('/');
+                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
+                if (selectedMonth === 'all' || opMonth.toString() === selectedMonth) {
+                    op.items.forEach(it => { csvContent += `"${op.id}","${op.date}","${it.sku}","${it.desc.replace(/"/g, '""')}","${it.meta}","${it.r}","${it.r - it.meta}"\n`; });
+                }
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `Reporte_Logistico_Tajho_${monthLabel}.csv`; link.click();
+        }
+
+        function openWork(idx) {
+            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            currentOp = { ...h[idx], localIdx: idx };
+            localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.getElementById('v-work').classList.add('active');
+            document.getElementById('work-title').innerText = currentOp.id;
+            document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+            refreshWorkStats();
+        }
+
+        function commitCount() {
+            const val = parseInt(document.getElementById('work-input').value); if(isNaN(val)) return;
+            const item = currentOp.items.find(x => x.sku === document.getElementById('work-select').value);
+            item.r += val; document.getElementById('work-input').value = '';
+            localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
+            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
+            localStorage.setItem('tajho_v3', JSON.stringify(h));
+            refreshWorkStats();
+        }
+
+        function refreshWorkStats() {
+            let totalMeta = 0, totalReal = 0, skusCompletos = 0;
+            currentOp.items.forEach(x => { totalMeta += x.meta; totalReal += x.r; if(x.r >= x.meta) skusCompletos++; });
+            const porcTotal = totalMeta > 0 ? Math.min(Math.round((totalReal / totalMeta) * 100), 100) : 0;
+            document.getElementById('work-perc-title').innerText = porcTotal + "%";
+            document.getElementById('work-skus').innerText = `${skusCompletos}/${currentOp.items.length} SKU`;
+            document.getElementById('work-cajas-total').innerText = `${totalReal}/${totalMeta}`;
+            document.getElementById('work-progress-bar').style.width = porcTotal + "%";
+            document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
+                <div class="aura-card p-4 border-l-4 ${x.r >= x.meta ? 'border-success' : 'border-accent'} mb-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-2"><span>${x.sku}</span><span>${x.r} / ${x.meta}</span></div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
                 </div>`).join('');
         }
 
-        // --- LA SOLUCIÓN TÉCNICA DEFINITIVA ---
-        function generateSafePDF(idx) {
-            try {
-                // 1. Verificación de librerías
-                if (!window.jspdf || !window.jspdf.jsPDF) {
-                    alert("Las herramientas de PDF aún se están procesando. Espera 2 segundos.");
-                    return;
-                }
-
-                const h = JSON.parse(localStorage.getItem('tajho_final') || '[]');
-                const data = h[idx];
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                // 2. Formato Cuadriculado (Estilo Excel)
-                doc.setFont("helvetica", "bold");
-                doc.text("REPORTE DE INVENTARIO - TWINS ELITE", 105, 20, { align: "center" });
-                
-                doc.autoTable({
-                    startY: 30,
-                    head: [['SKU / PRODUCTO', 'META', 'REAL', 'ESTADO']],
-                    body: data.items.map(it => [it.sku, it.meta, it.meta, 'OK']), // Usamos meta como real para el ejemplo
-                    theme: 'grid', // Esto crea los cuadros tipo Excel
-                    headStyles: { fillColor: [15, 23, 42] },
-                    styles: { fontSize: 9, cellPadding: 3 }
-                });
-
-                // 3. Firma Obligatoria
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.setFontSize(10);
-                doc.text("__________________________", 14, finalY);
-                doc.text("Revisión autorizada por:", 14, finalY + 7);
-                doc.setFont("helvetica", "bold");
-                doc.text("J. Angelo Nuñez Durand", 14, finalY + 12);
-                doc.setFont("helvetica", "normal");
-                doc.text("Asist. Inventario Logístico", 14, finalY + 17);
-
-                // 4. Descarga directa
-                doc.save(`Reporte_${data.id}.pdf`);
-
-            } catch (err) {
-                console.error(err);
-                alert("Error de procesamiento interno. Intenta abrir el enlace en 'Modo Escritorio' si el error persiste.");
+        function checkSession() {
+            const savedOp = localStorage.getItem('tajho_active_op');
+            if (savedOp) {
+                currentOp = JSON.parse(savedOp); navTo('work');
+                document.getElementById('work-title').innerText = currentOp.id;
+                document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
+                refreshWorkStats();
             }
+        }
+
+        async function finalizeWork() {
+            currentOp.done = true;
+            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
+            localStorage.setItem('tajho_v3', JSON.stringify(h));
+            const lastIdx = currentOp.localIdx;
+            localStorage.removeItem('tajho_active_op');
+            hideModal('m-finish'); navTo('hist');
+            // Espera breve para asegurar que el DOM cargó el historial
+            setTimeout(() => genPDF(lastIdx), 600);
+        }
+
+        // --- FUNCIÓN PDF RESTAURADA ---
+        function genPDF(idx) {
+            try {
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) { alert("Librería no lista. Por favor, reintenta."); return; }
+                
+                const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+                const d = history[idx];
+                if (!d) return;
+
+                const doc = new jsPDF();
+                
+                // Encabezado
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16); doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
+                doc.setFontSize(10);
+                doc.text(`OPERACIÓN: ${d.id}`, 14, 30);
+                doc.text(`FECHA: ${d.date}`, 14, 35);
+                
+                // Tabla Estilo Excel (Grid)
+                doc.autoTable({ 
+                    startY: 42, 
+                    head: [['CÓDIGO', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']], 
+                    body: d.items.map(it => [
+                        it.sku, 
+                        it.desc, 
+                        it.meta,
+                        it.r, 
+                        (it.r >= it.meta) ? "APROBADO" : "PENDIENTE"
+                    ]), 
+                    headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    styles: { cellPadding: 3, fontSize: 8, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
+                    theme: 'grid'
+                });
+                
+                // Firma Autorizada
+                const finalY = doc.lastAutoTable.finalY + 25;
+                doc.setFontSize(10); doc.setFont("helvetica", "bold");
+                doc.text("REVISIÓN AUTORIZADA POR:", 14, finalY);
+                doc.text("J. ANGELO NUÑEZ DURAND", 14, finalY + 6);
+                doc.setFont("helvetica", "normal");
+                doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                
+                doc.save(`Reporte_${d.id}.pdf`);
+            } catch(e) { 
+                console.error(e);
+                alert("Error al generar PDF. Asegúrate de estar en el historial."); 
+            }
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+        function viewQuickList(idx) {
+            const op = JSON.parse(localStorage.getItem('tajho_v3') || '[]')[idx];
+            document.getElementById('list-modal-title').innerText = op.id;
+            document.getElementById('list-modal-content').innerHTML = op.items.map(it => `<div class="bg-slate-50 p-3 rounded-xl flex justify-between"><div><p class="font-black text-xs">${it.sku}</p></div><p class="text-xs font-black text-accent">${it.r} / ${it.meta}</p></div>`).join('');
+            showModal('m-list');
         }
     </script>
 </body>
