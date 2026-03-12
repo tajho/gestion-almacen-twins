@@ -190,19 +190,29 @@
             checkSession(); 
         };
 
-        async function loadMasterData() { try { const res = await fetch(API_URL); master = await res.json(); } catch(e) {} }
+       // Para cargar los productos al inicio (Hoja 1)
+async function loadMasterData() { 
+    try { 
+        const res = await fetch(API_URL); 
+        const data = await res.json(); 
+        master = data.productos; // <--- Lee solo productos
+    } catch(e) {} 
+}
 
-        async function refreshHistory() {
-            try {
-                const res = await fetch(API_URL + "?t=" + Date.now());
-                const data = await res.json();
-                // Mapeo flexible: Buscamos filas que tengan el patrón "TWINS-" en cualquier columna
-                master_history = data.filter(row => {
-                    return Object.values(row).some(val => val && val.toString().includes('TWINS'));
-                });
-            } catch(e) { console.error("Error cargando historial"); }
-        }
-
+// Para cargar el historial (Hoja 2)
+async function refreshHistory() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        
+        // <--- AQUÍ ESTÁ EL TRUCO: Lee solo la lista de historial
+        master_history = data.historial; 
+        
+        console.log("Historial de Hoja 2 cargado:", master_history.length);
+    } catch(e) {
+        console.error("Error al sincronizar:", e);
+    }
+}
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
             if (q.length < 2) { resDiv.classList.add('hidden'); return; }
