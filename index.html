@@ -248,43 +248,80 @@
         }
 
         function filterByProduct(q) {
-            const term = q.toLowerCase();
-            const selectedMonth = document.getElementById('month-filter').value;
-            let html = "", totalCajas = 0, totalCont = new Set();
-            
-            const grouped = master_history.reduce((acc, curr) => {
-                const idOp = curr.operacion || curr.id;
-                if (!idOp) return acc;
-                if (!acc[idOp]) acc[idOp] = { id: idOp, date: curr.fecha || curr.date, items: [], done: (curr.estado || '').includes('COMPLE') };
-                acc[idOp].items.push({ sku: curr.sku, desc: curr.descripcion || curr.desc, meta: parseInt(curr.meta || 0), r: parseInt(curr.real || curr.r || 0) });
-                return acc;
-            }, {});
+    const term = q.toLowerCase();
+    const selectedMonth = document.getElementById('month-filter').value;
+    let html = "", totalCajas = 0, totalCont = new Set();
 
-            Object.values(grouped).forEach((op) => {
-                const dateParts = String(op.date).split(',')[0].split('/');
-                const opMonth = dateParts.length > 1 ? new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth() : -1;
-                const matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
-                const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => String(it.sku).toLowerCase().includes(term));
-                
-                if (matchesMonth) { op.items.forEach(it => { totalCajas += it.r; }); totalCont.add(op.id); }
-                if (opMatches && matchesMonth) {
-                    html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
-                        <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
-                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
-                            <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
-                        </div>
-                    </div>`;
-                }
-            });
+    // Agrupamos las filas del Excel con nombres flexibles
+    const grouped = master_history.reduce((acc, curr) => {
+        // Buscamos el ID en cualquier variante: operacion, id, ID, OPERACION
+        const idOp = curr.operacion || curr.id || curr.ID || curr.OPERACION;
+        if (!idOp) return acc; // Si no hay ID, saltamos la fila
 
-            document.getElementById('stats-cont').innerText = totalCont.size;
-            document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-            document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS EN EXCEL</p>';
+        // Buscamos la fecha en cualquier variante
+        const fechaOp = curr.fecha || curr.date || curr.FECHA || curr.DATE || "";
+        
+        // Buscamos el estado
+        const estadoOp = (curr.estado || curr.status || curr.ESTADO || "").toString().toUpperCase();
+
+        if (!acc[idOp]) {
+            acc[idOp] = { 
+                id: idOp, 
+                date: fechaOp, 
+                items: [], 
+                done: estadoOp === 'COMPLETADO' 
+            };
         }
+
+        // Buscamos SKU, Descripcion, Meta y Real con flexibilidad
+        acc[idOp].items.push({ 
+            sku: curr.sku || curr.SKU || "", 
+            desc: curr.descripcion || curr.desc || curr.DESCRIPCION || "", 
+            meta: parseInt(curr.meta || curr.META || 0), 
+            r: parseInt(curr.real || curr.r || curr.REAL || 0) 
+        });
+        return acc;
+    }, {});
+
+    Object.values(grouped).forEach((op) => {
+        const dateStr = String(op.date);
+        let matchesMonth = true;
+
+        // Intentamos filtrar por mes si hay fecha válida
+        if (dateStr && dateStr.includes('/')) {
+            const dateParts = dateStr.split(',')[0].split('/');
+            if (dateParts.length >= 2) {
+                const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
+                matchesMonth = (selectedMonth === 'all' || opMonth.toString() === selectedMonth);
+            }
+        }
+        
+        const opMatches = op.id.toLowerCase().includes(term) || op.items.some(it => it.sku.toLowerCase().includes(term));
+
+        if (matchesMonth) { 
+            op.items.forEach(it => { totalCajas += it.r; }); 
+            totalCont.add(op.id); 
+        }
+
+        if (opMatches && matchesMonth) {
+            html += `<div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
+                <div class="flex justify-between items-start mb-4">
+                    <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
+                    <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="viewQuickListFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
+                    <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                </div>
+            </div>`;
+        }
+    });
+
+    document.getElementById('stats-cont').innerText = totalCont.size;
+    document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
+    document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS (REVISA LOS ENCABEZADOS DE TU EXCEL)</p>';
+}
+
 
         function exportToExcel() {
             let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
