@@ -281,36 +281,23 @@
             document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
         }
 
-        // FUNCIÓN PARA EXPORTAR A EXCEL (CSV)
         function exportToExcel() {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const selectedMonth = document.getElementById('month-filter').value;
             const monthLabel = selectedMonth === 'all' ? 'Anual' : document.getElementById('month-filter').options[document.getElementById('month-filter').selectedIndex].text;
-            
-            let csvContent = "\uFEFF"; // BOM para caracteres especiales (tildes)
-            csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
-
+            let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
             history.forEach(op => {
                 const dateParts = op.date.split(',')[0].split('/');
                 const opMonth = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getMonth();
-                
                 if (selectedMonth === 'all' || opMonth.toString() === selectedMonth) {
                     op.items.forEach(it => {
-                        const diff = it.r - it.meta;
-                        csvContent += `"${op.id}","${op.date}","${it.sku}","${it.desc.replace(/"/g, '""')}","${it.meta}","${it.r}","${diff}"\n`;
+                        csvContent += `"${op.id}","${op.date}","${it.sku}","${it.desc.replace(/"/g, '""')}","${it.meta}","${it.r}","${it.r - it.meta}"\n`;
                     });
                 }
             });
-
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Reporte_Logistico_Tajho_${monthLabel}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_Logistico_Tajho_${monthLabel}.csv`; link.click();
         }
 
         function viewQuickList(idx) {
@@ -352,7 +339,7 @@
             document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
                 <div class="aura-card p-4 border-l-4 ${x.r >= x.meta ? 'border-success' : 'border-accent'} mb-2">
                     <div class="flex justify-between text-[10px] font-black uppercase mb-2"><span>${x.sku}</span><span>${x.r} / ${x.meta}</span></div>
-                    <div class="h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
+                    <div class="h-1 bg-slate-100 rounded-full overflow-auto"><div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div></div>
                 </div>`).join('');
         }
 
@@ -377,6 +364,7 @@
             hideModal('m-finish'); navTo('hist');
         }
 
+        // --- FUNCIÓN MODIFICADA: REPORTE ESTILO EXCEL ---
         function genPDF(idx) {
             try {
                 const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
@@ -386,23 +374,40 @@
                 const { jsPDF } = window.jspdf; 
                 const doc = new jsPDF();
                 
-                doc.setFontSize(18); doc.text("REPORTE DE CARGA - TAJHO PRIME", 14, 22);
-                doc.setFontSize(10); doc.text(`OPERACIÓN: ${d.id} | FECHA: ${d.date}`, 14, 30);
+                // Encabezado
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16); doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
+                doc.setFontSize(10); doc.text(`OPERACIÓN: ${d.id}`, 14, 30);
+                doc.text(`FECHA: ${d.date}`, 14, 35);
                 
+                // Tabla Estilo Excel
                 doc.autoTable({ 
-                    startY: 35, 
-                    head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], 
-                    body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), 
-                    headStyles: { fillColor: [0, 122, 255] },
-                    theme: 'striped'
+                    startY: 42, 
+                    head: [['CÓDIGO', 'DESCRIPCIÓN', 'CANT. CAJAS', 'ESTADO']], 
+                    body: d.items.map(it => [
+                        it.sku, 
+                        it.desc, 
+                        it.r, 
+                        (it.r >= it.meta) ? "APROBADO" : "PENDIENTE"
+                    ]), 
+                    headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    styles: { cellPadding: 3, fontSize: 9, valign: 'middle', overflow: 'linebreak', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
+                    theme: 'grid'
                 });
                 
-                doc.setFontSize(9); 
-                doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", 14, doc.lastAutoTable.finalY + 15);
+                // Pie de Página con Firma Solicitada
+                const finalY = doc.lastAutoTable.finalY + 25;
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "bold");
+                doc.text("REVISIÓN Y CONTEO", 14, finalY);
+                doc.text("J. ANGELO NUÑEZ DURAND", 14, finalY + 6);
+                doc.setFont("helvetica", "normal");
+                doc.text("Asist. Logístico", 14, finalY + 11);
+                
                 doc.save(`Reporte_${d.id}.pdf`);
             } catch(e) { 
                 console.error(e);
-                alert("Error al generar PDF. Asegúrate de que el historial tenga datos."); 
+                alert("Error al generar PDF."); 
             }
         }
 
