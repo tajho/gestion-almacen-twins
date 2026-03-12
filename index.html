@@ -221,25 +221,33 @@
         }
 
            // --- FUNCIÓN PARA GUARDAR EN EL CELULAR Y EN EXCEL ---
-        async function saveContenedor() {
+                async function saveContenedor() {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
-            const nuevoContenedor = { id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false };
+            const fecha = new Date().toLocaleString('es-PE');
             
-            h.unshift(nuevoContenedor);
+            // Guardar localmente
+            h.unshift({ id, date: fecha, items: [...queue], done: false });
             localStorage.setItem('tajho_v3', JSON.stringify(h));
 
-            // Enviar a Google Sheets (Excel)
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(nuevoContenedor)
-                });
-            } catch(e) { console.log("Error al sincronizar con Excel"); }
+            // Enviar al Excel (Google Sheets)
+            const payload = {
+                action: 'REGISTER',
+                id: id,
+                date: fecha,
+                items: JSON.stringify(queue)
+            };
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => console.log("Registrado en Excel")).catch(e => console.error(e));
 
             queue = []; renderQueue(); navTo('hist');
         }
+
         function filterByProduct(q) {
             const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             const selectedMonth = document.getElementById('month-filter').value;
@@ -332,44 +340,47 @@
             }
         }
 
-        async function finalizeWork() {
+                async function finalizeWork() {
             currentOp.done = true;
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); 
             h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
             
             const lastIdx = currentOp.localIdx;
-            const dataFinal = currentOp;
 
-            // Enviar actualización final al Excel
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ ...dataFinal, action: 'FINALIZE' })
-                });
-            } catch(e) { console.log("Error al cerrar en Excel"); }
+            // Enviar actualización de cierre al Excel
+            const payload = {
+                action: 'FINALIZE',
+                id: currentOp.id,
+                items: JSON.stringify(currentOp.items)
+            };
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
             
-            // Disparo del PDF con los datos ya asegurados
+            // Disparar PDF
             setTimeout(() => genPDF(lastIdx), 800);
         }
+
         // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF (CORREGIDA) ---
                 // --- FUNCIÓN SOLUCIÓN DEFINITIVA REPORTE PDF ---
-        function genPDF(idx) {
+                function genPDF(idx) {
             try {
                 const { jsPDF } = window.jspdf;
-                if (!jsPDF) { alert("Librería PDF no cargada. Reintenta."); return; }
-
                 const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                 const d = history[idx];
                 if (!d) return;
 
                 const doc = new jsPDF();
                 
-                // Títulos
+                // Títulos y Datos
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(16);
                 doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
@@ -377,7 +388,7 @@
                 doc.text(`OPERACIÓN: ${d.id}`, 14, 32);
                 doc.text(`FECHA: ${d.date}`, 14, 38);
                 
-                // Tabla Estilo Grid (Excel)
+                // Tabla Formato Grid
                 doc.autoTable({ 
                     startY: 45, 
                     head: [['SKU', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']], 
@@ -389,11 +400,11 @@
                         (it.r >= it.meta) ? "OK" : "PENDIENTE"
                     ]), 
                     theme: 'grid',
-                    headStyles: { fillColor: [15, 23, 42] },
+                    headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] },
                     styles: { fontSize: 8 }
                 });
                 
-                // Firma oficial Angelo
+                // Pie de página con tu firma
                 const finalY = doc.lastAutoTable.finalY + 25;
                 doc.setFont("helvetica", "bold");
                 doc.text("__________________________", 14, finalY);
@@ -402,17 +413,23 @@
                 doc.setFont("helvetica", "normal");
                 doc.text("Asist. Inventario Logístico", 14, finalY + 17);
                 
-                // Método de descarga compatible con móviles
+                // Descarga compatible con móviles (Blob)
                 const blob = doc.output('blob');
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Reporte_${d.id}.pdf`;
+                a.download = `Reporte_Tajho_${d.id}.pdf`;
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-            } catch(e) { console.error(e); alert("Error al generar PDF."); }
+            } catch(e) { 
+                console.error(e);
+                alert("Error al generar el PDF del reporte."); 
+            }
         }
+
 
 
         function showModal(id) { document.getElementById(id).classList.add('active'); }
