@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx8Ubb6fBiKY2j3ecjfXVNEbD7-o4YW1xLbqa3cVMLkwnSLROa6DUM93rYxk0IIrCZOkw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzhO9apx2FOIKJhPpFyObzLBf8gjEcW77Km98R2NKiQ2bpnanEpcVVq3mpZXcQk5lrSbA/exec";
         let master = [], queue = [], currentOp = null, master_history = [];
 
         function toggleMenu() {
@@ -176,7 +176,7 @@
             if(document.getElementById('m-' + v)) document.getElementById('m-' + v).classList.add('active');
             if(v === 'hist') {
                 await refreshHistory();
-                filterByProduct(document.getElementById('sku-query').value);
+                await filterByProduct(document.getElementById('sku-query').value);
             }
             toggleMenu();
         }
@@ -196,8 +196,11 @@
             try {
                 const res = await fetch(API_URL + "?t=" + Date.now());
                 const data = await res.json();
-                master_history = data.filter(row => row.operacion || row.id || row.fecha);
-            } catch(e) { console.error("Error cargando historial del Excel"); }
+                // Mapeo flexible: Buscamos filas que tengan el patrón "TWINS-" en cualquier columna
+                master_history = data.filter(row => {
+                    return Object.values(row).some(val => val && val.toString().includes('TWINS'));
+                });
+            } catch(e) { console.error("Error cargando historial"); }
         }
 
         function searchMaster(q) {
@@ -248,65 +251,73 @@
         }
 
         async function filterByProduct(q) {
-    const term = q.toLowerCase();
-    const resultsDiv = document.getElementById('product-results');
-    
-    // 1. Forzamos actualización desde el Excel
-    await refreshHistory(); 
+            const term = q.toLowerCase();
+            const resultsDiv = document.getElementById('product-results');
+            const selectedMonth = document.getElementById('month-filter').value;
+            
+            let html = "", totalCajas = 0, totalCont = new Set();
 
-    let html = "", totalCajas = 0, totalCont = new Set();
+            const grouped = master_history.reduce((acc, curr) => {
+                // Buscamos cuál columna contiene el ID "TWINS"
+                const idOp = Object.values(curr).find(v => v && v.toString().includes('TWINS'));
+                if (!idOp) return acc;
 
-    // 2. Agrupamos por ID de operación (usando la columna 'id' o 'operacion')
-    const grouped = master_history.reduce((acc, curr) => {
-        const idOp = curr.id || curr.operacion || curr.idoperacion;
-        if (!idOp || !idOp.toString().includes('TWINS')) return acc;
+                if (!acc[idOp]) {
+                    const fechaRaw = curr.fecha || curr.date || curr.fechaoperacion || Object.values(curr).find(v => v && v.toString().includes('/')) || "";
+                    const estadoRaw = (curr.estado || curr.status || "").toString().toUpperCase();
+                    
+                    acc[idOp] = { 
+                        id: idOp, 
+                        date: fechaRaw, 
+                        items: [], 
+                        done: estadoRaw === 'COMPLETADO'
+                    };
+                }
+                acc[idOp].items.push({ 
+                    sku: curr.sku || curr.codigo || "", 
+                    desc: curr.descripcion || curr.desc || "", 
+                    meta: parseInt(curr.meta || 0), 
+                    r: parseInt(curr.real || curr.r || 0) 
+                });
+                return acc;
+            }, {});
 
-        if (!acc[idOp]) {
-            acc[idOp] = { 
-                id: idOp, 
-                date: curr.fecha || curr.date || "", 
-                items: [], 
-                done: (curr.estado || "").toString().toUpperCase() === 'COMPLETADO'
-            };
+            Object.values(grouped).forEach(op => {
+                let matchesMonth = true;
+                if (selectedMonth !== 'all' && op.date.includes('/')) {
+                    const monthPart = parseInt(op.date.split('/')[1]) - 1;
+                    matchesMonth = monthPart.toString() === selectedMonth;
+                }
+
+                if (op.id.toLowerCase().includes(term) && matchesMonth) {
+                    op.items.forEach(it => { totalCajas += it.r; });
+                    totalCont.add(op.id);
+
+                    html += `
+                    <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
+                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="viewQuickListFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
+                            <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                        </div>
+                    </div>`;
+                }
+            });
+
+            document.getElementById('stats-cont').innerText = totalCont.size;
+            document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
+            resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">NO SE ENCONTRARON REGISTROS</p>';
         }
-        acc[idOp].items.push({ 
-            sku: curr.sku, 
-            desc: curr.descripcion || curr.desc || "", 
-            meta: parseInt(curr.meta || 0), 
-            r: parseInt(curr.real || curr.r || 0) 
-        });
-        return acc;
-    }, {});
-
-    // 3. Generamos el HTML
-    Object.values(grouped).forEach(op => {
-        if (op.id.toLowerCase().includes(term)) {
-            op.items.forEach(it => { totalCajas += it.r; });
-            totalCont.add(op.id);
-
-            html += `
-            <div class="aura-card p-5 border-l-8 ${op.done ? 'border-success' : 'border-accent'} mb-4">
-                <div class="flex justify-between items-start mb-4">
-                    <div><p class="text-[9px] font-black text-slate-400 uppercase">${op.date}</p><h4 class="text-xl font-black">${op.id}</h4></div>
-                    <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase ${op.done ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}">${op.done ? 'Finalizado' : 'Abierto'}</span>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="viewQuickListFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
-                    <button onclick="genPDFFromExcel('${op.id}')" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
-                </div>
-            </div>`;
-        }
-    });
-
-    document.getElementById('stats-cont').innerText = totalCont.size;
-    document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-    resultsDiv.innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">NO SE ENCONTRARON REGISTROS EN HOJA 2</p>';
-}
-
 
         function exportToExcel() {
             let csvContent = "\uFEFF"; csvContent += "ID Operacion,Fecha,SKU,Descripcion,Meta,Real,Diferencia\n";
-            master_history.forEach(it => { csvContent += `"${it.operacion || it.id}","${it.fecha || it.date}","${it.sku}","${(it.descripcion || it.desc || '').replace(/"/g, '""')}","${it.meta}","${it.real || it.r}","${(it.real || it.r) - it.meta}"\n`; });
+            master_history.forEach(it => { 
+                const id = it.operacion || it.id || it.idoperacion;
+                csvContent += `"${id}","${it.fecha || it.date}","${it.sku}","${(it.descripcion || it.desc || '').replace(/"/g, '""')}","${it.meta}","${it.real || it.r}","${(it.real || it.r) - it.meta}"\n`; 
+            });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `Reporte_Tajho.csv`; link.click();
         }
@@ -368,7 +379,10 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const items = master_history.filter(x => (x.operacion || x.id) === opId);
+                const items = master_history.filter(it => {
+                    const id = it.operacion || it.id || it.idoperacion;
+                    return id === opId;
+                });
                 if (items.length === 0) return;
                 const info = items[0];
                 doc.setFontSize(16); doc.text("REPORTE DE CARGA - TWINS ELITE", 105, 20, { align: "center" });
@@ -392,7 +406,10 @@
         }
 
         function viewQuickListFromExcel(opId) {
-            const items = master_history.filter(x => (x.operacion || x.id) === opId);
+            const items = master_history.filter(it => {
+                const id = it.operacion || it.id || it.idoperacion;
+                return id === opId;
+            });
             document.getElementById('list-modal-title').innerText = opId;
             document.getElementById('list-modal-content').innerHTML = items.map(it => `<div class="bg-slate-50 p-3 rounded-xl flex justify-between"><div><p class="font-black text-xs">${it.sku}</p></div><p class="text-xs font-black text-accent">${it.real || it.r} / ${it.meta}</p></div>`).join('');
             showModal('m-list');
@@ -403,4 +420,3 @@
     </script>
 </body>
 </html>
-
