@@ -15,21 +15,17 @@
         :root { --bg: #f8fafc; --accent: #007AFF; --success: #34C759; --danger: #FF3B30; --header-h: 70px; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
         
-        /* HEADER FIJO */
-        .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-        /* MENÚ LATERAL (HAMBURGUESA) */
         .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 40px 20px; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
         .menu-overlay.active { display: block; }
 
-        .menu-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 20px; color: #64748b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; border: none; background: transparent; width: 100%; }
+        .menu-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 20px; color: #64748b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; border: none; background: transparent; width: 100%; text-align: left; }
         .menu-link.active { background: var(--accent); color: #fff; }
-        .menu-link i { font-size: 24px; }
 
-        /* VISTAS */
-        .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; animation: viewIn 0.4s ease; }
+        .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; animation: viewIn 0.4s ease; padding-bottom: 100px; }
         .view.active { display: flex; }
         @keyframes viewIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -37,8 +33,13 @@
         input, select { background: #fff!important; border: 1px solid #e2e8f0!important; border-radius: 18px!important; padding: 15px!important; font-weight: 700!important; outline: none!important; }
         
         .item-row { background: white; border-radius: 22px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-left: 6px solid var(--accent); margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }
-        .btn-ok { width: 80px; height: 80px; background: #fff; color: var(--accent); border: 3px solid var(--accent); border-radius: 30px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-ok:active { transform: scale(0.9); background: var(--accent); color: #fff; }
+        
+        /* MEJORA: Botón Añadir con mayor visibilidad */
+        .btn-add-main { background: var(--accent); color: white; border-radius: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 8px 20px rgba(0,122,255,0.2); }
+        .btn-add-main:active { transform: scale(0.95); }
+
+        /* MEJORA: Botón Registrar fijo al final para que no se pierda */
+        .sticky-action { position: sticky; bottom: 0; background: linear-gradient(to top, var(--bg) 80%, transparent); padding: 20px 0; margin-top: auto; }
 
         ::-webkit-scrollbar { display: none; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -48,9 +49,10 @@
 <body>
 
     <header class="main-header">
-        <button onclick="toggleMenu()" class="text-3xl text-slate-900"><i class="ph-bold ph-list"></i></button>
+        <button onclick="toggleMenu()" class="text-3xl text-slate-900 p-2"><i class="ph-bold ph-list"></i></button>
         <h2 class="text-xl font-black italic tracking-tighter">Tajho <span class="text-accent not-italic">Prime</span></h2>
-        <div class="w-8"></div> </header>
+        <div class="w-10"></div>
+    </header>
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -58,91 +60,99 @@
         <div class="mb-10 px-4">
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Menú Principal</p>
         </div>
-        <button onclick="navTo('dash')" class="menu-link active" id="m-dash"><i class="ph-duotone ph-house"></i><span>Inicio</span></button>
-        <button onclick="navTo('create')" class="menu-link" id="m-create"><i class="ph-duotone ph-package"></i><span>Carga</span></button>
-        <button onclick="navTo('hist')" class="menu-link" id="m-hist"><i class="ph-duotone ph-folders"></i><span>Archivo</span></button>
-        <div class="mt-auto border-t pt-6">
-            <p class="text-[9px] font-black text-slate-300 text-center uppercase tracking-tighter">J. Angelo Nuñez Durand<br>Logística Twins Elite</p>
+        <button onclick="navTo('dash')" class="menu-link active" id="m-dash"><i class="ph-duotone ph-house text-2xl"></i><span>Inicio</span></button>
+        <button onclick="navTo('create')" class="menu-link" id="m-create"><i class="ph-duotone ph-package text-2xl"></i><span>Carga</span></button>
+        <button onclick="navTo('hist')" class="menu-link" id="m-hist"><i class="ph-duotone ph-folders text-2xl"></i><span>Archivo</span></button>
+        <div class="mt-auto border-t pt-6 text-center">
+            <p class="text-[9px] font-black text-slate-400 uppercase leading-relaxed">
+                J. Angelo Nuñez Durand<br>Asist. Inventario Logístico
+            </p>
         </div>
     </nav>
 
     <div id="v-dash" class="view active">
-        <div class="aura-card p-10 text-center relative overflow-hidden mt-10">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/5 rounded-full blur-3xl"></div>
+        <div class="aura-card p-10 text-center relative overflow-hidden mt-6">
             <i class="ph-duotone ph-identification-card text-7xl text-accent mb-6 block"></i>
             <h3 class="font-black text-2xl uppercase tracking-tighter">Inventory Manager</h3>
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Acceso Autorizado</p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Twins Elite | Tajho Official</p>
         </div>
     </div>
 
     <div id="v-create" class="view">
-        <h2 class="text-2xl font-black mb-6 tracking-tighter">Nueva Carga</h2>
-        <div class="aura-card p-6 mb-6 relative" style="z-index: 10;">
+        <h2 class="text-2xl font-black mb-6 tracking-tighter">Planificar Carga</h2>
+        <div class="aura-card p-6 mb-6">
             <div class="relative mb-4">
-                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar SKU..." autocomplete="off">
-                <div id="search-results" class="hidden absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border z-50"></div>
+                <label class="text-[9px] font-black uppercase text-slate-400 ml-2 mb-1 block">Producto / SKU</label>
+                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full" placeholder="Buscar..." autocomplete="off">
+                <div id="search-results" class="hidden absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border z-50 max-h-60 overflow-y-auto"></div>
             </div>
             <div class="flex gap-3">
-                <input type="number" id="meta-in" class="flex-1 text-center text-xl font-black" placeholder="Meta">
-                <button onclick="addToQueue()" class="bg-accent text-white px-8 rounded-2xl font-black text-xs uppercase">Añadir</button>
+                <div class="flex-1">
+                    <label class="text-[9px] font-black uppercase text-slate-400 ml-2 mb-1 block">Meta Cajas</label>
+                    <input type="number" id="meta-in" class="w-full text-center text-xl font-black" placeholder="0">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addToQueue()" class="btn-add-main h-[54px] px-8">Añadir</button>
+                </div>
             </div>
         </div>
-        <div id="queue-list" class="space-y-1 flex-1"></div>
-        <button onclick="saveContenedor()" id="btn-save-all" class="w-full py-5 bg-accent text-white rounded-2xl font-black text-xs uppercase mt-4 hidden shadow-xl shadow-accent/20">Registrar Contenedor</button>
+
+        <div id="queue-list" class="space-y-2">
+            </div>
+
+        <div class="sticky-action">
+            <button onclick="saveContenedor()" id="btn-save-all" class="w-full py-5 bg-black text-white rounded-2xl font-black text-xs uppercase hidden shadow-xl">
+                Registrar Contenedor
+            </button>
+        </div>
     </div>
 
     <div id="v-hist" class="view">
-        <h2 class="text-2xl font-black mb-6 tracking-tighter text-slate-900">Historial de Descargas</h2>
+        <h2 class="text-2xl font-black mb-6 tracking-tighter">Archivo</h2>
         <div class="aura-card p-6 mb-6">
-            <div class="grid grid-cols-2 gap-4 mb-6 text-center">
-                <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-accent">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-50 p-4 rounded-2xl">
                     <p class="text-[8px] font-black text-slate-400 uppercase">Envíos</p>
-                    <p id="stats-cont" class="text-3xl font-black text-accent">0</p>
+                    <p id="stats-cont" class="text-2xl font-black text-accent">0</p>
                 </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-success">
-                    <p class="text-[8px] font-black text-slate-400 uppercase">Cajas</p>
-                    <p id="stats-cajas" class="text-3xl font-black text-success">0</p>
+                <div class="bg-slate-50 p-4 rounded-2xl">
+                    <p class="text-[8px] font-black text-slate-400 uppercase">Total Cajas</p>
+                    <p id="stats-cajas" class="text-2xl font-black text-success">0</p>
                 </div>
             </div>
-            <select id="month-filter" onchange="filterByProduct('')" class="w-full text-[10px] font-black uppercase mb-4 text-accent"></select>
-            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Buscar SKU..." oninput="filterByProduct(this.value)">
+            <select id="month-filter" onchange="filterByProduct('')" class="w-full text-xs font-bold mb-3"></select>
+            <input type="text" id="sku-query" class="w-full text-sm" placeholder="Filtrar por SKU..." oninput="filterByProduct(this.value)">
         </div>
-        <div id="product-results" class="space-y-3 pb-10"></div>
+        <div id="product-results" class="space-y-3"></div>
     </div>
 
     <div id="v-work" class="view">
-        <div class="flex justify-between items-end mb-6">
-            <h2 class="text-3xl font-black tracking-tighter" id="work-title"></h2>
-            <p id="work-perc-title" class="text-4xl font-black tracking-tighter text-accent">0%</p>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black tracking-tighter" id="work-title"></h2>
+            <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
         </div>
-
-        <div class="aura-card p-6 mb-6 text-white" style="background: linear-gradient(135deg, #0047AB, #007AFF);">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <p class="text-[9px] font-black text-cyan-100 uppercase tracking-widest mb-1">Cajas Totales</p>
-                    <p id="work-cajas-total" class="text-3xl font-black tracking-tighter">0 / 0</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[9px] font-black text-cyan-100 uppercase tracking-widest mb-1">SKU Completos</p>
-                    <p id="work-skus" class="text-xl font-black">0 / 0</p>
-                </div>
+        <div class="aura-card p-6 mb-6 bg-slate-900 text-white">
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-4 tracking-widest">Progreso de Descarga</p>
+            <div class="flex justify-between mb-2 font-black text-xl">
+                <span id="work-cajas-total">0 / 0</span>
+                <span id="work-skus">0 / 0</span>
             </div>
-            <div class="h-2.5 bg-white/20 rounded-full overflow-hidden">
-                <div id="work-progress-bar" class="h-full bg-white transition-all duration-700" style="width: 0%"></div>
+            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div id="work-progress-bar" class="h-full bg-accent transition-all duration-500" style="width: 0%"></div>
             </div>
         </div>
 
         <div class="aura-card p-8 text-center mb-6">
-            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-6 text-center text-xl font-black border-none bg-accent/5 text-accent"></select>
-            <div class="flex items-center justify-center gap-6">
-                <input type="number" id="work-input" class="w-32 text-7xl font-black text-center border-none p-0 text-accent bg-transparent" placeholder="0">
-                <button onclick="commitCount()" class="btn-ok shadow-lg"><i class="ph-duotone ph-check-circle text-5xl"></i></button>
+            <select id="work-select" onchange="refreshWorkStats()" class="w-full mb-4 text-center font-black text-accent border-none"></select>
+            <div class="flex items-center justify-center gap-4">
+                <input type="number" id="work-input" class="w-24 text-4xl font-black text-center border-none p-0 bg-transparent" placeholder="0">
+                <button onclick="commitCount()" class="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-lg"><i class="ph-bold ph-check text-3xl"></i></button>
             </div>
         </div>
 
-        <div id="work-stats" class="space-y-3 flex-1 overflow-y-auto mb-6"></div>
+        <div id="work-stats" class="space-y-2 flex-1 overflow-y-auto mb-6"></div>
 
-        <button onclick="showModal('m-finish')" class="w-full h-16 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-xl" style="background: linear-gradient(90deg, #FF3B30, #a855f7);">
+        <button onclick="showModal('m-finish')" class="w-full py-5 bg-danger text-white rounded-2xl font-black text-xs uppercase shadow-lg shadow-red-200">
             Finalizar Operación
         </button>
     </div>
@@ -150,8 +160,8 @@
     <div id="m-finish" class="modal">
         <div class="aura-card p-10 w-full max-w-sm text-center">
             <i class="ph-duotone ph-warning-circle text-7xl text-danger mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-6 tracking-tight">¿Cerrar Descarga?</h3>
-            <button onclick="finalizeWork()" class="w-full h-14 bg-danger text-white rounded-2xl font-black text-xs uppercase mb-3">Sí, Generar Reporte</button>
+            <h3 class="text-2xl font-black mb-6">¿Cerrar Descarga?</h3>
+            <button onclick="finalizeWork()" class="w-full py-4 bg-danger text-white rounded-xl font-black text-xs uppercase mb-3">Sí, Generar Reporte</button>
             <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-300 uppercase">Cancelar</button>
         </div>
     </div>
@@ -177,7 +187,7 @@
         window.onload = async () => { 
             loadMasterData(); 
             const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            document.getElementById('month-filter').innerHTML = '<option value="all">Ver Todo</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+            document.getElementById('month-filter').innerHTML = '<option value="all">Todo el año</option>' + months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
             document.getElementById('month-filter').value = new Date().getMonth();
             checkSession(); 
         };
@@ -188,9 +198,9 @@
             const resDiv = document.getElementById('search-results');
             if (q.length < 2) { resDiv.classList.add('hidden'); return; }
             const term = q.toLowerCase();
-            const matches = master.filter(row => String(row.sku || row.SKU || '').toLowerCase().includes(term) || String(row.descripcion || row.DESCRIPCION || '').toLowerCase().includes(term)).slice(0, 5);
+            const matches = master.filter(row => String(row.sku || row.SKU || '').toLowerCase().includes(term) || String(row.descripcion || row.DESCRIPCION || '').toLowerCase().includes(term)).slice(0, 10);
             if(matches.length > 0) {
-                resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="p-4 border-b last:border-0"><p class="font-black text-sm text-accent">${x.sku || x.SKU}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p></div>`).join('');
+                resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku || x.SKU}', '${x.descripcion || x.DESCRIPCION || ''}')" class="p-4 border-b last:border-0 active:bg-slate-50"><p class="font-black text-sm text-accent">${x.sku || x.SKU}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate">${x.descripcion || x.DESCRIPCION || ''}</p></div>`).join('');
                 resDiv.classList.remove('hidden');
             } else { resDiv.classList.add('hidden'); }
         }
@@ -204,15 +214,16 @@
 
         function addToQueue() {
             const s = document.getElementById('sku-in').value, d = document.getElementById('sku-in').dataset.desc || '', m = parseInt(document.getElementById('meta-in').value);
-            if(!s || !m) return;
+            if(!s || isNaN(m) || m <= 0) { alert("Completa SKU y Meta"); return; }
             queue.push({ sku: s, desc: d, meta: m, r: 0 });
             document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
             renderQueue();
         }
 
         function renderQueue() {
-            document.getElementById('btn-save-all').classList.toggle('hidden', queue.length === 0);
-            document.getElementById('queue-list').innerHTML = queue.map((x, i) => `<div class="item-row"><div><p class="font-black text-sm">${x.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${x.desc}</p></div><span class="font-black text-xs bg-slate-100 px-3 py-1 rounded-lg">${x.meta}</span></div>`).join('');
+            const btn = document.getElementById('btn-save-all');
+            btn.classList.toggle('hidden', queue.length === 0);
+            document.getElementById('queue-list').innerHTML = queue.map((x, i) => `<div class="item-row"><div><p class="font-black text-sm">${x.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase truncate max-w-[200px]">${x.desc}</p></div><span class="font-black text-xs bg-slate-100 px-4 py-2 rounded-xl text-accent">${x.meta}</span></div>`).join('');
         }
 
         function saveContenedor() {
@@ -220,9 +231,7 @@
             const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
             h.unshift({ id, date: new Date().toLocaleString('es-PE'), items: [...queue], done: false });
             localStorage.setItem('tajho_v3', JSON.stringify(h));
-            queue = []; renderQueue(); 
-            // Abrimos directamente el menú para ir al historial o dejamos que el usuario elija
-            navTo('hist');
+            queue = []; renderQueue(); navTo('hist');
         }
 
         function filterByProduct(q) {
@@ -239,24 +248,24 @@
 
                 if (term.length > 0) {
                     op.items.forEach(item => {
-                        if ((item.sku.toLowerCase().includes(term) || (item.desc || '').toLowerCase().includes(term)) && matchesMonth && item.r > 0) {
-                            html += `<div class="aura-card p-5 mb-2 border-l-4 border-accent flex justify-between items-center"><div class="flex-1"><p class="text-[8px] font-black text-slate-400 uppercase">${op.id}</p><p class="text-sm font-black">${item.sku}</p></div><p class="text-xl font-black text-accent">${item.r}</p></div>`;
+                        if ((item.sku.toLowerCase().includes(term)) && matchesMonth && item.r > 0) {
+                            html += `<div class="aura-card p-4 mb-2 border-l-4 border-accent flex justify-between items-center"><div><p class="text-[8px] font-black text-slate-400 uppercase">${op.id}</p><p class="text-sm font-black">${item.sku}</p></div><p class="font-black text-accent">${item.r}</p></div>`;
                         }
                     });
                 } else if (matchesMonth) {
-                    html += `<div class="aura-card p-6 flex justify-between items-center mb-3"><div><p class="text-[8px] font-black text-slate-300 uppercase">${op.date}</p><p class="text-xl font-black">${op.id}</p></div>${op.done ? `<button onclick="genPDF(${idx})" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-accent"><i class="ph-duotone ph-file-pdf"></i></button>` : `<button onclick="openWork(${idx})" class="bg-accent text-white py-2 px-6 rounded-xl text-[10px] font-black uppercase">Contar</button>`}</div>`;
+                    html += `<div class="aura-card p-5 flex justify-between items-center mb-3"><div><p class="text-[8px] font-black text-slate-300 uppercase">${op.date}</p><p class="text-lg font-black">${op.id}</p></div>${op.done ? `<button onclick="genPDF(${idx})" class="w-10 h-10 rounded-full bg-slate-50 text-accent flex items-center justify-center"><i class="ph-bold ph-file-pdf"></i></button>` : `<button onclick="openWork(${idx})" class="bg-accent text-white py-2 px-5 rounded-xl text-[10px] font-black uppercase">Contar</button>`}</div>`;
                 }
             });
             document.getElementById('stats-cont').innerText = totalCont.size;
             document.getElementById('stats-cajas').innerText = totalCajas.toLocaleString();
-            document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 text-[10px] font-black">SIN REGISTROS</p>';
+            document.getElementById('product-results').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-black text-xs">SIN REGISTROS</p>';
         }
 
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
             if (savedOp) {
                 currentOp = JSON.parse(savedOp); 
-                document.getElementById('v-dash').classList.remove('active');
+                document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
                 document.getElementById('v-work').classList.add('active');
                 document.getElementById('work-title').innerText = currentOp.id;
                 document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
@@ -290,17 +299,17 @@
             currentOp.items.forEach(x => { totalMeta += x.meta; totalReal += x.r; if(x.r >= x.meta) skusCompletos++; });
             const porcTotal = totalMeta > 0 ? Math.min(Math.round((totalReal / totalMeta) * 100), 100) : 0;
             document.getElementById('work-perc-title').innerText = porcTotal + "%";
-            document.getElementById('work-skus').innerText = `${skusCompletos} / ${currentOp.items.length}`;
-            document.getElementById('work-cajas-total').innerText = `${totalReal.toLocaleString()} / ${totalMeta.toLocaleString()}`;
+            document.getElementById('work-skus').innerText = `${skusCompletos}/${currentOp.items.length} SKU`;
+            document.getElementById('work-cajas-total').innerText = `${totalReal}/${totalMeta}`;
             document.getElementById('work-progress-bar').style.width = porcTotal + "%";
             document.getElementById('work-stats').innerHTML = currentOp.items.map(x => `
-                <div class="aura-card p-5 ${x.r >= x.meta ? 'border-l-4 border-success bg-success/5' : ''}">
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-3">
-                        <span class="max-w-[150px] truncate ${x.r >= x.meta ? 'text-success' : ''}">${x.sku}</span>
-                        <span class="${x.r >= x.meta ? 'text-success' : 'text-slate-400'}">${x.r.toLocaleString()} / ${x.meta.toLocaleString()}</span>
+                <div class="aura-card p-4 ${x.r >= x.meta ? 'border-l-4 border-success' : 'border-l-4 border-accent'}">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                        <span>${x.sku}</span>
+                        <span>${x.r} / ${x.meta}</span>
                     </div>
                     <div class="h-1 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full ${x.r >= x.meta ? 'bg-success' : 'bg-accent'} transition-all duration-500" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
+                        <div class="h-full bg-accent" style="width:${Math.min((x.r/x.meta)*100,100)}%"></div>
                     </div>
                 </div>`).join('');
         }
@@ -317,11 +326,10 @@
         function genPDF(idx) {
             const d = JSON.parse(localStorage.getItem('tajho_v3') || '[]')[idx];
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.setFontSize(22); doc.text("TAJHO PRIME | TWINS ELITE", 14, 25);
-            doc.setFontSize(10); doc.text(`REPORTE: ${d.id} | ${d.date}`, 14, 32);
-            doc.autoTable({ startY: 45, head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), headStyles: { fillColor: [0,0,0] } });
-            doc.setFontSize(9); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 14, doc.lastAutoTable.finalY + 20);
-            doc.text("Asistente de Inventario Logístico", 14, doc.lastAutoTable.finalY + 25);
+            doc.setFontSize(20); doc.text("REPORTE DE CARGA - TAJHO PRIME", 14, 22);
+            doc.setFontSize(10); doc.text(`OPERACIÓN: ${d.id} | FECHA: ${d.date}`, 14, 30);
+            doc.autoTable({ startY: 40, head: [['SKU', 'DESCRIPCION', 'META', 'REAL', 'DIF.']], body: d.items.map(it => [it.sku, it.desc, it.meta, it.r, (it.r - it.meta)]), headStyles: { fillColor: [0, 0, 0] } });
+            doc.setFontSize(9); doc.text("Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico", 14, doc.lastAutoTable.finalY + 20);
             doc.save(`Reporte_${d.id}.pdf`);
         }
 
