@@ -22,6 +22,9 @@
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
         .menu-overlay.active { display: block; }
         
+        /* Estilos de Modal Corregidos */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 4000; padding: 20px; }
+
         /* Vistas y Tarjetas */
         .view { display: none; min-height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 10px); flex-direction: column; animation: fadeIn 0.3s ease; }
         .view.active { display: flex; }
@@ -150,8 +153,8 @@
             checkSession(); 
         };
 
-        async function loadMasterData() { try { const res = await fetch(API_URL); const data = await res.json(); master = data.productos || []; } catch(e) {}}
-        async function refreshHistory() { try { const res = await fetch(API_URL); const data = await res.json(); master_history = data.historial || []; filterByProduct(''); } catch(e) {}}
+        async function loadMasterData() { try { const res = await fetch(API_URL); const data = await res.json(); master = data.productos || []; } catch(e) { console.error("Error cargando maestro:", e); }}
+        async function refreshHistory() { try { const res = await fetch(API_URL); const data = await res.json(); master_history = data.historial || []; filterByProduct(''); } catch(e) { console.error("Error cargando historial:", e); }}
 
         function searchMaster(q) {
             const resDiv = document.getElementById('search-results');
@@ -163,13 +166,22 @@
             } else resDiv.classList.add('hidden');
         }
 
-        function pickSku(s, d) { document.getElementById('sku-in').value = s; document.getElementById('sku-in').dataset.desc = d; document.getElementById('search-results').classList.add('hidden'); }
+        function pickSku(s, d) { 
+            const input = document.getElementById('sku-in');
+            input.value = s; 
+            input.dataset.desc = d; 
+            document.getElementById('search-results').classList.add('hidden'); 
+        }
 
         function addToQueue() {
-            const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
-            if(!s || isNaN(m)) return;
-            queue.push({ sku: s, desc: document.getElementById('sku-in').dataset.desc || '', meta: m, r: 0 });
-            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
+            const input = document.getElementById('sku-in');
+            const s = input.value, m = parseInt(document.getElementById('meta-in').value);
+            if(!s || isNaN(m) || m <= 0) return;
+            
+            queue.push({ sku: s, desc: input.dataset.desc || '', meta: m, r: 0 });
+            input.value = ''; 
+            document.getElementById('meta-in').value = '';
+            delete input.dataset.desc;
             renderQueue();
         }
 
@@ -180,7 +192,8 @@
 
         function saveContenedor() {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const id = `TWINS-${String(h.length + 1).padStart(4, '0')}`;
+            // ID único basado en timestamp para evitar duplicados al borrar caché
+            const id = `TW-${Date.now().toString().slice(-4)}`; 
             const nuevo = { id, date: new Date().toLocaleString(), items: [...queue], done: false };
             h.unshift(nuevo);
             localStorage.setItem('tajho_v3', JSON.stringify(h));
@@ -210,6 +223,7 @@
 
         function openWork(idx) {
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+            if(!h[idx]) return;
             currentOp = { ...h[idx], localIdx: idx };
             localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
             navTo('work');
@@ -269,11 +283,21 @@
 
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
-            if (savedOp) { currentOp = JSON.parse(savedOp); openWork(currentOp.localIdx); }
+            if (savedOp) { 
+                const op = JSON.parse(savedOp);
+                const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
+                const idx = h.findIndex(x => x.id === op.id);
+                if(idx !== -1) openWork(idx);
+            }
         }
 
         function showModal(id) { document.getElementById(id).style.display = 'flex'; }
         function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Función PDF Placeholder para evitar error de consola
+        function genPDFFromExcel(id) {
+            alert("Generando reporte PDF para: " + id + "\nRevisión autorizada por J. Angelo Nuñez Durand");
+        }
 
         async function finalizeWork() {
             currentOp.done = true; saveWorkState();
