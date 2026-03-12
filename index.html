@@ -13,14 +13,12 @@
     
     <style>
         :root { --bg: #f8fafc; --accent: #007AFF; --success: #34C759; --danger: #FF3B30; --header-h: 70px; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: auto; height: 100vh; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
         .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 40px 20px; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
         .menu-overlay.active { display: block; }
-        .menu-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 20px; color: #64748b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; border: none; background: transparent; width: 100%; text-align: left; }
-        .menu-link.active { background: var(--accent); color: #fff; }
         .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; animation: viewIn 0.4s ease; padding-bottom: 120px; }
         .view.active { display: flex; }
         @keyframes viewIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
@@ -120,7 +118,7 @@
             <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
         </div>
         <div class="aura-card p-6 mb-4 bg-slate-900 text-white">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso de Conteo</p>
             <div class="flex justify-between mb-2 font-black text-xl">
                 <span id="work-cajas-total">0 / 0</span>
                 <span id="work-skus">0 / 0</span>
@@ -139,7 +137,7 @@
         <div id="work-stats" class="space-y-2 overflow-y-auto mb-6"></div>
         <div class="sticky-action">
             <button onclick="showModal('m-finish')" class="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
-                Completar Descarga
+                Finalizar y Guardar
             </button>
         </div>
     </div>
@@ -153,9 +151,10 @@
 
     <div id="m-finish" class="modal">
         <div class="aura-card p-10 w-full max-w-sm text-center">
-            <i class="ph-duotone ph-warning-circle text-7xl text-danger mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-6 uppercase">¿Cerrar Descarga?</h3>
-            <button onclick="finalizeWork()" class="w-full py-5 bg-red-600 text-white rounded-xl font-black text-xs uppercase mb-4">SÍ, GENERAR PDF</button>
+            <i class="ph-duotone ph-check-circle text-7xl text-success mb-6 block"></i>
+            <h3 class="text-2xl font-black mb-6 uppercase">¿Guardar y Finalizar?</h3>
+            <p class="text-xs text-slate-400 mb-6 font-bold uppercase">Una vez guardado, podrás generar el PDF desde el Historial.</p>
+            <button onclick="finalizeWork()" class="w-full py-5 bg-black text-white rounded-xl font-black text-xs uppercase mb-4">SÍ, GUARDAR CONTEO</button>
             <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CANCELAR</button>
         </div>
     </div>
@@ -248,7 +247,7 @@
                         <div class="flex gap-2">
                             <button onclick="${op.done ? '' : `openWork(${idx})`}" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase ${op.done ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white'}" ${op.done ? 'disabled' : ''}>${op.done ? 'Cerrado' : 'Continuar'}</button>
                             <button onclick="viewQuickList(${idx})" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
-                            <button onclick="genPDF(${idx})" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                            <button onclick="${op.done ? `genPDF(${idx})` : 'alert(\'Finaliza el conteo para descargar el PDF\')'}" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase ${op.done ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-400'}">PDF</button>
                         </div>
                     </div>`;
                 }
@@ -278,8 +277,7 @@
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             currentOp = { ...h[idx], localIdx: idx };
             localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-work').classList.add('active');
+            navTo('work');
             document.getElementById('work-title').innerText = currentOp.id;
             document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             refreshWorkStats();
@@ -313,7 +311,8 @@
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
             if (savedOp) {
-                currentOp = JSON.parse(savedOp); navTo('work');
+                currentOp = JSON.parse(savedOp);
+                navTo('work');
                 document.getElementById('work-title').innerText = currentOp.id;
                 document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
                 refreshWorkStats();
@@ -324,23 +323,27 @@
             currentOp.done = true;
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
-            const lastIdx = currentOp.localIdx;
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
-            setTimeout(() => genPDF(lastIdx), 500);
         }
 
-        // --- FUNCIÓN SOLUCIÓN DEFINITIVA PDF ---
+        // --- FUNCIÓN REESTRUCTURADA PARA EL PDF ---
         function genPDF(idx) {
             try {
-                if (!window.jspdf || !window.jspdf.jsPDF) { alert("Librería PDF no cargada. Reintenta en 2 segundos."); return; }
+                // Validación de seguridad de la librería
+                if (typeof window.jspdf === 'undefined') {
+                    alert("Cargando herramientas de reporte... Intenta de nuevo en 3 segundos.");
+                    return;
+                }
+
                 const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                 const d = history[idx];
-                if (!d || !d.items) { alert("No hay datos para esta operación."); return; }
+                if (!d) return;
 
-                const doc = new window.jspdf.jsPDF();
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
                 
-                // Título y Datos Generales
+                // Encabezado Profesional
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(16); doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
                 doc.setFontSize(10);
@@ -359,11 +362,10 @@
                     ]), 
                     headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
                     styles: { cellPadding: 3, fontSize: 9, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
-                    columnStyles: { 3: { fontStyle: 'bold' } },
                     theme: 'grid'
                 });
                 
-                // Firma Solicitada por Angelo
+                // Firma Autorizada
                 const finalY = doc.lastAutoTable.finalY + 25;
                 doc.setFontSize(10); doc.setFont("helvetica", "bold");
                 doc.text("REVISIÓN Y CONTEO", 14, finalY);
@@ -372,7 +374,10 @@
                 doc.text("Asist. Logístico", 14, finalY + 11);
                 
                 doc.save(`Reporte_${d.id}.pdf`);
-            } catch(e) { console.error(e); alert("Error crítico al generar PDF. Asegúrate de tener conexión."); }
+            } catch(e) { 
+                console.error(e);
+                alert("Ocurrió un inconveniente al generar el reporte. Asegúrate de que la descarga haya finalizado correctamente."); 
+            }
         }
 
         function showModal(id) { document.getElementById(id).classList.add('active'); }
