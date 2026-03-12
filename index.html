@@ -19,8 +19,6 @@
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 2500; display: none; }
         .menu-overlay.active { display: block; }
-        .menu-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 20px; color: #64748b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; border: none; background: transparent; width: 100%; text-align: left; }
-        .menu-link.active { background: var(--accent); color: #fff; }
         .view { display: none; height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 20px); flex-direction: column; overflow-y: auto; animation: viewIn 0.4s ease; padding-bottom: 120px; }
         .view.active { display: flex; }
         @keyframes viewIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
@@ -120,7 +118,7 @@
             <span id="work-perc-title" class="bg-accent text-white px-4 py-1 rounded-full text-sm font-black">0%</span>
         </div>
         <div class="aura-card p-6 mb-4 bg-slate-900 text-white">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-4">Progreso de Conteo</p>
             <div class="flex justify-between mb-2 font-black text-xl">
                 <span id="work-cajas-total">0 / 0</span>
                 <span id="work-skus">0 / 0</span>
@@ -139,7 +137,7 @@
         <div id="work-stats" class="space-y-2 overflow-y-auto mb-6"></div>
         <div class="sticky-action">
             <button onclick="showModal('m-finish')" class="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-xl">
-                Completar Descarga
+                Finalizar y Guardar
             </button>
         </div>
     </div>
@@ -153,9 +151,10 @@
 
     <div id="m-finish" class="modal">
         <div class="aura-card p-10 w-full max-w-sm text-center">
-            <i class="ph-duotone ph-warning-circle text-7xl text-danger mb-6 block"></i>
-            <h3 class="text-2xl font-black mb-6 uppercase">¿Cerrar Descarga?</h3>
-            <button onclick="finalizeWork()" class="w-full py-5 bg-red-600 text-white rounded-xl font-black text-xs uppercase mb-4">SÍ, GENERAR PDF</button>
+            <i class="ph-duotone ph-check-circle text-7xl text-success mb-6 block"></i>
+            <h3 class="text-2xl font-black mb-6 uppercase">¿Guardar y Finalizar?</h3>
+            <p class="text-xs text-slate-400 mb-6 font-bold uppercase">Una vez guardado, podrás generar el PDF desde el Historial.</p>
+            <button onclick="finalizeWork()" class="w-full py-5 bg-black text-white rounded-xl font-black text-xs uppercase mb-4">SÍ, GUARDAR CONTEO</button>
             <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CANCELAR</button>
         </div>
     </div>
@@ -248,7 +247,7 @@
                         <div class="flex gap-2">
                             <button onclick="${op.done ? '' : `openWork(${idx})`}" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase ${op.done ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white'}" ${op.done ? 'disabled' : ''}>${op.done ? 'Cerrado' : 'Continuar'}</button>
                             <button onclick="viewQuickList(${idx})" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-[10px] uppercase">Lista</button>
-                            <button onclick="genPDF(${idx})" class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-black text-[10px] uppercase">PDF</button>
+                            <button onclick="${op.done ? `genPDF(${idx})` : 'alert(\'Finaliza el conteo para descargar el PDF\')'}" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase ${op.done ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-400'}">PDF</button>
                         </div>
                     </div>`;
                 }
@@ -278,8 +277,7 @@
             const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
             currentOp = { ...h[idx], localIdx: idx };
             localStorage.setItem('tajho_active_op', JSON.stringify(currentOp));
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-work').classList.add('active');
+            navTo('work');
             document.getElementById('work-title').innerText = currentOp.id;
             document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
             refreshWorkStats();
@@ -313,7 +311,8 @@
         function checkSession() {
             const savedOp = localStorage.getItem('tajho_active_op');
             if (savedOp) {
-                currentOp = JSON.parse(savedOp); navTo('work');
+                currentOp = JSON.parse(savedOp);
+                navTo('work');
                 document.getElementById('work-title').innerText = currentOp.id;
                 document.getElementById('work-select').innerHTML = currentOp.items.map(x => `<option value="${x.sku}">${x.sku}</option>`).join('');
                 refreshWorkStats();
@@ -324,26 +323,27 @@
             currentOp.done = true;
             let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]'); h[currentOp.localIdx] = currentOp;
             localStorage.setItem('tajho_v3', JSON.stringify(h));
-            const lastIdx = currentOp.localIdx;
             localStorage.removeItem('tajho_active_op');
             hideModal('m-finish'); navTo('hist');
-            // Espera breve para asegurar que el DOM cargó el historial
-            setTimeout(() => genPDF(lastIdx), 600);
         }
 
-        // --- FUNCIÓN PDF RESTAURADA ---
+        // --- FUNCIÓN REESTRUCTURADA PARA EL PDF ---
         function genPDF(idx) {
             try {
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) { alert("Librería no lista. Por favor, reintenta."); return; }
-                
+                // Validación de seguridad de la librería
+                if (typeof window.jspdf === 'undefined') {
+                    alert("Cargando herramientas de reporte... Intenta de nuevo en 3 segundos.");
+                    return;
+                }
+
                 const history = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
                 const d = history[idx];
                 if (!d) return;
 
+                const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Encabezado
+                // Encabezado Profesional
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(16); doc.text("REPORTE DE CARGA Y CONTEO", 105, 20, { align: "center" });
                 doc.setFontSize(10);
@@ -353,31 +353,30 @@
                 // Tabla Estilo Excel (Grid)
                 doc.autoTable({ 
                     startY: 42, 
-                    head: [['CÓDIGO', 'DESCRIPCIÓN', 'META', 'REAL', 'ESTADO']], 
+                    head: [['CÓDIGO', 'DESCRIPCIÓN', 'CANT. CAJAS', 'ESTADO']], 
                     body: d.items.map(it => [
                         it.sku, 
                         it.desc, 
-                        it.meta,
                         it.r, 
                         (it.r >= it.meta) ? "APROBADO" : "PENDIENTE"
                     ]), 
                     headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
-                    styles: { cellPadding: 3, fontSize: 8, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
+                    styles: { cellPadding: 3, fontSize: 9, valign: 'middle', tableLineColor: [200, 200, 200], lineWidth: 0.1 },
                     theme: 'grid'
                 });
                 
                 // Firma Autorizada
                 const finalY = doc.lastAutoTable.finalY + 25;
                 doc.setFontSize(10); doc.setFont("helvetica", "bold");
-                doc.text("REVISIÓN AUTORIZADA POR:", 14, finalY);
+                doc.text("REVISIÓN Y CONTEO", 14, finalY);
                 doc.text("J. ANGELO NUÑEZ DURAND", 14, finalY + 6);
                 doc.setFont("helvetica", "normal");
-                doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                doc.text("Asist. Logístico", 14, finalY + 11);
                 
                 doc.save(`Reporte_${d.id}.pdf`);
             } catch(e) { 
                 console.error(e);
-                alert("Error al generar PDF. Asegúrate de estar en el historial."); 
+                alert("Ocurrió un inconveniente al generar el reporte. Asegúrate de que la descarga haya finalizado correctamente."); 
             }
         }
 
