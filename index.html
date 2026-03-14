@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logística - Twins Elite</title>
+    <title>Twins Elite - Logística</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        
-        .container-card { background: white; border-radius: 32px; border: 1px solid #F1F5F9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 20px; overflow: hidden; }
-        .btn-tool { border-radius: 16px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid #F1F5F9; }
+        .premium-card { background: white; border-radius: 28px; border: 1px solid #F1F5F9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; overflow: hidden; }
+        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid #F1F5F9; background: #FFF; width: 100%; }
         .btn-tool:active { transform: scale(0.95); background: #f8fafc; }
-        
-        /* Indicador visual de color de texto según Excel */
-        .txt-red { color: #ef4444; }
-        .txt-green { color: #22c55e; }
-        .txt-blue { color: #3b82f6; }
-        .txt-orange { color: #f97316; }
-        .txt-purple { color: #a855f7; }
+        .badge-canal { background: #0F172A; color: white; padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -27,130 +20,116 @@
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo Nuñez Durand</p>
+                <h1 class="text-2xl font-[800] tracking-tighter italic text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
             </div>
-            <div id="sync-indicator" class="text-green-500"><i class="ph-bold ph-check-circle text-2xl"></i></div>
+            <i class="ph-bold ph-package text-2xl text-blue-600"></i>
         </div>
     </header>
 
     <main class="p-5 max-w-xl mx-auto pb-40">
-        
         <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Cajas Analizadas</p>
-                <h2 id="total-boxes" class="text-3xl font-black text-slate-800">0</h2>
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm text-center">
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Contenedores</p>
+                <h2 id="count-containers" class="text-3xl font-black text-slate-800">0</h2>
             </div>
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Productos SKU</p>
-                <h2 id="total-skus" class="text-3xl font-black text-slate-800">0</h2>
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm text-center">
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Total SKUs</p>
+                <h2 id="count-skus" class="text-3xl font-black text-blue-600">0</h2>
             </div>
         </div>
 
-        <div id="main-content"></div>
-
+        <div id="main-content">
+            </div>
     </main>
 
     <script>
-        const API_URL = "TU_URL_DE_APPS_SCRIPT";
-        // Carga inmediata desde la memoria del teléfono
-        let masterData = JSON.parse(localStorage.getItem('twins_v12_cache')) || [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
+        let inventoryData = JSON.parse(localStorage.getItem('twins_final_cache')) || [];
 
-        async function fetchUpdate() {
+        async function syncData() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                masterData = data.historial || data;
-                localStorage.setItem('twins_v12_cache', JSON.stringify(masterData));
+                inventoryData = Array.isArray(data) ? data : (data.historial || []);
+                localStorage.setItem('twins_final_cache', JSON.stringify(inventoryData));
                 renderApp();
-            } catch(e) { console.log("Sincronización invisible fallida"); }
+            } catch(e) { console.log("Actualización en segundo plano..."); }
         }
 
         function renderApp() {
             const container = document.getElementById('main-content');
             
-            // AGRUPACIÓN POR COLOR DE LETRA (Atributo 'fontColor' desde el Excel)
-            const grouped = masterData.reduce((acc, item) => {
-                if(!item.operacion) return acc;
-                
-                // Usamos el color de letra como identificador de contenedor
-                const colorID = item.fontColor || 'blue'; 
-                if(!acc[colorID]) {
-                    acc[colorID] = { 
-                        color: colorID, 
-                        label: item.operacion, 
+            // AGRUPACIÓN POR CANAL (Número 1, 2, 3...)
+            const grouped = inventoryData.reduce((acc, curr) => {
+                const canalID = curr.canal || "S/N";
+                if (!acc[canalID]) {
+                    acc[canalID] = { 
+                        id: canalID, 
                         items: [], 
-                        cajasSum: 0 
+                        fechaLlegada: curr.almacen || "Sin Fecha" 
                     };
                 }
-                acc[colorID].items.push(item);
-                acc[colorID].cajasSum += (Number(item.meta) || 0);
+                acc[canalID].items.push(curr);
                 return acc;
             }, {});
 
             let html = '';
-            let globalCajas = 0;
-            let globalSkus = 0;
+            const channels = Object.values(grouped);
 
-            Object.values(grouped).forEach(group => {
-                globalCajas += group.cajasSum;
-                globalSkus += group.items.length;
-
+            channels.forEach(group => {
                 html += `
-                <div class="container-card p-7">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Contenedor Identificado</span>
-                            <h3 class="text-2xl font-[900] tracking-tighter uppercase" style="color: ${group.color}">
-                                ${group.label}
-                            </h3>
+                <div class="premium-card">
+                    <div style="height: 6px; background-color: #3b82f6;"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="badge-canal">CANAL ${group.id}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase">${group.fechaLlegada}</span>
+                                </div>
+                                <h3 class="text-xl font-black tracking-tighter text-slate-800">CONTENEDOR ${group.id}</h3>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-[10px] font-black text-slate-900">${group.cajasSum} CJ</p>
-                            <p class="text-[8px] font-bold text-slate-400 uppercase">${group.items.length} SKUS</p>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-3 gap-3">
-                        <div onclick="btnControl('CORREGIR', '${group.color}')" class="btn-tool bg-white text-slate-600">
-                            <i class="ph-bold ph-pencil-simple text-lg text-blue-500"></i>CORREGIR
-                        </div>
-                        <div onclick="btnControl('LISTA', '${group.color}')" class="btn-tool bg-white text-slate-600">
-                            <i class="ph-bold ph-list-numbers text-lg text-slate-800"></i>LISTA
-                        </div>
-                        <div onclick="btnControl('PDF', '${group.color}')" class="btn-tool bg-white text-slate-600">
-                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i>PDF
+                        <div class="grid grid-cols-3 gap-3">
+                            <div onclick="ejecutar('CORREGIR', '${group.id}')" class="btn-tool">
+                                <i class="ph-bold ph-pencil-simple text-lg text-blue-500"></i>CORREGIR
+                            </div>
+                            <div onclick="ejecutar('LISTA', '${group.id}')" class="btn-tool">
+                                <i class="ph-bold ph-list-magnifying text-lg text-slate-700"></i>LISTA
+                            </div>
+                            <div onclick="ejecutar('PDF', '${group.id}')" class="btn-tool">
+                                <i class="ph-bold ph-file-pdf text-lg text-red-500"></i>PDF
+                            </div>
                         </div>
                     </div>
                 </div>`;
             });
 
-            container.innerHTML = html || `<div class="py-20 text-center opacity-20 font-black uppercase text-xs tracking-widest">Sin datos disponibles</div>`;
-            document.getElementById('total-boxes').innerText = globalCajas.toLocaleString();
-            document.getElementById('total-skus').innerText = globalSkus.toLocaleString();
+            container.innerHTML = html || '<p class="text-center py-20 opacity-30 font-bold uppercase text-[10px]">Esperando datos del canal...</p>';
+            document.getElementById('count-containers').innerText = channels.length;
+            document.getElementById('count-skus').innerText = inventoryData.length;
         }
 
-        // FUNCIONALIDAD DE BOTONES
-        function btnControl(tipo, colorId) {
-            const filtered = masterData.filter(i => i.fontColor === colorId);
+        function ejecutar(tipo, canalId) {
+            const filtrados = inventoryData.filter(i => String(i.canal) === String(canalId));
             
             if (tipo === 'LISTA') {
-                const detalle = filtered.map(i => `${i.sku} | ${i.descripcion} | ${i.meta} cajas`).join('\n');
-                alert(`DETALLE DEL CONTENEDOR:\n\n${detalle}`);
-            } 
-            else if (tipo === 'PDF') {
-                const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-                alert(`Generando PDF para contenedor con letras color ${colorId}...\n\n${footer}`);
-            }
-            else if (tipo === 'CORREGIR') {
-                alert(`Abriendo editor para los ${filtered.length} productos de este contenedor.`);
+                const lista = filtrados.map(i => `COD: ${i.codigo || i.sku} | ${i.descripcion}`).join('\n');
+                alert(`CONTENEDOR CANAL ${canalId}:\n\n${lista}`);
+            } else if (tipo === 'PDF') {
+                const firma = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                alert(`Generando Reporte de Canal ${canalId}...\n\n${firma}`);
+            } else if (tipo === 'CORREGIR') {
+                alert(`Editor abierto para Canal ${canalId}`);
             }
         }
 
-        // Inicio nativo e inmediato
+        // Ejecución
         renderApp();
-        fetchUpdate();
-        setInterval(fetchUpdate, 60000);
+        syncData();
+        setInterval(syncData, 60000);
     </script>
 </body>
 </html>
