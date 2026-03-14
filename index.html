@@ -3,130 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Gestión de Contenedores</title>
+    <title>Logística - Twins Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         
-        /* Estilos de Botones Funcionales */
-        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; width: 100%; }
-        .btn-tool:active { transform: scale(0.95); opacity: 0.8; }
+        .container-card { background: white; border-radius: 32px; border: 1px solid #F1F5F9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 20px; overflow: hidden; }
+        .btn-tool { border-radius: 16px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid #F1F5F9; }
+        .btn-tool:active { transform: scale(0.95); background: #f8fafc; }
         
-        /* Identificadores de Contenedor por Color de Puerto */
-        .card-container { border-radius: 24px; background: white; border: 1px solid #F1F5F9; margin-bottom: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .color-tag { height: 6px; width: 100%; }
+        /* Indicador visual de color de texto según Excel */
+        .txt-red { color: #ef4444; }
+        .txt-green { color: #22c55e; }
+        .txt-blue { color: #3b82f6; }
+        .txt-orange { color: #f97316; }
+        .txt-purple { color: #a855f7; }
     </style>
 </head>
 <body>
 
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-5">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logística e Inventario</p>
+                <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo Nuñez Durand</p>
             </div>
-            <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
-                Modo Activo
-            </div>
+            <div id="sync-indicator" class="text-green-500"><i class="ph-bold ph-check-circle text-2xl"></i></div>
         </div>
     </header>
 
-    <main class="p-5 max-w-xl mx-auto pb-32">
-        <div id="app-content">
+    <main class="p-5 max-w-xl mx-auto pb-40">
+        
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Cajas Analizadas</p>
+                <h2 id="total-boxes" class="text-3xl font-black text-slate-800">0</h2>
             </div>
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Productos SKU</p>
+                <h2 id="total-skus" class="text-3xl font-black text-slate-800">0</h2>
+            </div>
+        </div>
+
+        <div id="main-content"></div>
+
     </main>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
-        let inventoryData = JSON.parse(localStorage.getItem('twins_cache')) || [];
+        const API_URL = "TU_URL_DE_APPS_SCRIPT";
+        // Carga inmediata desde la memoria del teléfono
+        let masterData = JSON.parse(localStorage.getItem('twins_v12_cache')) || [];
 
-        // SINCRONIZACIÓN INVISIBLE
-        async function syncData() {
+        async function fetchUpdate() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                inventoryData = data.historial || data;
-                localStorage.setItem('twins_cache', JSON.stringify(inventoryData));
-                renderContainers();
-            } catch(e) { console.error("Sync en segundo plano"); }
+                masterData = data.historial || data;
+                localStorage.setItem('twins_v12_cache', JSON.stringify(masterData));
+                renderApp();
+            } catch(e) { console.log("Sincronización invisible fallida"); }
         }
 
-        function renderContainers() {
-            const container = document.getElementById('app-content');
+        function renderApp() {
+            const container = document.getElementById('main-content');
             
-            // AGRUPACIÓN POR COLOR (Columna G - Llegada a Puerto)
-            const groupedByColor = inventoryData.reduce((acc, curr) => {
-                const colorKey = curr.color_puerto || 'ROJO'; // Basado en tus capturas
-                if (!acc[colorKey]) acc[colorKey] = { color: colorKey, items: [], totalCajas: 0 };
+            // AGRUPACIÓN POR COLOR DE LETRA (Atributo 'fontColor' desde el Excel)
+            const grouped = masterData.reduce((acc, item) => {
+                if(!item.operacion) return acc;
                 
-                acc[colorKey].items.push(curr);
-                acc[colorKey].totalCajas += (Number(curr.cajas) || 0);
+                // Usamos el color de letra como identificador de contenedor
+                const colorID = item.fontColor || 'blue'; 
+                if(!acc[colorID]) {
+                    acc[colorID] = { 
+                        color: colorID, 
+                        label: item.operacion, 
+                        items: [], 
+                        cajasSum: 0 
+                    };
+                }
+                acc[colorID].items.push(item);
+                acc[colorID].cajasSum += (Number(item.meta) || 0);
                 return acc;
             }, {});
 
             let html = '';
-            Object.values(groupedByColor).forEach(group => {
-                const colorHex = group.color === 'ROJO' ? '#ef4444' : group.color === 'VERDE' ? '#22c55e' : '#3b82f6';
-                
-                html += `
-                <div class="card-container">
-                    <div class="color-tag" style="background-color: ${colorHex}"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Contenedor Puerto</span>
-                                <h3 class="text-xl font-bold text-slate-800 uppercase">${group.color}</h3>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[10px] font-black text-blue-600">${group.totalCajas} CAJAS</p>
-                                <p class="text-[8px] font-bold text-slate-400 uppercase">${group.items.length} SKUS</p>
-                            </div>
-                        </div>
+            let globalCajas = 0;
+            let globalSkus = 0;
 
-                        <div class="grid grid-cols-3 gap-3">
-                            <button onclick="ejecutarAccion('CORREGIR', '${group.color}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100">
-                                <i class="ph-bold ph-pencil-simple text-lg"></i>CORREGIR
-                            </button>
-                            <button onclick="ejecutarAccion('LISTA', '${group.color}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100">
-                                <i class="ph-bold ph-list-bullets text-lg"></i>LISTA
-                            </button>
-                            <button onclick="ejecutarAccion('PDF', '${group.color}')" class="btn-tool bg-red-50 text-red-600 border-red-100">
-                                <i class="ph-bold ph-file-pdf text-lg"></i>PDF
-                            </button>
+            Object.values(grouped).forEach(group => {
+                globalCajas += group.cajasSum;
+                globalSkus += group.items.length;
+
+                html += `
+                <div class="container-card p-7">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Contenedor Identificado</span>
+                            <h3 class="text-2xl font-[900] tracking-tighter uppercase" style="color: ${group.color}">
+                                ${group.label}
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-slate-900">${group.cajasSum} CJ</p>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase">${group.items.length} SKUS</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div onclick="btnControl('CORREGIR', '${group.color}')" class="btn-tool bg-white text-slate-600">
+                            <i class="ph-bold ph-pencil-simple text-lg text-blue-500"></i>CORREGIR
+                        </div>
+                        <div onclick="btnControl('LISTA', '${group.color}')" class="btn-tool bg-white text-slate-600">
+                            <i class="ph-bold ph-list-numbers text-lg text-slate-800"></i>LISTA
+                        </div>
+                        <div onclick="btnControl('PDF', '${group.color}')" class="btn-tool bg-white text-slate-600">
+                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i>PDF
                         </div>
                     </div>
                 </div>`;
             });
 
-            container.innerHTML = html || '<p class="text-center py-10 text-slate-400 uppercase text-[10px] font-bold">Cargando datos del servidor...</p>';
+            container.innerHTML = html || `<div class="py-20 text-center opacity-20 font-black uppercase text-xs tracking-widest">Sin datos disponibles</div>`;
+            document.getElementById('total-boxes').innerText = globalCajas.toLocaleString();
+            document.getElementById('total-skus').innerText = globalSkus.toLocaleString();
         }
 
-        // LÓGICA DE BOTONES FUNCIONALES
-        function ejecutarAccion(tipo, contenedor) {
-            if (tipo === 'CORREGIR') {
-                // Abrir modal o vista de edición
-                console.log("Editando contenedor: " + contenedor);
-                alert("Abriendo editor para contenedor " + contenedor);
-            } 
-            else if (tipo === 'LISTA') {
-                // Filtrar y mostrar los productos (Columna A, C, D)
-                const items = inventoryData.filter(i => i.color_puerto === contenedor);
-                let listaStr = items.map(i => `${i.codigo}: ${i.descripcion} (${i.cajas} cajas)`).join('\n');
-                alert("Productos en este contenedor:\n\n" + listaStr);
+        // FUNCIONALIDAD DE BOTONES
+        function btnControl(tipo, colorId) {
+            const filtered = masterData.filter(i => i.fontColor === colorId);
+            
+            if (tipo === 'LISTA') {
+                const detalle = filtered.map(i => `${i.sku} | ${i.descripcion} | ${i.meta} cajas`).join('\n');
+                alert(`DETALLE DEL CONTENEDOR:\n\n${detalle}`);
             } 
             else if (tipo === 'PDF') {
-                const firma = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-                alert("Generando PDF...\nContenedor: " + contenedor + "\n\n" + firma);
-                // Aquí se integraría la librería jsPDF
+                const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                alert(`Generando PDF para contenedor con letras color ${colorId}...\n\n${footer}`);
+            }
+            else if (tipo === 'CORREGIR') {
+                alert(`Abriendo editor para los ${filtered.length} productos de este contenedor.`);
             }
         }
 
-        // Inicio
-        renderContainers();
-        syncData();
-        setInterval(syncData, 60000);
+        // Inicio nativo e inmediato
+        renderApp();
+        fetchUpdate();
+        setInterval(fetchUpdate, 60000);
     </script>
 </body>
 </html>
