@@ -3,131 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Premium Inventory</title>
+    <title>Twins Elite Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FBFBFE; }
-        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #F1F5F9; }
-        .premium-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 32px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .premium-card:active { transform: scale(0.98); box-shadow: 0 2px 10px -2px rgba(0,0,0,0.05); }
-        .btn-action { border-radius: 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+        .premium-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 32px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04); }
+        .btn-action { border-radius: 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 14px 8px; transition: all 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="text-slate-900">
+<body>
 
-    <header class="glass-header sticky top-0 z-50 p-6">
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 p-6">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-[800] tracking-tighter text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <div class="flex items-center gap-2 mt-1">
-                    <div id="sync-indicator" class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                    <span id="sync-status" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">En línea</span>
-                </div>
+                <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo N. Durand</p>
             </div>
-            <div id="week-tag" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-2xl text-[10px] font-extrabold uppercase tracking-tight border border-blue-100">
-                Semana --
+            <div id="month-label" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-2xl text-[10px] font-extrabold uppercase border border-blue-100">
+                Resumen de Marzo
             </div>
         </div>
     </header>
 
     <main class="p-5 max-w-xl mx-auto pb-40">
         
-        <div class="relative mb-10">
-            <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-lg"></i>
-            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Buscar contenedor, SKU o fecha..." 
-                class="w-full bg-white border border-slate-100 rounded-[24px] py-5 pl-14 pr-6 text-sm font-medium shadow-sm focus:ring-4 focus:ring-blue-500/5 outline-none transition-all placeholder:text-slate-300">
+        <div class="grid grid-cols-2 gap-4 mb-10">
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="ph-bold ph-package text-xl"></i>
+                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Cajas del Mes</p>
+                <h2 id="total-boxes" class="text-3xl font-black text-slate-800">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
+                <div class="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="ph-bold ph-barcode text-xl"></i>
+                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Variedad SKUs</p>
+                <h2 id="total-skus" class="text-3xl font-black text-slate-800">0</h2>
+            </div>
         </div>
 
-        <div id="section-title" class="px-2 mb-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Cargando inventario...</div>
+        <div class="flex flex-col gap-3 mb-8">
+            <div class="relative">
+                <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                <input type="text" id="search-input" oninput="applyFilters()" placeholder="Buscar contenedor o producto..." 
+                    class="w-full bg-white border border-slate-200 rounded-2xl py-5 pl-14 pr-6 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
+            </div>
+            <select id="month-select" onchange="applyFilters()" class="bg-white border border-slate-200 rounded-2xl py-4 px-5 text-xs font-black text-slate-600 outline-none appearance-none">
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03" selected>Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+            </select>
+        </div>
+
+        <div id="section-title" class="px-2 mb-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ingresos Recientes</div>
         
         <div id="operations-list" class="space-y-6">
             </div>
 
     </main>
 
-    <div id="view-counting" class="fixed inset-0 bg-white z-[60] hidden overflow-y-auto px-5 py-8">
+    <div id="view-modal" class="fixed inset-0 bg-white z-[60] hidden overflow-y-auto px-6 py-10">
         <div class="max-w-xl mx-auto">
-            <button onclick="closeModal()" class="mb-8 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
-                <i class="ph-bold ph-arrow-left text-xl"></i>
-            </button>
-            <div id="modal-header" class="mb-10"></div>
-            <div id="modal-items" class="space-y-4 pb-48"></div>
-            
-            <div id="modal-footer" class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-50 hidden">
+            <button onclick="closeModal()" class="mb-8 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-arrow-left"></i></button>
+            <div id="modal-header"></div>
+            <div id="modal-items" class="space-y-4 mt-10 pb-40"></div>
+            <div id="modal-footer" class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 border-t border-slate-50 hidden">
                 <div class="max-w-xl mx-auto">
-                    <button onclick="saveToExcel()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-blue-100 active:scale-95 transition-transform">
-                        Confirmar Cambios
-                    </button>
+                    <button onclick="saveData()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm uppercase tracking-widest">Actualizar Excel</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
         let master_data = [];
-        let is_searching = false;
 
-        async function loadData(silent = false) {
-            const indicator = document.getElementById('sync-indicator');
-            const status = document.getElementById('sync-status');
-            
-            if(!silent) indicator.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-            
+        // SINCRONIZACIÓN INVISIBLE
+        async function loadData() {
             try {
-                const res = await fetch(WEB_APP_URL);
+                const res = await fetch(API_URL);
                 const data = await res.json();
                 master_data = data.historial;
-                indicator.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]";
-                status.innerText = "Sincronizado";
-                if(!is_searching) renderDefault();
-            } catch (e) {
-                indicator.className = "w-2 h-2 rounded-full bg-red-500";
-                status.innerText = "Offline";
-            }
+                applyFilters();
+            } catch (e) { console.log("Silent Sync Fail"); }
         }
 
-        function getWeek(d) {
-            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            return Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        }
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const month = document.getElementById('month-select').value;
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"];
+            document.getElementById('month-label').innerText = `Resumen de ${monthNames[parseInt(month)-1]}`;
 
-        function renderDefault() {
-            const list = document.getElementById('operations-list');
-            const title = document.getElementById('section-title');
-            const weekTag = document.getElementById('week-tag');
-
+            // Agrupar y Filtrar
             const grouped = master_data.reduce((acc, curr) => {
-                const match = curr.operacion.match(/\d{2}\/\d{2}/);
-                if(!match) return acc;
-                const [d, m] = match[0].split('/');
-                const week = getWeek(new Date(2026, m-1, d));
-                if(!acc[week]) acc[week] = [];
-                acc[week].push(curr);
+                const [d, m] = curr.operacion.match(/\d{2}\/\d{2}/)[0].split('/');
+                const matchesSearch = curr.operacion.toLowerCase().includes(query) || 
+                                     curr.sku.toLowerCase().includes(query) || 
+                                     curr.descripcion.toLowerCase().includes(query);
+                const matchesMonth = m === month;
+
+                if(matchesMonth && matchesSearch) {
+                    if(!acc[curr.operacion]) acc[curr.operacion] = { ...curr, items: [], totalBoxes: 0 };
+                    acc[curr.operacion].items.push(curr);
+                    acc[curr.operacion].totalBoxes += curr.meta;
+                }
                 return acc;
             }, {});
 
-            const currentWeek = getWeek(new Date());
-            const availableWeeks = Object.keys(grouped).sort((a,b) => b-a);
-            const weekToShow = grouped[currentWeek] ? currentWeek : availableWeeks[0];
+            // Ordenar por fecha (lo más reciente arriba)
+            const results = Object.values(grouped).sort((a,b) => {
+                const dateA = a.operacion.match(/\d{2}\/\d{2}/)[0].split('/').reverse().join('');
+                const dateB = b.operacion.match(/\d{2}\/\d{2}/)[0].split('/').reverse().join('');
+                return dateB.localeCompare(dateA);
+            });
 
-            weekTag.innerText = `Semana ${weekToShow}`;
-            title.innerText = weekToShow == currentWeek ? "Flujo de Trabajo Actual" : "Últimos ingresos de almacén";
-            
-            renderCards(groupById(grouped[weekToShow] || []));
-        }
+            // Actualizar Dashboard del Mes
+            document.getElementById('total-boxes').innerText = results.reduce((a,b) => a + b.totalBoxes, 0).toLocaleString();
+            document.getElementById('total-skus').innerText = results.reduce((a,b) => a + b.items.length, 0).toLocaleString();
 
-        function groupById(flat) {
-            return Object.values(flat.reduce((acc, c) => {
-                if(!acc[c.operacion]) acc[c.operacion] = { ...c, items: [] };
-                acc[c.operacion].items.push(c);
-                return acc;
-            }, {}));
+            renderCards(results);
         }
 
         function renderCards(data) {
@@ -135,68 +139,40 @@
             list.innerHTML = data.map(op => `
                 <div class="premium-card p-7">
                     <div class="flex justify-between items-start mb-6">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-[9px] font-black uppercase tracking-widest ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'}">
-                                    ${op.estado === 'COMPLETADO' ? '● Registro Cerrado' : '● Ingreso Pendiente'}
-                                </span>
-                            </div>
-                            <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">${op.operacion}</h3>
+                        <div>
+                            <span class="text-[9px] font-black uppercase tracking-[0.2em] ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'}">
+                                ${op.estado}
+                            </span>
+                            <h3 class="text-2xl font-[800] text-slate-800 tracking-tighter mt-1">${op.operacion}</h3>
                         </div>
                         <span class="bg-slate-900 text-white text-[8px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest">Canal ${op.canal}</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="bg-slate-50/50 p-4 rounded-[20px]">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Cajas Meta</p>
-                            <p class="text-lg font-extrabold text-slate-700">${op.items.reduce((a,b)=>a+b.meta,0)}</p>
-                        </div>
-                        <div class="bg-slate-50/50 p-4 rounded-[20px]">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Variedad</p>
-                            <p class="text-lg font-extrabold text-slate-700">${op.items.length} SKUs</p>
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-3 gap-3">
-                        <button onclick="openAction('${op.operacion}', 'EDIT')" class="btn-action bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-600 hover:text-white">
-                            <i class="ph-bold ph-pencil-simple text-base"></i>Corregir
+                        <button onclick="openModal('${op.operacion}', 'EDIT')" class="btn-action bg-blue-50 text-blue-600 border border-blue-100">
+                            <i class="ph-bold ph-pencil-simple text-lg"></i>Corregir
                         </button>
-                        <button onclick="openAction('${op.operacion}', 'VIEW')" class="btn-action bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-900 hover:text-white">
-                            <i class="ph-bold ph-list-bullets text-base"></i>Ver Lista
+                        <button onclick="openModal('${op.operacion}', 'VIEW')" class="btn-action bg-slate-50 text-slate-600 border border-slate-100">
+                            <i class="ph-bold ph-list-bullets text-lg"></i>Ver Lista
                         </button>
-                        <button onclick="genPDF('${op.operacion}')" class="btn-action bg-red-50 text-red-600 border border-red-100 hover:bg-red-600 hover:text-white">
-                            <i class="ph-bold ph-file-pdf text-base"></i>PDF
+                        <button onclick="alert('Generando PDF...')" class="btn-action bg-red-50 text-red-600 border border-red-100">
+                            <i class="ph-bold ph-file-pdf text-lg"></i>PDF
                         </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function handleSearch() {
-            const val = document.getElementById('search-input').value.toLowerCase();
-            if(val.length > 0) {
-                is_searching = true;
-                const filtered = master_data.filter(i => i.operacion.toLowerCase().includes(val) || i.sku.toLowerCase().includes(val) || i.descripcion.toLowerCase().includes(val));
-                document.getElementById('section-title').innerText = "Resultados de búsqueda global";
-                renderCards(groupById(filtered));
-            } else {
-                is_searching = false;
-                renderDefault();
-            }
-        }
-
-        let current_view_data = null;
+        let current_op = null;
         let active_mode = 'VIEW';
 
-        function openAction(id, mode) {
+        function openModal(id, mode) {
             active_mode = mode;
-            current_view_data = { id: id, items: JSON.parse(JSON.stringify(master_data.filter(i => i.operacion === id))) };
-            
-            document.getElementById('view-counting').classList.remove('hidden');
+            current_op = { id: id, items: JSON.parse(JSON.stringify(master_data.filter(i => i.operacion === id))) };
+            document.getElementById('view-modal').classList.remove('hidden');
             document.getElementById('modal-footer').classList.toggle('hidden', mode === 'VIEW');
-            
             document.getElementById('modal-header').innerHTML = `
-                <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2">${mode === 'EDIT' ? 'Editor de Inventario' : 'Detalles del Ingreso'}</p>
+                <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">${mode === 'EDIT' ? 'Editor de Cajas' : 'Vista de Resumen'}</p>
                 <h2 class="text-4xl font-[800] text-slate-900 tracking-tighter">${id}</h2>
             `;
             renderModalItems();
@@ -204,32 +180,28 @@
 
         function renderModalItems() {
             const container = document.getElementById('modal-items');
-            container.innerHTML = current_view_data.items.map(item => `
+            container.innerHTML = current_op.items.map(item => `
                 <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                    <div class="flex justify-between items-start mb-5">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-slate-300 uppercase mb-1">${item.sku}</p>
-                            <h4 class="font-bold text-slate-700 leading-tight">${item.descripcion}</h4>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1 pr-4">
+                            <p class="text-[10px] font-black text-slate-300 uppercase">${item.sku}</p>
+                            <h4 class="font-bold text-slate-700 text-sm leading-tight">${item.descripcion}</h4>
                         </div>
-                        <div class="bg-slate-50 px-3 py-2 rounded-xl text-center min-w-[60px]">
+                        <div class="text-right">
                             <p class="text-[8px] font-bold text-slate-400 uppercase">Meta</p>
-                            <p class="font-black text-slate-800">${item.meta}</p>
+                            <p class="font-black text-lg">${item.meta}</p>
                         </div>
                     </div>
-                    
                     ${active_mode === 'EDIT' ? `
-                        <div class="flex items-center justify-between gap-4">
-                            <button onclick="updateQty('${item.sku}', -1)" class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center font-black text-xl active:scale-90">-</button>
-                            <div class="flex-1 text-center">
-                                <span class="text-3xl font-black ${item.real >= item.meta ? 'text-green-500' : 'text-slate-900'}">${item.real}</span>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">Cajas Contadas</p>
-                            </div>
-                            <button onclick="updateQty('${item.sku}', 1)" class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-xl active:scale-90">+</button>
+                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-2xl">
+                            <button onclick="updateQty('${item.sku}', -1)" class="w-12 h-12 bg-white rounded-xl shadow-sm font-black text-xl">-</button>
+                            <span class="text-2xl font-black ${item.real >= item.meta ? 'text-green-500' : 'text-slate-900'}">${item.real}</span>
+                            <button onclick="updateQty('${item.sku}', 1)" class="w-12 h-12 bg-slate-900 text-white rounded-xl shadow-sm font-black text-xl">+</button>
                         </div>
                     ` : `
-                        <div class="flex justify-between items-center py-3 px-5 bg-green-50 rounded-2xl border border-green-100">
-                            <span class="text-[10px] font-black text-green-600 uppercase">Conteo Final</span>
-                            <span class="text-2xl font-black text-green-700">${item.real}</span>
+                        <div class="bg-green-50 py-3 px-5 rounded-xl border border-green-100 flex justify-between">
+                            <span class="text-[10px] font-black text-green-600 uppercase">Recibido</span>
+                            <span class="text-xl font-black text-green-700">${item.real}</span>
                         </div>
                     `}
                 </div>
@@ -237,24 +209,22 @@
         }
 
         function updateQty(sku, v) {
-            const i = current_view_data.items.find(x => x.sku === sku);
+            const i = current_op.items.find(x => x.sku === sku);
             if(i) { i.real = Math.max(0, i.real + v); renderModalItems(); }
         }
 
-        function closeModal() { document.getElementById('view-counting').classList.add('hidden'); }
+        function closeModal() { document.getElementById('view-modal').classList.add('hidden'); }
 
-        async function saveToExcel() {
-            if(!confirm("¿Deseas actualizar el registro oficial en Excel?")) return;
+        async function saveData() {
             const btn = event.target;
-            btn.disabled = true; btn.innerText = "Sincronizando...";
-            
+            btn.disabled = true; btn.innerText = "Guardando...";
             try {
-                await fetch(WEB_APP_URL, {
+                await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({
                         action: 'FINALIZE',
-                        id: current_view_data.id,
-                        items: JSON.stringify(current_view_data.items.map(i => ({sku: i.sku, r: i.real})))
+                        id: current_op.id,
+                        items: JSON.stringify(current_op.items.map(i => ({sku: i.sku, r: i.real})))
                     })
                 });
                 closeModal();
@@ -262,10 +232,8 @@
             } catch (e) { btn.disabled = false; btn.innerText = "Error - Reintentar"; }
         }
 
-        function genPDF(id) { alert("Generando Reporte Logístico de " + id); }
-
-        // SYNC SILENCIOSO CADA MINUTO
-        setInterval(() => loadData(true), 60000);
+        // AUTO-SYNC SILENCIOSO CADA 60 SEGUNDOS
+        setInterval(loadData, 60000);
         window.onload = loadData;
     </script>
 </body>
