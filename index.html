@@ -23,7 +23,7 @@
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">J. Angelo Nuñez Durand</p>
             </div>
             <div id="month-label" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-2xl text-[10px] font-extrabold uppercase border border-blue-100">
-                Cargando...
+                Inventario
             </div>
         </div>
     </header>
@@ -70,44 +70,62 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
         let master_data = [];
 
+        // SINCRONIZACIÓN 100% INVISIBLE
         async function loadData() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                master_data = data.historial || [];
+                // Verificamos si los datos vienen en 'historial' o directamente en el array
+                master_data = data.historial || data; 
                 applyFilters();
             } catch (e) {
-                console.error("Error cargando datos");
+                console.error("Silent sync error");
             }
         }
 
         function applyFilters() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const month = document.getElementById('month-select').value;
+            const list = document.getElementById('operations-list');
+            
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"];
             document.getElementById('month-label').innerText = `Resumen de ${monthNames[parseInt(month)-1]}`;
 
+            // Agrupamos por operación
             const grouped = master_data.reduce((acc, curr) => {
-                // Lógica de extracción de fecha más robusta
-                const dateMatch = curr.operacion.match(/(\d{2})\/(\d{2})/);
-                if (!dateMatch) return acc;
+                // Si no hay operación, saltar
+                if(!curr.operacion) return acc;
 
-                const [_, day, m] = dateMatch;
+                // Extraemos el mes del string "CONT 15/03/26" o similar
+                const dateParts = curr.operacion.match(/(\d{2})\/(\d{2})/);
+                const itemMonth = dateParts ? dateParts[2] : "03"; // Por defecto marzo si no hay fecha
+                const itemDay = dateParts ? dateParts[1] : "01";
+
                 const matchesSearch = curr.operacion.toLowerCase().includes(query) || 
-                                     curr.sku.toLowerCase().includes(query) || 
-                                     curr.descripcion.toLowerCase().includes(query);
-                const matchesMonth = m === month;
+                                     (curr.sku && curr.sku.toLowerCase().includes(query)) || 
+                                     (curr.descripcion && curr.descripcion.toLowerCase().includes(query));
+                
+                const matchesMonth = itemMonth === month;
 
                 if (matchesMonth && matchesSearch) {
-                    if (!acc[curr.operacion]) acc[curr.operacion] = { ...curr, items: [], totalBoxes: 0, sortKey: `${m}${day}` };
+                    if (!acc[curr.operacion]) {
+                        acc[curr.operacion] = { 
+                            ...curr, 
+                            items: [], 
+                            totalBoxes: 0,
+                            sortKey: `${itemMonth}${itemDay}` 
+                        };
+                    }
                     acc[curr.operacion].items.push(curr);
                     acc[curr.operacion].totalBoxes += (Number(curr.meta) || 0);
                 }
                 return acc;
             }, {});
 
+            // Convertimos a array y ordenamos: Lo más reciente arriba
             const results = Object.values(grouped).sort((a,b) => b.sortKey.localeCompare(a.sortKey));
 
+            // Dashboard
             document.getElementById('total-boxes').innerText = results.reduce((a,b) => a + b.totalBoxes, 0).toLocaleString();
             document.getElementById('total-skus').innerText = results.reduce((a,b) => a + b.items.length, 0).toLocaleString();
 
@@ -117,7 +135,7 @@
         function renderCards(data) {
             const list = document.getElementById('operations-list');
             if (data.length === 0) {
-                list.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs font-bold uppercase">No se encontraron ingresos en este mes</div>`;
+                list.innerHTML = `<p class="text-center py-20 text-slate-400 text-xs font-bold uppercase tracking-widest">No hay registros para mostrar</p>`;
                 return;
             }
 
@@ -132,16 +150,25 @@
                         </div>
                         <span class="bg-slate-900 text-white text-[8px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest">Canal ${op.canal || 'S/C'}</span>
                     </div>
+
                     <div class="grid grid-cols-3 gap-3">
-                        <button class="btn-action bg-blue-50 text-blue-600 border border-blue-100"><i class="ph-bold ph-pencil-simple text-lg"></i>Corregir</button>
-                        <button class="btn-action bg-slate-50 text-slate-600 border border-slate-100"><i class="ph-bold ph-list-bullets text-lg"></i>Ver Lista</button>
-                        <button class="btn-action bg-red-50 text-red-600 border border-red-100"><i class="ph-bold ph-file-pdf text-lg"></i>PDF</button>
+                        <div class="btn-action bg-blue-50 text-blue-600 border border-blue-100">
+                            <i class="ph-bold ph-pencil-simple text-lg"></i>Corregir
+                        </div>
+                        <div class="btn-action bg-slate-50 text-slate-600 border border-slate-100">
+                            <i class="ph-bold ph-list-bullets text-lg"></i>Ver Lista
+                        </div>
+                        <div class="btn-action bg-red-50 text-red-600 border border-red-100">
+                            <i class="ph-bold ph-file-pdf text-lg"></i>PDF
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
+        // Sincronización cada 60 segundos
         setInterval(loadData, 60000);
+        // Carga inicial
         window.onload = loadData;
     </script>
 </body>
