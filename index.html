@@ -3,133 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Logística</title>
+    <title>Twins Elite Pro | Smart Logistics</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        .premium-card { background: white; border-radius: 28px; border: 1px solid #F1F5F9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; overflow: hidden; }
-        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid #F1F5F9; background: #FFF; width: 100%; }
-        .btn-tool:active { transform: scale(0.95); background: #f8fafc; }
-        .badge-canal { background: #0F172A; color: white; padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f1f5f9; 
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Efecto de Vidrio Esmerilado (Glassmorphism) */
+        .glass-header {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Tarjetas de Contenedor Nivel Premium */
+        .container-card {
+            background: white;
+            border-radius: 32px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .container-card:active {
+            transform: scale(0.97);
+        }
+
+        /* Botones Inteligentes */
+        .smart-btn {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px 8px;
+        }
+
+        /* Scrollbar Invisible */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="antialiased text-slate-900">
 
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6">
-        <div class="max-w-xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-[800] tracking-tighter italic text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
+    <header class="glass-header sticky top-0 z-50 p-6">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+                    <i class="ph-bold ph-cube text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
+                    <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Sistemas de Inventario</span>
+                </div>
             </div>
-            <i class="ph-bold ph-package text-2xl text-blue-600"></i>
+            <div class="text-right">
+                <p id="clock" class="text-xs font-bold text-slate-800">10:49 AM</p>
+                <p class="text-[8px] font-black text-blue-600 uppercase">Status: Online</p>
+            </div>
         </div>
     </header>
 
-    <main class="p-5 max-w-xl mx-auto pb-40">
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm text-center">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Contenedores</p>
-                <h2 id="count-containers" class="text-3xl font-black text-slate-800">0</h2>
+    <main class="max-w-2xl mx-auto p-5 pb-32">
+        
+        <section class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+                <div class="absolute -right-2 -top-2 text-slate-50 group-hover:text-blue-50 transition-colors">
+                    <i class="ph-fill ph-shipping-container text-6xl"></i>
+                </div>
+                <p class="relative z-10 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Canales Activos</p>
+                <h2 id="stats-channels" class="relative z-10 text-4xl font-800 text-slate-900">0</h2>
             </div>
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm text-center">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Total SKUs</p>
-                <h2 id="count-skus" class="text-3xl font-black text-blue-600">0</h2>
+            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items Almacén</p>
+                <h2 id="stats-items" class="text-4xl font-800 text-blue-600">0</h2>
             </div>
+        </section>
+
+        <div class="relative mb-10">
+            <input type="text" id="main-search" oninput="engine.filter()" 
+                class="w-full bg-white border-2 border-slate-100 rounded-[24px] py-6 pl-14 pr-6 text-sm font-semibold shadow-xl shadow-slate-200/50 focus:border-blue-500 outline-none transition-all"
+                placeholder="Buscar por código, descripción o canal...">
+            <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
         </div>
 
-        <div id="main-content">
+        <div id="app-feed" class="space-y-6">
             </div>
+
     </main>
 
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-header rounded-[30px] p-2 flex justify-between items-center shadow-2xl z-50 border border-white">
+        <button class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+            <i class="ph-bold ph-house-line text-xl"></i>
+        </button>
+        <button class="w-14 h-14 text-slate-400 flex items-center justify-center">
+            <i class="ph-bold ph-chart-line-up text-xl"></i>
+        </button>
+        <button class="w-14 h-14 text-slate-400 flex items-center justify-center">
+            <i class="ph-bold ph-qr-code text-xl"></i>
+        </button>
+        <button class="w-14 h-14 text-slate-400 flex items-center justify-center">
+            <i class="ph-bold ph-user-circle text-xl"></i>
+        </button>
+    </nav>
+
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
-        let inventoryData = JSON.parse(localStorage.getItem('twins_final_cache')) || [];
-
-        async function syncData() {
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                inventoryData = Array.isArray(data) ? data : (data.historial || []);
-                localStorage.setItem('twins_final_cache', JSON.stringify(inventoryData));
-                renderApp();
-            } catch(e) { console.log("Actualización en segundo plano..."); }
-        }
-
-        function renderApp() {
-            const container = document.getElementById('main-content');
+        // LÓGICA DE NEGOCIO PROFESIONAL
+        const engine = {
+            data: JSON.parse(localStorage.getItem('twins_db')) || [],
             
-            // AGRUPACIÓN POR CANAL (Número 1, 2, 3...)
-            const grouped = inventoryData.reduce((acc, curr) => {
-                const canalID = curr.canal || "S/N";
-                if (!acc[canalID]) {
-                    acc[canalID] = { 
-                        id: canalID, 
-                        items: [], 
-                        fechaLlegada: curr.almacen || "Sin Fecha" 
-                    };
-                }
-                acc[canalID].items.push(curr);
-                return acc;
-            }, {});
+            init: async function() {
+                this.render();
+                await this.sync();
+                this.updateClock();
+            },
 
-            let html = '';
-            const channels = Object.values(grouped);
+            sync: async function() {
+                try {
+                    const response = await fetch('TU_URL_DE_APPS_SCRIPT');
+                    const raw = await response.json();
+                    this.data = raw.historial || raw;
+                    localStorage.setItem('twins_db', JSON.stringify(this.data));
+                    this.render();
+                } catch(e) { console.warn("Modo Offline: Usando caché local"); }
+            },
 
-            channels.forEach(group => {
-                html += `
-                <div class="premium-card">
-                    <div style="height: 6px; background-color: #3b82f6;"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="badge-canal">CANAL ${group.id}</span>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase">${group.fechaLlegada}</span>
+            filter: function() {
+                const q = document.getElementById('main-search').value.toLowerCase();
+                this.render(q);
+            },
+
+            render: function(query = "") {
+                const feed = document.getElementById('app-feed');
+                
+                // Agrupación Inteligente por CANAL (Tu nueva columna de control)
+                const groups = this.data.reduce((acc, item) => {
+                    const canal = item.canal || "0";
+                    if(item.codigo.toLowerCase().includes(query) || item.descripcion.toLowerCase().includes(query) || canal.toString().includes(query)) {
+                        if(!acc[canal]) acc[canal] = { id: canal, date: item.almacen, items: [], color: item.fontColor || '#2563eb' };
+                        acc[canal].items.push(item);
+                    }
+                    return acc;
+                }, {});
+
+                let html = '';
+                const channels = Object.values(groups);
+
+                channels.forEach(group => {
+                    html += `
+                    <div class="container-card overflow-hidden">
+                        <div class="h-2 w-full" style="background: ${group.color}"></div>
+                        <div class="p-7">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="bg-slate-900 text-white text-[9px] font-900 px-3 py-1 rounded-full">CANAL ${group.id}</span>
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">${group.date}</span>
+                                    </div>
+                                    <h3 class="text-2xl font-800 text-slate-800 tracking-tighter uppercase">Contenedor ${group.id}</h3>
                                 </div>
-                                <h3 class="text-xl font-black tracking-tighter text-slate-800">CONTENEDOR ${group.id}</h3>
+                                <div class="bg-blue-50 p-3 rounded-2xl text-center min-w-[70px]">
+                                    <p class="text-[8px] font-black text-blue-400 uppercase leading-none mb-1">Items</p>
+                                    <p class="text-xl font-800 text-blue-600 leading-none">${group.items.length}</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <button onclick="engine.action('CORREGIR', '${group.id}')" class="smart-btn bg-slate-50 text-slate-600 border border-slate-100 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                    <i class="ph-bold ph-pencil-simple text-xl"></i>
+                                    <span class="text-[9px] font-900 tracking-tighter">CORREGIR</span>
+                                </button>
+                                <button onclick="engine.action('LISTA', '${group.id}')" class="smart-btn bg-slate-50 text-slate-600 border border-slate-100">
+                                    <i class="ph-bold ph-list-bullets text-xl"></i>
+                                    <span class="text-[9px] font-900 tracking-tighter">VER LISTA</span>
+                                </button>
+                                <button onclick="engine.action('PDF', '${group.id}')" class="smart-btn bg-red-50 text-red-600 border border-red-100">
+                                    <i class="ph-bold ph-file-pdf text-xl"></i>
+                                    <span class="text-[9px] font-900 tracking-tighter">REPORTE</span>
+                                </button>
                             </div>
                         </div>
+                    </div>`;
+                });
 
-                        <div class="grid grid-cols-3 gap-3">
-                            <div onclick="ejecutar('CORREGIR', '${group.id}')" class="btn-tool">
-                                <i class="ph-bold ph-pencil-simple text-lg text-blue-500"></i>CORREGIR
-                            </div>
-                            <div onclick="ejecutar('LISTA', '${group.id}')" class="btn-tool">
-                                <i class="ph-bold ph-list-magnifying text-lg text-slate-700"></i>LISTA
-                            </div>
-                            <div onclick="ejecutar('PDF', '${group.id}')" class="btn-tool">
-                                <i class="ph-bold ph-file-pdf text-lg text-red-500"></i>PDF
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            });
+                feed.innerHTML = html;
+                document.getElementById('stats-channels').innerText = channels.length;
+                document.getElementById('stats-items').innerText = this.data.length;
+            },
 
-            container.innerHTML = html || '<p class="text-center py-20 opacity-30 font-bold uppercase text-[10px]">Esperando datos del canal...</p>';
-            document.getElementById('count-containers').innerText = channels.length;
-            document.getElementById('count-skus').innerText = inventoryData.length;
-        }
+            action: function(type, id) {
+                const items = this.data.filter(i => String(i.canal) === id);
+                if(type === 'LISTA') {
+                    const content = items.map(i => `• ${i.codigo} | ${i.descripcion}`).join('\n');
+                    alert(`CONTENIDO CANAL ${id}:\n\n${content}`);
+                } else if(type === 'PDF') {
+                    const firma = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                    alert(`[PRO] Generando Reporte de Auditoría para Canal ${id}...\n\n${firma}`);
+                }
+            },
 
-        function ejecutar(tipo, canalId) {
-            const filtrados = inventoryData.filter(i => String(i.canal) === String(canalId));
-            
-            if (tipo === 'LISTA') {
-                const lista = filtrados.map(i => `COD: ${i.codigo || i.sku} | ${i.descripcion}`).join('\n');
-                alert(`CONTENEDOR CANAL ${canalId}:\n\n${lista}`);
-            } else if (tipo === 'PDF') {
-                const firma = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-                alert(`Generando Reporte de Canal ${canalId}...\n\n${firma}`);
-            } else if (tipo === 'CORREGIR') {
-                alert(`Editor abierto para Canal ${canalId}`);
+            updateClock: function() {
+                setInterval(() => {
+                    const now = new Date();
+                    document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }, 1000);
             }
-        }
+        };
 
-        // Ejecución
-        renderApp();
-        syncData();
-        setInterval(syncData, 60000);
+        engine.init();
     </script>
 </body>
 </html>
