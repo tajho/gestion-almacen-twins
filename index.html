@@ -1,138 +1,274 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --primary: #002d5a; /* Azul corporativo */
-        --accent: #0056b3;
-        --bg: #f4f7f6;
-        --card-bg: #ffffff;
-      }
-      body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
-      .container { max-width: 800px; margin: auto; }
-      
-      /* Buscador y Filtros */
-      .search-box { 
-        background: var(--card-bg); padding: 20px; border-radius: 12px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;
-        display: flex; gap: 10px; flex-wrap: wrap;
-      }
-      input, select, button { 
-        padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; 
-      }
-      input { flex: 2; min-width: 200px; }
-      select { flex: 1; min-width: 120px; }
-      button { 
-        background: var(--primary); color: white; border: none; 
-        cursor: pointer; transition: 0.3s; font-weight: bold;
-      }
-      button:hover { background: var(--accent); }
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twins Elite - Gestión de Inventario</title>
+  <style>
+    :root {
+      --primary: #002d5a;
+      --accent: #0056b3;
+      --bg: #121212;
+      --card-bg: #ffffff;
+      --text-dark: #333;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Roboto, sans-serif; 
+      background-color: var(--bg); 
+      color: #eee; 
+      margin: 0; 
+      padding: 0; 
+    }
 
-      /* Tarjeta de Contenedor */
-      .card {
-        background: var(--card-bg); border-radius: 10px; padding: 15px;
-        margin-bottom: 15px; border-left: 5px solid var(--primary);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-        animation: fadeIn 0.4s ease-out;
-      }
-      .card-header { grid-column: span 2; font-weight: bold; color: var(--primary); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-      .card-data { font-size: 0.9em; color: #555; }
-      .label { font-weight: bold; color: #333; display: block; font-size: 0.8em; text-transform: uppercase; }
-      .date-exact { color: #d9534f; font-weight: bold; } /* Color para resaltar fecha exacta */
+    /* Cabecera y Buscador Sticky */
+    .header-container {
+      background: #1f1f1f;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
 
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      
-      .loading { text-align: center; color: var(--primary); font-weight: bold; padding: 20px; }
-    </style>
-  </head>
-  <body>
+    .search-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 900px;
+      margin: auto;
+    }
 
-    <div class="container">
-      <div class="search-box">
-        <input type="text" id="busqueda" placeholder="Buscar por cliente o producto..." onkeyup="filtrarLocal()">
-        <select id="mesFiltro">
-          <option value="">Todos los meses</option>
-          <option value="1">Enero</option><option value="2">Febrero</option>
-          <option value="3">Marzo</option><option value="4">Abril</option>
-          <option value="5">Mayo</option><option value="6">Junio</option>
-          <option value="7">Julio</option><option value="8">Agosto</option>
-          <option value="9">Septiembre</option><option value="10">Octubre</option>
-          <option value="11">Noviembre</option><option value="12">Diciembre</option>
-        </select>
-        <button onclick="cargarDatos()">Sincronizar</button>
-      </div>
+    input, select {
+      background: #2d2d2d;
+      color: white;
+      border: 1px solid #444;
+      padding: 12px;
+      border-radius: 8px;
+      outline: none;
+      flex: 1;
+      min-width: 150px;
+    }
 
-      <div id="loading" class="loading" style="display:none;">Sincronizando datos...</div>
-      <div id="listaContenedor"></div>
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover { background: #004494; }
+
+    /* Contenedor de Tarjetas */
+    .main-content {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* Estilo de la Tarjeta de Contenedor */
+    .card {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border-left: 10px solid var(--primary);
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover { transform: translateY(-5px); }
+
+    .card-body { padding: 15px; flex-grow: 1; }
+
+    .card-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95em;
+    }
+
+    .label { font-weight: bold; color: #666; }
+    
+    /* Resaltado de Fecha Exacta */
+    .date-badge {
+      background: #fff3cd;
+      color: #856404;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      border: 1px solid #ffeeba;
+    }
+
+    .vendedor-tag {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .footer-auth {
+      background: #f8f9fa;
+      padding: 10px;
+      font-size: 0.75em;
+      color: #777;
+      border-top: 1px solid #eee;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .status-bar {
+      text-align: center;
+      font-size: 0.8em;
+      color: #aaa;
+      margin-top: 5px;
+    }
+
+    /* Animación de carga */
+    .loading-shimmer {
+      text-align: center;
+      padding: 50px;
+      font-size: 1.2em;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-container">
+    <div class="search-group">
+      <select id="mesFiltro" onchange="sincronizar()">
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
+      </select>
+      <input type="text" id="buscador" placeholder="Buscar cliente o producto..." onkeyup="filtrarLocal()">
+      <button onclick="sincronizar()">Actualizar</button>
     </div>
+    <div id="status" class="status-bar">Listo</div>
+  </div>
 
-    <script>
-      let datosMemoria = [];
+  <div class="main-content">
+    <div id="loading" class="loading-shimmer" style="display:none;">Sincronizando con Twins Elite...</div>
+    <div id="contenedorLista" class="grid"></div>
+  </div>
 
-      // Cargar datos al iniciar
-      window.onload = () => {
-        const mesActual = new Date().getMonth() + 1;
-        document.getElementById('mesFiltro').value = mesActual;
-        cargarDatos();
-      };
+  <script>
+    let cacheDatos = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec";
 
-      function cargarDatos() {
-        const loading = document.getElementById('loading');
-        const mes = document.getElementById('mesFiltro').value;
-        const anio = new Date().getFullYear(); // Año actual automático
-        
-        loading.style.display = 'block';
-        document.getElementById('listaContenedor').innerHTML = '';
+    // Al iniciar, cargar mes actual
+    window.onload = () => {
+      const fechaActual = new Date();
+      document.getElementById('mesFiltro').value = fechaActual.getMonth() + 1;
+      sincronizar();
+    };
 
-        // Llamada a Google Apps Script
-        google.script.run
-          .withSuccessHandler(data => {
-            datosMemoria = data;
-            renderizarTarjetas(data);
-            loading.style.display = 'none';
-          })
-          .obtenerDatosCorregidos(mes, anio);
+    function sincronizar() {
+      const mes = document.getElementById('mesFiltro').value;
+      const anio = 2026; // Año configurado
+      const status = document.getElementById('status');
+      const loader = document.getElementById('loading');
+      const lista = document.getElementById('contenedorLista');
+
+      status.innerText = "Sincronizando invisiblemente...";
+      loader.style.display = "block";
+      lista.innerHTML = "";
+
+      // Conexión directa con Google Apps Script
+      google.script.run
+        .withSuccessHandler(datos => {
+          cacheDatos = datos;
+          renderizarTarjetas(datos);
+          loader.style.display = "none";
+          status.innerText = "Sincronización completada: " + datos.length + " registros.";
+        })
+        .withFailureHandler(err => {
+          status.innerText = "Error de conexión.";
+          loader.style.display = "none";
+        })
+        .obtenerDatosCorregidos(mes, anio);
+    }
+
+    function renderizarTarjetas(registros) {
+      const lista = document.getElementById('contenedorLista');
+      lista.innerHTML = "";
+
+      if (registros.length === 0) {
+        lista.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No hay datos para este periodo.</p>";
+        return;
       }
 
-      function renderizarTarjetas(data) {
-        const contenedor = document.getElementById('listaContenedor');
-        contenedor.innerHTML = '';
-
-        if (data.length === 0) {
-          contenedor.innerHTML = '<p style="text-align:center">No se encontraron registros en este mes.</p>';
-          return;
-        }
-
-        data.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <div class="card-header">${item.CLIENTE || 'Sin Nombre'}</div>
-            <div class="card-data"><span class="label">Producto</span>${item.PRODUCTO}</div>
-            <div class="card-data"><span class="label">Fecha Exacta</span><span class="date-exact">${item.FECHA}</span></div>
-            <div class="card-data"><span class="label">Cantidad</span>${item.CANTIDAD}</div>
-            <div class="card-data"><span class="label">Vendedor</span>${item.VENDEDOR}</div>
-            <div style="grid-column: span 2; font-size: 0.75em; color: #999; font-style: italic; border-top: 1px solid #eee; padding-top: 5px;">
-              Revisión autorizada por J. Angelo Nuñez Durand
+      registros.forEach(item => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'card';
+        tarjeta.innerHTML = `
+          <div class="card-body">
+            <div class="card-title">${item.CLIENTE || 'Sin Identificar'}</div>
+            <div class="info-row">
+              <span class="label">Fecha Exacta:</span>
+              <span class="date-badge">${item.FECHA}</span>
             </div>
-          `;
-          contenedor.appendChild(card);
-        });
-      }
+            <div class="info-row">
+              <span class="label">Producto:</span>
+              <span>${item.PRODUCTO || '---'}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Cantidad:</span>
+              <span style="font-weight:bold;">${item.CANTIDAD || '0'}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Vendedor:</span>
+              <span class="vendedor-tag">${item.VENDEDOR || 'Asignado'}</span>
+            </div>
+          </div>
+          <div class="footer-auth">
+            Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.
+          </div>
+        `;
+        lista.appendChild(tarjeta);
+      });
+    }
 
-      function filtrarLocal() {
-        const term = document.getElementById('busqueda').value.toLowerCase();
-        const filtrados = datosMemoria.filter(item => 
-          (item.CLIENTE && item.CLIENTE.toLowerCase().includes(term)) || 
-          (item.PRODUCTO && item.PRODUCTO.toLowerCase().includes(term))
-        );
-        renderizarTarjetas(filtrados);
-      }
-    </script>
-  </body>
+    function filtrarLocal() {
+      const query = document.getElementById('buscador').value.toLowerCase();
+      const filtrados = cacheDatos.filter(d => {
+        const nombre = (d.CLIENTE || "").toLowerCase();
+        const prod = (d.PRODUCTO || "").toLowerCase();
+        return nombre.includes(query) || prod.includes(query);
+      });
+      renderizarTarjetas(filtrados);
+    }
+  </script>
+</body>
 </html>
