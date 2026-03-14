@@ -16,55 +16,50 @@
             overscroll-behavior: none;
         }
 
-        /* DISEÑO MODERNO: Glassmorphism y Sombras suaves */
         .glass-header { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(16px); 
-            border-bottom: 1px solid rgba(226, 232, 240, 0.6); 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid #E2E8F0; 
         }
 
         .card-container { 
             background: white; 
-            border-radius: 32px; 
-            border: 1px solid #F1F5F9; 
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-            transition: transform 0.2s ease;
+            border-radius: 28px; 
+            border: 1px solid #E2E8F0; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-status { 
-            @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[26px] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest border; 
+            @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[24px] transition-all active:scale-90 text-[10px] font-black uppercase tracking-widest border; 
         }
 
-        /* Separador de Meses Minimalista */
+        .stat-card {
+            @apply bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center;
+        }
+
+        /* Separador de Meses Mejorado */
         .month-divider {
-            @apply sticky top-[100px] z-40 bg-white/70 backdrop-blur-md py-4 px-2 my-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] flex items-center justify-between;
-        }
-
-        .month-divider::after {
-            content: ""; flex: 1; height: 1px; background: linear-gradient(to right, #E2E8F0, transparent); margin-left: 15px;
+            @apply sticky top-[100px] z-40 bg-blue-600 py-3 px-6 my-6 rounded-2xl text-[11px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg shadow-blue-100;
         }
 
         .work-mode {
             display: none;
             position: fixed;
             inset: 0;
-            background: #FFFFFF;
+            background: white;
             z-index: 100;
-            animation: slideUp 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+            animation: slideUp 0.4s ease-out;
         }
 
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .item-row {
-            @apply p-5 rounded-[26px] bg-slate-50 border border-slate-100 flex items-center justify-between mb-3;
+            @apply p-5 rounded-[22px] bg-slate-50 border border-slate-100 flex items-center justify-between shadow-sm mb-3;
         }
 
         .counter-btn {
-            @apply w-12 h-12 rounded-2xl flex items-center justify-center text-xl active:scale-90 transition-all;
+            @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl active:scale-75 transition-all;
         }
-
-        /* Quitar scrollbar visual */
-        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="antialiased">
@@ -73,42 +68,42 @@
         <header class="glass-header sticky top-0 z-50 p-6">
             <div class="max-w-xl mx-auto flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-800 tracking-tighter italic leading-none text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] italic mt-1">J. Angelo Nuñez Durand</p>
+                    <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">J. Angelo Nuñez Durand</p>
                 </div>
-                <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:rotate-180 transition-transform">
                     <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
                 </button>
             </div>
         </header>
 
         <main class="max-w-xl mx-auto p-6">
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="bg-white p-6 rounded-[30px] border border-slate-100 shadow-sm">
-                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-3">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2">
                         <i class="ph-bold ph-shipping-container text-xl"></i>
                     </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Contenedores</p>
-                    <p class="text-3xl font-800 text-slate-800" id="dash-total-cont">0</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Contenedores</p>
+                    <p class="text-2xl font-900 text-slate-800" id="dash-total-cont">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-[30px] border border-slate-100 shadow-sm">
-                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-3">
+                <div class="stat-card">
+                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2">
                         <i class="ph-bold ph-package text-xl"></i>
                     </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Cajas Totales</p>
-                    <p class="text-3xl font-800 text-slate-800" id="dash-total-cajas">0</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Cajas Totales</p>
+                    <p class="text-2xl font-900 text-slate-800" id="dash-total-cajas">0</p>
                 </div>
             </div>
 
-            <div class="space-y-3 mb-10">
+            <div class="space-y-3 mb-8">
                 <div class="relative">
                     <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." 
-                    class="w-full pl-14 pr-6 py-5 rounded-[26px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm focus:ring-2 focus:ring-blue-100 transition-all">
-                    <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 text-xl"></i>
+                    class="w-full pl-14 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                    <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                 </div>
                 
                 <div class="relative">
-                    <select id="monthFilter" onchange="app.render()" class="w-full p-5 pl-14 rounded-[26px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
+                    <select id="monthFilter" onchange="app.render()" class="w-full p-5 pl-14 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
                         <option value="ALL">TODOS LOS MESES</option>
                         <option value="0">ENERO</option><option value="1">FEBRERO</option>
                         <option value="2">MARZO</option><option value="3">ABRIL</option>
@@ -117,8 +112,8 @@
                         <option value="8">SEPTIEMBRE</option><option value="9">OCTUBRE</option>
                         <option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
                     </select>
-                    <i class="ph-bold ph-calendar-blank absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 text-xl pointer-events-none"></i>
-                    <i class="ph-bold ph-caret-down absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
+                    <i class="ph-bold ph-calendar-blank absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                    <i class="ph-bold ph-caret-down absolute right-6 top-1/2 -translate-y-1/2 text-slate-300"></i>
                 </div>
             </div>
 
@@ -127,52 +122,51 @@
     </div>
 
     <div id="view-counter" class="work-mode flex-col">
-        <header class="p-8 border-b border-slate-50 flex justify-between items-center bg-white">
-            <button onclick="app.closeCounter()" class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center active:scale-90 transition-all">
-                <i class="ph-bold ph-caret-left text-xl text-slate-900"></i>
-            </button>
-            <div class="text-center">
-                <h2 class="text-lg font-900 uppercase tracking-tighter text-slate-900" id="counter-title">Contenedor</h2>
-                <p class="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none mt-1">Auditoría en Almacén</p>
+        <header class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+            <div>
+                <h2 class="text-xl font-900 uppercase tracking-tighter" id="counter-title">Contenedor</h2>
+                <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Conteo de Cajas en Almacén</p>
             </div>
-            <div class="w-12"></div>
+            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
+                <i class="ph-bold ph-x text-xl text-white"></i>
+            </button>
         </header>
 
-        <div class="grid grid-cols-2 gap-4 p-6 bg-slate-50/50">
-            <div class="bg-white p-5 rounded-[26px] border border-slate-100 text-center shadow-sm">
-                <p class="text-[9px] font-black text-slate-300 uppercase mb-1">Items SKU</p>
+        <div class="grid grid-cols-2 gap-4 p-6 bg-slate-50 border-b border-slate-100">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKU</p>
                 <p class="text-2xl font-900 text-blue-600 leading-none" id="totalItems">0</p>
             </div>
-            <div class="bg-white p-5 rounded-[26px] border border-slate-100 text-center shadow-sm">
-                <p class="text-[9px] font-black text-slate-300 uppercase mb-1">Total Cajas</p>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Cajas</p>
                 <p class="text-2xl font-900 text-slate-800 leading-none" id="totalCount">0</p>
             </div>
         </div>
 
-        <div id="counterList" class="flex-1 overflow-y-auto p-6 space-y-3"></div>
+        <div id="counterList" class="flex-1 overflow-y-auto p-6"></div>
 
-        <div class="p-8 bg-white border-t border-slate-100">
-            <button onclick="app.saveWork()" class="w-full py-6 bg-slate-900 text-white rounded-[28px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all">
-                Guardar Inventario
+        <div class="p-6 bg-white border-t border-slate-100">
+            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-200">
+                Finalizar Conteo
             </button>
-            <p class="text-center text-[8px] font-black text-slate-300 uppercase mt-5 tracking-widest italic">
+            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4 tracking-widest italic">
                 Revisión autorizada por J. Angelo Nuñez Durand
             </p>
         </div>
     </div>
 
     <script>
-        /* TU LÓGICA DE CÓDIGO INTACTA */
         const app = {
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             activeId: null,
 
+            // Parser de fecha personalizado para formato DD/MM/YY o DD/MM/YYYY
             parseFechaAlmacen: function(str) {
                 if(!str) return new Date(0);
                 const parts = str.split('/');
                 if(parts.length === 3) {
                     const dia = parseInt(parts[0]);
-                    const mes = parseInt(parts[1]) - 1;
+                    const mes = parseInt(parts[1]) - 1; // Enero es 0
                     let anio = parseInt(parts[2]);
                     if(anio < 100) anio += 2000;
                     return new Date(anio, mes, dia);
@@ -198,10 +192,12 @@
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 const monthFilter = document.getElementById('monthFilter').value;
 
+                // Agrupación y Filtrado
                 const groups = this.data.reduce((acc, item) => {
                     const id = item.canal || item.CONTENEDOR || "S/N";
                     const dateStr = item.almacen || item.FECHA || "";
                     const dateObj = this.parseFechaAlmacen(dateStr);
+                    
                     const matchesSearch = JSON.stringify(item).toLowerCase().includes(search);
                     const itemMonth = dateObj.getMonth();
                     const matchesMonth = (monthFilter === "ALL") || (itemMonth.toString() === monthFilter);
@@ -215,6 +211,7 @@
 
                 const sortedGroups = Object.values(groups).sort((a,b) => b.dateObj - a.dateObj);
                 
+                // Dashboard Stats
                 document.getElementById('dash-total-cont').innerText = sortedGroups.length;
                 document.getElementById('dash-total-cajas').innerText = sortedGroups.reduce((sum, g) => 
                     sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
@@ -227,7 +224,10 @@
                     const groupMonth = months[g.dateObj.getMonth()] + " " + g.dateObj.getFullYear();
 
                     if (groupMonth !== currentMonthName) {
-                        html += `<div class="month-divider"><span>${groupMonth}</span></div>`;
+                        html += `<div class="month-divider">
+                                    <span>${groupMonth}</span>
+                                    <i class="ph-bold ph-calendar-blank opacity-50"></i>
+                                 </div>`;
                         currentMonthName = groupMonth;
                     }
 
@@ -235,22 +235,22 @@
                     const isFinal = totalCajas > 0;
                     
                     html += `
-                    <div class="card-container mb-4">
+                    <div class="card-container shadow-sm mb-4">
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
-                                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">ALMACÉN: ${g.dateStr}</p>
-                                    <h3 class="text-2xl font-900 text-slate-900 uppercase tracking-tighter">Contenedor ${g.id}</h3>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase italic">ALMACÉN: ${g.dateStr}</p>
+                                    <h3 class="text-2xl font-900 text-slate-900 uppercase">Contenedor ${g.id}</h3>
                                 </div>
-                                <div class="px-3 py-1 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black text-slate-500">${totalCajas} CAJAS</div>
+                                <div class="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-500">${totalCajas} CAJAS</div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
-                                <button onclick="app.startWork('${g.id}')" class="btn-status ${isFinal ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-900 border-slate-100'}">
-                                    <i class="ph-fill ${isFinal ? 'ph-pencil-simple' : 'ph-play'} text-xl"></i>
-                                    ${isFinal ? 'CORREGIR' : 'AUDITAR'}
+                                <button onclick="app.startWork('${g.id}')" class="btn-status ${isFinal ? 'border-blue-100 text-blue-600 bg-blue-50' : 'border-green-100 text-green-600 bg-green-50'}">
+                                    <i class="ph-fill ${isFinal ? 'ph-pencil-simple' : 'ph-play'} text-2xl"></i>
+                                    ${isFinal ? 'CORREGIR' : 'EMPEZAR'}
                                 </button>
-                                <button onclick="app.generatePDF('${g.id}')" class="btn-status bg-white text-slate-400 border-slate-100">
-                                    <i class="ph-fill ph-file-pdf text-xl"></i>
+                                <button onclick="app.generatePDF('${g.id}')" class="btn-status border-slate-100 text-slate-400">
+                                    <i class="ph-fill ph-file-pdf text-2xl"></i>
                                     REPORTE
                                 </button>
                             </div>
@@ -264,20 +264,20 @@
             startWork: function(id) {
                 this.activeId = id;
                 const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == id);
-                document.getElementById('counter-title').innerText = id;
+                document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
                 document.getElementById('totalItems').innerText = filtrados.length;
                 this.updateTotalCount(filtrados);
 
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
                     <div class="item-row">
                         <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-black text-blue-500 leading-none mb-1">${item.codigo || 'SKU'}</p>
+                            <p class="text-[10px] font-black text-blue-600 leading-none mb-1">${item.codigo || 'S/C'}</p>
                             <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
                         </div>
-                        <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100">
-                            <button class="counter-btn bg-slate-50 text-slate-400" onclick="app.adjust(${idx}, -1)"><i class="ph-bold ph-minus"></i></button>
-                            <span class="w-8 text-center font-900 text-xl text-slate-900" id="val-${idx}">${item.cantidad || 0}</span>
-                            <button class="counter-btn bg-slate-900 text-white" onclick="app.adjust(${idx}, 1)"><i class="ph-bold ph-plus"></i></button>
+                        <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
+                            <button class="counter-btn bg-slate-100" onclick="app.adjust(${idx}, -1)"><i class="ph-bold ph-minus"></i></button>
+                            <span class="w-8 text-center font-900 text-xl text-blue-600" id="val-${idx}">${item.cantidad || 0}</span>
+                            <button class="counter-btn bg-blue-600 text-white" onclick="app.adjust(${idx}, 1)"><i class="ph-bold ph-plus"></i></button>
                         </div>
                     </div>`).join('');
                 document.getElementById('view-counter').style.display = 'flex';
