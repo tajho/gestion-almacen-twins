@@ -33,17 +33,15 @@
             @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[24px] transition-all active:scale-90 text-[10px] font-black uppercase tracking-widest border; 
         }
 
-        /* Dash Stats */
         .stat-card {
             @apply bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center;
         }
 
-        /* Sección de Meses */
+        /* Separador de Meses Mejorado */
         .month-divider {
-            @apply sticky top-[100px] z-40 bg-slate-50/80 backdrop-blur-sm py-2 px-4 mb-4 rounded-xl border border-slate-200 text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] flex items-center gap-2 shadow-sm;
+            @apply sticky top-[100px] z-40 bg-blue-600 py-3 px-6 my-6 rounded-2xl text-[11px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg shadow-blue-100;
         }
 
-        /* Modo Trabajo */
         .work-mode {
             display: none;
             position: fixed;
@@ -73,15 +71,14 @@
                     <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">J. Angelo Nuñez Durand</p>
                 </div>
-                <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:rotate-180 transition-transform duration-500">
+                <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:rotate-180 transition-transform">
                     <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
                 </button>
             </div>
         </header>
 
-        <main class="max-w-xl mx-auto p-6 space-y-6">
-            
-            <div class="grid grid-cols-2 gap-4">
+        <main class="max-w-xl mx-auto p-6">
+            <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="stat-card">
                     <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2">
                         <i class="ph-bold ph-shipping-container text-xl"></i>
@@ -98,9 +95,9 @@
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 mb-8">
                 <div class="relative">
-                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o SKU..." 
+                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." 
                     class="w-full pl-14 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
                     <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                 </div>
@@ -120,7 +117,7 @@
                 </div>
             </div>
 
-            <div id="feed" class="space-y-6 pb-10"></div>
+            <div id="feed" class="space-y-4 pb-20"></div>
         </main>
     </div>
 
@@ -136,12 +133,12 @@
         </header>
 
         <div class="grid grid-cols-2 gap-4 p-6 bg-slate-50 border-b border-slate-100">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKU Distintos</p>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKU</p>
                 <p class="text-2xl font-900 text-blue-600 leading-none" id="totalItems">0</p>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Cajas Contadas</p>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Cajas</p>
                 <p class="text-2xl font-900 text-slate-800 leading-none" id="totalCount">0</p>
             </div>
         </div>
@@ -159,22 +156,34 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec";
-
         const app = {
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             activeId: null,
+
+            // Parser de fecha personalizado para formato DD/MM/YY o DD/MM/YYYY
+            parseFechaAlmacen: function(str) {
+                if(!str) return new Date(0);
+                const parts = str.split('/');
+                if(parts.length === 3) {
+                    const dia = parseInt(parts[0]);
+                    const mes = parseInt(parts[1]) - 1; // Enero es 0
+                    let anio = parseInt(parts[2]);
+                    if(anio < 100) anio += 2000;
+                    return new Date(anio, mes, dia);
+                }
+                return new Date(str);
+            },
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
                 icon.classList.add('animate-spin');
                 try {
-                    const res = await fetch(API_URL);
+                    const res = await fetch("https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec");
                     const json = await res.json();
                     this.data = Array.isArray(json) ? json : (json.historial || []);
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { console.error(e); }
+                } catch(e) { alert("Sin conexión. Datos locales."); }
                 finally { icon.classList.remove('animate-spin'); }
             },
 
@@ -183,20 +192,18 @@
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 const monthFilter = document.getElementById('monthFilter').value;
 
-                // Lógica Estricta de la columna ALMACEN
+                // Agrupación y Filtrado
                 const groups = this.data.reduce((acc, item) => {
                     const id = item.canal || item.CONTENEDOR || "S/N";
-                    // Foco en columna ALMACEN
-                    const dateRaw = item.almacen || item.FECHA;
-                    const dateObj = new Date(dateRaw);
+                    const dateStr = item.almacen || item.FECHA || "";
+                    const dateObj = this.parseFechaAlmacen(dateStr);
                     
                     const matchesSearch = JSON.stringify(item).toLowerCase().includes(search);
-                    
-                    let itemMonth = !isNaN(dateObj) ? dateObj.getMonth() : null;
-                    let matchesMonth = (monthFilter === "ALL") || (itemMonth !== null && itemMonth.toString() === monthFilter);
+                    const itemMonth = dateObj.getMonth();
+                    const matchesMonth = (monthFilter === "ALL") || (itemMonth.toString() === monthFilter);
 
                     if (matchesSearch && matchesMonth) {
-                        if (!acc[id]) acc[id] = { id, fecha: dateRaw, dateObj: dateObj, items: [] };
+                        if (!acc[id]) acc[id] = { id, dateStr, dateObj, items: [] };
                         acc[id].items.push(item);
                     }
                     return acc;
@@ -204,46 +211,41 @@
 
                 const sortedGroups = Object.values(groups).sort((a,b) => b.dateObj - a.dateObj);
                 
-                // Estadísticas Dashboard
+                // Dashboard Stats
                 document.getElementById('dash-total-cont').innerText = sortedGroups.length;
-                const globalCajas = sortedGroups.reduce((sum, g) => sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
-                document.getElementById('dash-total-cajas').innerText = globalCajas;
+                document.getElementById('dash-total-cajas').innerText = sortedGroups.reduce((sum, g) => 
+                    sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
 
                 let html = '';
-                let lastMonthLabel = '';
+                let currentMonthName = '';
 
                 sortedGroups.forEach(g => {
-                    const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-                    const currentMonthLabel = !isNaN(g.dateObj) ? `${monthNames[g.dateObj.getMonth()]} ${g.dateObj.getFullYear()}` : "FECHA DESCONOCIDA";
+                    const months = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+                    const groupMonth = months[g.dateObj.getMonth()] + " " + g.dateObj.getFullYear();
 
-                    // Separador por Mes (Limpieza Visual)
-                    if (currentMonthLabel !== lastMonthLabel) {
-                        html += `<div class="month-divider"><i class="ph-bold ph-calendar-check"></i> ${currentMonthLabel}</div>`;
-                        lastMonthLabel = currentMonthLabel;
+                    if (groupMonth !== currentMonthName) {
+                        html += `<div class="month-divider">
+                                    <span>${groupMonth}</span>
+                                    <i class="ph-bold ph-calendar-blank opacity-50"></i>
+                                 </div>`;
+                        currentMonthName = groupMonth;
                     }
 
-                    const totalCajasCont = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
-                    const isFinal = totalCajasCont > 0;
+                    const totalCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+                    const isFinal = totalCajas > 0;
                     
                     html += `
-                    <div class="card-container shadow-xl shadow-slate-900/5 mb-6">
-                        <div class="p-7">
+                    <div class="card-container shadow-sm mb-4">
+                        <div class="p-6">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">
-                                        ALMACÉN: ${g.fecha}
-                                    </p>
-                                    <h3 class="text-3xl font-900 text-slate-900 tracking-tighter uppercase leading-none">
-                                        Contenedor ${g.id}
-                                    </h3>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase italic">ALMACÉN: ${g.dateStr}</p>
+                                    <h3 class="text-2xl font-900 text-slate-900 uppercase">Contenedor ${g.id}</h3>
                                 </div>
-                                <span class="bg-blue-600 text-white px-3 py-1 rounded-full font-black text-[10px]">
-                                    ${totalCajasCont} CAJAS
-                                </span>
+                                <div class="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-500">${totalCajas} CAJAS</div>
                             </div>
-
                             <div class="grid grid-cols-2 gap-4">
-                                <button onclick="app.startWork('${g.id}')" class="btn-status ${isFinal ? 'border-blue-100 text-blue-600 bg-blue-50/30' : 'border-green-100 text-green-600 bg-green-50/50'}">
+                                <button onclick="app.startWork('${g.id}')" class="btn-status ${isFinal ? 'border-blue-100 text-blue-600 bg-blue-50' : 'border-green-100 text-green-600 bg-green-50'}">
                                     <i class="ph-fill ${isFinal ? 'ph-pencil-simple' : 'ph-play'} text-2xl"></i>
                                     ${isFinal ? 'CORREGIR' : 'EMPEZAR'}
                                 </button>
@@ -256,7 +258,7 @@
                     </div>`;
                 });
 
-                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-widest">No hay registros</div>';
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs">Sin registros</div>';
             },
 
             startWork: function(id) {
@@ -270,38 +272,29 @@
                     <div class="item-row">
                         <div class="flex-1 pr-4">
                             <p class="text-[10px] font-black text-blue-600 leading-none mb-1">${item.codigo || 'S/C'}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || 'Sin descripción'}</p>
+                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
                         </div>
                         <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                            <button class="counter-btn bg-slate-100 text-slate-600" onclick="app.adjust(${idx}, -1)">
-                                <i class="ph-bold ph-minus"></i>
-                            </button>
+                            <button class="counter-btn bg-slate-100" onclick="app.adjust(${idx}, -1)"><i class="ph-bold ph-minus"></i></button>
                             <span class="w-8 text-center font-900 text-xl text-blue-600" id="val-${idx}">${item.cantidad || 0}</span>
-                            <button class="counter-btn bg-blue-600 text-white" onclick="app.adjust(${idx}, 1)">
-                                <i class="ph-bold ph-plus"></i>
-                            </button>
+                            <button class="counter-btn bg-blue-600 text-white" onclick="app.adjust(${idx}, 1)"><i class="ph-bold ph-plus"></i></button>
                         </div>
-                    </div>
-                `).join('');
-
+                    </div>`).join('');
                 document.getElementById('view-counter').style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             },
 
             adjust: function(idx, val) {
                 const el = document.getElementById(`val-${idx}`);
-                let current = parseInt(el.innerText);
-                current = Math.max(0, current + val);
+                let current = Math.max(0, parseInt(el.innerText) + val);
                 el.innerText = current;
-
                 const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == this.activeId);
                 filtrados[idx].cantidad = current;
                 this.updateTotalCount(filtrados);
             },
 
             updateTotalCount: function(items) {
-                const sum = items.reduce((a, b) => a + (parseInt(b.cantidad) || 0), 0);
-                document.getElementById('totalCount').innerText = sum;
+                document.getElementById('totalCount').innerText = items.reduce((a, b) => a + (parseInt(b.cantidad) || 0), 0);
             },
 
             saveWork: function() {
@@ -316,7 +309,7 @@
             },
 
             generatePDF: function(id) {
-                alert(`Generando reporte para Contenedor ${id}.\nAutorizado por Angelo Nuñez Durand.`);
+                alert(`Reporte Contenedor ${id}\nAutorizado por: Angelo Nuñez Durand`);
             }
         };
 
