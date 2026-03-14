@@ -3,190 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aura Logistics - Twins Elite</title>
+    <title>Twins Elite - Gestión de Contenedores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         
-        /* Agrupación por Color de Puerto */
-        .color-section { margin-bottom: 30px; }
-        .color-label { 
-            font-size: 11px; font-weight: 900; text-transform: uppercase; 
-            letter-spacing: 0.15em; margin-bottom: 12px; display: flex; 
-            align-items: center; gap: 10px; color: #64748b;
-        }
-        .color-label::after { content: ""; flex: 1; height: 1px; background: #E2E8F0; }
-
-        .premium-card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 12px; }
-        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
-        .btn-tool:active { transform: scale(0.96); opacity: 0.7; }
-
-        /* Indicadores de Color Lateral */
-        .bar-red { border-left: 5px solid #ef4444; }
-        .bar-blue { border-left: 5px solid #3b82f6; }
-        .bar-green { border-left: 5px solid #22c55e; }
-        .bar-yellow { border-left: 5px solid #eab308; }
-        .bar-purple { border-left: 5px solid #a855f7; }
-        .bar-orange { border-left: 5px solid #f97316; }
+        /* Estilos de Botones Funcionales */
+        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; width: 100%; }
+        .btn-tool:active { transform: scale(0.95); opacity: 0.8; }
+        
+        /* Identificadores de Contenedor por Color de Puerto */
+        .card-container { border-radius: 24px; background: white; border: 1px solid #F1F5F9; margin-bottom: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .color-tag { height: 6px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-5">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo N. Durand</p>
+                <h1 class="text-xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logística e Inventario</p>
             </div>
-            <div class="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center">
-                <i class="ph-bold ph-factory text-blue-600"></i>
+            <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                Modo Activo
             </div>
         </div>
     </header>
 
-    <main class="p-5 max-w-xl mx-auto pb-40">
-        
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Volumen Cajas</p>
-                <h2 id="dash-boxes" class="text-3xl font-black text-slate-800">0</h2>
+    <main class="p-5 max-w-xl mx-auto pb-32">
+        <div id="app-content">
             </div>
-            <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Diversidad SKUs</p>
-                <h2 id="dash-skus" class="text-3xl font-black text-slate-800">0</h2>
-            </div>
-        </div>
-
-        <div class="mb-8">
-            <div class="relative">
-                <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                <input type="text" id="search-box" oninput="renderApp()" placeholder="Buscar por código o descripción..." 
-                    class="w-full bg-white border border-slate-200 rounded-2xl py-5 pl-14 pr-6 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-            </div>
-        </div>
-
-        <div id="app-content"></div>
-
     </main>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
-        
-        // Carga inmediata desde memoria local
-        let inventoryData = JSON.parse(localStorage.getItem('twins_inventory')) || [];
+        let inventoryData = JSON.parse(localStorage.getItem('twins_cache')) || [];
 
+        // SINCRONIZACIÓN INVISIBLE
         async function syncData() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
                 inventoryData = data.historial || data;
-                localStorage.setItem('twins_inventory', JSON.stringify(inventoryData));
-                renderApp();
-            } catch(e) { console.log("Silent background sync active"); }
+                localStorage.setItem('twins_cache', JSON.stringify(inventoryData));
+                renderContainers();
+            } catch(e) { console.error("Sync en segundo plano"); }
         }
 
-        function renderApp() {
-            const query = document.getElementById('search-box').value.toLowerCase();
+        function renderContainers() {
             const container = document.getElementById('app-content');
             
-            // 1. Agrupar por Contenedor e identificar Color de Puerto
-            const grouped = inventoryData.reduce((acc, curr) => {
-                if(!curr.operacion) return acc;
-
-                const matches = curr.sku.toLowerCase().includes(query) || 
-                               curr.descripcion.toLowerCase().includes(query) ||
-                               curr.operacion.toLowerCase().includes(query);
-
-                if(matches) {
-                    if(!acc[curr.operacion]) {
-                        // El color se extrae directamente de la columna de tu Excel
-                        const puertoColor = curr.color ? curr.color.toLowerCase() : 'blue';
-                        acc[curr.operacion] = { 
-                            name: curr.operacion,
-                            color: puertoColor,
-                            totalBoxes: 0,
-                            itemsCount: 0,
-                            canal: curr.canal || 'S/C'
-                        };
-                    }
-                    acc[curr.operacion].totalBoxes += (Number(curr.meta) || 0);
-                    acc[curr.operacion].itemsCount += 1;
-                }
-                return acc;
-            }, {});
-
-            // 2. Clasificar grupos por Color
-            const byColor = Object.values(grouped).reduce((acc, op) => {
-                if(!acc[op.color]) acc[op.color] = [];
-                acc[op.color].push(op);
-                return acc;
-            }, {});
-
-            // 3. Renderizado
-            let html = '';
-            let boxesSum = 0;
-            let skusSum = 0;
-
-            Object.keys(byColor).forEach(color => {
-                html += `
-                <div class="color-section">
-                    <div class="color-label">
-                        <i class="ph-fill ph-circle text-[8px]" style="color: ${color}"></i>
-                        Llegada a Puerto: ${color}
-                    </div>`;
+            // AGRUPACIÓN POR COLOR (Columna G - Llegada a Puerto)
+            const groupedByColor = inventoryData.reduce((acc, curr) => {
+                const colorKey = curr.color_puerto || 'ROJO'; // Basado en tus capturas
+                if (!acc[colorKey]) acc[colorKey] = { color: colorKey, items: [], totalCajas: 0 };
                 
-                byColor[color].forEach(op => {
-                    boxesSum += op.totalBoxes;
-                    skusSum += op.itemsCount;
-                    html += `
-                        <div class="premium-card p-6 bar-${color}">
-                            <div class="flex justify-between items-start mb-5">
-                                <div class="flex-1">
-                                    <h3 class="text-xl font-[800] text-slate-800 tracking-tight">${op.name}</h3>
-                                    <div class="flex gap-3 mt-1">
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Cajas: ${op.totalBoxes}</p>
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase">SKUs: ${op.itemsCount}</p>
-                                    </div>
-                                </div>
-                                <span class="bg-slate-900 text-white text-[8px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest">
-                                    Canal ${op.canal}
-                                </span>
-                            </div>
+                acc[colorKey].items.push(curr);
+                acc[colorKey].totalCajas += (Number(curr.cajas) || 0);
+                return acc;
+            }, {});
 
-                            <div class="grid grid-cols-3 gap-2.5">
-                                <div onclick="action('CORREGIR', '${op.name}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100/50">
-                                    <i class="ph-bold ph-pencil-simple text-lg"></i>CORREGIR
-                                </div>
-                                <div onclick="action('LISTA', '${op.name}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100">
-                                    <i class="ph-bold ph-stack text-lg"></i>LISTA
-                                </div>
-                                <div onclick="action('PDF', '${op.name}')" class="btn-tool bg-red-50 text-red-600 border-red-100/50">
-                                    <i class="ph-bold ph-file-pdf text-lg"></i>PDF
-                                </div>
+            let html = '';
+            Object.values(groupedByColor).forEach(group => {
+                const colorHex = group.color === 'ROJO' ? '#ef4444' : group.color === 'VERDE' ? '#22c55e' : '#3b82f6';
+                
+                html += `
+                <div class="card-container">
+                    <div class="color-tag" style="background-color: ${colorHex}"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Contenedor Puerto</span>
+                                <h3 class="text-xl font-bold text-slate-800 uppercase">${group.color}</h3>
                             </div>
-                        </div>`;
-                });
-                html += `</div>`;
+                            <div class="text-right">
+                                <p class="text-[10px] font-black text-blue-600">${group.totalCajas} CAJAS</p>
+                                <p class="text-[8px] font-bold text-slate-400 uppercase">${group.items.length} SKUS</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="ejecutarAccion('CORREGIR', '${group.color}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100">
+                                <i class="ph-bold ph-pencil-simple text-lg"></i>CORREGIR
+                            </button>
+                            <button onclick="ejecutarAccion('LISTA', '${group.color}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100">
+                                <i class="ph-bold ph-list-bullets text-lg"></i>LISTA
+                            </button>
+                            <button onclick="ejecutarAccion('PDF', '${group.color}')" class="btn-tool bg-red-50 text-red-600 border-red-100">
+                                <i class="ph-bold ph-file-pdf text-lg"></i>PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
             });
 
-            container.innerHTML = html || `<div class="py-20 text-center text-slate-300 font-black text-xs uppercase tracking-widest">Sin coincidencias</div>`;
-            document.getElementById('dash-boxes').innerText = boxesSum.toLocaleString();
-            document.getElementById('dash-skus').innerText = skusSum.toLocaleString();
+            container.innerHTML = html || '<p class="text-center py-10 text-slate-400 uppercase text-[10px] font-bold">Cargando datos del servidor...</p>';
         }
 
-        function action(type, id) {
-            if(type === 'PDF') {
-                const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-                alert(`Generando reporte técnico para: ${id}\n\n${footer}`);
+        // LÓGICA DE BOTONES FUNCIONALES
+        function ejecutarAccion(tipo, contenedor) {
+            if (tipo === 'CORREGIR') {
+                // Abrir modal o vista de edición
+                console.log("Editando contenedor: " + contenedor);
+                alert("Abriendo editor para contenedor " + contenedor);
+            } 
+            else if (tipo === 'LISTA') {
+                // Filtrar y mostrar los productos (Columna A, C, D)
+                const items = inventoryData.filter(i => i.color_puerto === contenedor);
+                let listaStr = items.map(i => `${i.codigo}: ${i.descripcion} (${i.cajas} cajas)`).join('\n');
+                alert("Productos en este contenedor:\n\n" + listaStr);
+            } 
+            else if (tipo === 'PDF') {
+                const firma = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                alert("Generando PDF...\nContenedor: " + contenedor + "\n\n" + firma);
+                // Aquí se integraría la librería jsPDF
             }
         }
 
         // Inicio
-        renderApp();
+        renderContainers();
         syncData();
-        setInterval(syncData, 60000); // Sync invisible cada minuto
+        setInterval(syncData, 60000);
     </script>
 </body>
 </html>
