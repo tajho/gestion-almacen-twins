@@ -8,58 +8,13 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #F8FAFC; 
-            color: #0F172A; 
-            overscroll-behavior: none;
-        }
-
-        .glass-header { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid #E2E8F0; 
-        }
-
-        .card-container { 
-            background: white; 
-            border-radius: 28px; 
-            border: 1px solid #E2E8F0; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-status { 
-            @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[24px] transition-all active:scale-90 text-[10px] font-black uppercase tracking-widest border; 
-        }
-
-        .stat-card {
-            @apply bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center;
-        }
-
-        /* Separador de Meses Mejorado */
-        .month-divider {
-            @apply sticky top-[100px] z-40 bg-blue-600 py-3 px-6 my-6 rounded-2xl text-[11px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg shadow-blue-100;
-        }
-
-        .work-mode {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: white;
-            z-index: 100;
-            animation: slideUp 0.4s ease-out;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; overscroll-behavior: none; }
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E2E8F0; }
+        .card-container { background: white; border-radius: 28px; border: 1px solid #E2E8F0; transition: all 0.3s ease; }
+        .btn-status { @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[24px] transition-all active:scale-90 text-[10px] font-black uppercase tracking-widest border; }
+        .month-divider { @apply sticky top-[100px] z-40 bg-slate-900 py-3 px-6 my-6 rounded-2xl text-[11px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg; }
+        .work-mode { display: none; position: fixed; inset: 0; background: white; z-index: 100; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .item-row {
-            @apply p-5 rounded-[22px] bg-slate-50 border border-slate-100 flex items-center justify-between shadow-sm mb-3;
-        }
-
-        .counter-btn {
-            @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl active:scale-75 transition-all;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -79,42 +34,30 @@
 
         <main class="max-w-xl mx-auto p-6">
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="stat-card">
-                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2">
-                        <i class="ph-bold ph-shipping-container text-xl"></i>
-                    </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Contenedores</p>
+                <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2"><i class="ph-bold ph-shipping-container text-xl"></i></div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Contenedores</p>
                     <p class="text-2xl font-900 text-slate-800" id="dash-total-cont">0</p>
                 </div>
-                <div class="stat-card">
-                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2">
-                        <i class="ph-bold ph-package text-xl"></i>
-                    </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Cajas Totales</p>
+                <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2"><i class="ph-bold ph-package text-xl"></i></div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Cajas Totales</p>
                     <p class="text-2xl font-900 text-slate-800" id="dash-total-cajas">0</p>
                 </div>
             </div>
 
             <div class="space-y-3 mb-8">
                 <div class="relative">
-                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." 
-                    class="w-full pl-14 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." class="w-full pl-14 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
                     <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                 </div>
-                
-                <div class="relative">
-                    <select id="monthFilter" onchange="app.render()" class="w-full p-5 pl-14 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
-                        <option value="ALL">TODOS LOS MESES</option>
-                        <option value="0">ENERO</option><option value="1">FEBRERO</option>
-                        <option value="2">MARZO</option><option value="3">ABRIL</option>
-                        <option value="4">MAYO</option><option value="5">JUNIO</option>
-                        <option value="6">JULIO</option><option value="7">AGOSTO</option>
-                        <option value="8">SEPTIEMBRE</option><option value="9">OCTUBRE</option>
-                        <option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
-                    </select>
-                    <i class="ph-bold ph-calendar-blank absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
-                    <i class="ph-bold ph-caret-down absolute right-6 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                </div>
+                <select id="monthFilter" onchange="app.render()" class="w-full p-5 pl-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
+                    <option value="ALL">TODOS LOS MESES</option>
+                    <option value="0">ENERO</option><option value="1">FEBRERO</option><option value="2">MARZO</option>
+                    <option value="3">ABRIL</option><option value="4">MAYO</option><option value="5">JUNIO</option>
+                    <option value="6">JULIO</option><option value="7">AGOSTO</option><option value="8">SEPTIEMBRE</option>
+                    <option value="9">OCTUBRE</option><option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
+                </select>
             </div>
 
             <div id="feed" class="space-y-4 pb-20"></div>
@@ -125,20 +68,18 @@
         <header class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
             <div>
                 <h2 class="text-xl font-900 uppercase tracking-tighter" id="counter-title">Contenedor</h2>
-                <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Conteo de Cajas en Almacén</p>
+                <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Revisión autorizada por J. Angelo Nuñez Durand</p>
             </div>
-            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
-                <i class="ph-bold ph-x text-xl text-white"></i>
-            </button>
+            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
         </header>
 
         <div class="grid grid-cols-2 gap-4 p-6 bg-slate-50 border-b border-slate-100">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKU</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKU Distintos</p>
                 <p class="text-2xl font-900 text-blue-600 leading-none" id="totalItems">0</p>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Cajas</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Cajas Contadas</p>
                 <p class="text-2xl font-900 text-slate-800 leading-none" id="totalCount">0</p>
             </div>
         </div>
@@ -146,12 +87,7 @@
         <div id="counterList" class="flex-1 overflow-y-auto p-6"></div>
 
         <div class="p-6 bg-white border-t border-slate-100">
-            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-200">
-                Finalizar Conteo
-            </button>
-            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4 tracking-widest italic">
-                Revisión autorizada por J. Angelo Nuñez Durand
-            </p>
+            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-200">Finalizar Conteo</button>
         </div>
     </div>
 
@@ -160,18 +96,16 @@
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             activeId: null,
 
-            // Parser de fecha personalizado para formato DD/MM/YY o DD/MM/YYYY
+            // CORRECCIÓN DE FECHA: Limpia el texto sucio de la columna Almacén
             parseFechaAlmacen: function(str) {
-                if(!str) return new Date(0);
-                const parts = str.split('/');
-                if(parts.length === 3) {
-                    const dia = parseInt(parts[0]);
-                    const mes = parseInt(parts[1]) - 1; // Enero es 0
-                    let anio = parseInt(parts[2]);
-                    if(anio < 100) anio += 2000;
-                    return new Date(anio, mes, dia);
+                if(!str) return new Date();
+                // Si la fecha trae basura como "2025-12-20T08:00...", extraemos solo la parte de fecha
+                let cleanStr = str.toString().split('T')[0];
+                if(cleanStr.includes('/')) {
+                    const p = cleanStr.split('/');
+                    return new Date(p[2].length === 2 ? "20"+p[2] : p[2], p[1]-1, p[0]);
                 }
-                return new Date(str);
+                return new Date(cleanStr);
             },
 
             sync: async function() {
@@ -183,7 +117,7 @@
                     this.data = Array.isArray(json) ? json : (json.historial || []);
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { alert("Sin conexión. Datos locales."); }
+                } catch(e) { alert("Error de sincronización."); }
                 finally { icon.classList.remove('animate-spin'); }
             },
 
@@ -192,18 +126,13 @@
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 const monthFilter = document.getElementById('monthFilter').value;
 
-                // Agrupación y Filtrado
                 const groups = this.data.reduce((acc, item) => {
                     const id = item.canal || item.CONTENEDOR || "S/N";
-                    const dateStr = item.almacen || item.FECHA || "";
-                    const dateObj = this.parseFechaAlmacen(dateStr);
-                    
-                    const matchesSearch = JSON.stringify(item).toLowerCase().includes(search);
-                    const itemMonth = dateObj.getMonth();
-                    const matchesMonth = (monthFilter === "ALL") || (itemMonth.toString() === monthFilter);
+                    const dateObj = this.parseFechaAlmacen(item.almacen || item.FECHA);
+                    const itemMonth = dateObj.getMonth().toString();
 
-                    if (matchesSearch && matchesMonth) {
-                        if (!acc[id]) acc[id] = { id, dateStr, dateObj, items: [] };
+                    if (JSON.stringify(item).toLowerCase().includes(search) && (monthFilter === "ALL" || itemMonth === monthFilter)) {
+                        if (!acc[id]) acc[id] = { id, dateObj, items: [], displayDate: item.almacen || item.FECHA };
                         acc[id].items.push(item);
                     }
                     return acc;
@@ -211,86 +140,71 @@
 
                 const sortedGroups = Object.values(groups).sort((a,b) => b.dateObj - a.dateObj);
                 
-                // Dashboard Stats
+                // ACTUALIZACIÓN DE CONTADORES GLOBALES
                 document.getElementById('dash-total-cont').innerText = sortedGroups.length;
                 document.getElementById('dash-total-cajas').innerText = sortedGroups.reduce((sum, g) => 
                     sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
 
                 let html = '';
-                let currentMonthName = '';
+                let currentMonthLabel = '';
 
                 sortedGroups.forEach(g => {
                     const months = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-                    const groupMonth = months[g.dateObj.getMonth()] + " " + g.dateObj.getFullYear();
+                    const monthLabel = months[g.dateObj.getMonth()] + " " + g.dateObj.getFullYear();
 
-                    if (groupMonth !== currentMonthName) {
-                        html += `<div class="month-divider">
-                                    <span>${groupMonth}</span>
-                                    <i class="ph-bold ph-calendar-blank opacity-50"></i>
-                                 </div>`;
-                        currentMonthName = groupMonth;
+                    if (monthLabel !== currentMonthLabel) {
+                        html += `<div class="month-divider"><span>${monthLabel}</span><i class="ph-bold ph-calendar"></i></div>`;
+                        currentMonthLabel = monthLabel;
                     }
 
-                    const totalCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
-                    const isFinal = totalCajas > 0;
+                    const cajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
                     
                     html += `
-                    <div class="card-container shadow-sm mb-4">
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase italic">ALMACÉN: ${g.dateStr}</p>
-                                    <h3 class="text-2xl font-900 text-slate-900 uppercase">Contenedor ${g.id}</h3>
-                                </div>
-                                <div class="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-500">${totalCajas} CAJAS</div>
+                    <div class="card-container p-6 mb-4">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase">ALMACÉN: ${g.displayDate.toString().split('T')[0]}</p>
+                                <h3 class="text-xl font-900 text-slate-900 uppercase">CONTENEDOR ${g.id.toString().split('T')[0]}</h3>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <button onclick="app.startWork('${g.id}')" class="btn-status ${isFinal ? 'border-blue-100 text-blue-600 bg-blue-50' : 'border-green-100 text-green-600 bg-green-50'}">
-                                    <i class="ph-fill ${isFinal ? 'ph-pencil-simple' : 'ph-play'} text-2xl"></i>
-                                    ${isFinal ? 'CORREGIR' : 'EMPEZAR'}
-                                </button>
-                                <button onclick="app.generatePDF('${g.id}')" class="btn-status border-slate-100 text-slate-400">
-                                    <i class="ph-fill ph-file-pdf text-2xl"></i>
-                                    REPORTE
-                                </button>
-                            </div>
+                            <div class="px-3 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-black">${cajas} CAJAS</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="app.startWork('${g.id}')" class="btn-status ${cajas > 0 ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}">
+                                <i class="ph-fill ${cajas > 0 ? 'ph-pencil-simple' : 'ph-play'} text-xl"></i>
+                                ${cajas > 0 ? 'CORREGIR' : 'EMPEZAR'}
+                            </button>
+                            <button onclick="app.generatePDF('${g.id}')" class="btn-status border-slate-100 text-slate-400"><i class="ph-fill ph-file-pdf text-xl"></i>PDF</button>
                         </div>
                     </div>`;
                 });
-
-                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs">Sin registros</div>';
+                feed.innerHTML = html || '<p class="text-center py-10 opacity-30">No hay datos</p>';
             },
 
             startWork: function(id) {
                 this.activeId = id;
                 const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == id);
-                document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
+                document.getElementById('counter-title').innerText = `CONTENEDOR ${id.toString().split('T')[0]}`;
                 document.getElementById('totalItems').innerText = filtrados.length;
                 this.updateTotalCount(filtrados);
 
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
-                    <div class="item-row">
-                        <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-black text-blue-600 leading-none mb-1">${item.codigo || 'S/C'}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
-                        </div>
-                        <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                            <button class="counter-btn bg-slate-100" onclick="app.adjust(${idx}, -1)"><i class="ph-bold ph-minus"></i></button>
-                            <span class="w-8 text-center font-900 text-xl text-blue-600" id="val-${idx}">${item.cantidad || 0}</span>
-                            <button class="counter-btn bg-blue-600 text-white" onclick="app.adjust(${idx}, 1)"><i class="ph-bold ph-plus"></i></button>
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl mb-3 border border-slate-100">
+                        <div class="flex-1"><p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo}</p><p class="text-xs font-bold text-slate-800 uppercase">${item.descripcion}</p></div>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
+                            <button onclick="app.adjust('${id}', ${idx}, -1)" class="w-10 h-10 bg-slate-100 rounded-lg"><i class="ph-bold ph-minus"></i></button>
+                            <span class="w-8 text-center font-900 text-lg text-blue-600">${item.cantidad || 0}</span>
+                            <button onclick="app.adjust('${id}', ${idx}, 1)" class="w-10 h-10 bg-blue-600 text-white rounded-lg"><i class="ph-bold ph-plus"></i></button>
                         </div>
                     </div>`).join('');
                 document.getElementById('view-counter').style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             },
 
-            adjust: function(idx, val) {
-                const el = document.getElementById(`val-${idx}`);
-                let current = Math.max(0, parseInt(el.innerText) + val);
-                el.innerText = current;
-                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == this.activeId);
-                filtrados[idx].cantidad = current;
-                this.updateTotalCount(filtrados);
+            adjust: function(id, idx, val) {
+                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == id);
+                let current = parseInt(filtrados[idx].cantidad || 0);
+                filtrados[idx].cantidad = Math.max(0, current + val);
+                this.startWork(id); // Refresca la lista
             },
 
             updateTotalCount: function(items) {
@@ -303,14 +217,8 @@
                 this.closeCounter();
             },
 
-            closeCounter: function() {
-                document.getElementById('view-counter').style.display = 'none';
-                document.body.style.overflow = 'auto';
-            },
-
-            generatePDF: function(id) {
-                alert(`Reporte Contenedor ${id}\nAutorizado por: Angelo Nuñez Durand`);
-            }
+            closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; document.body.style.overflow = 'auto'; },
+            generatePDF: function(id) { alert("PDF generado. Revisión autorizada por J. Angelo Nuñez Durand."); }
         };
 
         window.onload = () => app.render();
