@@ -3,74 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite | Next Gen Logistics</title>
+    <title>Twins Elite | Logistics Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-            --primary: #2563eb;
-            --bg-light: #fdfeff;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-light); 
-            color: #1e293b; 
-            overscroll-behavior: none;
-        }
-
-        /* Elevación sutil para diseño moderno */
-        .modern-card {
-            background: #ffffff;
-            border: 1px solid rgba(241, 245, 249, 0.8);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-            border-radius: 32px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .modern-card:active {
-            transform: scale(0.98);
-        }
-
-        /* Glassmorphism para el Header */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-        }
-
-        /* Separadores tipo Apple */
-        .month-label {
-            @apply sticky top-[100px] z-40 bg-white/70 backdrop-blur-md py-4 px-2 mb-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-4;
-        }
-
-        .month-label::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, #e2e8f0, transparent);
-        }
-
-        .btn-action {
-            @apply flex flex-col items-center justify-center gap-3 p-6 rounded-[28px] transition-all duration-300 font-bold text-[10px] uppercase tracking-widest border border-slate-100;
-        }
-
-        /* Animación suave para la entrada del contador */
-        .modal-active {
-            display: flex;
-            animation: modalFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(100px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Scrollbar invisible */
-        ::-webkit-scrollbar { display: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFEFF; color: #1E293B; overscroll-behavior: none; }
+        .modern-card { background: #ffffff; border: 1px solid rgba(241, 245, 249, 0.8); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04); border-radius: 32px; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(226, 232, 240, 0.5); }
+        .month-label { @apply sticky top-[100px] z-40 bg-white/80 backdrop-blur-md py-4 px-2 mb-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-4; }
+        .month-label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, #e2e8f0, transparent); }
+        .modal-active { display: flex !important; animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="antialiased">
@@ -78,43 +22,44 @@
     <div id="view-dashboard">
         <header class="glass-nav sticky top-0 z-50 px-6 py-5">
             <div class="max-w-xl mx-auto flex justify-between items-center">
-                <div class="flex flex-col">
+                <div>
                     <span class="text-blue-600 font-800 text-[10px] tracking-[0.4em] uppercase leading-none mb-1">Logistics AI</span>
-                    <h1 class="text-2xl font-800 tracking-tighter text-slate-900">TWINS<span class="font-400 text-slate-400">ELITE</span></h1>
+                    <h1 class="text-2xl font-800 tracking-tighter text-slate-900 leading-none">TWINS<span class="font-400 text-slate-400">ELITE</span></h1>
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">J. Angelo Nuñez Durand</p>
                 </div>
-                <button onclick="app.sync()" class="group w-14 h-14 bg-slate-900 rounded-[22px] flex items-center justify-center shadow-xl shadow-slate-200 active:scale-90 transition-all">
-                    <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-white text-xl group-active:rotate-180 transition-transform duration-500"></i>
+                <button onclick="app.sync()" class="w-14 h-14 bg-slate-900 rounded-[22px] flex items-center justify-center shadow-xl active:scale-90 transition-all">
+                    <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-white text-xl"></i>
                 </button>
             </div>
         </header>
 
         <main class="max-w-xl mx-auto p-6">
-            <div class="flex gap-4 mb-10 overflow-x-auto pb-2">
+            <div class="flex gap-4 mb-8 overflow-x-auto pb-2">
                 <div class="min-w-[160px] flex-1 bg-blue-600 p-6 rounded-[32px] text-white shadow-xl shadow-blue-100">
                     <i class="ph-bold ph-shipping-container text-2xl mb-4"></i>
                     <p class="text-[10px] font-bold opacity-80 uppercase tracking-wider">Contenedores</p>
                     <p class="text-3xl font-800" id="dash-total-cont">0</p>
                 </div>
-                <div class="min-w-[160px] flex-1 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <div class="min-w-[160px] flex-1 bg-white p-6 rounded-[32px] border border-slate-100">
                     <i class="ph-bold ph-package text-2xl text-green-500 mb-4"></i>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cajas Totales</p>
                     <p class="text-3xl font-800 text-slate-800" id="dash-total-cajas">0</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-12 gap-3 mb-10">
+            <div class="grid grid-cols-12 gap-3 mb-8">
                 <div class="col-span-8 relative">
-                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar..." 
-                    class="w-full pl-12 pr-4 py-5 rounded-[24px] bg-slate-100/50 border-none focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all outline-none font-semibold text-sm">
+                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar..." class="w-full pl-12 pr-4 py-5 rounded-[24px] bg-slate-100/50 border-none outline-none font-bold text-sm">
                     <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 </div>
                 <div class="col-span-4 relative">
-                    <select id="monthFilter" onchange="app.render()" class="w-full h-full px-4 rounded-[24px] bg-slate-100/50 border-none font-bold text-[10px] uppercase outline-none appearance-none">
+                    <select id="monthFilter" onchange="app.render()" class="w-full h-full px-4 rounded-[24px] bg-slate-100/50 border-none font-800 text-[10px] uppercase outline-none appearance-none">
                         <option value="ALL">MES</option>
                         <option value="0">ENE</option><option value="1">FEB</option><option value="2">MAR</option>
                         <option value="3">ABR</option><option value="4">MAY</option><option value="5">JUN</option>
+                        <option value="6">JUL</option><option value="7">AGO</option><option value="8">SEP</option>
+                        <option value="9">OCT</option><option value="10">NOV</option><option value="11">DIC</option>
                     </select>
-                    <i class="ph-bold ph-funnel absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
             </div>
 
@@ -122,37 +67,25 @@
         </main>
     </div>
 
-    <div id="view-counter" class="work-mode flex-col fixed inset-0 z-[100] bg-white">
-        <header class="p-8 flex justify-between items-center">
-            <button onclick="app.closeCounter()" class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center active:scale-90 transition-all">
+    <div id="view-counter" class="hidden fixed inset-0 z-[100] bg-white flex-col">
+        <header class="p-8 flex justify-between items-center bg-white border-b border-slate-50">
+            <button onclick="app.closeCounter()" class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center active:scale-75 transition-all">
                 <i class="ph-bold ph-caret-left text-slate-900"></i>
             </button>
             <div class="text-center">
-                <h2 class="text-lg font-800 text-slate-900 uppercase tracking-tighter" id="counter-title">Cargando...</h2>
-                <span class="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em]">Registro de Almacén</span>
+                <h2 class="text-lg font-800 text-slate-900 uppercase tracking-tighter" id="counter-title">...</h2>
+                <span class="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em]">Auditoría de Cajas</span>
             </div>
             <div class="w-12 h-12"></div>
         </header>
-
-        <div id="counterList" class="flex-1 overflow-y-auto px-6 space-y-4"></div>
-
-        <div class="p-8 bg-white/80 backdrop-blur-lg border-t border-slate-50">
-            <div class="flex justify-between items-center mb-6 px-2">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase">Total Auditado</p>
-                    <p class="text-2xl font-800 text-slate-900"><span id="totalCount">0</span> <small class="text-xs text-slate-400 font-600">CAJAS</small></p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase">Items SKU</p>
-                    <p class="text-2xl font-800 text-blue-600" id="totalItems">0</p>
-                </div>
+        <div id="counterList" class="flex-1 overflow-y-auto px-6 py-4 space-y-4"></div>
+        <div class="p-8 bg-white border-t border-slate-50">
+            <div class="flex justify-between items-center mb-6">
+                <div><p class="text-[10px] font-bold text-slate-400 uppercase">Auditadas</p><p class="text-2xl font-800 text-slate-900"><span id="totalCount">0</span> <small class="text-xs text-slate-400">CAJAS</small></p></div>
+                <div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Items SKU</p><p class="text-2xl font-800 text-blue-600" id="totalItems">0</p></div>
             </div>
-            <button onclick="app.saveWork()" class="w-full py-6 bg-slate-900 text-white rounded-[30px] font-800 text-xs uppercase tracking-[0.2em] shadow-2xl shadow-slate-300 active:scale-95 transition-all">
-                Guardar Inventario
-            </button>
-            <p class="text-center text-[8px] font-bold text-slate-300 uppercase mt-6 tracking-widest italic">
-                Autorizado por Angelo Nuñez Durand
-            </p>
+            <button onclick="app.saveWork()" class="w-full py-6 bg-slate-900 text-white rounded-[30px] font-800 text-xs uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all">Guardar Conteo</button>
+            <p class="text-center text-[8px] font-bold text-slate-300 uppercase mt-6 tracking-widest italic">Revisión autorizada por J. Angelo Nuñez Durand</p>
         </div>
     </div>
 
@@ -161,17 +94,15 @@
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             activeId: null,
 
-            parseFechaAlmacen: function(str) {
-                if(!str) return new Date();
-                const cleanStr = str.toString().split('T')[0];
-                const parts = cleanStr.includes('/') ? cleanStr.split('/') : cleanStr.split('-');
-                if(parts.length === 3) {
-                    const dia = parseInt(parts[0].length === 4 ? parts[2] : parts[0]);
-                    const mes = parseInt(parts[1]) - 1;
-                    const anio = parseInt(parts[0].length === 4 ? parts[0] : (parts[2].length === 2 ? "20"+parts[2] : parts[2]));
-                    return new Date(anio, mes, dia);
-                }
-                return new Date(str);
+            // RECUPERADO: Lógica de limpieza de fechas para evitar error 1969
+            parseFechaCorrecta: function(raw) {
+                if(!raw) return { label: "S/F", month: -1, year: 2026, sort: 0 };
+                let s = raw.toString().split('T')[0];
+                let p = s.includes('-') ? s.split('-') : s.split('/');
+                let d, m, y;
+                if(p[0].length === 4) { y = parseInt(p[0]); m = parseInt(p[1]) - 1; d = parseInt(p[2]); }
+                else { d = parseInt(p[0]); m = parseInt(p[1]) - 1; y = (p[2].length === 2 ? 2000 + parseInt(p[2]) : parseInt(p[2])); }
+                return { label: `${d}/${m+1}/${y}`, month: m, year: y, sort: new Date(y, m, d).getTime() };
             },
 
             sync: async function() {
@@ -183,68 +114,59 @@
                     this.data = Array.isArray(json) ? json : (json.historial || []);
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { console.error("Offline mode"); }
-                finally { setTimeout(() => icon.classList.remove('animate-spin'), 1000); }
+                } catch(e) { console.log("Modo Offline"); }
+                finally { icon.classList.remove('animate-spin'); }
             },
 
             render: function() {
                 const feed = document.getElementById('feed');
                 const search = document.getElementById('searchInput').value.toLowerCase();
-                const monthFilter = document.getElementById('monthFilter').value;
-                const monthsNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+                const mFilter = document.getElementById('monthFilter').value;
+                const mNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
                 const groups = this.data.reduce((acc, item) => {
-                    const id = item.canal || item.CONTENEDOR || "S/N";
-                    const dateObj = this.parseFechaAlmacen(item.almacen || item.FECHA);
-                    const itemMonth = dateObj.getMonth();
-                    
-                    if (JSON.stringify(item).toLowerCase().includes(search) && (monthFilter === "ALL" || itemMonth.toString() === monthFilter)) {
-                        if (!acc[id]) acc[id] = { id, dateObj, items: [], rawDate: item.almacen || item.FECHA };
+                    const id = (item.canal || item.CONTENEDOR || "S/N").toString().split('T')[0];
+                    const f = this.parseFechaCorrecta(item.almacen || item.FECHA);
+                    if (JSON.stringify(item).toLowerCase().includes(search) && (mFilter === "ALL" || f.month.toString() === mFilter)) {
+                        if (!acc[id]) acc[id] = { id, f, items: [] };
                         acc[id].items.push(item);
                     }
                     return acc;
                 }, {});
 
-                const sorted = Object.values(groups).sort((a,b) => b.dateObj - a.dateObj);
+                const sorted = Object.values(groups).sort((a,b) => b.f.sort - a.f.sort);
                 
+                // RECUPERADO: Contadores de Dashboard vinculados
                 document.getElementById('dash-total-cont').innerText = sorted.length;
-                document.getElementById('dash-total-cajas').innerText = sorted.reduce((sum, g) => 
-                    sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
+                document.getElementById('dash-total-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
 
                 let html = '';
-                let lastMonthKey = '';
+                let lastM = '';
 
                 sorted.forEach(g => {
-                    const mKey = `${monthsNames[g.dateObj.getMonth()]} ${g.dateObj.getFullYear()}`;
-                    if (mKey !== lastMonthKey) {
+                    const mKey = `${mNames[g.f.month]} ${g.f.year}`;
+                    if (mKey !== lastM) {
                         html += `<div class="month-label">${mKey}</div>`;
-                        lastMonthKey = mKey;
+                        lastM = mKey;
                     }
 
                     const tCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
                     
                     html += `
                     <div class="modern-card p-6">
-                        <div class="flex justify-between items-start mb-8">
+                        <div class="flex justify-between items-start mb-6">
                             <div>
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="w-2 h-2 rounded-full ${tCajas > 0 ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}"></span>
-                                    <p class="text-[9px] font-800 text-slate-400 uppercase tracking-widest">${g.rawDate.toString().split('T')[0]}</p>
-                                </div>
-                                <h3 class="text-xl font-800 text-slate-800 tracking-tighter uppercase">${g.id}</h3>
+                                <p class="text-[9px] font-800 text-slate-400 uppercase tracking-widest mb-1 italic">ALMACÉN: ${g.f.label}</p>
+                                <h3 class="text-xl font-800 text-slate-800 uppercase tracking-tighter">Contenedor ${g.id}</h3>
                             </div>
-                            <div class="bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-                                <span class="text-[10px] font-800 text-slate-800">${tCajas} <span class="text-slate-400">CAJAS</span></span>
-                            </div>
+                            <div class="bg-blue-50 px-3 py-1 rounded-xl"><span class="text-[10px] font-800 text-blue-600">${tCajas} <span class="opacity-50">CAJAS</span></span></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <button onclick="app.startWork('${g.id}')" class="btn-action bg-blue-600 text-white border-none shadow-lg shadow-blue-100 active:scale-95">
-                                <i class="ph-fill ph-pencil-simple-line text-xl"></i>
-                                Audit
+                            <button onclick="app.startWork('${g.id}')" class="flex flex-col items-center p-5 bg-slate-900 text-white rounded-[24px] text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all">
+                                <i class="ph-fill ${tCajas > 0 ? 'ph-pencil-simple' : 'ph-play'} text-xl mb-1"></i>${tCajas > 0 ? 'Corregir' : 'Empezar'}
                             </button>
-                            <button onclick="app.generatePDF('${g.id}')" class="btn-action bg-white text-slate-600 hover:bg-slate-50">
-                                <i class="ph-bold ph-file-pdf text-xl text-slate-400"></i>
-                                PDF
+                            <button class="flex flex-col items-center p-5 bg-white text-slate-400 border border-slate-100 rounded-[24px] text-[10px] font-bold uppercase tracking-widest" onclick="app.generatePDF('${g.id}')">
+                                <i class="ph-bold ph-file-pdf text-xl mb-1"></i>Reporte
                             </button>
                         </div>
                     </div>`;
@@ -254,31 +176,32 @@
 
             startWork: function(id) {
                 this.activeId = id;
-                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == id);
+                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
                 document.getElementById('counter-title').innerText = id;
                 document.getElementById('totalItems').innerText = filtrados.length;
                 this.updateTotalCount(filtrados);
 
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
-                    <div class="p-5 rounded-[28px] bg-slate-50 border border-slate-100 flex items-center justify-between shadow-sm">
+                    <div class="p-5 rounded-[28px] bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <div class="flex-1 pr-4">
-                            <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px] font-800 mb-1">${item.codigo || 'SKU-00'}</span>
-                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || 'Sin descripción'}</p>
+                            <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px] font-800 mb-1">${item.codigo || 'S/C'}</span>
+                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
                         </div>
                         <div class="flex items-center gap-3 bg-white p-2 rounded-[20px] shadow-sm border border-slate-100">
-                            <button class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 active:bg-red-50 active:text-red-500 transition-colors" onclick="app.adjust(${idx}, -1)"><i class="ph-bold ph-minus"></i></button>
+                            <button class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400" onclick="app.adjust('${id}', ${idx}, -1)">-</button>
                             <span class="w-8 text-center font-800 text-lg text-slate-800" id="val-${idx}">${item.cantidad || 0}</span>
-                            <button class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-lg shadow-blue-100 active:scale-90" onclick="app.adjust(${idx}, 1)"><i class="ph-bold ph-plus"></i></button>
+                            <button class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white" onclick="app.adjust('${id}', ${idx}, 1)">+</button>
                         </div>
                     </div>`).join('');
                 document.getElementById('view-counter').classList.add('modal-active');
             },
 
-            adjust: function(idx, val) {
+            // RECUPERADO: Lógica de ajuste de cantidad persistente
+            adjust: function(id, idx, val) {
                 const el = document.getElementById(`val-${idx}`);
-                let current = Math.max(0, parseInt(el.innerText) + val);
+                let current = Math.max(0, (parseInt(el.innerText) || 0) + val);
                 el.innerText = current;
-                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR) == this.activeId);
+                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
                 filtrados[idx].cantidad = current;
                 this.updateTotalCount(filtrados);
             },
@@ -293,14 +216,12 @@
                 this.closeCounter();
             },
 
-            closeCounter: function() {
+            closeCounter: function() { 
                 document.getElementById('view-counter').classList.remove('modal-active');
-                document.getElementById('view-counter').style.display = 'none';
+                setTimeout(() => { document.getElementById('view-counter').classList.add('hidden'); }, 300);
             },
 
-            generatePDF: function(id) {
-                alert(`Exportando reporte: ${id}\nRevisión autorizada por J. Angelo Nuñez Durand`);
-            }
+            generatePDF: function(id) { alert(`Generando Reporte: ${id}\nAutorizado por: Angelo Nuñez Durand`); }
         };
 
         window.onload = () => app.render();
