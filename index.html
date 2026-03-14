@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite Pro</title>
+    <title>Twins Elite - Logística Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; -webkit-tap-highlight-color: transparent; }
-        .premium-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 32px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04); margin-bottom: 16px; }
-        .btn-action { border-radius: 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 14px 8px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
-        .btn-action:active { transform: scale(0.95); background-color: #f1f5f9; }
-        .month-header { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #94a3b8; margin: 24px 8px 12px 8px; display: flex; align-items: center; gap: 10px; }
-        .month-header::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+        
+        /* SECCIONES POR MES */
+        .month-block { margin-bottom: 40px; }
+        .month-divider { 
+            position: sticky; top: 88px; z-index: 40;
+            background: rgba(248, 250, 252, 0.9); backdrop-filter: blur(8px);
+            padding: 12px 4px; font-size: 11px; font-weight: 900; 
+            color: #64748b; letter-spacing: 0.2em; text-transform: uppercase;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .month-divider::after { content: ""; flex: 1; height: 1px; background: #E2E8F0; }
+
+        .premium-card { background: white; border-radius: 28px; border: 1px solid #F1F5F9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); margin-bottom: 16px; transition: transform 0.2s; }
+        .btn-tool { border-radius: 16px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 4px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .btn-tool:active { transform: scale(0.96); background: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -21,12 +31,10 @@
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-[800] tracking-tighter italic text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo Nuñez Durand</p>
+                <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">J. Angelo Nuñez Durand</p>
             </div>
-            <div class="flex flex-col items-end">
-                <span id="dash-month" class="text-[10px] font-black text-blue-600 uppercase">MARZO 2026</span>
-            </div>
+            <i class="ph-bold ph-calendar-check text-2xl text-blue-600"></i>
         </div>
     </header>
 
@@ -34,135 +42,153 @@
         
         <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Cajas Totales</p>
-                <h2 id="total-boxes" class="text-3xl font-black text-slate-800">0</h2>
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-tighter">Cajas Procesadas</p>
+                <h2 id="dash-boxes" class="text-3xl font-black text-slate-800">0</h2>
             </div>
             <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Items Únicos</p>
-                <h2 id="total-skus" class="text-3xl font-black text-slate-800">0</h2>
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-tighter">Variedad SKUs</p>
+                <h2 id="dash-skus" class="text-3xl font-black text-slate-800">0</h2>
             </div>
         </div>
 
-        <div class="mb-4">
-            <input type="text" id="search-input" oninput="renderView()" placeholder="Buscar en historial..." 
-                class="w-full bg-white border border-slate-200 rounded-2xl py-5 px-6 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
+        <div class="mb-8">
+            <div class="relative">
+                <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                <input type="text" id="search-box" oninput="processAndRender()" placeholder="Buscar contenedor o SKU..." 
+                    class="w-full bg-white border border-slate-200 rounded-2xl py-5 pl-14 pr-6 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
+            </div>
         </div>
 
-        <div id="main-content"></div>
+        <div id="history-container"></div>
 
     </main>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
-        let master_data = JSON.parse(localStorage.getItem('twins_cache')) || [];
+        const WEB_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
+        const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-        const MONTH_NAMES = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+        // Carga inicial desde memoria local para velocidad instantánea
+        let rawData = JSON.parse(localStorage.getItem('twins_data')) || [];
 
-        async function syncData() {
+        async function fetchInvisible() {
             try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                const freshData = data.historial || data;
-                if (freshData.length > 0) {
-                    master_data = freshData;
-                    localStorage.setItem('twins_cache', JSON.stringify(master_data));
-                    renderView();
-                }
-            } catch (e) { console.log("Silent background sync failed"); }
+                const r = await fetch(WEB_URL);
+                const d = await r.json();
+                rawData = d.historial || d;
+                localStorage.setItem('twins_data', JSON.stringify(rawData));
+                processAndRender();
+            } catch(e) { console.log("Sync background error"); }
         }
 
-        function renderView() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const container = document.getElementById('main-content');
+        function processAndRender() {
+            const query = document.getElementById('search-box').value.toLowerCase();
+            const container = document.getElementById('history-container');
             
-            // 1. Agrupar por Operación primero para sumar metas
-            const operations = master_data.reduce((acc, curr) => {
-                if(!curr.operacion) return acc;
+            // 1. Agrupar items por Contenedor (Operación)
+            const groupedOps = rawData.reduce((acc, item) => {
+                if(!item.operacion) return acc;
                 
-                const matchesSearch = curr.operacion.toLowerCase().includes(query) || 
-                                     (curr.sku && curr.sku.toLowerCase().includes(query));
+                const matchesSearch = item.operacion.toLowerCase().includes(query) || 
+                                     (item.sku && item.sku.toLowerCase().includes(query));
                 
                 if(matchesSearch) {
-                    if(!acc[curr.operacion]) {
-                        // Extraer mes (ej: 15/03/26 -> 03)
-                        const mMatch = curr.operacion.match(/\/(\d{2})\//);
-                        const monthIdx = mMatch ? parseInt(mMatch[1]) - 1 : 2; // Default Marzo
-                        acc[curr.operacion] = { ...curr, items: [], totalBoxes: 0, monthIdx };
+                    if(!acc[item.operacion]) {
+                        // Extraer fecha del nombre (ej: "CONT 14/03/26")
+                        const dateMatch = item.operacion.match(/(\d{2})\/(\d{2})\/(\d{2})/);
+                        const day = dateMatch ? dateMatch[1] : "01";
+                        const month = dateMatch ? parseInt(dateMatch[2]) - 1 : 2; // Default Marzo
+                        const year = dateMatch ? "20" + dateMatch[3] : "2026";
+                        
+                        acc[item.operacion] = { 
+                            ...item, 
+                            items: [], 
+                            totalBoxes: 0, 
+                            mIdx: month,
+                            y: year,
+                            sortKey: `${year}${dateMatch ? dateMatch[2] : '03'}${day}`
+                        };
                     }
-                    acc[curr.operacion].items.push(curr);
-                    acc[curr.operacion].totalBoxes += (Number(curr.meta) || 0);
+                    acc[item.operacion].items.push(item);
+                    acc[item.operacion].totalBoxes += (Number(item.meta) || 0);
                 }
                 return acc;
             }, {});
 
-            // 2. Agrupar por Meses para el diseño
-            const byMonth = Object.values(operations).reduce((acc, op) => {
-                if(!acc[op.monthIdx]) acc[op.monthIdx] = [];
-                acc[op.monthIdx].push(op);
+            // 2. Agrupar Operaciones por Mes
+            const byMonth = Object.values(groupedOps).reduce((acc, op) => {
+                const key = `${op.mIdx}-${op.y}`;
+                if(!acc[key]) acc[key] = { label: `${MESES[op.mIdx]} ${op.y}`, ops: [], m: op.mIdx };
+                acc[key].ops.push(op);
                 return acc;
             }, {});
 
-            // 3. Renderizar
-            let html = '';
-            let globalBoxes = 0;
-            let globalSkus = 0;
+            // 3. Renderizado Ordenado (Reciente primero)
+            let finalHtml = '';
+            let totalB = 0, totalS = 0;
 
-            // Ordenar meses descendente
-            const sortedMonths = Object.keys(byMonth).sort((a,b) => b - a);
+            const sortedKeys = Object.keys(byMonth).sort((a,b) => {
+                const [mA, yA] = a.split('-').map(Number);
+                const [mB, yB] = b.split('-').map(Number);
+                return yB !== yA ? yB - yA : mB - mA;
+            });
 
-            sortedMonths.forEach(mIdx => {
-                html += `<div class="month-header">${MONTH_NAMES[mIdx]}</div>`;
+            sortedKeys.forEach(key => {
+                finalHtml += `<div class="month-divider">${byMonth[key].label}</div><div class="month-block">`;
                 
-                // Ordenar contenedores dentro del mes (recientes primero)
-                byMonth[mIdx].sort((a,b) => b.operacion.localeCompare(a.operacion)).forEach(op => {
-                    globalBoxes += op.totalBoxes;
-                    globalSkus += op.items.length;
-                    
-                    html += `
+                byMonth[key].ops.sort((a,b) => b.sortKey.localeCompare(a.sortKey)).forEach(op => {
+                    totalB += op.totalBoxes;
+                    totalS += op.items.length;
+                    finalHtml += `
                         <div class="premium-card p-7">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'}">
-                                        ● ${op.estado || 'PENDIENTE'}
-                                    </span>
-                                    <h3 class="text-2xl font-[800] text-slate-800 tracking-tighter mt-1">${op.operacion}</h3>
+                                    <p class="text-[9px] font-black uppercase tracking-[0.2em] ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'} mb-1">
+                                        ● ${op.estado || 'EN PROCESO'}
+                                    </p>
+                                    <h3 class="text-2xl font-[800] text-slate-800 tracking-tighter leading-none">${op.operacion}</h3>
                                 </div>
-                                <span class="bg-slate-900 text-white text-[8px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest">Canal ${op.canal || 'S/C'}</span>
+                                <span class="bg-slate-100 text-slate-500 text-[8px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest border border-slate-200">
+                                    Canal ${op.canal || 'S/C'}
+                                </span>
                             </div>
 
                             <div class="grid grid-cols-3 gap-3">
-                                <div onclick="handleEdit('${op.operacion}')" class="btn-action bg-blue-50 text-blue-600 border border-blue-100">
+                                <div onclick="btnAction('CORREGIR', '${op.operacion}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100/50 hover:bg-blue-600 hover:text-white">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>CORREGIR
                                 </div>
-                                <div onclick="handleView('${op.operacion}')" class="btn-action bg-slate-50 text-slate-600 border border-slate-100">
+                                <div onclick="btnAction('LISTA', '${op.operacion}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100/50 hover:bg-slate-900 hover:text-white">
                                     <i class="ph-bold ph-list-bullets text-lg"></i>LISTA
                                 </div>
-                                <div onclick="handlePDF('${op.operacion}')" class="btn-action bg-red-50 text-red-600 border border-red-100">
+                                <div onclick="btnAction('PDF', '${op.operacion}')" class="btn-tool bg-red-50 text-red-600 border-red-100/50 hover:bg-red-600 hover:text-white">
                                     <i class="ph-bold ph-file-pdf text-lg"></i>PDF
                                 </div>
                             </div>
                         </div>`;
                 });
+                finalHtml += `</div>`;
             });
 
-            container.innerHTML = html || `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">Sin registros</div>`;
-            document.getElementById('total-boxes').innerText = globalBoxes.toLocaleString();
-            document.getElementById('total-skus').innerText = globalSkus.toLocaleString();
+            container.innerHTML = finalHtml || `<div class="py-20 text-center opacity-30 font-black uppercase text-xs tracking-[0.3em]">Sin registros</div>`;
+            document.getElementById('dash-boxes').innerText = totalB.toLocaleString();
+            document.getElementById('dash-skus').innerText = totalS.toLocaleString();
         }
 
-        // FUNCIONES DE BOTONES
-        function handleEdit(id) { console.log("Editando: " + id); }
-        function handleView(id) { console.log("Viendo: " + id); }
-        function handlePDF(id) { 
-            const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-            alert("Generando PDF para " + id + "\n\n" + footer); 
+        // CONTROLADOR DE ACCIONES
+        function btnAction(type, id) {
+            if(type === 'PDF') {
+                const sign = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                alert(`Generando reporte para: ${id}\n\n${sign}`);
+            } else if(type === 'CORREGIR') {
+                alert(`Abriendo editor para: ${id}`);
+            } else {
+                alert(`Mostrando lista de: ${id}`);
+            }
         }
 
-        // Ejecución inicial rápida (desde memoria)
-        renderView();
-        // Sincronización invisible (segundo plano)
-        syncData();
-        setInterval(syncData, 60000);
+        // Inicio
+        processAndRender();
+        fetchInvisible();
+        setInterval(fetchInvisible, 60000);
     </script>
 </body>
 </html>
