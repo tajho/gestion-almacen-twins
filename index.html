@@ -1,274 +1,279 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Twins Elite - Gestión de Inventario</title>
-  <style>
-    :root {
-      --primary: #002d5a;
-      --accent: #0056b3;
-      --bg: #121212;
-      --card-bg: #ffffff;
-      --text-dark: #333;
-    }
-    
-    body { 
-      font-family: 'Segoe UI', Roboto, sans-serif; 
-      background-color: var(--bg); 
-      color: #eee; 
-      margin: 0; 
-      padding: 0; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Twins Elite | Smart Logistics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #F1F5F9; 
+            color: #0F172A; 
+        }
 
-    /* Cabecera y Buscador Sticky */
-    .header-container {
-      background: #1f1f1f;
-      padding: 15px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
+        /* DISEÑO DE CABECERA ORIGINAL */
+        .glass-nav { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #E2E8F0; 
+        }
 
-    .search-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      max-width: 900px;
-      margin: auto;
-    }
+        /* DISEÑO DE TARJETAS ORIGINAL */
+        .card-container { 
+            background: white; 
+            border-radius: 24px; 
+            border: 1px solid #E2E8F0; 
+            transition: all 0.3s ease; 
+            overflow: hidden;
+        }
+        .card-container:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
+        }
 
-    input, select {
-      background: #2d2d2d;
-      color: white;
-      border: 1px solid #444;
-      padding: 12px;
-      border-radius: 8px;
-      outline: none;
-      flex: 1;
-      min-width: 150px;
-    }
+        /* MODAL CON DISEÑO DE APP (NUEVO Y SÓLIDO) */
+        .modal-overlay { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(4px); 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 100; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+        .modal-content { 
+            background: white; 
+            border-radius: 28px; 
+            width: 100%; 
+            max-width: 500px; 
+            max-height: 80vh; 
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out; 
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
+        .modal-body { overflow-y: auto; padding: 24px; flex-grow: 1; }
 
-    button:hover { background: #004494; }
-
-    /* Contenedor de Tarjetas */
-    .main-content {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 0 15px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    /* Estilo de la Tarjeta de Contenedor */
-    .card {
-      background: var(--card-bg);
-      color: var(--text-dark);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      border-left: 10px solid var(--primary);
-      transition: transform 0.2s;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card:hover { transform: translateY(-5px); }
-
-    .card-body { padding: 15px; flex-grow: 1; }
-
-    .card-title {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 10px;
-      border-bottom: 2px solid #f0f0f0;
-      padding-bottom: 5px;
-      text-transform: uppercase;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.95em;
-    }
-
-    .label { font-weight: bold; color: #666; }
-    
-    /* Resaltado de Fecha Exacta */
-    .date-badge {
-      background: #fff3cd;
-      color: #856404;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-      border: 1px solid #ffeeba;
-    }
-
-    .vendedor-tag {
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    .footer-auth {
-      background: #f8f9fa;
-      padding: 10px;
-      font-size: 0.75em;
-      color: #777;
-      border-top: 1px solid #eee;
-      text-align: center;
-      font-style: italic;
-    }
-
-    .status-bar {
-      text-align: center;
-      font-size: 0.8em;
-      color: #aaa;
-      margin-top: 5px;
-    }
-
-    /* Animación de carga */
-    .loading-shimmer {
-      text-align: center;
-      padding: 50px;
-      font-size: 1.2em;
-      color: var(--accent);
-    }
-  </style>
+        /* BOTONES ORIGINALES */
+        .btn-action { 
+            @apply flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border border-slate-100 bg-white transition-all active:scale-95 text-[10px] font-bold uppercase; 
+        }
+        .btn-action i { @apply text-xl; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+    </style>
 </head>
-<body>
+<body class="pb-24">
 
-  <div class="header-container">
-    <div class="search-group">
-      <select id="mesFiltro" onchange="sincronizar()">
-        <option value="1">Enero</option>
-        <option value="2">Febrero</option>
-        <option value="3">Marzo</option>
-        <option value="4">Abril</option>
-        <option value="5">Mayo</option>
-        <option value="6">Junio</option>
-        <option value="7">Julio</option>
-        <option value="8">Agosto</option>
-        <option value="9">Septiembre</option>
-        <option value="10">Octubre</option>
-        <option value="11">Noviembre</option>
-        <option value="12">Diciembre</option>
-      </select>
-      <input type="text" id="buscador" placeholder="Buscar cliente o producto..." onkeyup="filtrarLocal()">
-      <button onclick="sincronizar()">Actualizar</button>
+    <div id="modalLista" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content shadow-2xl" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-800 tracking-tighter uppercase text-blue-600" id="modalTitle">Detalle</h3>
+                    <p id="modalCount" class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic"></p>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div id="modalBody" class="modal-body space-y-3">
+                </div>
+            <div class="p-6 border-t border-slate-50">
+                <button onclick="closeModal()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg">Entendido</button>
+            </div>
+        </div>
     </div>
-    <div id="status" class="status-bar">Listo</div>
-  </div>
 
-  <div class="main-content">
-    <div id="loading" class="loading-shimmer" style="display:none;">Sincronizando con Twins Elite...</div>
-    <div id="contenedorLista" class="grid"></div>
-  </div>
-
-  <script>
-    let cacheDatos = [];
-    const API_URL = "https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec";
-
-    // Al iniciar, cargar mes actual
-    window.onload = () => {
-      const fechaActual = new Date();
-      document.getElementById('mesFiltro').value = fechaActual.getMonth() + 1;
-      sincronizar();
-    };
-
-    function sincronizar() {
-      const mes = document.getElementById('mesFiltro').value;
-      const anio = 2026; // Año configurado
-      const status = document.getElementById('status');
-      const loader = document.getElementById('loading');
-      const lista = document.getElementById('contenedorLista');
-
-      status.innerText = "Sincronizando invisiblemente...";
-      loader.style.display = "block";
-      lista.innerHTML = "";
-
-      // Conexión directa con Google Apps Script
-      google.script.run
-        .withSuccessHandler(datos => {
-          cacheDatos = datos;
-          renderizarTarjetas(datos);
-          loader.style.display = "none";
-          status.innerText = "Sincronización completada: " + datos.length + " registros.";
-        })
-        .withFailureHandler(err => {
-          status.innerText = "Error de conexión.";
-          loader.style.display = "none";
-        })
-        .obtenerDatosCorregidos(mes, anio);
-    }
-
-    function renderizarTarjetas(registros) {
-      const lista = document.getElementById('contenedorLista');
-      lista.innerHTML = "";
-
-      if (registros.length === 0) {
-        lista.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No hay datos para este periodo.</p>";
-        return;
-      }
-
-      registros.forEach(item => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'card';
-        tarjeta.innerHTML = `
-          <div class="card-body">
-            <div class="card-title">${item.CLIENTE || 'Sin Identificar'}</div>
-            <div class="info-row">
-              <span class="label">Fecha Exacta:</span>
-              <span class="date-badge">${item.FECHA}</span>
+    <header class="glass-nav sticky top-0 z-50 p-5">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
             </div>
-            <div class="info-row">
-              <span class="label">Producto:</span>
-              <span>${item.PRODUCTO || '---'}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Cantidad:</span>
-              <span style="font-weight:bold;">${item.CANTIDAD || '0'}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Vendedor:</span>
-              <span class="vendedor-tag">${item.VENDEDOR || 'Asignado'}</span>
-            </div>
-          </div>
-          <div class="footer-auth">
-            Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.
-          </div>
-        `;
-        lista.appendChild(tarjeta);
-      });
-    }
+            <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-800" id="syncStatus">CONECTADO</div>
+        </div>
+    </header>
 
-    function filtrarLocal() {
-      const query = document.getElementById('buscador').value.toLowerCase();
-      const filtrados = cacheDatos.filter(d => {
-        const nombre = (d.CLIENTE || "").toLowerCase();
-        const prod = (d.PRODUCTO || "").toLowerCase();
-        return nombre.includes(query) || prod.includes(query);
-      });
-      renderizarTarjetas(filtrados);
-    }
-  </script>
+    <main class="max-w-xl mx-auto p-5">
+        
+        <div class="grid grid-cols-1 gap-3 mb-8">
+            <div class="relative">
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar código o descripción..." 
+                class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-sm transition-all">
+                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+            </div>
+            
+            <div class="relative">
+                <select id="monthFilter" onchange="app.render()" class="w-full p-4 pl-12 rounded-2xl bg-white border border-slate-200 shadow-sm font-bold text-xs uppercase text-slate-600 outline-none appearance-none">
+                    <option value="ALL">TODOS LOS MESES</option>
+                    <option value="0">ENERO</option>
+                    <option value="1">FEBRERO</option>
+                    <option value="2">MARZO</option>
+                    <option value="3">ABRIL</option>
+                    <option value="4">MAYO</option>
+                    <option value="5">JUNIO</option>
+                    <option value="6">JULIO</option>
+                    <option value="7">AGOSTO</option>
+                    <option value="8">SEPTIEMBRE</option>
+                    <option value="9">OCTUBRE</option>
+                    <option value="10">NOVIEMBRE</option>
+                    <option value="11">DICIEMBRE</option>
+                </select>
+                <i class="ph-bold ph-calendar-blank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+            </div>
+        </div>
+
+        <div id="feed" class="space-y-6">
+            </div>
+    </main>
+
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-nav rounded-[30px] p-2 flex justify-around items-center shadow-2xl z-50 border border-white">
+        <button class="p-4 text-blue-600 transition-transform active:scale-90"><i class="ph-bold ph-house-line text-2xl"></i></button>
+        <button onclick="app.sync()" class="p-4 text-slate-400 transition-transform active:scale-90"><i class="ph-bold ph-arrows-clockwise text-2xl"></i></button>
+        <button class="p-4 text-slate-400 transition-transform active:scale-90"><i class="ph-bold ph-user-circle text-2xl"></i></button>
+    </nav>
+
+    <script>
+        const API_URL = "TU_URL_DE_APPS_SCRIPT";
+
+        const app = {
+            data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
+
+            // Función para limpiar la fecha según tu requerimiento exacto
+            formatLabelDate: function(dateStr) {
+                if (!dateStr || dateStr === "SIN FECHA") return "FECHA CONTENEDOR: --/--/----";
+                const d = new Date(dateStr);
+                if (isNaN(d)) return `FECHA CONTENEDOR: ${dateStr}`;
+                const dia = String(d.getDate()).padStart(2, '0');
+                const mes = String(d.getMonth() + 1).padStart(2, '0');
+                const anio = d.getFullYear();
+                return `FECHA CONTENEDOR: ${dia}/${mes}/${anio}`;
+            },
+
+            sync: async function() {
+                const tag = document.getElementById('syncStatus');
+                tag.innerText = "Sincronizando...";
+                try {
+                    const res = await fetch(API_URL);
+                    const json = await res.json();
+                    this.data = json.historial || json;
+                    localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
+                    this.render();
+                    tag.innerText = "CONECTADO";
+                } catch(e) {
+                    tag.innerText = "MODO LOCAL";
+                }
+            },
+
+            render: function() {
+                const feed = document.getElementById('feed');
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const month = document.getElementById('monthFilter').value;
+
+                // AGRUPACIÓN POR LA SECCIÓN "ALMACEN"
+                const groups = this.data.reduce((acc, item) => {
+                    const canal = item.canal || "S/N";
+                    const fechaAlmacen = new Date(item.almacen);
+                    
+                    const cumpleBusqueda = (item.codigo || "").toLowerCase().includes(search) || (item.descripcion || "").toLowerCase().includes(search);
+                    const cumpleMes = month === "ALL" || (!isNaN(fechaAlmacen) && fechaAlmacen.getMonth().toString() === month);
+
+                    if (cumpleBusqueda && cumpleMes) {
+                        if (!acc[canal]) {
+                            acc[canal] = { id: canal, fecha: item.almacen, items: [] };
+                        }
+                        acc[canal].items.push(item);
+                    }
+                    return acc;
+                }, {});
+
+                let html = '';
+                const sorted = Object.values(groups).sort((a, b) => b.id - a.id);
+
+                sorted.forEach(g => {
+                    html += `
+                    <div class="card-container shadow-sm">
+                        <div class="h-1.5 w-full bg-blue-600"></div>
+                        <div class="p-6">
+                            <div class="mb-5">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">
+                                    ${this.formatLabelDate(g.fecha)}
+                                </p>
+                                <h3 class="text-2xl font-800 text-slate-800 tracking-tighter uppercase leading-none">
+                                    Contenedor ${g.id}
+                                </h3>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <button onclick="app.action('EDIT', '${g.id}')" class="btn-action border-blue-50 text-blue-600 hover:bg-blue-50">
+                                    <i class="ph-bold ph-pencil-simple-line"></i>CORREGIR
+                                </button>
+                                <button onclick="app.action('LIST', '${g.id}')" class="btn-action border-slate-50 text-slate-700 hover:bg-slate-50">
+                                    <i class="ph-bold ph-list-bullets"></i>VER LISTA
+                                </button>
+                                <button onclick="app.action('PDF', '${g.id}')" class="btn-action border-red-50 text-red-500 hover:bg-red-50">
+                                    <i class="ph-bold ph-file-pdf"></i>PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-widest">No se encontraron registros</div>';
+            },
+
+            action: function(type, id) {
+                const filtrados = this.data.filter(i => String(i.canal) === String(id));
+
+                if (type === 'LIST') {
+                    document.getElementById('modalTitle').innerText = `Contenedor ${id}`;
+                    document.getElementById('modalCount').innerText = `${filtrados.length} productos registrados`;
+                    
+                    let content = '';
+                    filtrados.forEach(item => {
+                        content += `
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-blue-600">
+                                <i class="ph-bold ph-barcode text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] font-black text-blue-600 leading-none mb-1">${item.codigo}</p>
+                                <p class="text-xs font-bold text-slate-700 uppercase leading-tight">${item.descripcion}</p>
+                            </div>
+                        </div>`;
+                    });
+                    document.getElementById('modalBody').innerHTML = content;
+                    document.getElementById('modalLista').style.display = 'flex';
+                }
+
+                if (type === 'PDF') {
+                    const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                    alert(`GENERANDO REPORTE PDF\n\nContenedor: ${id}\n\n${footer}`);
+                }
+
+                if (type === 'EDIT') {
+                    alert(`Iniciando corrección para el Contenedor ${id}...`);
+                }
+            }
+        };
+
+        function closeModal() {
+            document.getElementById('modalLista').style.display = 'none';
+        }
+
+        // Inicio
+        app.render();
+        app.sync();
+    </script>
 </body>
 </html>
