@@ -3,82 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite | Control Logístico</title>
+    <title>Twins Elite | Control Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        .month-divider { @apply sticky top-[100px] z-40 bg-slate-900 py-3 px-6 my-4 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg; }
+        .glass-header { @apply sticky top-0 z-50 p-6 bg-white/90 backdrop-blur-md border-b border-slate-100; }
         .card-container { @apply bg-white rounded-[28px] border border-slate-200 p-6 mb-4 shadow-sm; }
-        .item-row { @apply flex justify-between items-center py-3 border-b border-slate-50 last:border-0; }
+        .progress-bar { @apply h-2 w-full bg-slate-100 rounded-full overflow-hidden; }
+        .progress-fill { @apply h-full bg-blue-600 transition-all duration-500; }
+        .btn-counter { @apply w-10 h-10 flex items-center justify-center rounded-xl font-bold text-lg active:scale-90 transition-transform; }
     </style>
 </head>
 <body class="antialiased">
 
-    <header class="glass-header sticky top-0 z-50 p-6 bg-white/90 backdrop-blur-md border-b border-slate-100">
-        <div class="max-w-xl mx-auto">
-            <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">J. Angelo Nuñez Durand</p>
+    <header class="glass-header">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">Gestión de Inventario</p>
+            </div>
+            <button onclick="location.reload()" class="p-3 bg-slate-50 rounded-2xl text-slate-400 hover:text-blue-600">
+                <i class="ph-bold ph-arrows-clockwise text-xl"></i>
+            </button>
         </div>
     </header>
 
     <main class="max-w-xl mx-auto p-6">
-        <div class="space-y-3 mb-8">
-            <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o código..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
-            <select id="monthFilter" onchange="app.render()" class="w-full p-5 px-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
-                <option value="ALL">TODOS LOS COMPLETADOS</option>
-                <option value="0">ENERO</option><option value="1">FEBRERO</option><option value="2">MARZO</option>
-                <option value="3">ABRIL</option><option value="4">MAYO</option><option value="5">JUNIO</option>
-                <option value="6">JULIO</option><option value="7">AGOSTO</option><option value="8">SEPTIEMBRE</option>
-                <option value="9">OCTUBRE</option><option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
-            </select>
+        
+        <div id="view-list">
+            <div class="space-y-3 mb-8">
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o código..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                <select id="monthFilter" onchange="app.render()" class="w-full p-5 px-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
+                    <option value="ALL">TODOS LOS COMPLETADOS</option>
+                    <option value="0">ENERO</option><option value="1">FEBRERO</option><option value="2">MARZO</option>
+                    <option value="3">ABRIL</option><option value="4">MAYO</option><option value="5">JUNIO</option>
+                    <option value="6">JULIO</option><option value="7">AGOSTO</option><option value="8">SEPTIEMBRE</option>
+                    <option value="9">OCTUBRE</option><option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
+                </select>
+            </div>
+            <div id="feed" class="space-y-4 pb-20"></div>
         </div>
-        <div id="feed" class="space-y-4 pb-20"></div>
+
+        <div id="view-control" class="hidden">
+            <button onclick="app.closeControl()" class="mb-6 flex items-center text-slate-400 font-bold text-xs uppercase tracking-widest">
+                <i class="ph-bold ph-caret-left mr-2"></i> Volver al listado
+            </button>
+            
+            <div class="card-container border-blue-100 bg-blue-50/30">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-[10px] font-900 text-blue-600 uppercase tracking-widest">Progreso General</p>
+                        <h2 id="control-title" class="text-2xl font-900 text-slate-900 uppercase">CONTENEDOR</h2>
+                    </div>
+                    <p id="total-percent" class="text-2xl font-900 text-blue-600">0%</p>
+                </div>
+                <div class="progress-bar mb-2"><div id="total-fill" class="progress-fill" style="width: 0%"></div></div>
+                <p id="total-count" class="text-[10px] font-bold text-slate-400 uppercase">0 / 0 CAJAS CONTADAS</p>
+            </div>
+
+            <div id="items-control" class="space-y-4 mb-24">
+                </div>
+
+            <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-lg border-t border-slate-100 z-50">
+                <button onclick="app.finalizarDescarga()" class="w-full max-w-xl mx-auto py-5 bg-green-600 text-white rounded-[24px] font-black uppercase tracking-widest shadow-xl shadow-green-200 flex items-center justify-center">
+                    <i class="ph-bold ph-check-circle text-xl mr-2"></i> Finalizar y Guardar
+                </button>
+            </div>
+        </div>
     </main>
 
     <script>
         const app = {
             data: [],
-            url: "https://script.google.com/macros/s/AKfycbwyaW2P0aK17COlZtYElUCj_8sgiZ3j9cvjXbhbjEWpAA3e-puqRwlTXlbAj-e_9D8H/exec",
-
-            // MEJORA CRÍTICA: Ahora lee la fecha sin importar el formato del Excel
-            parseFecha: function(str) {
-                if(!str || str === "" || str === "S/N") return { label: "PENDIENTE", sort: 9999999999999, m: "PENDIENTE", y: "" };
-                
-                // Intentamos crear el objeto fecha
-                let f = new Date(str);
-                
-                // Si la fecha es inválida por el formato, intentamos limpiarla
-                if (isNaN(f.getTime())) {
-                    // Si viene como DD/MM/YYYY
-                    const partes = str.split('/');
-                    if(partes.length === 3) {
-                        f = new Date(partes[2], partes[1] - 1, partes[0]);
-                    }
-                }
-
-                if(isNaN(f.getTime())) return { label: "FECHA INVÁLIDA", sort: 8888888888888, m: "PENDIENTE", y: "" };
-
-                return { 
-                    label: `${f.getDate().toString().padStart(2, '0')}/${(f.getMonth()+1).toString().padStart(2, '0')}/${f.getFullYear()}`, 
-                    sort: f.getTime(), 
-                    m: f.getMonth().toString(), 
-                    y: f.getFullYear() 
-                };
-            },
+            currentCont: null,
+            conteoTemp: {}, // Aquí guardamos lo que vas contando
+            url: "https://script.google.com/macros/s/AKfycbwwbzb30jZFQlcaFjBKbcde8Ysm8LqQs3UtwcnRr0kQ9f7lvlR6eTuA96khLUfcoJQN/exec",
 
             sync: async function() {
                 try {
                     const res = await fetch(this.url);
                     this.data = await res.json();
                     this.render();
-                } catch(e) { console.log("Error sync"); }
+                } catch(e) { console.log("Error de conexión"); }
             },
 
-            toggleLista: function(id) {
-                const el = document.getElementById(`lista-${id}`);
-                el.classList.toggle('hidden');
+            parseFecha: function(str) {
+                if(!str || str === "" || str === "S/N") return { label: "PENDIENTE", sort: 9999999999999, m: "PENDIENTE", y: "" };
+                let f = new Date(str);
+                if (isNaN(f.getTime())) {
+                    const partes = str.split('/');
+                    if(partes.length === 3) f = new Date(partes[2], partes[1] - 1, partes[0]);
+                }
+                if(isNaN(f.getTime())) return { label: "PENDIENTE", sort: 9999999999999, m: "PENDIENTE", y: "" };
+                return { label: `${f.getDate().toString().padStart(2, '0')}/${(f.getMonth()+1).toString().padStart(2, '0')}/${f.getFullYear()}`, sort: f.getTime(), m: f.getMonth().toString(), y: f.getFullYear() };
+            },
+
+            openControl: function(contId) {
+                this.currentCont = this.data.filter(i => i.contenedor.toString() === contId.toString());
+                document.getElementById('view-list').classList.add('hidden');
+                document.getElementById('view-control').classList.remove('hidden');
+                document.getElementById('control-title').innerText = `CONT. ${contId}`;
+                
+                // Inicializamos conteo temporal si no existe
+                this.currentCont.forEach(i => {
+                    if(!this.conteoTemp[i.codigo]) this.conteoTemp[i.codigo] = 0;
+                });
+                
+                this.renderControl();
+            },
+
+            closeControl: function() {
+                document.getElementById('view-list').classList.remove('hidden');
+                document.getElementById('view-control').classList.add('hidden');
+            },
+
+            updateItem: function(codigo, cant) {
+                const item = this.currentCont.find(i => i.codigo === codigo);
+                const nuevoValor = this.conteoTemp[codigo] + cant;
+                if(nuevoValor >= 0) {
+                    this.conteoTemp[codigo] = nuevoValor;
+                    this.renderControl();
+                }
+            },
+
+            renderControl: function() {
+                let html = '';
+                let totalEsperado = 0;
+                let totalContado = 0;
+
+                this.currentCont.forEach(i => {
+                    const contado = this.conteoTemp[i.codigo];
+                    const meta = i.cajas;
+                    totalEsperado += meta;
+                    totalContado += contado;
+                    const pct = Math.min((contado / meta) * 100, 100);
+                    const completado = contado >= meta;
+
+                    html += `
+                    <div class="card-container ${completado ? 'border-green-200 bg-green-50/20' : ''}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1 pr-4">
+                                <h4 class="font-900 text-slate-900 leading-tight">${i.codigo}</h4>
+                                <p class="text-[10px] font-600 text-slate-500 uppercase">${i.descripcion}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-900 ${completado ? 'text-green-600' : 'text-blue-600'}">${contado} / ${meta}</p>
+                                <p class="text-[9px] font-black text-slate-300 uppercase">CAJAS</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="h-full ${completado ? 'bg-green-500' : 'bg-blue-500'} transition-all" style="width: ${pct}%"></div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="app.updateItem('${i.codigo}', -1)" class="btn-counter bg-slate-100 text-slate-400"><i class="ph-bold ph-minus"></i></button>
+                                <button onclick="app.updateItem('${i.codigo}', 1)" class="btn-counter ${completado ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}"><i class="ph-bold ph-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                document.getElementById('items-control').innerHTML = html;
+                
+                // Actualizar barra general
+                const totalPct = Math.round((totalContado / totalEsperado) * 100);
+                document.getElementById('total-percent').innerText = `${totalPct}%`;
+                document.getElementById('total-fill').style.width = `${totalPct}%`;
+                document.getElementById('total-count').innerText = `${totalContado} / ${totalEsperado} CAJAS CONTADAS`;
+            },
+
+            finalizarDescarga: function() {
+                const contId = this.currentCont[0].contenedor;
+                if(confirm(`¿Confirmar finalización de descarga para el Contenedor ${contId}?`)) {
+                    google.script.run.withSuccessHandler(() => {
+                        alert("¡Descarga completada y guardada!");
+                        location.reload();
+                    }).registrarConteoFinal({ id: contId });
+                }
             },
 
             render: function() {
@@ -102,56 +205,38 @@
                     return acc;
                 }, {});
 
-                // ORDENAR: Los más recientes arriba
                 const sorted = Object.values(groups).sort((a,b) => b.f.sort - a.f.sort);
                 let html = '';
                 let lastHeader = '';
 
                 sorted.forEach(g => {
-                    const header = g.f.m === "PENDIENTE" ? "SECCIÓN PENDIENTE" : `${mNames[g.f.m]} ${g.f.y}`;
+                    const header = g.f.m === "PENDIENTE" ? "PENDIENTES / PRÓXIMOS" : `${mNames[g.f.m]} ${g.f.y}`;
                     if(header !== lastHeader) {
                         html += `<div class="month-divider"><span>${header}</span><i class="ph-bold ph-calendar"></i></div>`;
                         lastHeader = header;
                     }
 
                     const tCajas = g.items.reduce((s, i) => s + i.cajas, 0);
-                    const esCompletado = g.estado === "COMPLETADO";
+                    const esCompletado = g.estado === "CONTEO REALIZADO" || g.estado === "COMPLETADO";
 
                     html += `
                     <div class="card-container">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-[10px] font-800 text-blue-600 uppercase tracking-widest mb-1">📅 FECHA: ${g.f.label}</p>
+                                <p class="text-[10px] font-800 text-blue-600 uppercase tracking-widest mb-1">📅 ${g.f.label}</p>
                                 <h3 class="text-xl font-900 text-slate-900 uppercase">CONTENEDOR ${g.id}</h3>
                             </div>
-                            <div class="px-3 py-1 ${esCompletado ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'} rounded-lg text-[10px] font-black">
+                            <div class="px-3 py-1 ${esCompletado ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'} rounded-lg text-[10px] font-black uppercase">
                                 ${esCompletado ? 'COMPLETADO' : tCajas + ' CAJAS'}
                             </div>
                         </div>
-
-                        <div id="lista-${g.id}" class="hidden mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                            ${g.items.map(i => `
-                                <div class="item-row">
-                                    <div class="flex flex-col">
-                                        <span class="text-[11px] font-900 text-slate-800">${i.codigo}</span>
-                                        <span class="text-[9px] font-600 text-slate-500 uppercase">${i.descripcion}</span>
-                                    </div>
-                                    <span class="text-[11px] font-900 text-blue-600">${i.cajas} CJ</span>
-                                </div>
-                            `).join('')}
-                        </div>
-
                         <div class="grid grid-cols-1 gap-3">
-                            <button class="w-full py-4 ${esCompletado ? 'hidden' : 'bg-blue-600 text-white'} rounded-2xl text-[10px] font-black uppercase shadow-lg">
-                                <i class="ph-bold ph-play mr-2"></i>INICIAR DESCARGA
+                            <button onclick="app.openControl('${g.id}')" class="w-full py-4 ${esCompletado ? 'bg-slate-50 text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-100'} rounded-2xl text-[10px] font-black uppercase">
+                                <i class="ph-bold ph-play mr-2"></i> ${esCompletado ? 'REVISAR CONTEO' : 'INICIAR CONTEO'}
                             </button>
                             <div class="grid grid-cols-2 gap-3">
-                                <button onclick="app.toggleLista('${g.id}')" class="py-4 bg-slate-100 text-slate-600 rounded-2xl text-[10px] font-black uppercase">
-                                    <i class="ph-bold ph-list-bullets mr-1"></i>VER LISTA
-                                </button>
-                                <button class="py-4 ${esCompletado ? 'bg-green-600 text-white shadow-lg' : 'bg-slate-50 text-slate-300 pointer-events-none'} rounded-2xl text-[10px] font-black uppercase">
-                                    <i class="ph-bold ph-file-pdf mr-1"></i>REPORTE
-                                </button>
+                                <button class="py-4 bg-slate-100 text-slate-600 rounded-2xl text-[10px] font-black uppercase"><i class="ph-bold ph-list-bullets mr-1"></i> DETALLE</button>
+                                <button class="py-4 ${esCompletado ? 'bg-green-600 text-white' : 'bg-slate-50 text-slate-300 pointer-events-none'} rounded-2xl text-[10px] font-black uppercase"><i class="ph-bold ph-file-pdf mr-1"></i> REPORTE</button>
                             </div>
                         </div>
                     </div>`;
