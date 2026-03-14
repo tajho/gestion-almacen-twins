@@ -38,6 +38,11 @@
             @apply bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center;
         }
 
+        /* Sección de Meses */
+        .month-divider {
+            @apply sticky top-[100px] z-40 bg-slate-50/80 backdrop-blur-sm py-2 px-4 mb-4 rounded-xl border border-slate-200 text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] flex items-center gap-2 shadow-sm;
+        }
+
         /* Modo Trabajo */
         .work-mode {
             display: none;
@@ -95,7 +100,7 @@
 
             <div class="space-y-3">
                 <div class="relative">
-                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o código..." 
+                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o SKU..." 
                     class="w-full pl-14 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
                     <i class="ph-bold ph-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                 </div>
@@ -176,48 +181,57 @@
             render: function() {
                 const feed = document.getElementById('feed');
                 const search = document.getElementById('searchInput').value.toLowerCase();
-                const month = document.getElementById('monthFilter').value;
+                const monthFilter = document.getElementById('monthFilter').value;
 
-                // FILTRADO POR FECHA Y BÚSQUEDA
+                // Lógica Estricta de la columna ALMACEN
                 const groups = this.data.reduce((acc, item) => {
                     const id = item.canal || item.CONTENEDOR || "S/N";
-                    const dateVal = item.almacen || item.FECHA;
-                    const dateObj = new Date(dateVal);
+                    // Foco en columna ALMACEN
+                    const dateRaw = item.almacen || item.FECHA;
+                    const dateObj = new Date(dateRaw);
                     
                     const matchesSearch = JSON.stringify(item).toLowerCase().includes(search);
                     
-                    // Lógica estricta de mes
-                    let matchesMonth = true;
-                    if(month !== "ALL") {
-                        matchesMonth = !isNaN(dateObj) && dateObj.getMonth().toString() === month;
-                    }
+                    let itemMonth = !isNaN(dateObj) ? dateObj.getMonth() : null;
+                    let matchesMonth = (monthFilter === "ALL") || (itemMonth !== null && itemMonth.toString() === monthFilter);
 
                     if (matchesSearch && matchesMonth) {
-                        if (!acc[id]) acc[id] = { id, fecha: dateVal, items: [] };
+                        if (!acc[id]) acc[id] = { id, fecha: dateRaw, dateObj: dateObj, items: [] };
                         acc[id].items.push(item);
                     }
                     return acc;
                 }, {});
 
-                const filteredGroups = Object.values(groups).sort((a,b) => b.id - a.id);
+                const sortedGroups = Object.values(groups).sort((a,b) => b.dateObj - a.dateObj);
                 
-                // ACTUALIZAR CUADROS ESTADÍSTICOS DASHBOARD
-                document.getElementById('dash-total-cont').innerText = filteredGroups.length;
-                const globalCajas = filteredGroups.reduce((sum, g) => sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
+                // Estadísticas Dashboard
+                document.getElementById('dash-total-cont').innerText = sortedGroups.length;
+                const globalCajas = sortedGroups.reduce((sum, g) => sum + g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0), 0);
                 document.getElementById('dash-total-cajas').innerText = globalCajas;
 
                 let html = '';
-                filteredGroups.forEach(g => {
+                let lastMonthLabel = '';
+
+                sortedGroups.forEach(g => {
+                    const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+                    const currentMonthLabel = !isNaN(g.dateObj) ? `${monthNames[g.dateObj.getMonth()]} ${g.dateObj.getFullYear()}` : "FECHA DESCONOCIDA";
+
+                    // Separador por Mes (Limpieza Visual)
+                    if (currentMonthLabel !== lastMonthLabel) {
+                        html += `<div class="month-divider"><i class="ph-bold ph-calendar-check"></i> ${currentMonthLabel}</div>`;
+                        lastMonthLabel = currentMonthLabel;
+                    }
+
                     const totalCajasCont = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
                     const isFinal = totalCajasCont > 0;
                     
                     html += `
-                    <div class="card-container shadow-xl shadow-slate-900/5">
+                    <div class="card-container shadow-xl shadow-slate-900/5 mb-6">
                         <div class="p-7">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
                                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">
-                                        LLEGADA: ${g.fecha}
+                                        ALMACÉN: ${g.fecha}
                                     </p>
                                     <h3 class="text-3xl font-900 text-slate-900 tracking-tighter uppercase leading-none">
                                         Contenedor ${g.id}
@@ -242,7 +256,7 @@
                     </div>`;
                 });
 
-                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-widest">No hay registros en este periodo</div>';
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-widest">No hay registros</div>';
             },
 
             startWork: function(id) {
