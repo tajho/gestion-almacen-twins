@@ -2,283 +2,211 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho Aura Prime | Twins Elite</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Twins Elite - Logística</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
-    
     <style>
-        :root { --bg: #f8fafc; --accent: #007AFF; --success: #10b981; --warning: #f59e0b; --header-h: 70px; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #0f172a; margin: 0; }
-        
-        .main-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px 20px; }
-        .side-menu.active { transform: translateX(100%); }
-        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2500; display: none; }
-        .menu-overlay.active { display: block; }
-        
-        .view { display: none; min-height: 100vh; padding: 20px; padding-top: calc(var(--header-h) + 15px); flex-direction: column; animation: slideUp 0.4s ease; }
-        .view.active { display: flex; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Estética de Tarjetas Dinámicas */
-        .container-card { transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05); }
-        .container-card:active { transform: scale(0.98); }
-        .status-badge { padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .status-open { background: #eff6ff; color: #3b82f6; }
-        .status-closed { background: #ecfdf5; color: #10b981; }
-
-        .btn-action { @apply flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-[10px] uppercase transition-all active:scale-95; }
-        
-        /* Modal de Detalle (Lista) */
-        .detail-panel { position: fixed; bottom: -100%; left: 0; right: 0; background: white; border-radius: 30px 30px 0 0; z-index: 5000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-        .detail-panel.active { bottom: 0; }
-
-        input, select { border: 2px solid #f1f5f9!important; border-radius: 16px!important; transition: all 0.2s; }
-        input:focus { border-color: var(--accent)!important; background: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .aura-card { border-radius: 24px; transition: all 0.3s ease; }
+        .btn-press:active { transform: scale(0.96); }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900">
 
-    <header class="main-header">
-        <button onclick="toggleMenu()" class="text-3xl text-slate-800 p-2"><i class="ph-bold ph-squares-four"></i></button>
-        <h2 class="text-xl font-black italic tracking-tighter">Tajho <span class="text-accent not-italic">Prime</span></h2>
-        <div class="w-10"></div>
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 p-4">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <div>
+                <h1 class="font-black text-xl tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Control de Contenedores</p>
+            </div>
+            <button onclick="loadData()" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center btn-press">
+                <i class="ph-bold ph-arrows-clockwise text-slate-600"></i>
+            </button>
+        </div>
     </header>
 
-    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
-    <nav class="side-menu" id="side-menu">
-        <div class="mb-10 px-4"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tajho Systems</p></div>
-        <button onclick="navTo('dash')" class="flex items-center gap-4 p-4 rounded-2xl mb-2 font-bold text-slate-600 active:bg-blue-50 w-full text-left"><i class="ph-bold ph-house text-2xl"></i>Dashboard</button>
-        <button onclick="navTo('create')" class="flex items-center gap-4 p-4 rounded-2xl mb-2 font-bold text-slate-600 active:bg-blue-50 w-full text-left"><i class="ph-bold ph-plus-circle text-2xl"></i>Nueva Carga</button>
-        <button onclick="navTo('hist')" class="flex items-center gap-4 p-4 rounded-2xl mb-2 font-bold text-slate-600 active:bg-blue-50 w-full text-left"><i class="ph-bold ph-clock-counter-clockwise text-2xl"></i>Historial</button>
-        <div class="mt-auto border-t pt-6 text-center">
-            <p class="text-[9px] font-black text-slate-400 uppercase leading-relaxed">J. Angelo Nuñez Durand<br><span class="text-accent">Asist. Inventario Logístico</span></p>
-        </div>
-    </nav>
-
-    <div id="v-dash" class="view active">
-        <div class="bg-white p-8 rounded-[30px] text-center mt-6 border border-slate-100 shadow-sm">
-            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="ph-fill ph-user-focus text-4xl text-accent"></i>
+    <main class="p-4 max-w-lg mx-auto pb-24">
+        
+        <div id="view-home">
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+                <button class="bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold">Todos</button>
+                <button class="bg-white border border-slate-200 px-4 py-2 rounded-full text-xs font-bold text-slate-500">Enero</button>
+                <button class="bg-white border border-slate-200 px-4 py-2 rounded-full text-xs font-bold text-slate-500">Febrero</button>
+                <button class="bg-white border border-slate-200 px-4 py-2 rounded-full text-xs font-bold text-slate-500">Marzo</button>
             </div>
-            <h3 class="font-extrabold text-2xl tracking-tighter">Inventory Manager</h3>
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Twins Elite | Tajho Official</p>
-        </div>
-    </div>
 
-    <div id="v-create" class="view">
-        <h2 class="text-3xl font-black mb-6 tracking-tighter">Planificar</h2>
-        <div class="bg-white p-6 rounded-[30px] border border-slate-100 shadow-sm mb-6">
-            <div class="relative mb-4">
-                <input type="text" id="sku-in" oninput="searchMaster(this.value)" class="w-full h-14 bg-slate-50 px-5 font-bold" placeholder="Buscar SKU..." autocomplete="off">
-                <div id="search-results" class="hidden absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border z-[2000] max-h-48 overflow-y-auto p-2"></div>
-            </div>
-            <div class="flex gap-3">
-                <input type="number" id="meta-in" class="flex-1 h-14 bg-slate-50 text-center font-black text-xl" placeholder="Meta">
-                <button onclick="addToQueue()" class="bg-accent text-white px-8 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-200">Añadir</button>
+            <div id="operations-list" class="space-y-4">
+                <div class="text-center py-20">
+                    <i class="ph-duotone ph-circle-notch animate-spin text-4xl text-slate-300"></i>
+                    <p class="text-slate-400 text-xs mt-2 font-bold uppercase">Sincronizando con Excel...</p>
+                </div>
             </div>
         </div>
-        <div id="queue-list" class="space-y-3 mb-24"></div>
-        <div class="fixed bottom-6 left-6 right-6">
-            <button onclick="saveContenedor()" id="btn-save-all" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase hidden shadow-2xl transition-all">Registrar Contenedor</button>
-        </div>
-    </div>
 
-    <div id="v-hist" class="view">
-        <div class="flex justify-between items-end mb-6">
-            <h2 class="text-3xl font-black tracking-tighter">Historial</h2>
-            <div class="text-right">
-                <p class="text-[9px] font-black text-slate-400 uppercase">Total Cajas</p>
-                <p id="stats-cajas" class="text-xl font-black text-accent">0</p>
+        <div id="view-counting" class="hidden">
+            <button onclick="showHome()" class="mb-4 flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-widest">
+                <i class="ph-bold ph-caret-left"></i> Volver
+            </button>
+            
+            <div id="container-header" class="mb-6">
+                </div>
+
+            <div id="items-list" class="space-y-3">
+                </div>
+
+            <div class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto">
+                <button onclick="finalizeProcess()" class="w-full bg-blue-600 text-white py-5 aura-card font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-200 btn-press">
+                    Finalizar y Guardar en Excel
+                </button>
             </div>
         </div>
-        <div id="product-results" class="space-y-4 pb-32"></div>
-    </div>
-
-    <div id="detail-panel" class="detail-panel">
-        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-8" onclick="closeDetail()"></div>
-        <h3 id="detail-id" class="text-2xl font-black tracking-tighter mb-2">--</h3>
-        <p id="detail-date" class="text-[10px] font-bold text-slate-400 uppercase mb-6 tracking-widest"></p>
-        <div id="detail-items" class="space-y-3 max-h-80 overflow-y-auto pr-2"></div>
-        <button onclick="closeDetail()" class="w-full mt-8 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-[10px] uppercase">Cerrar Detalle</button>
-    </div>
-
-    <div id="v-work" class="view">
-        <div class="flex justify-between items-center mb-6">
-            <p id="work-title" class="text-2xl font-black tracking-tighter">--</p>
-            <div class="bg-accent/10 px-5 py-2 rounded-full"><span id="work-perc-title" class="text-lg font-black text-accent">0%</span></div>
-        </div>
-        <div id="work-stats" class="space-y-3"></div>
-        <div class="fixed bottom-6 left-6 right-6">
-            <button onclick="showModal('m-finish')" class="w-full py-5 bg-slate-900 text-white rounded-[20px] font-black text-xs uppercase shadow-2xl">Finalizar Carga</button>
-        </div>
-    </div>
-
-    <div id="m-finish" class="modal" onclick="hideModal('m-finish')">
-        <div class="bg-white p-10 rounded-[40px] w-full max-w-sm text-center mx-4 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="ph-fill ph-warning-circle text-4xl text-amber-500"></i>
-            </div>
-            <h3 class="text-xl font-black mb-2 tracking-tighter">¿CERRAR DESCARGA?</h3>
-            <p class="text-xs text-slate-400 font-medium mb-8 leading-relaxed">Una vez cerrada, no podrás añadir más unidades y se generará el reporte oficial.</p>
-            <button onclick="finalizeWork()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase mb-4 shadow-lg">Sí, Finalizar Reporte</button>
-            <button onclick="hideModal('m-finish')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Todavía no</button>
-        </div>
-    </div>
+    </main>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw0RuZMVNBGi0OsbB3ASFsZdCcNtT1rwNBjFzM6SMmsm3u75LM4sa0xEgSIpVDaH_7vtg/exec";
-        let master = [], queue = [], currentOp = null;
+        // URL DE TU WEB APP (APPS SCRIPT)
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
+        
+        let master_history = [];
+        let current_container = null;
 
-        function toggleMenu() {
-            document.getElementById('side-menu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        async function loadData() {
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
+                master_history = data.historial;
+                renderMasterView();
+            } catch (error) {
+                alert("Error al conectar con el Excel. Revisa la URL.");
+            }
         }
 
-        async function navTo(v) {
-            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.getElementById('v-' + v).classList.add('active');
-            if(v === 'hist') renderHistory();
-            toggleMenu();
-        }
-
-        window.onload = async () => { 
-            await loadMasterData(); 
-            renderHistory();
-        };
-
-        async function loadMasterData() { try { const res = await fetch(API_URL); const data = await res.json(); master = data.productos || []; } catch(e) {}}
-
-        function searchMaster(q) {
-            const resDiv = document.getElementById('search-results');
-            if (q.length < 1) { resDiv.classList.add('hidden'); return; }
-            const matches = master.filter(row => String(row.sku).toLowerCase().includes(q.toLowerCase())).slice(0, 5);
-            resDiv.innerHTML = matches.map(x => `<div onclick="pickSku('${x.sku}', '${x.descripcion || x.desc || ''}')" class="p-4 hover:bg-slate-50 rounded-xl mb-1 cursor-pointer transition-colors"><p class="text-xs font-black">${x.sku}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${x.descripcion || x.desc || ''}</p></div>`).join('');
-            resDiv.classList.remove('hidden');
-        }
-
-        function pickSku(s, d) { 
-            const input = document.getElementById('sku-in');
-            input.value = s; input.dataset.desc = d; 
-            document.getElementById('search-results').classList.add('hidden'); 
-        }
-
-        function addToQueue() {
-            const s = document.getElementById('sku-in').value, m = parseInt(document.getElementById('meta-in').value);
-            if(!s || isNaN(m)) return;
-            queue.push({ sku: s, desc: document.getElementById('sku-in').dataset.desc || '', meta: m, r: 0 });
-            document.getElementById('sku-in').value = ''; document.getElementById('meta-in').value = '';
-            renderQueue();
-        }
-
-        function renderQueue() {
-            document.getElementById('btn-save-all').classList.toggle('hidden', queue.length === 0);
-            document.getElementById('queue-list').innerHTML = queue.map(x => `<div class="bg-white rounded-2xl p-4 flex justify-between items-center border border-slate-100 shadow-sm animate-slideUp"><div class="flex flex-col"><span class="text-xs font-black">${x.sku}</span><span class="text-[8px] text-slate-400 font-bold uppercase">${x.desc}</span></div><span class="bg-blue-50 text-accent px-4 py-1 rounded-full text-xs font-black">${x.meta}</span></div>`).join('');
-        }
-
-        function saveContenedor() {
-            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const id = `TW-${Date.now().toString().slice(-4)}`;
-            h.unshift({ id, date: new Date().toLocaleString(), items: [...queue], done: false });
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
-            queue = []; renderQueue(); navTo('hist');
-        }
-
-        function renderHistory() {
-            const localH = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            document.getElementById('stats-cajas').innerText = localH.reduce((acc, curr) => acc + curr.items.reduce((a, b) => a + b.r, 0), 0);
+        function renderMasterView() {
+            const container = document.getElementById('operations-list');
             
-            document.getElementById('product-results').innerHTML = localH.map((op, idx) => `
-                <div class="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm container-card">
-                    <div class="flex justify-between items-start mb-4">
+            // Lógica de agrupación (Cód Interno + Fecha)
+            const grouped = master_history.reduce((acc, curr) => {
+                const id = curr.operacion;
+                if (!acc[id]) {
+                    acc[id] = { 
+                        id: id, 
+                        items: [], 
+                        done: curr.estado === 'COMPLETADO',
+                        canal: curr.canal,
+                        fecha: id.split('(')[1]?.replace(')', '') || '--'
+                    };
+                }
+                acc[id].items.push(curr);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.values(grouped).map(op => `
+                <div class="aura-card p-5 border-l-[10px] ${op.done ? 'border-green-500 bg-green-50/30' : 'border-amber-500 bg-white'} shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-1">${op.date}</p>
-                            <h4 class="font-black text-xl tracking-tighter">${op.id}</h4>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Contenedor</span>
+                            <h4 class="font-black text-xl text-slate-800">${op.id}</h4>
                         </div>
-                        <span class="status-badge ${op.done ? 'status-closed' : 'status-open'}">${op.done ? 'Finalizado' : 'En Proceso'}</span>
+                        <span class="text-[10px] font-black px-2 py-1 rounded-md ${op.canal === 'ROJO' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">
+                            CANAL ${op.canal}
+                        </span>
                     </div>
-                    <div class="flex gap-2">
-                        ${!op.done ? `<button onclick="openWork(${idx})" class="btn-action bg-accent text-white shadow-lg shadow-blue-100"><i class="ph-bold ph-play"></i> Continuar</button>` : ''}
-                        <button onclick="openDetail(${idx})" class="btn-action bg-slate-50 text-slate-600"><i class="ph-bold ph-eye"></i> Ver Lista</button>
-                        ${op.done ? `<button onclick="genPDFFromExcel('${op.id}')" class="btn-action bg-amber-500 text-white shadow-lg shadow-amber-200"><i class="ph-bold ph-file-pdf"></i> PDF</button>` : ''}
+                    <div class="flex gap-4 text-[10px] font-bold text-slate-500 uppercase mb-4">
+                        <span><i class="ph-bold ph-package"></i> ${op.items.length} SKUs</span>
+                        <span><i class="ph-bold ph-calendar"></i> Ingreso: ${op.fecha}</span>
+                    </div>
+                    <button onclick="openContainer('${op.id}')" class="w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest btn-press ${op.done ? 'bg-slate-200 text-slate-500' : 'bg-slate-900 text-white'}">
+                        ${op.done ? 'Ver Resumen' : 'Iniciar Conteo de Cajas'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openContainer(id) {
+            const allItems = master_history.filter(i => i.operacion === id);
+            current_container = { id: id, items: [...allItems] };
+            
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-counting').classList.remove('hidden');
+            
+            document.getElementById('container-header').innerHTML = `
+                <h2 class="text-2xl font-black text-slate-900">${id}</h2>
+                <p class="text-xs text-slate-400 font-bold uppercase">Verificando cantidad de cajas</p>
+            `;
+            renderItemList();
+        }
+
+        function renderItemList() {
+            const list = document.getElementById('items-list');
+            list.innerHTML = current_container.items.map(item => `
+                <div id="row-${item.sku}" class="aura-card p-4 bg-white border border-slate-100 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="pr-4">
+                            <p class="text-[10px] font-black text-blue-600 uppercase">${item.sku}</p>
+                            <h5 class="font-bold text-sm leading-tight text-slate-700">${item.descripcion}</h5>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-slate-400 uppercase">Meta</p>
+                            <p class="font-black text-lg">${item.meta} <span class="text-[10px]">CAJAS</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-2 border border-slate-100">
+                        <button onclick="updateCount('${item.sku}', -1)" class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-bold btn-press">-</button>
+                        <div class="text-center">
+                            <span class="block text-[9px] font-black text-slate-400 uppercase">Recibido</span>
+                            <span class="text-2xl font-black ${item.real >= item.meta ? 'text-green-600' : 'text-slate-900'}">${item.real}</span>
+                        </div>
+                        <button onclick="updateCount('${item.sku}', 1)" class="w-12 h-12 bg-slate-900 text-white rounded-xl shadow-sm flex items-center justify-center text-xl font-bold btn-press">+</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function openDetail(idx) {
-            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            const op = h[idx];
-            document.getElementById('detail-id').innerText = op.id;
-            document.getElementById('detail-date').innerText = op.date;
-            document.getElementById('detail-items').innerHTML = op.items.map(x => `
-                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                    <div class="flex flex-col"><span class="text-xs font-black">${x.sku}</span><span class="text-[8px] text-slate-400 font-bold uppercase">${x.desc}</span></div>
-                    <div class="text-right"><span class="font-black text-sm text-slate-900">${x.r}</span> <span class="text-[10px] text-slate-300">/ ${x.meta}</span></div>
-                </div>
-            `).join('');
-            document.getElementById('detail-panel').classList.add('active');
-            document.getElementById('overlay').classList.add('active');
+        function updateCount(sku, val) {
+            const item = current_container.items.find(i => i.sku === sku);
+            if (item) {
+                item.real = Math.max(0, item.real + val);
+                renderItemList();
+            }
         }
 
-        function closeDetail() {
-            document.getElementById('detail-panel').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
+        async function finalizeProcess() {
+            if(!confirm("¿Deseas guardar el conteo de estas cajas en el Excel?")) return;
+            
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = "Guardando...";
+
+            const payload = {
+                action: 'FINALIZE',
+                id: current_container.id,
+                items: JSON.stringify(current_container.items.map(i => ({sku: i.sku, r: i.real})))
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                alert("¡Datos guardados con éxito en la Columna I y K!");
+                showHome();
+                loadData();
+            } catch (e) {
+                alert("Error al guardar.");
+                btn.disabled = false;
+                btn.innerHTML = "Finalizar y Guardar";
+            }
         }
 
-        // --- Lógica de Trabajo (Simplificada para fluidez) ---
-        function openWork(idx) {
-            const h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            currentOp = { ...h[idx], localIdx: idx };
-            navTo('work');
-            document.getElementById('work-title').innerText = currentOp.id;
-            refreshWorkStats();
+        function showHome() {
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-counting').classList.add('hidden');
         }
 
-        function refreshWorkStats() {
-            document.getElementById('work-stats').innerHTML = currentOp.items.map((x, i) => `
-                <div class="bg-white p-5 rounded-3xl border border-slate-100 flex items-center gap-4">
-                    <div class="flex-1">
-                        <p class="font-black text-xs">${x.sku}</p>
-                        <p class="text-[8px] text-slate-400 font-bold uppercase">${x.desc}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="updateCount(${i}, -1)" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center"><i class="ph-bold ph-minus"></i></button>
-                        <span class="w-12 text-center font-black text-xl">${x.r}</span>
-                        <button onclick="updateCount(${i}, 1)" class="w-10 h-10 rounded-full bg-blue-50 text-accent flex items-center justify-center"><i class="ph-bold ph-plus"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updateCount(idx, val) {
-            currentOp.items[idx].r = Math.max(0, currentOp.items[idx].r + val);
-            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            h[currentOp.localIdx] = currentOp;
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
-            refreshWorkStats();
-        }
-
-        function showModal(id) { document.getElementById(id).style.display = 'flex'; document.getElementById('overlay').classList.add('active'); }
-        function hideModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById('overlay').classList.remove('active'); }
-
-        function finalizeWork() {
-            currentOp.done = true;
-            let h = JSON.parse(localStorage.getItem('tajho_v3') || '[]');
-            h[currentOp.localIdx] = currentOp;
-            localStorage.setItem('tajho_v3', JSON.stringify(h));
-            hideModal('m-finish');
-            navTo('hist');
-        }
-
-        function genPDFFromExcel(id) {
-            alert(`Reporte Tajho: ${id}\nRevisión autorizada por J. Angelo Nuñez Durand`);
-        }
+        // Carga inicial
+        window.onload = loadData;
     </script>
 </body>
 </html>
