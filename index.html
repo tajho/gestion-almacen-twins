@@ -10,7 +10,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; -webkit-tap-highlight-color: transparent; }
         .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E2E8F0; }
-        .card-container { background: white; border-radius: 28px; border: 1px solid #E2E8F0; transition: all 0.2s; }
+        .card-container { background: white; border-radius: 28px; border: 1px solid #E2E8F0; transition: transform 0.1s; }
+        .card-container:active { transform: scale(0.98); }
         .month-divider { @apply sticky top-[100px] z-40 bg-slate-900 py-3 px-6 my-4 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg; }
         .work-mode { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
     </style>
@@ -28,8 +29,8 @@
         <main class="max-w-xl mx-auto p-6">
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center">
-                    <i class="ph-bold ph-shipping-container text-blue-600 text-xl mb-2"></i>
-                    <p class="text-[9px] font-black text-slate-400 uppercase">Contenedores</p>
+                    <i class="ph-bold ph-columns text-blue-600 text-xl mb-2"></i>
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Canales</p>
                     <p class="text-2xl font-900 text-slate-800" id="dash-total-cont">0</p>
                 </div>
                 <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center">
@@ -40,7 +41,7 @@
             </div>
 
             <div class="space-y-3 mb-8">
-                <input type="text" id="searchInput" oninput="app.render()" placeholder="Filtrar por Canal..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar por Canal..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
                 <select id="monthFilter" onchange="app.render()" class="w-full p-5 px-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
                     <option value="ALL">TODOS LOS MESES</option>
                     <option value="PENDIENTE">PENDIENTES</option>
@@ -73,8 +74,8 @@
         const app = {
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             
-            // Lógica de validación de columna ALMACEN
-            parseAlmacen: function(raw) {
+            // Lógica basada exactamente en tu columna ALMACEN
+            procesarFechaAlmacen: function(raw) {
                 if(!raw || raw.toString().trim() === "") return { label: "PENDIENTE", m: "PENDIENTE", y: "", sort: 0 };
                 
                 try {
@@ -82,18 +83,20 @@
                     let p = str.includes('-') ? str.split('-') : str.split('/');
                     let d, m, y;
 
+                    // Detectar si viene como YYYY-MM-DD o DD/MM/YYYY
                     if(p[0].length === 4) { y = parseInt(p[0]); m = parseInt(p[1]) - 1; d = parseInt(p[2]); }
                     else { d = parseInt(p[0]); m = parseInt(p[1]) - 1; y = p[2].length === 2 ? 2000 + parseInt(p[2]) : parseInt(p[2]); }
                     
-                    const fechaObj = new Date(y, m, d);
+                    const fechaFila = new Date(y, m, d);
                     const hoy = new Date();
                     hoy.setHours(0,0,0,0);
 
-                    if(isNaN(fechaObj.getTime()) || fechaObj > hoy) {
-                        return { label: "PENDIENTE", m: "PENDIENTE", y: "", sort: fechaObj.getTime() || 0 };
+                    // Si es fecha futura o inválida -> PENDIENTE
+                    if(isNaN(fechaFila.getTime()) || fechaFila > hoy) {
+                        return { label: "PENDIENTE", m: "PENDIENTE", y: "", sort: fechaFila.getTime() || 0 };
                     }
 
-                    return { label: `${d}/${m+1}/${y}`, m: m, y: y, sort: fechaObj.getTime() };
+                    return { label: `${d}/${m+1}/${y}`, m: m, y: y, sort: fechaFila.getTime() };
                 } catch(e) {
                     return { label: "PENDIENTE", m: "PENDIENTE", y: "", sort: 0 };
                 }
@@ -101,12 +104,13 @@
 
             sync: async function() {
                 try {
-                    const res = await fetch("https://script.google.com/macros/s/AKfycbwk_aGVqZGa40ytq_JTRV_mvt0byH_-ZDPHJNRxTHt0JbgPYbYxofGqOVTqW97U3V7L/exec");
+                    // Sincronización en segundo plano sin señales visuales
+                    const res = await fetch("https://script.google.com/macros/s/AKfycby2TcDJGjrN__hzYzRU4-MQSD58MEMe022voSyeAnMtHgQkb9Fr0ZNi_xWDqXDor2nC/exec");
                     const json = await res.json();
                     this.data = Array.isArray(json) ? json : (json.historial || []);
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { console.log("Silent sync inactive"); }
+                } catch(e) { console.log("Silent sync in progress..."); }
             },
 
             render: function() {
@@ -115,25 +119,26 @@
                 const mFilter = document.getElementById('monthFilter').value;
                 const mNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
-                // Diferenciación por columna CANAL
+                // Agrupamos por columna CANAL
                 const groups = this.data.reduce((acc, item) => {
-                    const canalID = (item.canal || "SIN CANAL").toString();
-                    const f = this.parseAlmacen(item.almacen);
+                    const canalValue = (item.canal || "S/C").toString();
+                    const f = this.procesarFechaAlmacen(item.almacen);
                     
-                    const matchesSearch = canalID.toLowerCase().includes(search);
+                    const matchesSearch = canalValue.toLowerCase().includes(search);
                     const matchesMonth = (mFilter === "ALL" || f.m.toString() === mFilter);
 
                     if (matchesSearch && matchesMonth) {
-                        if (!acc[canalID]) acc[canalID] = { id: canalID, f, items: [] };
-                        acc[canalID].items.push(item);
+                        if (!acc[canalValue]) acc[canalValue] = { id: canalValue, f, items: [] };
+                        acc[canalValue].items.push(item);
                     }
                     return acc;
                 }, {});
 
                 const sorted = Object.values(groups).sort((a,b) => b.f.sort - a.f.sort);
                 
+                // Actualizamos contadores superiores con columna CAJAS
                 document.getElementById('dash-total-cont').innerText = sorted.length;
-                document.getElementById('dash-total-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+                document.getElementById('dash-total-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(i.cajas) || 0), 0);
 
                 let html = '';
                 let lastMonth = '';
@@ -145,7 +150,7 @@
                         lastMonth = monthKey;
                     }
 
-                    const tCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+                    const sumaCajasCanal = g.items.reduce((s, i) => s + (parseInt(i.cajas) || 0), 0);
                     
                     html += `
                     <div class="card-container p-6 mb-4">
@@ -154,11 +159,11 @@
                                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">ALMACÉN: ${g.f.label}</p>
                                 <h3 class="text-xl font-900 text-slate-900 uppercase">CANAL ${g.id}</h3>
                             </div>
-                            <div class="px-3 py-1 ${tCajas > 0 ? 'bg-blue-600' : 'bg-slate-200'} text-white rounded-lg text-[10px] font-black">${tCajas} CAJAS</div>
+                            <div class="px-3 py-1 ${sumaCajasCanal > 0 ? 'bg-blue-600' : 'bg-slate-200'} text-white rounded-lg text-[10px] font-black">${sumaCajasCanal} CAJAS</div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <button onclick="app.startWork('${g.id}')" class="flex flex-col items-center p-4 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase">
-                                <i class="ph-fill ph-play text-xl mb-1"></i>EMPEZAR
+                            <button onclick="app.openCanal('${g.id}')" class="flex flex-col items-center p-4 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase">
+                                <i class="ph-fill ph-play text-xl mb-1"></i>REVISAR
                             </button>
                             <button class="flex flex-col items-center p-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase">
                                 <i class="ph-fill ph-file-pdf text-xl mb-1"></i>REPORTE
@@ -166,18 +171,21 @@
                         </div>
                     </div>`;
                 });
-                feed.innerHTML = html || '<div class="text-center py-20 opacity-30 font-bold tracking-widest text-xs">SIN REGISTROS</div>';
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-30 font-bold">SIN DATOS CARGADOS</div>';
             },
 
-            startWork: function(id) {
+            openCanal: function(id) {
                 const filtrados = this.data.filter(i => (i.canal || "").toString() === id);
                 document.getElementById('counter-title').innerText = `CANAL ${id}`;
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
                     <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl mb-3 border border-slate-100">
-                        <div class="flex-1"><p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p><p class="text-xs font-bold text-slate-800 uppercase">${item.descripcion || '...'}</p></div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p>
+                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
+                        </div>
                         <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
                             <button onclick="app.adjust('${id}', ${idx}, -1)" class="w-10 h-10 bg-slate-100 rounded-lg font-black">-</button>
-                            <span class="w-8 text-center font-900 text-lg text-blue-600">${item.cantidad || 0}</span>
+                            <span class="w-8 text-center font-900 text-lg text-blue-600">${item.cajas || 0}</span>
                             <button onclick="app.adjust('${id}', ${idx}, 1)" class="w-10 h-10 bg-blue-600 text-white rounded-lg font-black">+</button>
                         </div>
                     </div>`).join('');
@@ -186,8 +194,8 @@
 
             adjust: function(id, idx, val) {
                 const filtrados = this.data.filter(i => (i.canal || "").toString() === id);
-                filtrados[idx].cantidad = Math.max(0, (parseInt(filtrados[idx].cantidad) || 0) + val);
-                this.startWork(id);
+                filtrados[idx].cajas = Math.max(0, (parseInt(filtrados[idx].cajas) || 0) + val);
+                this.openCanal(id);
             },
 
             saveWork: function() {
@@ -200,7 +208,7 @@
         };
 
         window.onload = () => { app.sync(); app.render(); };
-        setInterval(() => app.sync(), 30000); 
+        setInterval(() => app.sync(), 45000); 
     </script>
 </body>
 </html>
