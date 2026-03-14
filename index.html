@@ -3,150 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TWINS ELITE PRO | L.M.S.</title>
+    <title>Twins Elite | Smart Logistics v12.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        
-        :root { --brand: #2563eb; --dark: #0f172a; --bg: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
-
-        .glass-header { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid #e2e8f0; }
-        .neo-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        .month-header {
-            position: sticky; top: 110px; z-index: 40; background: var(--dark); color: white;
-            padding: 12px 20px; border-radius: 16px; font-size: 11px; font-weight: 800;
-            letter-spacing: 0.2em; margin: 24px 0 16px 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .sync-indicator { width: 10px; height: 10px; border-radius: 50%; position: relative; }
-        .sync-online { background: #10b981; box-shadow: 0 0 10px #10b981; }
-        .sync-loading { background: var(--brand); animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        .work-view { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; -webkit-tap-highlight-color: transparent; }
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E2E8F0; }
+        .card-container { background: white; border-radius: 28px; border: 1px solid #E2E8F0; }
+        .month-divider { @apply sticky top-[100px] z-40 bg-slate-900 py-3 px-6 my-4 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg; }
+        .work-mode { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <header class="glass-header sticky top-0 z-50 px-6 py-5">
-        <div class="max-w-2xl mx-auto flex justify-between items-center">
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-2xl font-800 tracking-tighter text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                    <span class="bg-blue-600 text-white text-[8px] font-900 px-2 py-0.5 rounded-md">V12.1</span>
-                </div>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-1">
-                    <i class="ph-fill ph-shield-check"></i> Revisión autorizada por J. Angelo Nuñez Durand
-                </p>
+    <div id="view-dashboard">
+        <header class="glass-header sticky top-0 z-50 p-6">
+            <div class="max-w-xl mx-auto">
+                <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">J. Angelo Nuñez Durand</p>
             </div>
-            <div id="statusTag" class="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-2xl">
-                <div id="syncDot" class="sync-indicator sync-online"></div>
-                <span class="text-[9px] font-900 text-slate-500 uppercase tracking-tighter" id="statusText">Sistema Listo</span>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-2xl mx-auto p-6">
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="neo-card p-6 flex flex-col items-center">
-                <i class="ph-bold ph-shipping-container text-2xl text-blue-600 mb-2"></i>
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Contenedores</span>
-                <span class="text-3xl font-800 text-slate-900 mt-1" id="stat-cont">0</span>
-            </div>
-            <div class="neo-card p-6 flex flex-col items-center">
-                <i class="ph-bold ph-package text-2xl text-emerald-600 mb-2"></i>
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Cajas Totales</span>
-                <span class="text-3xl font-800 text-slate-900 mt-1" id="stat-cajas">0</span>
-            </div>
-        </div>
-
-        <div class="relative mb-8">
-            <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
-            <input type="text" id="mainSearch" oninput="App.render()" placeholder="Filtrar por contenedor, código o descripción..." 
-            class="w-full bg-white border border-slate-200 rounded-[22px] py-5 pl-14 pr-6 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-600 shadow-sm">
-        </div>
-
-        <div id="mainFeed" class="space-y-6 pb-32">
-            <div class="text-center py-20 opacity-30 font-bold italic">Sincronizando base de datos...</div>
-        </div>
-    </main>
-
-    <div id="workView" class="work-view">
-        <header class="bg-slate-900 text-white p-6 flex justify-between items-center">
-            <div>
-                <h2 class="text-xl font-800 tracking-tighter" id="workTitle">CONTENEDOR</h2>
-                <p class="text-[9px] font-black text-blue-400 uppercase italic">Auditoría en progreso</p>
-            </div>
-            <button onclick="App.closeWork()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
         </header>
-        <div id="workList" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50"></div>
-        <div class="p-6 bg-white border-t border-slate-200">
-            <button onclick="App.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-[11px] uppercase tracking-[0.2em] shadow-xl">Guardar Cambios</button>
+
+        <main class="max-w-xl mx-auto p-6">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center">
+                    <i class="ph-bold ph-shipping-container text-blue-600 text-xl mb-2"></i>
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Contenedores</p>
+                    <p class="text-2xl font-900 text-slate-800" id="dash-total-cont">0</p>
+                </div>
+                <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center">
+                    <i class="ph-bold ph-package text-green-600 text-xl mb-2"></i>
+                    <p class="text-[9px] font-black text-slate-400 uppercase">Cajas Totales</p>
+                    <p class="text-2xl font-900 text-slate-800" id="dash-total-cajas">0</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 mb-8">
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                <select id="monthFilter" onchange="app.render()" class="w-full p-5 px-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
+                    <option value="ALL">TODOS LOS MESES</option>
+                    <option value="0">ENERO</option><option value="1">FEBRERO</option><option value="2">MARZO</option>
+                    <option value="3">ABRIL</option><option value="4">MAYO</option><option value="5">JUNIO</option>
+                    <option value="6">JULIO</option><option value="7">AGOSTO</option><option value="8">SEPTIEMBRE</option>
+                    <option value="9">OCTUBRE</option><option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
+                </select>
+            </div>
+
+            <div id="feed" class="space-y-4 pb-20"></div>
+        </main>
+    </div>
+
+    <div id="view-counter" class="work-mode">
+        <header class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+            <div>
+                <h2 class="text-xl font-900 uppercase tracking-tighter" id="counter-title">...</h2>
+                <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Revisión autorizada por J. Angelo Nuñez Durand</p>
+            </div>
+            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
+        </header>
+        <div id="counterList" class="flex-1 overflow-y-auto p-6"></div>
+        <div class="p-6 bg-white border-t border-slate-100">
+            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl">Finalizar Conteo</button>
         </div>
     </div>
 
     <script>
-        const App = {
-            url: "https://script.google.com/macros/s/AKfycbwk_aGVqZGa40ytq_JTRV_mvt0byH_-ZDPHJNRxTHt0JbgPYbYxofGqOVTqW97U3V7L/exec",
-            db: JSON.parse(localStorage.getItem('twins_elite_pro_v12')) || [],
-
-            async sync() {
-                const dot = document.getElementById('syncDot');
-                const txt = document.getElementById('statusText');
-                dot.className = 'sync-indicator sync-loading';
-                txt.innerText = 'Sincronizando...';
-
+        const app = {
+            data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
+            
+            // Lógica de fecha ultra-segura para evitar que la app se quede en blanco
+            parseFecha: function(raw) {
                 try {
-                    const res = await fetch(this.url);
-                    const rawData = await res.json();
-                    
-                    // Normalización agresiva de datos
-                    this.db = rawData.map(row => {
-                        let normalized = {};
-                        for (let key in row) {
-                            let k = key.toLowerCase().trim();
-                            if (k.includes('contenedor') || k.includes('canal')) normalized.contenedor = row[key];
-                            if (k.includes('almacen') || k.includes('fecha')) normalized.almacen = row[key];
-                            if (k.includes('cantidad') || k.includes('caja')) normalized.cantidad = row[key];
-                            if (k.includes('codigo')) normalized.codigo = row[key];
-                            if (k.includes('descripcion')) normalized.descripcion = row[key];
-                        }
-                        return normalized;
-                    });
+                    if(!raw) return { label: "S/F", m: -1, y: 2026, sort: 0 };
+                    let str = raw.toString().split('T')[0];
+                    let p = str.includes('-') ? str.split('-') : str.split('/');
+                    let d, m, y;
 
-                    localStorage.setItem('twins_elite_pro_v12', JSON.stringify(this.db));
-                    this.render();
-                    dot.className = 'sync-indicator sync-online';
-                    txt.innerText = 'Sistema Online';
-                } catch (e) {
-                    dot.className = 'sync-indicator bg-amber-500';
-                    txt.innerText = 'Modo Local (Offline)';
+                    if(p[0].length === 4) { // YYYY-MM-DD
+                        y = parseInt(p[0]); m = parseInt(p[1]) - 1; d = parseInt(p[2]);
+                    } else { // DD/MM/YYYY
+                        d = parseInt(p[0]); m = parseInt(p[1]) - 1; 
+                        y = p[2].length === 2 ? 2000 + parseInt(p[2]) : parseInt(p[2]);
+                    }
+                    
+                    if(isNaN(m) || m < 0) return { label: "S/F", m: -1, y: 2026, sort: 0 };
+                    return { label: `${d}/${m+1}/${y}`, m: m, y: y, sort: new Date(y, m, d).getTime() };
+                } catch(e) {
+                    return { label: "S/F", m: -1, y: 2026, sort: 0 };
                 }
             },
 
-            processDate(str) {
-                if(!str) return { label: 'S/F', m: 0, y: 2026, sort: 0 };
-                const s = str.toString().split('T')[0];
-                const p = s.includes('-') ? s.split('-') : s.split('/');
-                let d, m, y;
-                if(p[0].length === 4) { y = parseInt(p[0]); m = parseInt(p[1])-1; d = parseInt(p[2]); }
-                else { d = parseInt(p[0]); m = parseInt(p[1])-1; y = p[2].length === 2 ? 2000+parseInt(p[2]) : parseInt(p[2]); }
-                return { label: `${d}/${m+1}/${y}`, m: m, y: y, sort: new Date(y, m, d).getTime() };
+            sync: async function() {
+                try {
+                    // Sincronización 100% silenciosa en segundo plano
+                    const res = await fetch("https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec");
+                    const json = await res.json();
+                    this.data = Array.isArray(json) ? json : (json.historial || []);
+                    localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
+                    this.render();
+                } catch(e) { console.log("Silent sync error"); }
             },
 
-            render() {
-                const feed = document.getElementById('mainFeed');
-                const query = document.getElementById('mainSearch').value.toLowerCase();
-                const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            render: function() {
+                const feed = document.getElementById('feed');
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const mFilter = document.getElementById('monthFilter').value;
+                const mNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
-                const groups = this.db.reduce((acc, item) => {
-                    const id = (item.contenedor || "SIN ID").toString();
-                    const f = this.processDate(item.almacen);
-                    if (JSON.stringify(item).toLowerCase().includes(query)) {
+                const groups = this.data.reduce((acc, item) => {
+                    const rawID = item.canal || item.CONTENEDOR || "S/N";
+                    const id = rawID.toString().split('T')[0];
+                    const f = this.parseFecha(item.almacen || item.FECHA);
+                    
+                    const matchesSearch = JSON.stringify(item).toLowerCase().includes(search);
+                    const matchesMonth = (mFilter === "ALL" || f.m.toString() === mFilter);
+
+                    if (matchesSearch && matchesMonth) {
                         if (!acc[id]) acc[id] = { id, f, items: [] };
                         acc[id].items.push(item);
                     }
@@ -154,76 +127,77 @@
                 }, {});
 
                 const sorted = Object.values(groups).sort((a,b) => b.f.sort - a.f.sort);
-                document.getElementById('stat-cont').innerText = sorted.length;
-                document.getElementById('stat-cajas').innerText = this.db.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+                
+                // Actualizar contadores globales
+                document.getElementById('dash-total-cont').innerText = sorted.length;
+                document.getElementById('dash-total-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
 
                 let html = '';
                 let lastMonth = '';
 
                 sorted.forEach(g => {
-                    const mKey = `${months[g.f.m]} ${g.f.y}`;
-                    if (mKey !== lastMonth) {
-                        html += `<div class="month-header"><span>${mKey.toUpperCase()}</span><i class="ph-fill ph-calendar-blank"></i></div>`;
-                        lastMonth = mKey;
+                    const monthKey = g.f.m === -1 ? "REVISAR FECHA" : `${mNames[g.f.m]} ${g.f.y}`;
+                    if (monthKey !== lastMonth) {
+                        html += `<div class="month-divider"><span>${monthKey}</span><i class="ph-bold ph-calendar"></i></div>`;
+                        lastMonth = monthKey;
                     }
-                    const total = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+
+                    const tCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+                    
                     html += `
-                        <div class="neo-card p-6 shadow-sm border-l-4 border-l-blue-600 mb-4">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">REGISTRO: ${g.f.label}</p>
-                                    <h3 class="text-xl font-800 text-slate-900 uppercase">CONTENEDOR ${g.id}</h3>
-                                </div>
-                                <div class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black">${total} UNIDADES</div>
+                    <div class="card-container p-6 mb-4">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase">ALMACÉN: ${g.f.label}</p>
+                                <h3 class="text-xl font-900 text-slate-900 uppercase">CONTENEDOR ${g.id}</h3>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <button onclick="App.openWork('${g.id}')" class="flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">
-                                    <i class="ph-fill ph-barcode text-xl"></i> Auditoría
-                                </button>
-                                <button class="flex items-center justify-center gap-2 py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-slate-100">
-                                    <i class="ph-fill ph-file-pdf text-xl"></i> Reporte
-                                </button>
-                            </div>
-                        </div>`;
+                            <div class="px-3 py-1 ${tCajas > 0 ? 'bg-blue-600' : 'bg-slate-200'} text-white rounded-lg text-[10px] font-black">${tCajas} CAJAS</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="app.startWork('${g.id}')" class="flex flex-col items-center p-4 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase">
+                                <i class="ph-fill ph-play text-xl mb-1"></i>EMPEZAR
+                            </button>
+                            <button class="flex flex-col items-center p-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase">
+                                <i class="ph-fill ph-file-pdf text-xl mb-1"></i>REPORTE
+                            </button>
+                        </div>
+                    </div>`;
                 });
-                feed.innerHTML = html || '<p class="py-20 text-center opacity-30 font-bold uppercase tracking-widest">No se encontraron resultados</p>';
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-30 font-bold">CARGANDO O SIN DATOS...</div>';
             },
 
-            openWork(id) {
-                const items = this.db.filter(i => i.contenedor.toString() === id);
-                document.getElementById('workTitle').innerText = `ID: ${id}`;
-                document.getElementById('workList').innerHTML = items.map((item, idx) => `
-                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                        <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || '...'}</p>
-                        </div>
-                        <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                            <button onclick="App.adjust('${id}', ${idx}, -1)" class="w-10 h-10 bg-white rounded-xl font-black text-slate-400 shadow-sm">-</button>
-                            <span class="w-8 text-center font-800 text-lg text-slate-900">${item.cantidad || 0}</span>
-                            <button onclick="App.adjust('${id}', ${idx}, 1)" class="w-10 h-10 bg-slate-900 text-white rounded-xl font-black shadow-md">+</button>
+            startWork: function(id) {
+                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
+                document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
+                document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl mb-3 border border-slate-100">
+                        <div class="flex-1"><p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p><p class="text-xs font-bold text-slate-800 uppercase">${item.descripcion || '...'}</p></div>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
+                            <button onclick="app.adjust('${id}', ${idx}, -1)" class="w-10 h-10 bg-slate-100 rounded-lg font-black">-</button>
+                            <span class="w-8 text-center font-900 text-lg text-blue-600">${item.cantidad || 0}</span>
+                            <button onclick="app.adjust('${id}', ${idx}, 1)" class="w-10 h-10 bg-blue-600 text-white rounded-lg font-black">+</button>
                         </div>
                     </div>`).join('');
-                document.getElementById('workView').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                document.getElementById('view-counter').style.display = 'flex';
             },
 
-            adjust(id, idx, val) {
-                const filtered = this.db.filter(i => i.contenedor.toString() === id);
-                filtered[idx].cantidad = Math.max(0, (parseInt(filtered[idx].cantidad) || 0) + val);
-                this.openWork(id);
+            adjust: function(id, idx, val) {
+                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
+                filtrados[idx].cantidad = Math.max(0, (parseInt(filtrados[idx].cantidad) || 0) + val);
+                this.startWork(id);
             },
 
-            saveWork() {
-                localStorage.setItem('twins_elite_pro_v12', JSON.stringify(this.db));
+            saveWork: function() {
+                localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                 this.render();
-                this.closeWork();
+                this.closeCounter();
             },
 
-            closeWork() { document.getElementById('workView').style.display = 'none'; document.body.style.overflow = 'auto'; }
+            closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
         };
 
-        window.onload = () => { App.sync(); App.render(); };
+        window.onload = () => { app.sync(); app.render(); };
+        setInterval(() => app.sync(), 30000); // Sincroniza cada 30 segundos en total silencio
     </script>
 </body>
 </html>
