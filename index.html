@@ -3,260 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite Pro - Gestión de Contenedores</title>
+    <title>Twins Elite - Flujo Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .aura-card { border-radius: 24px; border: 1px solid #f1f5f9; }
+        .btn-press:active { transform: scale(0.96); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .aura-card { border-radius: 28px; transition: all 0.2s ease; }
-        .btn-press:active { transform: scale(0.95); }
-        .tab-active { background: #0f172a; color: white; }
+        .bg-blur { backdrop-filter: blur(12px); background: rgba(255,255,255,0.8); }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900">
+<body class="bg-[#FDFDFD] text-slate-900">
 
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 p-4">
+    <header class="sticky top-0 z-50 bg-blur border-b border-slate-100 p-5">
         <div class="flex justify-between items-center max-w-xl mx-auto">
             <div>
-                <h1 class="font-[900] text-2xl tracking-tighter italic text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Inventory Management v2.0</p>
+                <h1 class="font-extrabold text-xl tracking-tighter">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <div class="flex items-center gap-1.5">
+                    <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    <span id="sync-text" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Sincronizado</span>
+                </div>
             </div>
-            <button onclick="loadData()" class="w-11 h-11 bg-slate-100 rounded-2xl flex items-center justify-center btn-press shadow-sm">
-                <i class="ph-bold ph-arrows-clockwise text-slate-600"></i>
-            </button>
+            <div id="week-indicator" class="bg-slate-900 text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
+                Cargando Semana...
+            </div>
         </div>
     </header>
 
     <main class="p-4 max-w-xl mx-auto pb-32">
         
-        <div id="search-section" class="mb-6 space-y-3">
-            <div class="relative">
-                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="search-input" oninput="applyFilters()" placeholder="Buscar producto, código o contenedor..." 
-                    class="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-            </div>
-
-            <div class="flex gap-2">
-                <select id="filter-month" onchange="applyFilters()" class="flex-1 bg-white border border-slate-200 rounded-2xl py-3 px-4 text-xs font-bold text-slate-600 outline-none shadow-sm">
-                    <option value="ALL">Todos los Meses</option>
-                    <option value="01">Enero</option>
-                    <option value="02">Febrero</option>
-                    <option value="03">Marzo</option>
-                </select>
-                <input type="number" id="filter-day" oninput="applyFilters()" placeholder="Día" min="1" max="31"
-                    class="w-20 bg-white border border-slate-200 rounded-2xl py-3 px-4 text-xs font-bold text-center outline-none shadow-sm">
-            </div>
+        <div class="mb-8 relative">
+            <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Buscar por código, descripción o fecha..." 
+                class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none transition-all">
         </div>
 
-        <div id="operations-list" class="space-y-5">
+        <div class="flex items-center justify-between mb-4 px-1">
+            <h2 id="section-title" class="text-xs font-black text-slate-400 uppercase tracking-widest">Semana Actual</h2>
+            <i class="ph-bold ph-calendar-blank text-slate-300"></i>
+        </div>
+
+        <div id="operations-list" class="space-y-4">
             </div>
 
-        <div id="view-counting" class="fixed inset-0 bg-[#F8FAFC] z-[60] hidden overflow-y-auto p-4">
-            <div class="max-w-xl mx-auto">
-                <button onclick="closeCounting()" class="mb-6 flex items-center gap-2 text-slate-500 font-extrabold text-[10px] uppercase tracking-widest bg-white px-4 py-2 rounded-full shadow-sm">
-                    <i class="ph-bold ph-arrow-left"></i> Volver al Panel
-                </button>
-                
-                <div id="container-header" class="mb-8"></div>
-                <div id="items-list" class="space-y-4 pb-40"></div>
+    </main>
 
-                <div id="footer-action" class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-100 hidden">
-                    <div class="max-w-xl mx-auto">
-                        <button onclick="finalizeProcess()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-[900] text-sm uppercase tracking-widest shadow-xl shadow-blue-200 btn-press">
-                            Guardar Cambios en Excel
-                        </button>
-                    </div>
+    <div id="view-counting" class="fixed inset-0 bg-white z-[60] hidden overflow-y-auto p-4">
+        <div class="max-w-xl mx-auto">
+            <button onclick="closeCounting()" class="mb-6 flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest">
+                <i class="ph-bold ph-arrow-left"></i> Volver
+            </button>
+            <div id="container-header" class="mb-8"></div>
+            <div id="items-list" class="space-y-4 pb-40"></div>
+            <div id="footer-action" class="fixed bottom-0 left-0 right-0 p-6 bg-blur border-t border-slate-50 hidden">
+                <div class="max-w-xl mx-auto">
+                    <button id="save-btn" onclick="finalizeProcess()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-200 btn-press">
+                        Guardar en Almacén
+                    </button>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
         let master_data = [];
-        let filtered_data = [];
+        let isSearchActive = false;
 
-        async function loadData() {
-            const list = document.getElementById('operations-list');
-            list.innerHTML = `<div class="text-center py-20 opacity-50"><i class="ph-bold ph-circle-notch animate-spin text-4xl"></i></div>`;
+        // 1. OBTENER NÚMERO DE SEMANA
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        }
+
+        // 2. CARGA INVISIBLE
+        async function loadData(silent = false) {
+            const dot = document.getElementById('sync-dot');
+            const text = document.getElementById('sync-text');
+            
+            if(!silent) dot.classList.replace('bg-green-500', 'bg-amber-500');
+            
             try {
                 const res = await fetch(WEB_APP_URL);
                 const data = await res.json();
                 master_data = data.historial;
-                applyFilters();
-            } catch (e) { alert("Error de conexión"); }
+                dot.classList.replace('bg-amber-500', 'bg-green-500');
+                text.innerText = "Sincronizado";
+                if(!isSearchActive) renderDefaultView();
+            } catch (e) {
+                dot.classList.replace('bg-green-500', 'bg-red-500');
+                text.innerText = "Modo Offline";
+                console.log("Error de conexión silencioso");
+            }
         }
 
-        function applyFilters() {
-            const search = document.getElementById('search-input').value.toLowerCase();
-            const month = document.getElementById('filter-month').value;
-            const day = document.getElementById('filter-day').value;
+        // 3. LÓGICA DE VISUALIZACIÓN POR SEMANAS
+        function renderDefaultView() {
+            const list = document.getElementById('operations-list');
+            const title = document.getElementById('section-title');
+            const weekIndicator = document.getElementById('week-indicator');
 
-            // Agrupamos primero para filtrar por contenedor
-            const grouped = master_data.reduce((acc, curr) => {
-                const id = curr.operacion;
-                if (!acc[id]) acc[id] = { ...curr, items: [] };
-                acc[id].items.push(curr);
+            // Agrupamos por semana
+            const groupedByWeek = master_data.reduce((acc, curr) => {
+                const [d, m, y] = curr.operacion.match(/\d{2}\/\d{2}/)[0].split('/');
+                const dateObj = new Date(2026, parseInt(m)-1, parseInt(d));
+                const week = getWeekNumber(dateObj);
+                if(!acc[week]) acc[week] = [];
+                acc[week].push(curr);
                 return acc;
             }, {});
 
-            const results = Object.values(grouped).filter(op => {
-                const [d, m] = op.operacion.match(/\d{2}\/\d{2}/)[0].split('/');
-                const matchesSearch = op.operacion.toLowerCase().includes(search) || 
-                                     op.items.some(i => i.sku.toLowerCase().includes(search) || i.descripcion.toLowerCase().includes(search));
-                const matchesMonth = month === 'ALL' || m === month;
-                const matchesDay = !day || d === day.padStart(2, '0');
-                
-                return matchesSearch && matchesMonth && matchesDay;
-            });
+            const currentWeek = getWeekNumber(new Date());
+            const availableWeeks = Object.keys(groupedByWeek).sort((a,b) => b-a);
+            
+            // Si la semana actual no tiene nada, tomamos la última disponible
+            const weekToShow = groupedByWeek[currentWeek] ? currentWeek : availableWeeks[0];
+            
+            weekIndicator.innerText = `Semana ${weekToShow}`;
+            title.innerText = weekToShow == currentWeek ? "Ingresos de esta semana" : "Últimos ingresos registrados";
 
-            renderCards(results);
+            renderCards(groupById(groupedByWeek[weekToShow]));
+        }
+
+        function groupById(flatArray) {
+            return Object.values(flatArray.reduce((acc, curr) => {
+                if(!acc[curr.operacion]) acc[curr.operacion] = { ...curr, items: [] };
+                acc[curr.operacion].items.push(curr);
+                return acc;
+            }, {}));
+        }
+
+        function handleSearch() {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            const list = document.getElementById('operations-list');
+            const title = document.getElementById('section-title');
+
+            if(val.length > 0) {
+                isSearchActive = true;
+                title.innerText = "Resultados de búsqueda";
+                const filtered = master_data.filter(i => 
+                    i.operacion.toLowerCase().includes(val) || 
+                    i.sku.toLowerCase().includes(val) || 
+                    i.descripcion.toLowerCase().includes(val)
+                );
+                renderCards(groupById(filtered));
+            } else {
+                isSearchActive = false;
+                renderDefaultView();
+            }
         }
 
         function renderCards(data) {
             const list = document.getElementById('operations-list');
-            if (data.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-slate-400 font-bold text-xs uppercase">No se encontraron resultados</div>`;
-                return;
-            }
-
             list.innerHTML = data.map(op => `
-                <div class="aura-card bg-white p-6 shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="aura-card bg-white p-5 shadow-sm active:bg-slate-50 transition-colors" onclick="openAction('${op.operacion}', '${op.estado === 'COMPLETADO' ? 'VIEW' : 'COUNT'}')">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="w-2 h-2 rounded-full ${op.estado === 'COMPLETADO' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse"></span>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${op.estado}</span>
+                            <h3 class="font-extrabold text-lg text-slate-800 leading-tight">${op.operacion}</h3>
+                            <div class="flex gap-3 mt-1">
+                                <span class="text-[9px] font-black uppercase text-slate-400">${op.items.length} SKUs</span>
+                                <span class="text-[9px] font-black uppercase ${op.canal === 'ROJO' ? 'text-red-500' : 'text-green-500'}">● Canal ${op.canal}</span>
                             </div>
-                            <h3 class="font-[900] text-xl text-slate-800 leading-tight">${op.operacion}</h3>
                         </div>
-                        <div class="text-right">
-                             <span class="px-3 py-1 rounded-lg text-[10px] font-black ${op.canal === 'ROJO' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}">CANAL ${op.canal}</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mb-6">
-                        <div class="bg-slate-50 p-3 rounded-2xl">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Productos</p>
-                            <p class="text-sm font-black text-slate-700">${op.items.length} SKUs</p>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-2xl">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Total Cajas</p>
-                            <p class="text-sm font-black text-slate-700">${op.items.reduce((a,b)=>a+b.meta,0)}</p>
+                        <div class="flex flex-col items-end">
+                            <span class="px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter ${op.estado === 'COMPLETADO' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">
+                                ${op.estado}
+                            </span>
                         </div>
                     </div>
-
-                    <div class="flex flex-col gap-2">
-                        ${op.estado === 'COMPLETADO' ? `
-                            <div class="grid grid-cols-3 gap-2">
-                                <button onclick="openAction('${op.operacion}', 'EDIT')" class="bg-slate-100 text-slate-600 py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter btn-press">Corregir</button>
-                                <button onclick="openAction('${op.operacion}', 'VIEW')" class="bg-slate-100 text-slate-600 py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter btn-press">Ver Lista</button>
-                                <button onclick="generatePDF('${op.operacion}')" class="bg-red-50 text-red-600 py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter btn-press">PDF</button>
-                            </div>
-                        ` : `
-                            <button onclick="openAction('${op.operacion}', 'COUNT')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[11px] font-[900] uppercase tracking-widest btn-press shadow-lg shadow-slate-200">Iniciar Conteo</button>
-                        `}
-                    </div>
+                    ${op.estado === 'COMPLETADO' ? `
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-slate-50">
+                            <button class="flex-1 bg-slate-50 text-slate-500 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest">Corregir</button>
+                            <button class="flex-1 bg-red-50 text-red-600 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest">Reporte PDF</button>
+                        </div>
+                    ` : ''}
                 </div>
             `).join('');
         }
 
-        let current_op = null;
-        let mode = 'VIEW';
+        // (Las funciones openAction, renderItems, updateQty y finalizeProcess son iguales a la versión anterior, solo asegúrate de pegarlas aquí)
+        // ... (Insertar aquí las funciones del mensaje anterior para manejar el conteo) ...
 
-        function openAction(id, actionMode) {
-            mode = actionMode;
-            current_op = { 
-                id: id, 
-                items: JSON.parse(JSON.stringify(master_data.filter(i => i.operacion === id))) 
-            };
-            
-            document.getElementById('view-counting').classList.remove('hidden');
-            document.getElementById('footer-action').classList.toggle('hidden', mode === 'VIEW');
-            
-            document.getElementById('container-header').innerHTML = `
-                <div class="flex justify-between items-end">
-                    <div>
-                        <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">${mode === 'COUNT' ? 'Modo Conteo' : mode === 'EDIT' ? 'Modo Corrección' : 'Vista de Solo Lectura'}</p>
-                        <h2 class="text-3xl font-[900] text-slate-900">${id}</h2>
-                    </div>
-                </div>
-            `;
-            renderItems();
-        }
-
-        function renderItems() {
-            const list = document.getElementById('items-list');
-            list.innerHTML = current_op.items.map(item => `
-                <div class="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm">
-                    <div class="flex justify-between mb-4">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-slate-400 uppercase">${item.sku}</p>
-                            <h4 class="font-bold text-sm text-slate-700 leading-tight">${item.descripcion}</h4>
-                        </div>
-                        <div class="text-right ml-4">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Meta</p>
-                            <p class="font-black text-lg text-slate-800">${item.meta}</p>
-                        </div>
-                    </div>
-
-                    ${mode !== 'VIEW' ? `
-                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                            <button onclick="updateQty('${item.sku}', -1)" class="w-12 h-12 bg-white rounded-xl shadow-sm font-black text-xl btn-press">-</button>
-                            <div class="text-center">
-                                <span class="text-2xl font-black ${item.real >= item.meta ? 'text-green-600' : 'text-slate-900'}">${item.real}</span>
-                            </div>
-                            <button onclick="updateQty('${item.sku}', 1)" class="w-12 h-12 bg-slate-900 text-white rounded-xl shadow-sm font-black text-xl btn-press">+</button>
-                        </div>
-                    ` : `
-                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 flex justify-between items-center">
-                            <span class="text-[10px] font-black text-green-700 uppercase tracking-widest text-center">Conteo Registrado</span>
-                            <span class="text-xl font-black text-green-700">${item.real}</span>
-                        </div>
-                    `}
-                </div>
-            `).join('');
-        }
-
-        function updateQty(sku, val) {
-            const item = current_op.items.find(i => i.sku === sku);
-            if(item) {
-                item.real = Math.max(0, item.real + val);
-                renderItems();
-            }
-        }
-
-        function closeCounting() {
-            document.getElementById('view-counting').classList.add('hidden');
-        }
-
-        async function finalizeProcess() {
-            if(!confirm("¿Confirmas la actualización de datos en el Excel?")) return;
-            const btn = event.target;
-            btn.disabled = true; btn.innerHTML = "Sincronizando...";
-            
-            try {
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: 'FINALIZE',
-                        id: current_op.id,
-                        items: JSON.stringify(current_op.items.map(i => ({sku: i.sku, r: i.real})))
-                    })
-                });
-                alert("Actualizado correctamente.");
-                closeCounting();
-                loadData();
-            } catch (e) { alert("Error al guardar"); btn.disabled = false; }
-        }
-
-        function generatePDF(id) {
-             alert("Generando PDF para: " + id + "...\n(Aquí se integraría la lógica de PDF)");
-        }
-
-        window.onload = loadData;
+        // AUTO-SYNC CADA 30 SEGUNDOS
+        setInterval(() => loadData(true), 30000);
+        window.onload = () => loadData();
     </script>
 </body>
 </html>
