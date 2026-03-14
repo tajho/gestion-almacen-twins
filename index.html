@@ -3,16 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite | Inventario</title>
+    <title>Twins Elite | Smart Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E2E8F0; }
-        .card-container { background: white; border-radius: 28px; border: 1px solid #E2E8F0; }
-        .month-divider { @apply sticky top-[110px] z-40 bg-slate-900 py-3 px-6 my-4 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg; }
-        .work-mode { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #F8FAFC; 
+            color: #0F172A; 
+            overscroll-behavior: none;
+        }
+
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid #E2E8F0; 
+        }
+
+        .card-container { 
+            background: white; 
+            border-radius: 28px; 
+            border: 1px solid #E2E8F0; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .month-divider {
+            @apply sticky top-[100px] z-40 bg-slate-900 py-3 px-6 my-6 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center justify-between shadow-lg;
+        }
+
+        .btn-status { 
+            @apply flex flex-col items-center justify-center gap-2 p-5 rounded-[24px] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest border; 
+        }
+
+        .work-mode {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 100;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body class="antialiased">
@@ -24,12 +59,12 @@
                     <h1 class="text-2xl font-800 tracking-tighter italic leading-none">TWINS <span class="text-blue-600">ELITE</span></h1>
                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic mt-1">J. Angelo Nuñez Durand</p>
                 </div>
-                <div id="syncIndicator" class="w-1.5 h-1.5 bg-blue-500 rounded-full opacity-0"></div>
+                <div id="syncIndicator" class="w-3 h-3 bg-blue-500 rounded-full opacity-0 transition-opacity"></div>
             </div>
         </header>
 
         <main class="max-w-xl mx-auto p-6">
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-white p-5 rounded-[26px] border border-slate-200 shadow-sm flex flex-col items-center text-center">
                     <i class="ph-bold ph-shipping-container text-blue-600 text-xl mb-2"></i>
                     <p class="text-[9px] font-black text-slate-400 uppercase">Contenedores</p>
@@ -43,62 +78,88 @@
             </div>
 
             <div class="space-y-3 mb-8">
-                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." class="w-full px-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." 
+                    class="w-full pl-12 pr-6 py-5 rounded-[24px] bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+                    <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                </div>
+                
                 <select id="monthFilter" onchange="app.render()" class="w-full p-5 px-6 rounded-[24px] bg-white border border-slate-200 shadow-sm font-800 text-[10px] uppercase text-slate-500 outline-none appearance-none tracking-widest">
                     <option value="ALL">TODOS LOS MESES</option>
-                    <option value="0">ENERO</option><option value="1">FEBRERO</option><option value="2">MARZO</option>
-                    <option value="3">ABRIL</option><option value="4">MAYO</option><option value="5">JUNIO</option>
-                    <option value="6">JULIO</option><option value="7">AGOSTO</option><option value="8">SEPTIEMBRE</option>
-                    <option value="9">OCTUBRE</option><option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
+                    <option value="0">ENERO</option><option value="1">FEBRERO</option>
+                    <option value="2">MARZO</option><option value="3">ABRIL</option>
+                    <option value="4">MAYO</option><option value="5">JUNIO</option>
+                    <option value="6">JULIO</option><option value="7">AGOSTO</option>
+                    <option value="8">SEPTIEMBRE</option><option value="9">OCTUBRE</option>
+                    <option value="10">NOVIEMBRE</option><option value="11">DICIEMBRE</option>
                 </select>
             </div>
 
-            <div id="feed" class="space-y-4 pb-20"></div>
+            <div id="feed" class="space-y-4 pb-24"></div>
         </main>
     </div>
 
     <div id="view-counter" class="work-mode">
         <header class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
             <div>
-                <h2 class="text-xl font-900 uppercase tracking-tighter" id="counter-title">...</h2>
+                <h2 class="text-xl font-900 uppercase tracking-tighter" id="counter-title">Contenedor</h2>
                 <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Revisión autorizada por J. Angelo Nuñez Durand</p>
             </div>
-            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
+            <button onclick="app.closeCounter()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
         </header>
-        <div id="counterList" class="flex-1 overflow-y-auto p-6"></div>
+
+        <div id="counterList" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+
         <div class="p-6 bg-white border-t border-slate-100">
-            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl">Finalizar Conteo</button>
+            <button onclick="app.saveWork()" class="w-full py-5 bg-blue-600 text-white rounded-[24px] font-900 text-xs uppercase tracking-[0.2em] shadow-xl">
+                Finalizar y Guardar
+            </button>
         </div>
     </div>
 
     <script>
         const app = {
-            data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
-            
-            // CORRECCIÓN LITERAL DE FECHA Y MES
-            parseFechaCorrecta: function(raw) {
-                if(!raw) return { label: "S/F", month: -1, year: 2026 };
-                let s = raw.toString().split('T')[0];
-                let p = s.includes('-') ? s.split('-') : s.split('/');
+            apiUrl: "https://script.google.com/macros/s/AKfycbw94DXCVXFF6RXABQGROvfNPq1evWuOFOZjDaVKQdumIlyyIcim4ovJ9jib6x2ZE9br/exec",
+            data: JSON.parse(localStorage.getItem('twins_elite_db')) || [],
+
+            // Función Maestra de Fechas: Limpia y detecta el mes real
+            processDate: function(str) {
+                if(!str) return { label: "S/F", month: 0, year: 2026, sort: 0 };
+                let clean = str.toString().split('T')[0];
+                let p = clean.includes('-') ? clean.split('-') : clean.split('/');
                 
                 let d, m, y;
+                // Formato YYYY-MM-DD
                 if(p[0].length === 4) { y = parseInt(p[0]); m = parseInt(p[1]) - 1; d = parseInt(p[2]); }
-                else { d = parseInt(p[0]); m = parseInt(p[1]) - 1; y = (p[2].length === 2 ? 2000 + parseInt(p[2]) : parseInt(p[2])); }
+                // Formato DD/MM/YYYY
+                else { d = parseInt(p[0]); m = parseInt(p[1]) - 1; y = p[2].length === 2 ? 2000+parseInt(p[2]) : parseInt(p[2]); }
 
-                return { label: `${d}/${m+1}/${y}`, month: m, year: y, sortKey: new Date(y, m, d).getTime() };
+                const dateObj = new Date(y, m, d);
+                return { 
+                    label: `${d}/${m+1}/${y}`, 
+                    month: m, 
+                    year: y, 
+                    sort: dateObj.getTime() 
+                };
             },
 
             sync: async function() {
                 const dot = document.getElementById('syncIndicator');
-                dot.style.opacity = "1";
+                dot.classList.add('opacity-100', 'animate-pulse');
                 try {
-                    const res = await fetch("https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec");
+                    const res = await fetch(this.apiUrl);
                     const json = await res.json();
                     this.data = Array.isArray(json) ? json : (json.historial || []);
-                    localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
+                    localStorage.setItem('twins_elite_db', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { console.log("Caché activa"); }
-                finally { setTimeout(() => dot.style.opacity = "0", 1000); }
+                } catch(e) { console.warn("Modo Offline"); }
+                finally { 
+                    setTimeout(() => {
+                        dot.classList.remove('opacity-100', 'animate-pulse');
+                    }, 2000);
+                }
             },
 
             render: function() {
@@ -107,31 +168,35 @@
                 const mFilter = document.getElementById('monthFilter').value;
                 const mNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
+                // Agrupación por Contenedor
                 const groups = this.data.reduce((acc, item) => {
-                    const id = (item.canal || item.CONTENEDOR || "S/N").toString().split('T')[0];
-                    const f = this.parseFechaCorrecta(item.almacen || item.FECHA);
+                    const id = (item.contenedor || item.canal || "S/N").toString().split('T')[0];
+                    const f = this.processDate(item.almacen || item.fecha);
                     
-                    if (JSON.stringify(item).toLowerCase().includes(search) && (mFilter === "ALL" || f.month.toString() === mFilter)) {
+                    const matchSearch = JSON.stringify(item).toLowerCase().includes(search);
+                    const matchMonth = (mFilter === "ALL" || f.month.toString() === mFilter);
+
+                    if (matchSearch && matchMonth) {
                         if (!acc[id]) acc[id] = { id, f, items: [] };
                         acc[id].items.push(item);
                     }
                     return acc;
                 }, {});
 
-                const sorted = Object.values(groups).sort((a,b) => b.f.sortKey - a.f.sortKey);
+                const sorted = Object.values(groups).sort((a,b) => b.f.sort - a.f.sort);
                 
-                // ACTUALIZACIÓN DE CONTADORES REALES
+                // Actualizar contadores globales
                 document.getElementById('dash-total-cont').innerText = sorted.length;
                 document.getElementById('dash-total-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
 
                 let html = '';
-                let lastM = '';
+                let lastMonthKey = '';
 
                 sorted.forEach(g => {
-                    const mKey = `${mNames[g.f.month]} ${g.f.year}`;
-                    if (mKey !== lastM) {
-                        html += `<div class="month-divider"><span>${mKey}</span><i class="ph-bold ph-calendar"></i></div>`;
-                        lastM = mKey;
+                    const monthKey = `${mNames[g.f.month]} ${g.f.year}`;
+                    if (monthKey !== lastMonthKey) {
+                        html += `<div class="month-divider"><span>${monthKey}</span><i class="ph-bold ph-calendar-blank"></i></div>`;
+                        lastMonthKey = monthKey;
                     }
 
                     const tCajas = g.items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
@@ -140,56 +205,71 @@
                     <div class="card-container p-6 mb-4">
                         <div class="flex justify-between items-start mb-6">
                             <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase">ALMACÉN: ${g.f.label}</p>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">REGISTRO: ${g.f.label}</p>
                                 <h3 class="text-xl font-900 text-slate-900 uppercase">CONTENEDOR ${g.id}</h3>
                             </div>
-                            <div class="px-3 py-1 ${tCajas > 0 ? 'bg-blue-600' : 'bg-slate-200'} text-white rounded-lg text-[10px] font-black">${tCajas} CAJAS</div>
+                            <div class="px-3 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-black">${tCajas} CAJAS</div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <button onclick="app.startWork('${g.id}')" class="flex flex-col items-center p-4 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest">
-                                <i class="ph-fill ph-play text-xl mb-1"></i>EMPEZAR
+                            <button onclick="app.startWork('${g.id}')" class="btn-status bg-blue-50 text-blue-600 border-blue-100">
+                                <i class="ph-fill ph-play text-xl"></i>EMPEZAR
                             </button>
-                            <button class="flex flex-col items-center p-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest">
-                                <i class="ph-fill ph-file-pdf text-xl mb-1"></i>REPORTE
+                            <button class="btn-status bg-slate-50 text-slate-400 border-slate-100">
+                                <i class="ph-fill ph-file-pdf text-xl"></i>PDF
                             </button>
                         </div>
                     </div>`;
                 });
-                feed.innerHTML = html || '<p class="text-center py-10 opacity-30">SIN REGISTROS</p>';
+
+                feed.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black text-xs uppercase">Sin registros</div>';
             },
 
             startWork: function(id) {
-                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
+                const filtrados = this.data.filter(i => (i.contenedor || i.canal || "").toString().includes(id));
                 document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
-                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl mb-3 border border-slate-100">
-                        <div class="flex-1"><p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p><p class="text-xs font-bold text-slate-800 uppercase">${item.descripcion || '...'}</p></div>
-                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                        <div class="flex-1 pr-4">
+                            <p class="text-[10px] font-black text-blue-600 mb-1">${item.codigo || 'S/C'}</p>
+                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight">${item.descripcion || 'Sin descripción'}</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm border border-slate-100">
                             <button onclick="app.adjust('${id}', ${idx}, -1)" class="w-10 h-10 bg-slate-100 rounded-lg font-black">-</button>
                             <span class="w-8 text-center font-900 text-lg text-blue-600">${item.cantidad || 0}</span>
                             <button onclick="app.adjust('${id}', ${idx}, 1)" class="w-10 h-10 bg-blue-600 text-white rounded-lg font-black">+</button>
                         </div>
                     </div>`).join('');
                 document.getElementById('view-counter').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             },
 
             adjust: function(id, idx, val) {
-                const filtrados = this.data.filter(i => (i.canal || i.CONTENEDOR || "").toString().includes(id));
-                filtrados[idx].cantidad = Math.max(0, (parseInt(filtrados[idx].cantidad) || 0) + val);
-                this.startWork(id);
+                const filtrados = this.data.filter(i => (i.contenedor || i.canal || "").toString().includes(id));
+                let current = parseInt(filtrados[idx].cantidad || 0);
+                filtrados[idx].cantidad = Math.max(0, current + val);
+                this.startWork(id); // Refresca lista de conteo
             },
 
             saveWork: function() {
-                localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
+                localStorage.setItem('twins_elite_db', JSON.stringify(this.data));
                 this.render();
                 this.closeCounter();
             },
 
-            closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
+            closeCounter: function() {
+                document.getElementById('view-counter').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         };
 
-        window.onload = () => { app.sync(); app.render(); };
-        setInterval(() => app.sync(), 60000); // Sync invisible cada minuto
+        // Inicio automático
+        window.onload = () => {
+            app.render();
+            app.sync(); // Sincronización invisible al cargar
+        };
+        
+        // Sincronización en segundo plano cada 60 segundos
+        setInterval(() => app.sync(), 60000);
     </script>
 </body>
 </html>
