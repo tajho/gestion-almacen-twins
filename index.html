@@ -3,64 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Flujo Inteligente</title>
+    <title>Twins Elite - Premium Inventory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .aura-card { border-radius: 24px; border: 1px solid #f1f5f9; }
-        .btn-press:active { transform: scale(0.96); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FBFBFE; }
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #F1F5F9; }
+        .premium-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 32px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .premium-card:active { transform: scale(0.98); box-shadow: 0 2px 10px -2px rgba(0,0,0,0.05); }
+        .btn-action { border-radius: 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .bg-blur { backdrop-filter: blur(12px); background: rgba(255,255,255,0.8); }
     </style>
 </head>
-<body class="bg-[#FDFDFD] text-slate-900">
+<body class="text-slate-900">
 
-    <header class="sticky top-0 z-50 bg-blur border-b border-slate-100 p-5">
-        <div class="flex justify-between items-center max-w-xl mx-auto">
+    <header class="glass-header sticky top-0 z-50 p-6">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="font-extrabold text-xl tracking-tighter">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <div class="flex items-center gap-1.5">
-                    <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    <span id="sync-text" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Sincronizado</span>
+                <h1 class="text-2xl font-[800] tracking-tighter text-slate-900">TWINS <span class="text-blue-600">ELITE</span></h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <div id="sync-indicator" class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                    <span id="sync-status" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">En línea</span>
                 </div>
             </div>
-            <div id="week-indicator" class="bg-slate-900 text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                Cargando Semana...
+            <div id="week-tag" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-2xl text-[10px] font-extrabold uppercase tracking-tight border border-blue-100">
+                Semana --
             </div>
         </div>
     </header>
 
-    <main class="p-4 max-w-xl mx-auto pb-32">
+    <main class="p-5 max-w-xl mx-auto pb-40">
         
-        <div class="mb-8 relative">
-            <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Buscar por código, descripción o fecha..." 
-                class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+        <div class="relative mb-10">
+            <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-lg"></i>
+            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Buscar contenedor, SKU o fecha..." 
+                class="w-full bg-white border border-slate-100 rounded-[24px] py-5 pl-14 pr-6 text-sm font-medium shadow-sm focus:ring-4 focus:ring-blue-500/5 outline-none transition-all placeholder:text-slate-300">
         </div>
 
-        <div class="flex items-center justify-between mb-4 px-1">
-            <h2 id="section-title" class="text-xs font-black text-slate-400 uppercase tracking-widest">Semana Actual</h2>
-            <i class="ph-bold ph-calendar-blank text-slate-300"></i>
-        </div>
-
-        <div id="operations-list" class="space-y-4">
+        <div id="section-title" class="px-2 mb-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Cargando inventario...</div>
+        
+        <div id="operations-list" class="space-y-6">
             </div>
 
     </main>
 
-    <div id="view-counting" class="fixed inset-0 bg-white z-[60] hidden overflow-y-auto p-4">
+    <div id="view-counting" class="fixed inset-0 bg-white z-[60] hidden overflow-y-auto px-5 py-8">
         <div class="max-w-xl mx-auto">
-            <button onclick="closeCounting()" class="mb-6 flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest">
-                <i class="ph-bold ph-arrow-left"></i> Volver
+            <button onclick="closeModal()" class="mb-8 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
+                <i class="ph-bold ph-arrow-left text-xl"></i>
             </button>
-            <div id="container-header" class="mb-8"></div>
-            <div id="items-list" class="space-y-4 pb-40"></div>
-            <div id="footer-action" class="fixed bottom-0 left-0 right-0 p-6 bg-blur border-t border-slate-50 hidden">
+            <div id="modal-header" class="mb-10"></div>
+            <div id="modal-items" class="space-y-4 pb-48"></div>
+            
+            <div id="modal-footer" class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-50 hidden">
                 <div class="max-w-xl mx-auto">
-                    <button id="save-btn" onclick="finalizeProcess()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-200 btn-press">
-                        Guardar en Almacén
+                    <button onclick="saveToExcel()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-blue-100 active:scale-95 transition-transform">
+                        Confirmar Cambios
                     </button>
                 </div>
             </div>
@@ -70,127 +69,204 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
         let master_data = [];
-        let isSearchActive = false;
+        let is_searching = false;
 
-        // 1. OBTENER NÚMERO DE SEMANA
-        function getWeekNumber(d) {
+        async function loadData(silent = false) {
+            const indicator = document.getElementById('sync-indicator');
+            const status = document.getElementById('sync-status');
+            
+            if(!silent) indicator.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+            
+            try {
+                const res = await fetch(WEB_APP_URL);
+                const data = await res.json();
+                master_data = data.historial;
+                indicator.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]";
+                status.innerText = "Sincronizado";
+                if(!is_searching) renderDefault();
+            } catch (e) {
+                indicator.className = "w-2 h-2 rounded-full bg-red-500";
+                status.innerText = "Offline";
+            }
+        }
+
+        function getWeek(d) {
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
             d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
             var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
             return Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
         }
 
-        // 2. CARGA INVISIBLE
-        async function loadData(silent = false) {
-            const dot = document.getElementById('sync-dot');
-            const text = document.getElementById('sync-text');
-            
-            if(!silent) dot.classList.replace('bg-green-500', 'bg-amber-500');
-            
-            try {
-                const res = await fetch(WEB_APP_URL);
-                const data = await res.json();
-                master_data = data.historial;
-                dot.classList.replace('bg-amber-500', 'bg-green-500');
-                text.innerText = "Sincronizado";
-                if(!isSearchActive) renderDefaultView();
-            } catch (e) {
-                dot.classList.replace('bg-green-500', 'bg-red-500');
-                text.innerText = "Modo Offline";
-                console.log("Error de conexión silencioso");
-            }
-        }
-
-        // 3. LÓGICA DE VISUALIZACIÓN POR SEMANAS
-        function renderDefaultView() {
+        function renderDefault() {
             const list = document.getElementById('operations-list');
             const title = document.getElementById('section-title');
-            const weekIndicator = document.getElementById('week-indicator');
+            const weekTag = document.getElementById('week-tag');
 
-            // Agrupamos por semana
-            const groupedByWeek = master_data.reduce((acc, curr) => {
-                const [d, m, y] = curr.operacion.match(/\d{2}\/\d{2}/)[0].split('/');
-                const dateObj = new Date(2026, parseInt(m)-1, parseInt(d));
-                const week = getWeekNumber(dateObj);
+            const grouped = master_data.reduce((acc, curr) => {
+                const match = curr.operacion.match(/\d{2}\/\d{2}/);
+                if(!match) return acc;
+                const [d, m] = match[0].split('/');
+                const week = getWeek(new Date(2026, m-1, d));
                 if(!acc[week]) acc[week] = [];
                 acc[week].push(curr);
                 return acc;
             }, {});
 
-            const currentWeek = getWeekNumber(new Date());
-            const availableWeeks = Object.keys(groupedByWeek).sort((a,b) => b-a);
-            
-            // Si la semana actual no tiene nada, tomamos la última disponible
-            const weekToShow = groupedByWeek[currentWeek] ? currentWeek : availableWeeks[0];
-            
-            weekIndicator.innerText = `Semana ${weekToShow}`;
-            title.innerText = weekToShow == currentWeek ? "Ingresos de esta semana" : "Últimos ingresos registrados";
+            const currentWeek = getWeek(new Date());
+            const availableWeeks = Object.keys(grouped).sort((a,b) => b-a);
+            const weekToShow = grouped[currentWeek] ? currentWeek : availableWeeks[0];
 
-            renderCards(groupById(groupedByWeek[weekToShow]));
+            weekTag.innerText = `Semana ${weekToShow}`;
+            title.innerText = weekToShow == currentWeek ? "Flujo de Trabajo Actual" : "Últimos ingresos de almacén";
+            
+            renderCards(groupById(grouped[weekToShow] || []));
         }
 
-        function groupById(flatArray) {
-            return Object.values(flatArray.reduce((acc, curr) => {
-                if(!acc[curr.operacion]) acc[curr.operacion] = { ...curr, items: [] };
-                acc[curr.operacion].items.push(curr);
+        function groupById(flat) {
+            return Object.values(flat.reduce((acc, c) => {
+                if(!acc[c.operacion]) acc[c.operacion] = { ...c, items: [] };
+                acc[c.operacion].items.push(c);
                 return acc;
             }, {}));
-        }
-
-        function handleSearch() {
-            const val = document.getElementById('search-input').value.toLowerCase();
-            const list = document.getElementById('operations-list');
-            const title = document.getElementById('section-title');
-
-            if(val.length > 0) {
-                isSearchActive = true;
-                title.innerText = "Resultados de búsqueda";
-                const filtered = master_data.filter(i => 
-                    i.operacion.toLowerCase().includes(val) || 
-                    i.sku.toLowerCase().includes(val) || 
-                    i.descripcion.toLowerCase().includes(val)
-                );
-                renderCards(groupById(filtered));
-            } else {
-                isSearchActive = false;
-                renderDefaultView();
-            }
         }
 
         function renderCards(data) {
             const list = document.getElementById('operations-list');
             list.innerHTML = data.map(op => `
-                <div class="aura-card bg-white p-5 shadow-sm active:bg-slate-50 transition-colors" onclick="openAction('${op.operacion}', '${op.estado === 'COMPLETADO' ? 'VIEW' : 'COUNT'}')">
-                    <div class="flex justify-between items-start">
+                <div class="premium-card p-7">
+                    <div class="flex justify-between items-start mb-6">
                         <div class="flex-1">
-                            <h3 class="font-extrabold text-lg text-slate-800 leading-tight">${op.operacion}</h3>
-                            <div class="flex gap-3 mt-1">
-                                <span class="text-[9px] font-black uppercase text-slate-400">${op.items.length} SKUs</span>
-                                <span class="text-[9px] font-black uppercase ${op.canal === 'ROJO' ? 'text-red-500' : 'text-green-500'}">● Canal ${op.canal}</span>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[9px] font-black uppercase tracking-widest ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'}">
+                                    ${op.estado === 'COMPLETADO' ? '● Registro Cerrado' : '● Ingreso Pendiente'}
+                                </span>
                             </div>
+                            <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">${op.operacion}</h3>
                         </div>
-                        <div class="flex flex-col items-end">
-                            <span class="px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter ${op.estado === 'COMPLETADO' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">
-                                ${op.estado}
-                            </span>
+                        <span class="bg-slate-900 text-white text-[8px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest">Canal ${op.canal}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-slate-50/50 p-4 rounded-[20px]">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Cajas Meta</p>
+                            <p class="text-lg font-extrabold text-slate-700">${op.items.reduce((a,b)=>a+b.meta,0)}</p>
+                        </div>
+                        <div class="bg-slate-50/50 p-4 rounded-[20px]">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Variedad</p>
+                            <p class="text-lg font-extrabold text-slate-700">${op.items.length} SKUs</p>
                         </div>
                     </div>
-                    ${op.estado === 'COMPLETADO' ? `
-                        <div class="flex gap-2 mt-4 pt-4 border-t border-slate-50">
-                            <button class="flex-1 bg-slate-50 text-slate-500 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest">Corregir</button>
-                            <button class="flex-1 bg-red-50 text-red-600 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest">Reporte PDF</button>
-                        </div>
-                    ` : ''}
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="openAction('${op.operacion}', 'EDIT')" class="btn-action bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-600 hover:text-white">
+                            <i class="ph-bold ph-pencil-simple text-base"></i>Corregir
+                        </button>
+                        <button onclick="openAction('${op.operacion}', 'VIEW')" class="btn-action bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-900 hover:text-white">
+                            <i class="ph-bold ph-list-bullets text-base"></i>Ver Lista
+                        </button>
+                        <button onclick="genPDF('${op.operacion}')" class="btn-action bg-red-50 text-red-600 border border-red-100 hover:bg-red-600 hover:text-white">
+                            <i class="ph-bold ph-file-pdf text-base"></i>PDF
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        // (Las funciones openAction, renderItems, updateQty y finalizeProcess son iguales a la versión anterior, solo asegúrate de pegarlas aquí)
-        // ... (Insertar aquí las funciones del mensaje anterior para manejar el conteo) ...
+        function handleSearch() {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            if(val.length > 0) {
+                is_searching = true;
+                const filtered = master_data.filter(i => i.operacion.toLowerCase().includes(val) || i.sku.toLowerCase().includes(val) || i.descripcion.toLowerCase().includes(val));
+                document.getElementById('section-title').innerText = "Resultados de búsqueda global";
+                renderCards(groupById(filtered));
+            } else {
+                is_searching = false;
+                renderDefault();
+            }
+        }
 
-        // AUTO-SYNC CADA 30 SEGUNDOS
-        setInterval(() => loadData(true), 30000);
-        window.onload = () => loadData();
+        let current_view_data = null;
+        let active_mode = 'VIEW';
+
+        function openAction(id, mode) {
+            active_mode = mode;
+            current_view_data = { id: id, items: JSON.parse(JSON.stringify(master_data.filter(i => i.operacion === id))) };
+            
+            document.getElementById('view-counting').classList.remove('hidden');
+            document.getElementById('modal-footer').classList.toggle('hidden', mode === 'VIEW');
+            
+            document.getElementById('modal-header').innerHTML = `
+                <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2">${mode === 'EDIT' ? 'Editor de Inventario' : 'Detalles del Ingreso'}</p>
+                <h2 class="text-4xl font-[800] text-slate-900 tracking-tighter">${id}</h2>
+            `;
+            renderModalItems();
+        }
+
+        function renderModalItems() {
+            const container = document.getElementById('modal-items');
+            container.innerHTML = current_view_data.items.map(item => `
+                <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-slate-300 uppercase mb-1">${item.sku}</p>
+                            <h4 class="font-bold text-slate-700 leading-tight">${item.descripcion}</h4>
+                        </div>
+                        <div class="bg-slate-50 px-3 py-2 rounded-xl text-center min-w-[60px]">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase">Meta</p>
+                            <p class="font-black text-slate-800">${item.meta}</p>
+                        </div>
+                    </div>
+                    
+                    ${active_mode === 'EDIT' ? `
+                        <div class="flex items-center justify-between gap-4">
+                            <button onclick="updateQty('${item.sku}', -1)" class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center font-black text-xl active:scale-90">-</button>
+                            <div class="flex-1 text-center">
+                                <span class="text-3xl font-black ${item.real >= item.meta ? 'text-green-500' : 'text-slate-900'}">${item.real}</span>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase">Cajas Contadas</p>
+                            </div>
+                            <button onclick="updateQty('${item.sku}', 1)" class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-xl active:scale-90">+</button>
+                        </div>
+                    ` : `
+                        <div class="flex justify-between items-center py-3 px-5 bg-green-50 rounded-2xl border border-green-100">
+                            <span class="text-[10px] font-black text-green-600 uppercase">Conteo Final</span>
+                            <span class="text-2xl font-black text-green-700">${item.real}</span>
+                        </div>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        function updateQty(sku, v) {
+            const i = current_view_data.items.find(x => x.sku === sku);
+            if(i) { i.real = Math.max(0, i.real + v); renderModalItems(); }
+        }
+
+        function closeModal() { document.getElementById('view-counting').classList.add('hidden'); }
+
+        async function saveToExcel() {
+            if(!confirm("¿Deseas actualizar el registro oficial en Excel?")) return;
+            const btn = event.target;
+            btn.disabled = true; btn.innerText = "Sincronizando...";
+            
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'FINALIZE',
+                        id: current_view_data.id,
+                        items: JSON.stringify(current_view_data.items.map(i => ({sku: i.sku, r: i.real})))
+                    })
+                });
+                closeModal();
+                loadData();
+            } catch (e) { btn.disabled = false; btn.innerText = "Error - Reintentar"; }
+        }
+
+        function genPDF(id) { alert("Generando Reporte Logístico de " + id); }
+
+        // SYNC SILENCIOSO CADA MINUTO
+        setInterval(() => loadData(true), 60000);
+        window.onload = loadData;
     </script>
 </body>
 </html>
