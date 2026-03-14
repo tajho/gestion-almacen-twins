@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Logística Pro</title>
+    <title>Aura Logistics - Twins Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         
-        /* SECCIONES POR MES */
-        .month-block { margin-bottom: 40px; }
-        .month-divider { 
-            position: sticky; top: 88px; z-index: 40;
-            background: rgba(248, 250, 252, 0.9); backdrop-filter: blur(8px);
-            padding: 12px 4px; font-size: 11px; font-weight: 900; 
-            color: #64748b; letter-spacing: 0.2em; text-transform: uppercase;
-            display: flex; align-items: center; gap: 12px;
+        /* Agrupación por Color de Puerto */
+        .color-section { margin-bottom: 30px; }
+        .color-label { 
+            font-size: 11px; font-weight: 900; text-transform: uppercase; 
+            letter-spacing: 0.15em; margin-bottom: 12px; display: flex; 
+            align-items: center; gap: 10px; color: #64748b;
         }
-        .month-divider::after { content: ""; flex: 1; height: 1px; background: #E2E8F0; }
+        .color-label::after { content: ""; flex: 1; height: 1px; background: #E2E8F0; }
 
-        .premium-card { background: white; border-radius: 28px; border: 1px solid #F1F5F9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); margin-bottom: 16px; transition: transform 0.2s; }
-        .btn-tool { border-radius: 16px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 4px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
-        .btn-tool:active { transform: scale(0.96); background: #f1f5f9; }
+        .premium-card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 12px; }
+        .btn-tool { border-radius: 14px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 2px; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .btn-tool:active { transform: scale(0.96); opacity: 0.7; }
+
+        /* Indicadores de Color Lateral */
+        .bar-red { border-left: 5px solid #ef4444; }
+        .bar-blue { border-left: 5px solid #3b82f6; }
+        .bar-green { border-left: 5px solid #22c55e; }
+        .bar-yellow { border-left: 5px solid #eab308; }
+        .bar-purple { border-left: 5px solid #a855f7; }
+        .bar-orange { border-left: 5px solid #f97316; }
     </style>
 </head>
 <body>
@@ -32,9 +38,11 @@
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-[800] tracking-tighter italic">TWINS <span class="text-blue-600">ELITE</span></h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">J. Angelo Nuñez Durand</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Angelo N. Durand</p>
             </div>
-            <i class="ph-bold ph-calendar-check text-2xl text-blue-600"></i>
+            <div class="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center">
+                <i class="ph-bold ph-factory text-blue-600"></i>
+            </div>
         </div>
     </header>
 
@@ -42,11 +50,11 @@
         
         <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-tighter">Cajas Procesadas</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Volumen Cajas</p>
                 <h2 id="dash-boxes" class="text-3xl font-black text-slate-800">0</h2>
             </div>
             <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-tighter">Variedad SKUs</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Diversidad SKUs</p>
                 <h2 id="dash-skus" class="text-3xl font-black text-slate-800">0</h2>
             </div>
         </div>
@@ -54,141 +62,131 @@
         <div class="mb-8">
             <div class="relative">
                 <i class="ph-bold ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                <input type="text" id="search-box" oninput="processAndRender()" placeholder="Buscar contenedor o SKU..." 
+                <input type="text" id="search-box" oninput="renderApp()" placeholder="Buscar por código o descripción..." 
                     class="w-full bg-white border border-slate-200 rounded-2xl py-5 pl-14 pr-6 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
             </div>
         </div>
 
-        <div id="history-container"></div>
+        <div id="app-content"></div>
 
     </main>
 
     <script>
-        const WEB_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
-        const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        const API_URL = "https://script.google.com/macros/s/AKfycbw-v5b_DkMPqup6Wm4J5KfGKZq9IRs99drhBYFV-MzHa4tcyb8dSn7YRx7KTHAEj1Jp/exec";
+        
+        // Carga inmediata desde memoria local
+        let inventoryData = JSON.parse(localStorage.getItem('twins_inventory')) || [];
 
-        // Carga inicial desde memoria local para velocidad instantánea
-        let rawData = JSON.parse(localStorage.getItem('twins_data')) || [];
-
-        async function fetchInvisible() {
+        async function syncData() {
             try {
-                const r = await fetch(WEB_URL);
-                const d = await r.json();
-                rawData = d.historial || d;
-                localStorage.setItem('twins_data', JSON.stringify(rawData));
-                processAndRender();
-            } catch(e) { console.log("Sync background error"); }
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                inventoryData = data.historial || data;
+                localStorage.setItem('twins_inventory', JSON.stringify(inventoryData));
+                renderApp();
+            } catch(e) { console.log("Silent background sync active"); }
         }
 
-        function processAndRender() {
+        function renderApp() {
             const query = document.getElementById('search-box').value.toLowerCase();
-            const container = document.getElementById('history-container');
+            const container = document.getElementById('app-content');
             
-            // 1. Agrupar items por Contenedor (Operación)
-            const groupedOps = rawData.reduce((acc, item) => {
-                if(!item.operacion) return acc;
-                
-                const matchesSearch = item.operacion.toLowerCase().includes(query) || 
-                                     (item.sku && item.sku.toLowerCase().includes(query));
-                
-                if(matchesSearch) {
-                    if(!acc[item.operacion]) {
-                        // Extraer fecha del nombre (ej: "CONT 14/03/26")
-                        const dateMatch = item.operacion.match(/(\d{2})\/(\d{2})\/(\d{2})/);
-                        const day = dateMatch ? dateMatch[1] : "01";
-                        const month = dateMatch ? parseInt(dateMatch[2]) - 1 : 2; // Default Marzo
-                        const year = dateMatch ? "20" + dateMatch[3] : "2026";
-                        
-                        acc[item.operacion] = { 
-                            ...item, 
-                            items: [], 
-                            totalBoxes: 0, 
-                            mIdx: month,
-                            y: year,
-                            sortKey: `${year}${dateMatch ? dateMatch[2] : '03'}${day}`
+            // 1. Agrupar por Contenedor e identificar Color de Puerto
+            const grouped = inventoryData.reduce((acc, curr) => {
+                if(!curr.operacion) return acc;
+
+                const matches = curr.sku.toLowerCase().includes(query) || 
+                               curr.descripcion.toLowerCase().includes(query) ||
+                               curr.operacion.toLowerCase().includes(query);
+
+                if(matches) {
+                    if(!acc[curr.operacion]) {
+                        // El color se extrae directamente de la columna de tu Excel
+                        const puertoColor = curr.color ? curr.color.toLowerCase() : 'blue';
+                        acc[curr.operacion] = { 
+                            name: curr.operacion,
+                            color: puertoColor,
+                            totalBoxes: 0,
+                            itemsCount: 0,
+                            canal: curr.canal || 'S/C'
                         };
                     }
-                    acc[item.operacion].items.push(item);
-                    acc[item.operacion].totalBoxes += (Number(item.meta) || 0);
+                    acc[curr.operacion].totalBoxes += (Number(curr.meta) || 0);
+                    acc[curr.operacion].itemsCount += 1;
                 }
                 return acc;
             }, {});
 
-            // 2. Agrupar Operaciones por Mes
-            const byMonth = Object.values(groupedOps).reduce((acc, op) => {
-                const key = `${op.mIdx}-${op.y}`;
-                if(!acc[key]) acc[key] = { label: `${MESES[op.mIdx]} ${op.y}`, ops: [], m: op.mIdx };
-                acc[key].ops.push(op);
+            // 2. Clasificar grupos por Color
+            const byColor = Object.values(grouped).reduce((acc, op) => {
+                if(!acc[op.color]) acc[op.color] = [];
+                acc[op.color].push(op);
                 return acc;
             }, {});
 
-            // 3. Renderizado Ordenado (Reciente primero)
-            let finalHtml = '';
-            let totalB = 0, totalS = 0;
+            // 3. Renderizado
+            let html = '';
+            let boxesSum = 0;
+            let skusSum = 0;
 
-            const sortedKeys = Object.keys(byMonth).sort((a,b) => {
-                const [mA, yA] = a.split('-').map(Number);
-                const [mB, yB] = b.split('-').map(Number);
-                return yB !== yA ? yB - yA : mB - mA;
-            });
-
-            sortedKeys.forEach(key => {
-                finalHtml += `<div class="month-divider">${byMonth[key].label}</div><div class="month-block">`;
+            Object.keys(byColor).forEach(color => {
+                html += `
+                <div class="color-section">
+                    <div class="color-label">
+                        <i class="ph-fill ph-circle text-[8px]" style="color: ${color}"></i>
+                        Llegada a Puerto: ${color}
+                    </div>`;
                 
-                byMonth[key].ops.sort((a,b) => b.sortKey.localeCompare(a.sortKey)).forEach(op => {
-                    totalB += op.totalBoxes;
-                    totalS += op.items.length;
-                    finalHtml += `
-                        <div class="premium-card p-7">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-[0.2em] ${op.estado === 'COMPLETADO' ? 'text-green-500' : 'text-amber-500'} mb-1">
-                                        ● ${op.estado || 'EN PROCESO'}
-                                    </p>
-                                    <h3 class="text-2xl font-[800] text-slate-800 tracking-tighter leading-none">${op.operacion}</h3>
+                byColor[color].forEach(op => {
+                    boxesSum += op.totalBoxes;
+                    skusSum += op.itemsCount;
+                    html += `
+                        <div class="premium-card p-6 bar-${color}">
+                            <div class="flex justify-between items-start mb-5">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-[800] text-slate-800 tracking-tight">${op.name}</h3>
+                                    <div class="flex gap-3 mt-1">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Cajas: ${op.totalBoxes}</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">SKUs: ${op.itemsCount}</p>
+                                    </div>
                                 </div>
-                                <span class="bg-slate-100 text-slate-500 text-[8px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest border border-slate-200">
-                                    Canal ${op.canal || 'S/C'}
+                                <span class="bg-slate-900 text-white text-[8px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest">
+                                    Canal ${op.canal}
                                 </span>
                             </div>
 
-                            <div class="grid grid-cols-3 gap-3">
-                                <div onclick="btnAction('CORREGIR', '${op.operacion}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100/50 hover:bg-blue-600 hover:text-white">
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <div onclick="action('CORREGIR', '${op.name}')" class="btn-tool bg-blue-50 text-blue-600 border-blue-100/50">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>CORREGIR
                                 </div>
-                                <div onclick="btnAction('LISTA', '${op.operacion}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100/50 hover:bg-slate-900 hover:text-white">
-                                    <i class="ph-bold ph-list-bullets text-lg"></i>LISTA
+                                <div onclick="action('LISTA', '${op.name}')" class="btn-tool bg-slate-50 text-slate-600 border-slate-100">
+                                    <i class="ph-bold ph-stack text-lg"></i>LISTA
                                 </div>
-                                <div onclick="btnAction('PDF', '${op.operacion}')" class="btn-tool bg-red-50 text-red-600 border-red-100/50 hover:bg-red-600 hover:text-white">
+                                <div onclick="action('PDF', '${op.name}')" class="btn-tool bg-red-50 text-red-600 border-red-100/50">
                                     <i class="ph-bold ph-file-pdf text-lg"></i>PDF
                                 </div>
                             </div>
                         </div>`;
                 });
-                finalHtml += `</div>`;
+                html += `</div>`;
             });
 
-            container.innerHTML = finalHtml || `<div class="py-20 text-center opacity-30 font-black uppercase text-xs tracking-[0.3em]">Sin registros</div>`;
-            document.getElementById('dash-boxes').innerText = totalB.toLocaleString();
-            document.getElementById('dash-skus').innerText = totalS.toLocaleString();
+            container.innerHTML = html || `<div class="py-20 text-center text-slate-300 font-black text-xs uppercase tracking-widest">Sin coincidencias</div>`;
+            document.getElementById('dash-boxes').innerText = boxesSum.toLocaleString();
+            document.getElementById('dash-skus').innerText = skusSum.toLocaleString();
         }
 
-        // CONTROLADOR DE ACCIONES
-        function btnAction(type, id) {
+        function action(type, id) {
             if(type === 'PDF') {
-                const sign = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
-                alert(`Generando reporte para: ${id}\n\n${sign}`);
-            } else if(type === 'CORREGIR') {
-                alert(`Abriendo editor para: ${id}`);
-            } else {
-                alert(`Mostrando lista de: ${id}`);
+                const footer = "Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico.";
+                alert(`Generando reporte técnico para: ${id}\n\n${footer}`);
             }
         }
 
         // Inicio
-        processAndRender();
-        fetchInvisible();
-        setInterval(fetchInvisible, 60000);
+        renderApp();
+        syncData();
+        setInterval(syncData, 60000); // Sync invisible cada minuto
     </script>
 </body>
 </html>
