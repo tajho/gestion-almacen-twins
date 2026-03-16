@@ -107,67 +107,72 @@
                 }
             },
 
-            render: function() {
+           render: function() {
     const feed = document.getElementById('feed');
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const selectedMonth = document.getElementById('monthFilter').value;
     
     if (!this.data || this.data.length === 0) {
-        feed.innerHTML = "<p class='text-center text-slate-400 py-10 uppercase text-[10px] font-bold'>No hay datos en la memoria</p>";
+        feed.innerHTML = "<p class='text-center text-slate-400 py-10 uppercase text-[10px] font-bold'>No hay datos. Presiona sincronizar.</p>";
         return;
     }
 
-    // 1. FILTRADO INTELIGENTE
+    // 1. FILTRADO
     const filteredData = this.data.filter(item => {
-        // Buscamos código o descripción (usando nombres de tu imagen)
+        // Texto: Código o Descripción
         const codigo = (item["CODIGO"] || "").toString().toLowerCase();
         const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
         const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
 
-        // Filtro de Mes: Buscamos "FECHA INGRESO" o "FECHA DE INGRESO"
-        const fechaStr = item["FECHA INGRESO"] || item["FECHA DE INGRESO"] || "";
-        
-        // Si no hay fecha y el filtro es "ALL", lo mostramos. Si hay fecha, comparamos el mes.
+        // Mes: Buscamos en "FECHA DE DESCARGA"
+        const fechaStr = item["FECHA DE DESCARGA"] || item["FECHA INGRESO"] || "";
         let matchMonth = true;
+
         if (selectedMonth !== "ALL") {
-            // Intentamos sacar el mes del formato DD/MM/YYYY
-            const partes = fechaStr.split('/');
-            const mesItem = partes.length > 1 ? partes[1].padStart(2, '0') : null;
+            // Esta parte detecta si la fecha usa "/" o "-" y saca el mes
+            const separador = fechaStr.includes('/') ? '/' : '-';
+            const partes = fechaStr.split(separador);
+            
+            // Normalmente la fecha es DD/MM/YYYY, el mes es el segundo elemento (índice 1)
+            let mesItem = "";
+            if (partes.length > 1) {
+                mesItem = partes[1].padStart(2, '0'); 
+            }
             matchMonth = (mesItem === selectedMonth);
         }
 
         return matchText && matchMonth;
     });
 
-    // 2. AGRUPAR POR CONTENEDOR
+    // 2. AGRUPAR Y CONTAR
     const groups = {};
-    let totalCajasMes = 0;
+    let totalCajasFiltradas = 0;
 
     filteredData.forEach(item => {
         let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
         if (!groups[id]) groups[id] = [];
         groups[id].push(item);
         
-        // Sumamos las cajas (Columna D de tu imagen)
-        totalCajasMes += (parseInt(item["CAJAS"]) || 0);
+        // Sumamos cajas
+        totalCajasFiltradas += (parseInt(item["CAJAS"]) || 0);
     });
 
     const groupKeys = Object.keys(groups).sort();
     
-    // Actualizar contadores en pantalla
+    // Actualizar números en los cuadros de arriba
     document.getElementById('dash-cont').innerText = groupKeys.length;
-    document.getElementById('dash-cajas').innerText = totalCajasMes;
+    document.getElementById('dash-cajas').innerText = totalCajasFiltradas;
 
     if (groupKeys.length === 0) {
         feed.innerHTML = `
-            <div class="text-center py-10">
-                <i class="ph-bold ph-magnifying-glass text-4xl text-slate-200 mb-2"></i>
-                <p class="text-xs font-bold text-slate-400 uppercase">Sin resultados para este filtro</p>
+            <div class="text-center py-10 opacity-50">
+                <i class="ph-bold ph-calendar-x text-4xl mb-2"></i>
+                <p class="text-[10px] font-bold uppercase">No hay datos para el mes o búsqueda actual</p>
             </div>`;
         return;
     }
 
-    // 3. RENDERIZAR TARJETAS
+    // 3. DIBUJAR TARJETAS
     feed.innerHTML = groupKeys.map(id => {
         const items = groups[id];
         const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
@@ -178,19 +183,18 @@
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${items.length} SKUs encontrados</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${items.length} SKUs en este mes</p>
                 </div>
                 <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
                     ${status}
                 </span>
             </div>
             <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                Abrir Detalles
+                Abrir Auditoría
             </button>
         </div>`;
     }).join('');
 }
-
 
             startWork: function(id) {
                 this.activeContenedor = id;
