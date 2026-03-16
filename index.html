@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Logística</title>
+    <title>Twins Elite - Inventario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .modal { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
-        .btn-primary { @apply w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2; }
-        input:focus, select:focus { outline: none; border-color: #2563eb; }
+        .btn-primary { @apply w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2; }
     </style>
 </head>
 <body>
 
-    <div id="view-dashboard" class="p-4 max-w-md mx-auto">
-        <header class="flex justify-between items-center mb-6 py-2">
+    <div class="p-4 max-w-md mx-auto">
+        <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-xl font-800 tracking-tighter text-slate-900 uppercase italic">Twins <span class="text-blue-600">Elite</span></h1>
+                <h1 class="text-xl font-800 text-slate-900 uppercase italic">Twins <span class="text-blue-600">Elite</span></h1>
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">J. Angelo Nuñez Durand</p>
             </div>
             <button onclick="app.sync()" class="w-12 h-12 bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-sm active:rotate-180 transition-all duration-500">
@@ -32,39 +31,47 @@
             <div class="relative">
                 <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar código o descripción..." 
-                    class="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm shadow-sm transition-all">
+                    class="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
             </div>
             
-            <div class="flex items-center gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-                <i class="ph-bold ph-calendar-blank ml-2 text-slate-400"></i>
-                <select id="monthFilter" onchange="app.render()" class="w-full py-2 bg-transparent text-xs font-bold uppercase outline-none cursor-pointer">
-                    <option value="ALL">TODOS LOS MESES</option>
-                    <option value="01">ENERO</option><option value="02">FEBRERO</option>
-                    <option value="03">MARZO</option><option value="04">ABRIL</option>
-                    <option value="05">MAYO</option><option value="06">JUNIO</option>
-                    <option value="07">JULIO</option><option value="08">AGOSTO</option>
-                    <option value="09">SEPTIEMBRE</option><option value="10">OCTUBRE</option>
-                    <option value="11">NOVIEMBRE</option><option value="12">DICIEMBRE</option>
-                </select>
+            <select id="monthFilter" onchange="app.render()" class="w-full p-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold uppercase outline-none shadow-sm">
+                <option value="ALL">TODOS LOS MESES</option>
+                <option value="01">ENERO</option><option value="02">FEBRERO</option>
+                <option value="03">MARZO</option><option value="04">ABRIL</option>
+                <option value="05">MAYO</option><option value="06">JUNIO</option>
+                <option value="07">JULIO</option><option value="08">AGOSTO</option>
+                <option value="09">SEPTIEMBRE</option><option value="10">OCTUBRE</option>
+                <option value="11">NOVIEMBRE</option><option value="12">DICIEMBRE</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="card p-4 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase">Contenedores</p>
+                <p class="text-xl font-800 text-slate-800" id="stat-cont">0</p>
+            </div>
+            <div class="card p-4 text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase">Cajas Totales</p>
+                <p class="text-xl font-800 text-blue-600" id="stat-cajas">0</p>
             </div>
         </div>
 
         <div id="feed" class="space-y-4 pb-24">
-            <p class="text-center text-slate-300 text-[10px] py-10 font-bold uppercase tracking-widest italic">Presiona el botón de arriba para cargar datos</p>
+            <p class="text-center text-slate-300 text-[10px] py-10 font-bold uppercase italic">Sincronizando con Twins Elite...</p>
         </div>
     </div>
 
     <div id="view-counter" class="modal">
         <header class="p-6 border-b flex justify-between items-center bg-white sticky top-0 z-10">
-            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center active:scale-90 transition-all"><i class="ph-bold ph-caret-left text-xl"></i></button>
+            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl"></i></button>
             <div class="text-center">
-                <h2 class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Inventario / Auditoría</h2>
-                <p class="text-sm font-900 uppercase text-slate-900" id="counter-title">...</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase">Registro de Inventario</p>
+                <p class="text-sm font-900 uppercase" id="counter-title">...</p>
             </div>
             <div class="w-10"></div>
         </header>
         <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50"></div>
-        <div class="p-6 border-t bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <div class="p-6 border-t bg-white">
             <button onclick="app.finishAudit()" class="btn-primary">Finalizar Revisión</button>
             <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4 italic">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
         </div>
@@ -72,9 +79,8 @@
 
     <script>
         const app = {
-            apiUrl: "https://script.google.com/macros/s/AKfycbwSDgx6Skw-leSC39cH06s4u9GiTQ4Sc0vOWlPxRUA730V139ONucTLfrTF8drjJbFI/exec",
-            data: JSON.parse(localStorage.getItem('twins_v4_data')) || [],
-            activeCont: null,
+            apiUrl: "https://script.google.com/macros/s/AKfycby-972OCFyUkqQ2LzWSmy10Ep6HX0hp6WuT8BKwq3fkoVSmuEVjDUA1Uk8VS0L8Js5e/exec",
+            data: JSON.parse(localStorage.getItem('twins_v6_data')) || [],
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
@@ -84,11 +90,11 @@
                     const result = await response.json();
                     if (Array.isArray(result)) {
                         this.data = result;
-                        localStorage.setItem('twins_v4_data', JSON.stringify(this.data));
+                        localStorage.setItem('twins_v6_data', JSON.stringify(this.data));
                         this.render();
                     }
                 } catch(e) { 
-                    alert("Error al conectar con Twins Elite. Verifica la red."); 
+                    alert("Error de conexión. Verifica el acceso al script."); 
                 } finally { 
                     icon.classList.remove('animate-spin'); 
                 }
@@ -99,52 +105,52 @@
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 const month = document.getElementById('monthFilter').value;
                 
-                if (!this.data || this.data.length === 0) return;
+                if (!this.data || this.data.length === 0) {
+                    feed.innerHTML = "<p class='text-center py-10 text-[10px] font-bold text-slate-300 uppercase'>Sin datos guardados</p>";
+                    return;
+                }
 
                 const filtered = this.data.filter(item => {
                     const text = (item["CODIGO"] || "") + (item["DESC. EN ESPAÑOL"] || "");
                     const matchText = text.toString().toLowerCase().includes(search);
-                    // Filtro de mes usando el campo MES_NUM que genera el script
                     const matchMonth = (month === "ALL") || (item["MES_NUM"] === month);
                     return matchText && matchMonth;
                 });
 
                 const groups = {};
+                let totalCajas = 0;
                 filtered.forEach(item => {
                     const id = (item["CONTENEDORES"] || "S/N").toString().trim();
                     if (!groups[id]) groups[id] = [];
                     groups[id].push(item);
+                    totalCajas += parseInt(item["CAJAS"]) || 0;
                 });
 
                 const keys = Object.keys(groups).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
-                
+                document.getElementById('stat-cont').innerText = keys.length;
+                document.getElementById('stat-cajas').innerText = totalCajas;
+
                 if (keys.length === 0) {
-                    feed.innerHTML = "<p class='text-center py-10 text-[10px] font-bold text-slate-300 uppercase'>No se encontraron contenedores para este mes</p>";
+                    feed.innerHTML = "<p class='text-center py-10 text-[10px] font-bold text-slate-300 uppercase italic'>No se encontraron resultados</p>";
                     return;
                 }
 
                 feed.innerHTML = keys.map(id => {
                     const items = groups[id];
-                    const fecha = items[0]["FECHA DE DESCARGA"] || "Sin fecha";
+                    const fecha = items[0]["FECHA_MOSTRAR"] || items[0]["FECHA DE DESCARGA"] || "S/F";
                     const estado = (items[0]["ESTADO"] || "PENDIENTE").toUpperCase();
-                    const isDone = estado === "COMPLETADO";
-                    
                     return `
-                    <div class="card p-5 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'} mb-4">
+                    <div class="card p-5 border-l-4 ${estado === 'COMPLETADO' ? 'border-l-green-500' : 'border-l-blue-600'} mb-4">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-lg font-900 uppercase tracking-tighter text-slate-800">CONT. ${id}</h3>
-                                <p class="text-[11px] font-bold text-blue-600 flex items-center gap-1 uppercase">
+                                <h3 class="text-lg font-900 uppercase text-slate-800">CONT. ${id}</h3>
+                                <p class="text-[11px] font-bold text-blue-600 uppercase flex items-center gap-1">
                                     <i class="ph-bold ph-calendar"></i> ${fecha}
                                 </p>
                             </div>
-                            <span class="${isDone ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50'} px-2 py-1 rounded text-[8px] font-black uppercase">
-                                ${estado}
-                            </span>
+                            <span class="text-[8px] font-black px-2 py-1 bg-slate-50 text-slate-400 rounded uppercase">${estado}</span>
                         </div>
-                        <button onclick="app.startWork('${id}')" class="btn-primary py-3">
-                            <i class="ph-bold ph-clipboard-text"></i> Abrir Conteo (${items.length} SKUS)
-                        </button>
+                        <button onclick="app.startWork('${id}')" class="btn-primary py-3">Abrir Conteo (${items.length} SKUS)</button>
                     </div>`;
                 }).join('');
             },
@@ -160,12 +166,12 @@
                         <div class="flex-1 pr-3">
                             <p class="text-[9px] font-black text-blue-600 uppercase mb-0.5">${item["CODIGO"] || "S/C"}</p>
                             <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight">${item["DESC. EN ESPAÑOL"] || "Sin detalle"}</p>
-                            <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">Esperado: ${item["CAJAS"]} CAJAS</p>
+                            <p class="text-[9px] font-bold text-slate-400 mt-1">Esperado: ${item["CAJAS"]} Unidades</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button class="w-9 h-9 bg-slate-100 rounded-lg font-bold active:bg-slate-200" onclick="app.adjust(${idx}, -1)">-</button>
+                            <button class="w-9 h-9 bg-slate-50 rounded-lg font-bold" onclick="app.adjust(${idx}, -1)">-</button>
                             <span class="w-6 text-center font-bold text-lg" id="val-${idx}">${item.audit || 0}</span>
-                            <button class="w-9 h-9 bg-slate-900 text-white rounded-lg font-bold active:scale-90" onclick="app.adjust(${idx}, 1)">+</button>
+                            <button class="w-9 h-9 bg-slate-900 text-white rounded-lg font-bold" onclick="app.adjust(${idx}, 1)">+</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -178,7 +184,7 @@
             },
 
             finishAudit: async function() {
-                if(!confirm("¿Confirmar revisión del Contenedor " + this.activeCont + "?")) return;
+                if(!confirm("¿Deseas finalizar el Contenedor " + this.activeCont + "?")) return;
                 try {
                     await fetch(this.apiUrl, {
                         method: 'POST',
@@ -187,13 +193,13 @@
                     });
                     this.closeCounter();
                     this.sync();
-                } catch(e) { alert("Error al guardar."); }
+                } catch(e) { alert("Error al guardar estado."); }
             },
 
             closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
         };
 
-        window.onload = () => { if(app.data.length > 0) app.render(); };
+        window.onload = () => { if(app.data.length > 0) app.render(); else app.sync(); };
     </script>
 </body>
 </html>
