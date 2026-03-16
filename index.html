@@ -109,72 +109,86 @@
             },
 
             render: function() {
-                const feed = document.getElementById('feed');
-                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                const selectedMonth = document.getElementById('monthFilter').value;
-                
-                if (this.data.length === 0) return;
+    const feed = document.getElementById('feed');
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const selectedMonth = document.getElementById('monthFilter').value;
+    
+    if (this.data.length === 0) return;
 
-                // 1. FILTRADO POR BUSQUEDA Y MES
-                const filteredData = this.data.filter(item => {
-                    const codigo = (item["CODIGO"] || "").toString().toLowerCase();
-                    const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
-                    const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
+    // 1. FILTRADO INTELIGENTE DE FECHA Y TEXTO
+    const filteredData = this.data.filter(item => {
+        const codigo = (item["CODIGO"] || "").toString().toLowerCase();
+        const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
+        const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
 
-                    let matchMonth = true;
-                    if (selectedMonth !== "ALL") {
-                        const fechaRaw = (item["FECHA DE DESCARGA"] || "").toString();
-                        const partes = fechaRaw.split('/');
-                        const mesItem = partes.length >= 2 ? partes[1].trim().padStart(2, '0') : null;
-                        matchMonth = (mesItem === selectedMonth);
-                    }
-                    return matchText && matchMonth;
-                });
+        let matchMonth = true;
+        if (selectedMonth !== "ALL") {
+            const fechaRaw = (item["FECHA DE DESCARGA"] || "").toString();
+            let mesItem = "";
 
-                // 2. AGRUPAR
-                const groups = {};
-                let totalCajas = 0;
-                filteredData.forEach(item => {
-                    let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
-                    if (!groups[id]) groups[id] = [];
-                    groups[id].push(item);
-                    totalCajas += (parseInt(item["CAJAS"]) || 0);
-                });
+            // Si la fecha viene como 2026-01-06T...
+            if (fechaRaw.includes('-') && fechaRaw.includes('T')) {
+                mesItem = fechaRaw.split('-')[1]; // Saca el "01"
+            } 
+            // Si la fecha viene como 06/01/2026
+            else if (fechaRaw.includes('/')) {
+                const partes = fechaRaw.split('/');
+                mesItem = partes.length >= 2 ? partes[1].trim().padStart(2, '0') : "";
+            }
 
-                const groupKeys = Object.keys(groups).sort();
-                document.getElementById('dash-cont').innerText = groupKeys.length;
-                document.getElementById('dash-cajas').innerText = totalCajas;
+            matchMonth = (mesItem === selectedMonth);
+        }
+        return matchText && matchMonth;
+    });
 
-                if (groupKeys.length === 0) {
-                    feed.innerHTML = `<p class="text-center py-10 text-xs font-bold text-slate-300 uppercase">Sin resultados</p>`;
-                    return;
-                }
+    // 2. AGRUPAR
+    const groups = {};
+    let totalCajas = 0;
+    filteredData.forEach(item => {
+        let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
+        if (!groups[id]) groups[id] = [];
+        groups[id].push(item);
+        totalCajas += (parseInt(item["CAJAS"]) || 0);
+    });
 
-                feed.innerHTML = groupKeys.map(id => {
-                    const items = groups[id];
-                    const fecha = items[0]["FECHA DE DESCARGA"] || "Sin fecha";
-                    const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
-                    const isDone = status === "COMPLETADO";
-                    
-                    return `
-                    <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-tighter flex items-center gap-1">
-                                    <i class="ph-bold ph-calendar"></i> ${fecha}
-                                </p>
-                            </div>
-                            <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
-                                ${status}
-                            </span>
-                        </div>
-                        <button onclick="app.startWork('${id}')" class="btn-primary py-3">
-                            <i class="ph-bold ph-pencil-simple"></i> Abrir Conteo (${items.length})
-                        </button>
-                    </div>`;
-                }).join('');
-            },
+    const groupKeys = Object.keys(groups).sort((a, b) => parseInt(a) - parseInt(b));
+    document.getElementById('dash-cont').innerText = groupKeys.length;
+    document.getElementById('dash-cajas').innerText = totalCajas;
+
+    // 3. GENERAR TARJETAS CON FECHA LIMPIA
+    feed.innerHTML = groupKeys.map(id => {
+        const items = groups[id];
+        let fechaLimpia = (items[0]["FECHA DE DESCARGA"] || "Sin fecha").toString();
+        
+        // --- LIMPIEZA VISUAL DE LA FECHA ---
+        if (fechaLimpia.includes('T')) {
+            const soloFecha = fechaLimpia.split('T')[0]; // Toma '2026-01-06'
+            const p = soloFecha.split('-');
+            fechaLimpia = `${p[2]}/${p[1]}/${p[0]}`; // Lo pone como '06/01/2026'
+        }
+
+        const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
+        const isDone = status === "COMPLETADO";
+        
+        return `
+        <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-tighter flex items-center gap-1">
+                        <i class="ph-bold ph-calendar"></i> ${fechaLimpia}
+                    </p>
+                </div>
+                <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
+                    ${status}
+                </span>
+            </div>
+            <button onclick="app.startWork('${id}')" class="btn-primary py-3">
+                <i class="ph-bold ph-pencil-simple"></i> Abrir Conteo (${items.length})
+            </button>
+        </div>`;
+    }).join('');
+}
 
             startWork: function(id) {
                 this.activeContenedor = id;
