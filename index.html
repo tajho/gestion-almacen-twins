@@ -113,39 +113,40 @@
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const selectedMonth = document.getElementById('monthFilter').value;
     
-    if (this.data.length === 0) return;
+    if (!this.data || this.data.length === 0) return;
 
-    // 1. FILTRADO INTELIGENTE DE FECHA Y TEXTO
+    // 1. FILTRADO Y EXTRACCIÓN DE MES REAL
     const filteredData = this.data.filter(item => {
+        // Filtro de Texto
         const codigo = (item["CODIGO"] || "").toString().toLowerCase();
         const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
         const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
 
-        let matchMonth = true;
-        if (selectedMonth !== "ALL") {
-            const fechaRaw = (item["FECHA DE DESCARGA"] || "").toString();
-            let mesItem = "";
+        if (selectedMonth === "ALL") return matchText;
 
-            // Si la fecha viene como 2026-01-06T...
-            if (fechaRaw.includes('-') && fechaRaw.includes('T')) {
-                mesItem = fechaRaw.split('-')[1]; // Saca el "01"
-            } 
-            // Si la fecha viene como 06/01/2026
-            else if (fechaRaw.includes('/')) {
-                const partes = fechaRaw.split('/');
-                mesItem = partes.length >= 2 ? partes[1].trim().padStart(2, '0') : "";
-            }
+        // Limpieza de Fecha para el Filtro
+        const fechaRaw = (item["FECHA DE DESCARGA"] || "").toString();
+        let mesDetectado = "";
 
-            matchMonth = (mesItem === selectedMonth);
+        if (fechaRaw.includes('-')) {
+            // Caso ISO: 2026-03-15... toma el "03"
+            const partes = fechaRaw.split('-');
+            mesDetectado = partes.length > 1 ? partes[1] : "";
+        } else if (fechaRaw.includes('/')) {
+            // Caso DD/MM/YYYY: toma el "MM" y asegura 2 dígitos
+            const partes = fechaRaw.split('/');
+            mesDetectado = partes.length > 1 ? partes[1].trim().padStart(2, '0') : "";
         }
-        return matchText && matchMonth;
+
+        // Solo pasa si el mes coincide exactamente con el selector
+        return matchText && (mesDetectado === selectedMonth);
     });
 
-    // 2. AGRUPAR
+    // 2. AGRUPAR POR CONTENEDOR
     const groups = {};
     let totalCajas = 0;
     filteredData.forEach(item => {
-        let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
+        let id = (item["CONTENEDORES"] || "S/N").toString().trim();
         if (!groups[id]) groups[id] = [];
         groups[id].push(item);
         totalCajas += (parseInt(item["CAJAS"]) || 0);
@@ -155,16 +156,16 @@
     document.getElementById('dash-cont').innerText = groupKeys.length;
     document.getElementById('dash-cajas').innerText = totalCajas;
 
-    // 3. GENERAR TARJETAS CON FECHA LIMPIA
+    // 3. RENDERIZAR CON FECHA FORMATEADA DD/MM/YYYY
     feed.innerHTML = groupKeys.map(id => {
         const items = groups[id];
-        let fechaLimpia = (items[0]["FECHA DE DESCARGA"] || "Sin fecha").toString();
+        let f = (items[0]["FECHA DE DESCARGA"] || "S/F").toString();
         
-        // --- LIMPIEZA VISUAL DE LA FECHA ---
-        if (fechaLimpia.includes('T')) {
-            const soloFecha = fechaLimpia.split('T')[0]; // Toma '2026-01-06'
-            const p = soloFecha.split('-');
-            fechaLimpia = `${p[2]}/${p[1]}/${p[0]}`; // Lo pone como '06/01/2026'
+        // Formateo visual para la tarjeta (Siempre DD/MM/YYYY)
+        if (f.includes('-') && f.includes('T')) {
+            const soloFecha = f.split('T')[0]; 
+            const p = soloFecha.split('-'); // [Año, Mes, Día]
+            f = `${p[2]}/${p[1]}/${p[0]}`;
         }
 
         const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
@@ -175,8 +176,8 @@
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-tighter flex items-center gap-1">
-                        <i class="ph-bold ph-calendar"></i> ${fechaLimpia}
+                    <p class="text-[11px] font-bold text-blue-600 flex items-center gap-1">
+                        <i class="ph-bold ph-calendar"></i> ${f}
                     </p>
                 </div>
                 <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
@@ -189,7 +190,6 @@
         </div>`;
     }).join('');
 }
-
             startWork: function(id) {
                 this.activeContenedor = id;
                 const filtrados = this.data.filter(i => (i["CONTENEDORES"] || "").toString().trim().toUpperCase() === id);
