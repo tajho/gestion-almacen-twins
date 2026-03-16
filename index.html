@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twins Elite - Control de Inventarios</title>
+    <title>Twins Elite - Gestión de Inventario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .modal { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
         .btn-primary { @apply w-full py-4 bg-slate-900 text-white rounded-2xl font-900 text-[11px] uppercase tracking-widest active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2; }
-        input:focus, select:focus { outline: none; ring: 2px; ring-color: #2563eb; }
     </style>
 </head>
 <body>
@@ -21,7 +20,7 @@
         <header class="flex justify-between items-center mb-6 py-2">
             <div>
                 <h1 class="text-xl font-800 tracking-tighter text-slate-900 uppercase">Twins <span class="text-blue-600">Elite</span></h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Logística / J. Angelo Nuñez D.</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
             </div>
             <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg active:rotate-180 transition-all duration-500">
                 <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
@@ -31,7 +30,7 @@
         <div class="space-y-3 mb-6">
             <div class="relative">
                 <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar código o descripción..." 
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar producto..." 
                     class="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm shadow-sm">
             </div>
             
@@ -39,18 +38,10 @@
                 <i class="ph-bold ph-calendar-blank ml-2 text-slate-400"></i>
                 <select id="monthFilter" onchange="app.render()" class="w-full py-2 bg-transparent text-xs font-bold uppercase outline-none">
                     <option value="ALL">TODOS LOS MESES</option>
-                    <option value="01">ENERO</option>
-                    <option value="02">FEBRERO</option>
-                    <option value="03">MARZO</option>
-                    <option value="04">ABRIL</option>
-                    <option value="05">MAYO</option>
-                    <option value="06">JUNIO</option>
-                    <option value="07">JULIO</option>
-                    <option value="08">AGOSTO</option>
-                    <option value="09">SEPTIEMBRE</option>
-                    <option value="10">OCTUBRE</option>
-                    <option value="11">NOVIEMBRE</option>
-                    <option value="12">DICIEMBRE</option>
+                    <option value="01">ENERO</option><option value="02">FEBRERO</option><option value="03">MARZO</option>
+                    <option value="04">ABRIL</option><option value="05">MAYO</option><option value="06">JUNIO</option>
+                    <option value="07">JULIO</option><option value="08">AGOSTO</option><option value="09">SEPTIEMBRE</option>
+                    <option value="10">OCTUBRE</option><option value="11">NOVIEMBRE</option><option value="12">DICIEMBRE</option>
                 </select>
             </div>
         </div>
@@ -67,7 +58,7 @@
         </div>
 
         <div id="feed" class="space-y-4 pb-24">
-            <p class="text-center text-slate-400 text-[10px] py-10 font-bold uppercase tracking-widest">Sincroniza para cargar inventario</p>
+            <p class="text-center text-slate-400 text-[10px] py-10 font-bold uppercase tracking-widest italic">Cargando base de datos...</p>
         </div>
     </div>
 
@@ -75,98 +66,101 @@
         <header class="p-6 border-b flex justify-between items-center bg-white sticky top-0 z-10">
             <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl text-slate-600"></i></button>
             <div class="text-center">
-                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revisión de Carga</h2>
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Auditoría</h2>
                 <p class="text-sm font-900 uppercase text-slate-900" id="counter-title">...</p>
             </div>
             <div class="w-10"></div>
         </header>
         <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
         <div class="p-6 border-t bg-white">
-            <button onclick="app.finishAudit()" class="btn-primary">Confirmar y Guardar</button>
-            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4 italic">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
+            <button onclick="app.finishAudit()" class="btn-primary">Finalizar Revisión</button>
+            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
         </div>
     </div>
 
     <script>
         const app = {
             apiUrl: "https://script.google.com/macros/s/AKfycbz-iZbnP_vow5Wv3a4K-tIs5iBJX7mSW0kXuFdhVNMh1Zik9dZzTOnaeR7MoIWtjRe6/exec",
-            data: JSON.parse(localStorage.getItem('twins_elite_db')) || [],
+            data: JSON.parse(localStorage.getItem('twins_data_v2')) || [],
             activeCont: null,
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
                 icon.classList.add('animate-spin');
                 try {
-                    const res = await fetch(this.apiUrl);
-                    const json = await res.json();
-                    if(json.error) throw new Error(json.error);
-                    this.data = json;
-                    localStorage.setItem('twins_elite_db', JSON.stringify(this.data));
-                    this.render();
-                } catch(e) { 
-                    alert("Error: Verifica la conexión o el permiso del script."); 
-                    console.error(e);
-                } finally { 
-                    icon.classList.remove('animate-spin'); 
+                    const response = await fetch(this.apiUrl);
+                    const result = await response.json();
+                    
+                    if (Array.isArray(result)) {
+                        this.data = result;
+                        localStorage.setItem('twins_data_v2', JSON.stringify(this.data));
+                        this.render();
+                    } else {
+                        alert("El script no devolvió una lista de datos válida.");
+                    }
+                } catch(e) {
+                    alert("Error de conexión. Asegúrate de que el script esté publicado como 'Cualquier persona'.");
+                } finally {
+                    icon.classList.remove('animate-spin');
                 }
             },
 
             render: function() {
                 const feed = document.getElementById('feed');
-                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                const selectedMonth = document.getElementById('monthFilter').value;
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const month = document.getElementById('monthFilter').value;
                 
-                if (this.data.length === 0) return;
-
-                // 1. FILTRADO POR TEXTO Y MES_NUM (MES_NUM viene del Apps Script)
-                const filtered = this.data.filter(item => {
-                    const codigo = (item["CODIGO"] || "").toString().toLowerCase();
-                    const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
-                    const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
-                    const matchMonth = (selectedMonth === "ALL") || (item["MES_NUM"] === selectedMonth);
-                    return matchText && matchMonth;
-                });
-
-                // 2. AGRUPAR POR CONTENEDOR
-                const groups = {};
-                let totalCajas = 0;
-                filtered.forEach(item => {
-                    let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
-                    if (!groups[id]) groups[id] = [];
-                    groups[id].push(item);
-                    totalCajas += (parseInt(item["CAJAS"]) || 0);
-                });
-
-                const groupKeys = Object.keys(groups).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
-                document.getElementById('dash-cont').innerText = groupKeys.length;
-                document.getElementById('dash-cajas').innerText = totalCajas;
-
-                if (groupKeys.length === 0) {
-                    feed.innerHTML = `<p class="text-center py-10 text-[10px] font-bold text-slate-300 uppercase tracking-widest">No se encontraron contenedores</p>`;
+                if (!this.data || this.data.length === 0) {
+                    feed.innerHTML = "<p class='text-center py-10 text-xs font-bold text-slate-300 uppercase'>Sin datos. Presiona sincronizar.</p>";
                     return;
                 }
 
-                // 3. RENDERIZAR TARJETAS
-                feed.innerHTML = groupKeys.map(id => {
+                // Filtrado con lógica MES_NUM enviada por el script
+                const filtered = this.data.filter(item => {
+                    const text = (item["CODIGO"] || "") + (item["DESC. EN ESPAÑOL"] || "");
+                    const matchText = text.toString().toLowerCase().includes(search);
+                    const matchMonth = (month === "ALL") || (item["MES_NUM"] === month);
+                    return matchText && matchMonth;
+                });
+
+                const groups = {};
+                let totalCajas = 0;
+                
+                filtered.forEach(item => {
+                    const contId = (item["CONTENEDORES"] || "S/N").toString().trim();
+                    if (!groups[contId]) groups[contId] = [];
+                    groups[contId].push(item);
+                    totalCajas += (parseInt(item["CAJAS"]) || 0);
+                });
+
+                const keys = Object.keys(groups).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                document.getElementById('dash-cont').innerText = keys.length;
+                document.getElementById('dash-cajas').innerText = totalCajas;
+
+                if (keys.length === 0) {
+                    feed.innerHTML = "<p class='text-center py-10 text-xs font-bold text-slate-300 uppercase'>No hay resultados para este mes.</p>";
+                    return;
+                }
+
+                feed.innerHTML = keys.map(id => {
                     const items = groups[id];
-                    const fecha = items[0]["FECHA DE DESCARGA"] || items[0]["FECHA INGRESO"] || "S/F";
-                    const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
-                    const isDone = status === "COMPLETADO";
+                    const fecha = items[0]["FECHA DE DESCARGA"] || "Sin fecha";
+                    const status = (items[0]["ESTADO"] || "PENDIENTE").toUpperCase();
                     
                     return `
-                    <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
+                    <div class="card p-5 mb-4 border-l-4 ${status === 'COMPLETADO' ? 'border-l-green-500' : 'border-l-blue-600'}">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-lg font-900 text-slate-900 uppercase tracking-tighter">CONT. ${id}</h3>
-                                <p class="text-[11px] font-bold text-blue-600 flex items-center gap-1 uppercase">
+                                <h3 class="text-lg font-900 text-slate-900 uppercase tracking-tighter">CONTENEDOR ${id}</h3>
+                                <p class="text-[11px] font-bold text-blue-600 flex items-center gap-1">
                                     <i class="ph-bold ph-calendar"></i> ${fecha}
                                 </p>
                             </div>
-                            <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
+                            <span class="${status === 'COMPLETADO' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
                                 ${status}
                             </span>
                         </div>
-                        <button onclick="app.startWork('${id}')" class="btn-primary py-3 shadow-md">
+                        <button onclick="app.startWork('${id}')" class="btn-primary py-3">
                             <i class="ph-bold ph-clipboard-text"></i> REVISAR (${items.length} SKUS)
                         </button>
                     </div>`;
@@ -175,22 +169,21 @@
 
             startWork: function(id) {
                 this.activeCont = id;
-                const filtrados = this.data.filter(i => (i["CONTENEDORES"] || "").toString().trim().toUpperCase() === id);
-                document.getElementById('counter-title').innerText = "CONTENEDOR " + id;
-                
-                document.getElementById('counterList').innerHTML = filtrados.map((item) => {
-                    const gIdx = this.data.indexOf(item);
+                const filtered = this.data.filter(i => (i["CONTENEDORES"] || "").toString().trim() === id);
+                document.getElementById('counter-title').innerText = "CONT. " + id;
+                document.getElementById('counterList').innerHTML = filtered.map(item => {
+                    const idx = this.data.indexOf(item);
                     return `
                     <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
                         <div class="flex-1 pr-3">
                             <p class="text-[9px] font-black text-blue-600 uppercase mb-0.5">${item["CODIGO"] || "S/C"}</p>
-                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${item["DESC. EN ESPAÑOL"] || "Sin detalle"}</p>
-                            <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">Esperado: ${item["CAJAS"]} cajas</p>
+                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight">${item["DESC. EN ESPAÑOL"] || "Sin detalle"}</p>
+                            <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">Esperado: ${item["CAJAS"]}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button class="w-9 h-9 rounded-lg bg-slate-100 font-bold active:bg-slate-200" onclick="app.adjust(${gIdx}, -1)">-</button>
-                            <span class="w-6 text-center font-900 text-lg" id="val-${gIdx}">${item.audit || 0}</span>
-                            <button class="w-9 h-9 rounded-lg bg-slate-900 text-white font-bold active:scale-90" onclick="app.adjust(${gIdx}, 1)">+</button>
+                            <button class="w-9 h-9 rounded-lg bg-slate-100 font-bold" onclick="app.adjust(${idx}, -1)">-</button>
+                            <span class="w-6 text-center font-900 text-lg" id="val-${idx}">${item.audit || 0}</span>
+                            <button class="w-9 h-9 rounded-lg bg-slate-900 text-white font-bold" onclick="app.adjust(${idx}, 1)">+</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -203,24 +196,25 @@
             },
 
             finishAudit: async function() {
-                if(!confirm("¿Confirmar revisión del Contenedor " + this.activeCont + "?")) return;
-                localStorage.setItem('twins_elite_db', JSON.stringify(this.data));
+                if(!confirm("¿Marcar Contenedor " + this.activeCont + " como completado?")) return;
                 try {
-                    // Envío de estado al Excel
                     await fetch(this.apiUrl, {
                         method: 'POST',
                         mode: 'no-cors',
                         body: JSON.stringify({ contenedor: this.activeCont, estado: "COMPLETADO" })
                     });
                     this.closeCounter();
-                    this.sync(); // Sincroniza para ver el cambio reflejado
-                } catch(e) { alert("Error al conectar con el servidor."); }
+                    this.sync();
+                } catch(e) { alert("Error al guardar."); }
             },
 
             closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
         };
 
-        window.onload = () => app.render();
+        window.onload = () => {
+            if(app.data.length > 0) app.render();
+            else app.sync();
+        };
     </script>
 </body>
 </html>
