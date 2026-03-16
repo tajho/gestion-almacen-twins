@@ -9,9 +9,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; shadow-sm; transition: all 0.2s; }
         .btn-main { @apply flex flex-col items-center justify-center p-4 rounded-2xl transition-all active:scale-95 border; }
         .modal { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
+        .status-pill { @apply px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider; }
     </style>
 </head>
 <body>
@@ -28,146 +29,205 @@
         </header>
 
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="card p-4 text-center">
+            <div class="card p-4 text-center border-l-4 border-l-slate-900">
                 <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Contenedores</p>
                 <p class="text-2xl font-800 text-slate-800" id="dash-cont">0</p>
             </div>
-            <div class="card p-4 text-center">
+            <div class="card p-4 text-center border-l-4 border-l-blue-600">
                 <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Cajas Totales</p>
                 <p class="text-2xl font-800 text-blue-600" id="dash-cajas">0</p>
             </div>
         </div>
 
         <div class="space-y-3 mb-6">
-            <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." class="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+            <div class="relative">
+                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o código..." class="w-full pl-11 pr-5 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm focus:border-blue-500 transition-colors">
+            </div>
         </div>
 
-        <div id="feed" class="space-y-4 pb-10"></div>
+        <div id="feed" class="space-y-4 pb-24"></div>
     </div>
 
     <div id="view-counter" class="modal">
-        <header class="p-6 border-b flex justify-between items-center">
-            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl"></i></button>
-            <h2 class="text-sm font-900 uppercase tracking-tight text-slate-900" id="counter-title">...</h2>
+        <header class="p-6 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center active:scale-90 transition-transform">
+                <i class="ph-bold ph-caret-left text-xl text-slate-600"></i>
+            </button>
+            <div class="text-center">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Auditoría de Carga</h2>
+                <p class="text-sm font-900 uppercase text-slate-900" id="counter-title">...</p>
+            </div>
             <div class="w-10"></div>
         </header>
-        <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-        <div class="p-6 border-t bg-slate-50">
-            <div class="flex justify-between mb-4">
-                <div class="text-center flex-1 border-r"><p class="text-[10px] font-bold text-slate-400">ITEMS</p><p class="text-xl font-800" id="totalItems">0</p></div>
-                <div class="text-center flex-1"><p class="text-[10px] font-bold text-slate-400">TOTAL CAJAS</p><p class="text-xl font-800 text-blue-600" id="totalCount">0</p></div>
+        
+        <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
+        
+        <div class="p-6 border-t bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between mb-6">
+                <div class="text-center flex-1 border-r border-slate-100">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Items Auditar</p>
+                    <p class="text-xl font-800 text-slate-800" id="totalItems">0</p>
+                </div>
+                <div class="text-center flex-1">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Conteo Total</p>
+                    <p class="text-xl font-800 text-blue-600" id="totalCount">0</p>
+                </div>
             </div>
-            <button onclick="app.saveWork()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-900 text-xs uppercase tracking-widest">Guardar Cambios</button>
-            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4">Revisión autorizada por J. Angelo Nuñez Durand</p>
+            <button onclick="app.saveWork()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-900 text-xs uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] transition-all">Confirmar Inventario</button>
+            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4 tracking-tighter">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
         </div>
     </div>
 
     <script>
         const app = {
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
-            activeId: null,
+            
+            // Llaves posibles según el Excel de origen para evitar errores de mapeo
+            keys: {
+                id: ["contenedor", "canal", "CON", "Contenedor"],
+                code: ["codigo", "COD", "SKU", "Código"],
+                desc: ["descripcion", "DESCRIPCION", "Detalle", "Descripción"],
+                qty: ["cajas", "cantidad", "CANT", "Stock"]
+            },
 
-            getVal: function(item, keys) {
-                for (let k of keys) {
-                    if (item[k] !== undefined) return item[k];
+            getVal: function(item, keyGroup) {
+                const targetKeys = this.keys[keyGroup] || [keyGroup];
+                for (let k of targetKeys) {
+                    if (item[k] !== undefined && item[k] !== null) return item[k];
                 }
-                return "";
+                return keyGroup === 'qty' ? 0 : "";
             },
 
             parseFecha: function(item) {
-                let raw = this.getVal(item, ["descarga", "fecha"]);
+                let raw = item.descarga || item.fecha || "";
                 if(!raw) return new Date();
-                let s = raw.toString().split('T')[0].split(/[/-]/);
-                return (s[0].length === 4) ? new Date(s[0], s[1]-1, s[2]) : new Date(s[2], s[1]-1, s[0]);
+                return new Date(raw);
             },
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
                 icon.classList.add('animate-spin');
                 try {
-                    const res = await fetch("TU_URL_DE_GOOGLE_SCRIPT"); // Asegúrate de poner tu link de implementación aquí
+                    // Reemplazar con URL de implementación real
+                    const res = await fetch("TU_URL_DE_APPS_SCRIPT"); 
                     const json = await res.json();
                     this.data = Array.isArray(json) ? json : (json.historial || []);
+                    // Inicializar campo 'cantidad_auditada' si no existe
+                    this.data = this.data.map(i => ({...i, cantidad_auditada: i.cantidad_auditada || 0}));
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { alert("Error de conexión. Revisa el link del script."); }
-                finally { icon.classList.remove('animate-spin'); }
+                } catch(e) { 
+                    console.error(e);
+                    alert("Error al sincronizar. Verifique la conexión."); 
+                } finally { 
+                    icon.classList.remove('animate-spin'); 
+                }
             },
 
             render: function() {
                 const feed = document.getElementById('feed');
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 
+                // Agrupar por contenedor
                 const groups = this.data.reduce((acc, item) => {
-                    const id = this.getVal(item, ["contenedor", "canal"]).toString() || "S/N";
-                    if (JSON.stringify(item).toLowerCase().includes(search)) {
-                        if (!acc[id]) acc[id] = { id, date: this.parseFecha(item), items: [] };
-                        acc[id].items.push(item);
+                    const contId = this.getVal(item, 'id').toString() || "S/N";
+                    const matchSearch = JSON.stringify(item).toLowerCase().includes(search);
+                    
+                    if (matchSearch) {
+                        if (!acc[contId]) acc[contId] = { id: contId, date: this.parseFecha(item), items: [] };
+                        acc[contId].items.push(item);
                     }
                     return acc;
                 }, {});
 
                 const sorted = Object.values(groups).sort((a,b) => b.date - a.date);
+                
                 document.getElementById('dash-cont').innerText = sorted.length;
-                document.getElementById('dash-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(this.getVal(i, ["cajas"])) || 0), 0);
+                document.getElementById('dash-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(this.getVal(i, 'qty')) || 0), 0);
 
-                feed.innerHTML = sorted.map(g => `
-                    <div class="card p-5 mb-3">
+                if (sorted.length === 0) {
+                    feed.innerHTML = `<div class="text-center py-10 opacity-30 font-bold uppercase text-xs">No se encontraron resultados</div>`;
+                    return;
+                }
+
+                feed.innerHTML = sorted.map(g => {
+                    const totalCajas = g.items.reduce((s, i) => s + (parseInt(this.getVal(i, 'qty')) || 0), 0);
+                    return `
+                    <div class="card p-5 mb-4 border-l-4 border-l-slate-200">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">${g.date.toLocaleDateString()}</p>
-                                <h3 class="text-xl font-800 text-slate-900 tracking-tighter uppercase">CONT. ${g.id}</h3>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${g.date.toLocaleDateString()}</p>
+                                <h3 class="text-xl font-900 text-slate-900 tracking-tighter uppercase">CONT. ${g.id}</h3>
                             </div>
-                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase">${g.items.length} SKUS</span>
+                            <div class="text-right">
+                                <span class="status-pill bg-blue-50 text-blue-600">${g.items.length} SKUS</span>
+                                <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">${totalCajas} Unidades</p>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <button onclick="app.startWork('${g.id}')" class="btn-main bg-slate-900 text-white border-slate-900">
-                                <i class="ph-fill ph-pencil-simple text-lg mb-1"></i><span class="text-[9px] font-black uppercase">Auditar</span>
+                            <button onclick="app.startWork('${g.id}')" class="btn-main bg-slate-900 text-white border-slate-900 shadow-md">
+                                <i class="ph-fill ph-pencil-simple text-lg mb-1"></i><span class="text-[9px] font-black uppercase tracking-widest">Auditar</span>
                             </button>
-                            <button onclick="alert('Generando reporte para el contenedor ${g.id}')" class="btn-main bg-white text-slate-400 border-slate-100">
+                            <button onclick="app.generateReport('${g.id}')" class="btn-main bg-white text-slate-600 border-slate-200">
                                 <i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[9px] font-black uppercase">Reporte</span>
                             </button>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             },
 
             startWork: function(id) {
-                this.activeId = id;
-                const filtrados = this.data.filter(i => this.getVal(i, ["contenedor"]).toString() === id);
+                const filtrados = this.data.filter(i => this.getVal(i, 'id').toString() === id);
                 document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
                 
-                document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
-                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div class="flex-1 pr-2">
-                            <p class="text-[10px] font-black text-blue-600 uppercase mb-1">${this.getVal(item, ["codigo"])}</p>
-                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${this.getVal(item, ["descripcion"])}</p>
+                document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => {
+                    // Usamos un ID único basado en el índice real de la data global
+                    const globalIdx = this.data.findIndex(di => di === item);
+                    return `
+                    <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <div class="flex-1 pr-3">
+                            <p class="text-[9px] font-black text-blue-600 uppercase mb-1">${this.getVal(item, 'code')}</p>
+                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${this.getVal(item, 'desc')}</p>
                         </div>
-                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
-                            <button class="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center font-bold" onclick="app.adjust('${id}', ${idx}, -1)">-</button>
-                            <span class="w-6 text-center font-800 text-lg" id="val-${idx}">${item.cantidad || 0}</span>
-                            <button class="w-10 h-10 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold" onclick="app.adjust('${id}', ${idx}, 1)">+</button>
+                        <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-100">
+                            <button class="w-9 h-9 rounded-lg bg-white flex items-center justify-center font-black text-slate-400 active:bg-red-50 active:text-red-500 transition-colors" onclick="app.adjust(${globalIdx}, -1)">-</button>
+                            <span class="w-8 text-center font-900 text-base text-slate-900" id="val-${globalIdx}">${item.cantidad_auditada || 0}</span>
+                            <button class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black active:scale-95 transition-transform" onclick="app.adjust(${globalIdx}, 1)">+</button>
                         </div>
-                    </div>`).join('');
+                    </div>`;
+                }).join('');
+                
                 document.getElementById('view-counter').style.display = 'flex';
-                this.updateTotalCount(filtrados);
+                this.updateTotalCount(id);
             },
 
-            adjust: function(id, idx, val) {
-                const el = document.getElementById(`val-${idx}`);
-                let cur = Math.max(0, parseInt(el.innerText) + val);
-                el.innerText = cur;
-                const filtrados = this.data.filter(i => this.getVal(i, ["contenedor"]).toString() === id);
-                filtrados[idx].cantidad = cur;
-                this.updateTotalCount(filtrados);
+            adjust: function(globalIdx, val) {
+                let item = this.data[globalIdx];
+                item.cantidad_auditada = Math.max(0, (item.cantidad_auditada || 0) + val);
+                
+                document.getElementById(`val-${globalIdx}`).innerText = item.cantidad_auditada;
+                this.updateTotalCount(this.getVal(item, 'id'));
             },
 
-            updateTotalCount: function(items) {
-                document.getElementById('totalCount').innerText = items.reduce((a, b) => a + (parseInt(b.cantidad) || 0), 0);
-                document.getElementById('totalItems').innerText = items.length;
+            updateTotalCount: function(containerId) {
+                const filtrados = this.data.filter(i => this.getVal(i, 'id').toString() === containerId);
+                const total = filtrados.reduce((a, b) => a + (parseInt(b.cantidad_auditada) || 0), 0);
+                
+                document.getElementById('totalCount').innerText = total;
+                document.getElementById('totalItems').innerText = filtrados.length;
             },
 
-            saveWork: function() { localStorage.setItem('twins_elite_data', JSON.stringify(this.data)); this.render(); this.closeCounter(); },
+            generateReport: function(id) {
+                alert(`Generando Reporte Oficial:\nContenedor: ${id}\nRevisado por: J. Angelo Nuñez Durand`);
+            },
+
+            saveWork: function() { 
+                localStorage.setItem('twins_elite_data', JSON.stringify(this.data)); 
+                this.render(); 
+                this.closeCounter(); 
+            },
+            
             closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
         };
 
