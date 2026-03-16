@@ -107,72 +107,72 @@
                 }
             },
 
-           render: function() {
+          render: function() {
     const feed = document.getElementById('feed');
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const selectedMonth = document.getElementById('monthFilter').value;
     
     if (!this.data || this.data.length === 0) {
-        feed.innerHTML = "<p class='text-center text-slate-400 py-10 uppercase text-[10px] font-bold'>No hay datos. Presiona sincronizar.</p>";
+        feed.innerHTML = "<p class='text-center text-slate-400 py-10 uppercase text-[10px] font-bold'>Sin datos. Sincroniza la App.</p>";
         return;
     }
 
-    // 1. FILTRADO
+    // 1. FILTRADO DINÁMICO
     const filteredData = this.data.filter(item => {
-        // Texto: Código o Descripción
+        // Buscamos en Código o Descripción
         const codigo = (item["CODIGO"] || "").toString().toLowerCase();
         const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
         const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
 
-        // Mes: Buscamos en "FECHA DE DESCARGA"
-        const fechaStr = item["FECHA DE DESCARGA"] || item["FECHA INGRESO"] || "";
+        // Buscamos el mes en "FECHA DE DESCARGA"
         let matchMonth = true;
-
         if (selectedMonth !== "ALL") {
-            // Esta parte detecta si la fecha usa "/" o "-" y saca el mes
-            const separador = fechaStr.includes('/') ? '/' : '-';
-            const partes = fechaStr.split(separador);
+            const fechaRaw = item["FECHA DE DESCARGA"] || "";
+            // Separamos por "/" (Día/Mes/Año)
+            const partes = fechaRaw.split('/');
             
-            // Normalmente la fecha es DD/MM/YYYY, el mes es el segundo elemento (índice 1)
-            let mesItem = "";
-            if (partes.length > 1) {
-                mesItem = partes[1].padStart(2, '0'); 
+            if (partes.length >= 2) {
+                // El mes es la segunda parte. Quitamos espacios y aseguramos 2 dígitos (03, 04...)
+                let mesItem = partes[1].trim().padStart(2, '0');
+                matchMonth = (mesItem === selectedMonth);
+            } else {
+                // Si la fecha no tiene el formato correcto, no la mostramos si hay un mes seleccionado
+                matchMonth = false;
             }
-            matchMonth = (mesItem === selectedMonth);
         }
-
         return matchText && matchMonth;
     });
 
-    // 2. AGRUPAR Y CONTAR
+    // 2. CONTEO DE CAJAS Y GRUPOS
     const groups = {};
-    let totalCajasFiltradas = 0;
+    let totalCajas = 0;
 
     filteredData.forEach(item => {
         let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
         if (!groups[id]) groups[id] = [];
         groups[id].push(item);
         
-        // Sumamos cajas
-        totalCajasFiltradas += (parseInt(item["CAJAS"]) || 0);
+        // Sumamos las cajas de la columna D
+        let valorCajas = parseInt(item["CAJAS"]) || 0;
+        totalCajas += valorCajas;
     });
 
     const groupKeys = Object.keys(groups).sort();
     
-    // Actualizar números en los cuadros de arriba
+    // Actualizamos los cuadros superiores
     document.getElementById('dash-cont').innerText = groupKeys.length;
-    document.getElementById('dash-cajas').innerText = totalCajasFiltradas;
+    document.getElementById('dash-cajas').innerText = totalCajas;
 
     if (groupKeys.length === 0) {
         feed.innerHTML = `
-            <div class="text-center py-10 opacity-50">
-                <i class="ph-bold ph-calendar-x text-4xl mb-2"></i>
-                <p class="text-[10px] font-bold uppercase">No hay datos para el mes o búsqueda actual</p>
+            <div class="text-center py-10 opacity-40">
+                <i class="ph-bold ph-calendar-x text-5xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-widest">No hay registros para este filtro</p>
             </div>`;
         return;
     }
 
-    // 3. DIBUJAR TARJETAS
+    // 3. GENERAR TARJETAS
     feed.innerHTML = groupKeys.map(id => {
         const items = groups[id];
         const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
@@ -183,14 +183,16 @@
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${items.length} SKUs en este mes</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${items.length} SKUs encontrados</p>
                 </div>
-                <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
-                    ${status}
-                </span>
+                <div class="text-right">
+                    <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
+                        ${status}
+                    </span>
+                </div>
             </div>
-            <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                Abrir Auditoría
+            <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all shadow-md">
+                Iniciar Revisión
             </button>
         </div>`;
     }).join('');
