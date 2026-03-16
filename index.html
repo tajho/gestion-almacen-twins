@@ -20,7 +20,7 @@
         <header class="flex justify-between items-center mb-6 py-2">
             <div>
                 <h1 class="text-xl font-800 tracking-tighter text-slate-900 uppercase">Twins <span class="text-blue-600">Elite</span></h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Angelo Nuñez Durand</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
             </div>
             <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg active:rotate-180 transition-all duration-500">
                 <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
@@ -39,7 +39,7 @@
         </div>
 
         <div class="space-y-3 mb-6">
-            <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor o código..." class="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
+            <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar contenedor..." class="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm outline-none font-bold text-sm">
         </div>
 
         <div id="feed" class="space-y-4 pb-10"></div>
@@ -54,10 +54,11 @@
         <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
         <div class="p-6 border-t bg-slate-50">
             <div class="flex justify-between mb-4">
-                <div class="text-center flex-1 border-r"><p class="text-[10px] font-bold text-slate-400">SKUS</p><p class="text-xl font-800" id="totalItems">0</p></div>
-                <div class="text-center flex-1"><p class="text-[10px] font-bold text-slate-400">CAJAS</p><p class="text-xl font-800 text-blue-600" id="totalCount">0</p></div>
+                <div class="text-center flex-1 border-r"><p class="text-[10px] font-bold text-slate-400">ITEMS</p><p class="text-xl font-800" id="totalItems">0</p></div>
+                <div class="text-center flex-1"><p class="text-[10px] font-bold text-slate-400">TOTAL CAJAS</p><p class="text-xl font-800 text-blue-600" id="totalCount">0</p></div>
             </div>
             <button onclick="app.saveWork()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-900 text-xs uppercase tracking-widest">Guardar Cambios</button>
+            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4">Revisión autorizada por J. Angelo Nuñez Durand</p>
         </div>
     </div>
 
@@ -66,37 +67,30 @@
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
             activeId: null,
 
-            // BUSCADOR DE COLUMNAS: Encuentra el dato aunque el nombre varíe
             getVal: function(item, keys) {
                 for (let k of keys) {
                     if (item[k] !== undefined) return item[k];
-                    // Prueba en minúsculas y sin espacios
-                    let cleanK = k.toLowerCase().replace(/\s/g, '');
-                    for (let realKey in item) {
-                        if (realKey.toLowerCase().replace(/\s/g, '') === cleanK) return item[realKey];
-                    }
                 }
                 return "";
             },
 
             parseFecha: function(item) {
-                let raw = this.getVal(item, ["FECHA DE DESCARGA", "FECHA", "almacen"]);
+                let raw = this.getVal(item, ["descarga", "fecha"]);
                 if(!raw) return new Date();
                 let s = raw.toString().split('T')[0].split(/[/-]/);
-                if (s[0].length === 4) return new Date(s[0], s[1]-1, s[2]);
-                return new Date(s[2], s[1]-1, s[0]);
+                return (s[0].length === 4) ? new Date(s[0], s[1]-1, s[2]) : new Date(s[2], s[1]-1, s[0]);
             },
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
                 icon.classList.add('animate-spin');
                 try {
-                    const res = await fetch("https://script.google.com/macros/s/AKfycbycL7jCK_jAwAch6H9DVnpditaxcMnghvhu860tGiCroA_ncf2fTKR6TU-qs1ojqEU/exec");
+                    const res = await fetch("TU_URL_DE_GOOGLE_SCRIPT"); // Asegúrate de poner tu link de implementación aquí
                     const json = await res.json();
                     this.data = Array.isArray(json) ? json : (json.historial || []);
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
-                } catch(e) { alert("Error de conexión"); }
+                } catch(e) { alert("Error de conexión. Revisa el link del script."); }
                 finally { icon.classList.remove('animate-spin'); }
             },
 
@@ -105,7 +99,7 @@
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 
                 const groups = this.data.reduce((acc, item) => {
-                    const id = this.getVal(item, ["CONTENEDORES", "CONTENEDOR", "canal"]).toString() || "S/N";
+                    const id = this.getVal(item, ["contenedor", "canal"]).toString() || "S/N";
                     if (JSON.stringify(item).toLowerCase().includes(search)) {
                         if (!acc[id]) acc[id] = { id, date: this.parseFecha(item), items: [] };
                         acc[id].items.push(item);
@@ -115,7 +109,7 @@
 
                 const sorted = Object.values(groups).sort((a,b) => b.date - a.date);
                 document.getElementById('dash-cont').innerText = sorted.length;
-                document.getElementById('dash-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(this.getVal(i, ["CAJAS", "cantidad"])) || 0), 0);
+                document.getElementById('dash-cajas').innerText = this.data.reduce((s, i) => s + (parseInt(this.getVal(i, ["cajas"])) || 0), 0);
 
                 feed.innerHTML = sorted.map(g => `
                     <div class="card p-5 mb-3">
@@ -124,14 +118,14 @@
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">${g.date.toLocaleDateString()}</p>
                                 <h3 class="text-xl font-800 text-slate-900 tracking-tighter uppercase">CONT. ${g.id}</h3>
                             </div>
-                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black">${g.items.length} ITEMS</span>
+                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase">${g.items.length} SKUS</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <button onclick="app.startWork('${g.id}')" class="btn-main bg-slate-900 text-white border-slate-900">
-                                <i class="ph-fill ph-pencil-simple text-lg mb-1"></i><span class="text-[9px] font-black">AUDITAR</span>
+                                <i class="ph-fill ph-pencil-simple text-lg mb-1"></i><span class="text-[9px] font-black uppercase">Auditar</span>
                             </button>
-                            <button onclick="app.pdf('${g.id}')" class="btn-main bg-white text-slate-400 border-slate-100">
-                                <i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[9px] font-black">REPORTE</span>
+                            <button onclick="alert('Generando reporte para el contenedor ${g.id}')" class="btn-main bg-white text-slate-400 border-slate-100">
+                                <i class="ph-bold ph-file-pdf text-lg mb-1"></i><span class="text-[9px] font-black uppercase">Reporte</span>
                             </button>
                         </div>
                     </div>
@@ -140,14 +134,14 @@
 
             startWork: function(id) {
                 this.activeId = id;
-                const filtrados = this.data.filter(i => this.getVal(i, ["CONTENEDORES", "CONTENEDOR", "canal"]).toString() === id);
+                const filtrados = this.data.filter(i => this.getVal(i, ["contenedor"]).toString() === id);
                 document.getElementById('counter-title').innerText = `CONTENEDOR ${id}`;
                 
                 document.getElementById('counterList').innerHTML = filtrados.map((item, idx) => `
                     <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                         <div class="flex-1 pr-2">
-                            <p class="text-[10px] font-black text-blue-600 uppercase mb-1">${this.getVal(item, ["CODIGO", "ITEM"])}</p>
-                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${this.getVal(item, ["DESC. EN ESPAÑOL", "DESCRIPCIÓN", "descripcion"])}</p>
+                            <p class="text-[10px] font-black text-blue-600 uppercase mb-1">${this.getVal(item, ["codigo"])}</p>
+                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${this.getVal(item, ["descripcion"])}</p>
                         </div>
                         <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm">
                             <button class="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center font-bold" onclick="app.adjust('${id}', ${idx}, -1)">-</button>
@@ -163,7 +157,7 @@
                 const el = document.getElementById(`val-${idx}`);
                 let cur = Math.max(0, parseInt(el.innerText) + val);
                 el.innerText = cur;
-                const filtrados = this.data.filter(i => this.getVal(i, ["CONTENEDORES", "CONTENEDOR", "canal"]).toString() === id);
+                const filtrados = this.data.filter(i => this.getVal(i, ["contenedor"]).toString() === id);
                 filtrados[idx].cantidad = cur;
                 this.updateTotalCount(filtrados);
             },
@@ -174,8 +168,7 @@
             },
 
             saveWork: function() { localStorage.setItem('twins_elite_data', JSON.stringify(this.data)); this.render(); this.closeCounter(); },
-            closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; },
-            pdf: function(id) { alert(`Generando reporte para ${id}\nAutorizado por J. Angelo Nuñez Durand`); }
+            closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
         };
 
         window.onload = () => app.render();
