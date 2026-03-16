@@ -17,56 +17,31 @@
 <body>
 
     <div id="view-dashboard" class="p-4 max-w-md mx-auto">
-    <header class="flex justify-between items-center mb-4 py-2">
-        <div>
-            <h1 class="text-xl font-800 tracking-tighter text-slate-900 uppercase">Twins <span class="text-blue-600">Elite</span></h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Gestión de Inventarios</p>
-        </div>
-        <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg active:rotate-180 transition-all">
-            <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
-        </button>
-    </header>
+        <header class="flex justify-between items-center mb-6 py-2">
+            <div>
+                <h1 class="text-xl font-800 tracking-tighter text-slate-900 uppercase">Twins <span class="text-blue-600">Elite</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">J. Angelo Nuñez Durand</p>
+            </div>
+            <button onclick="app.sync()" class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg active:rotate-180 transition-all duration-500">
+                <i id="syncIcon" class="ph-bold ph-arrows-clockwise text-xl"></i>
+            </button>
+        </header>
 
-    <div class="space-y-3 mb-6">
-        <div class="relative">
-            <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="searchInput" oninput="app.render()" placeholder="Buscar código o descripción..." 
-                class="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="card p-4 text-center border-b-4 border-b-slate-900">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Contenedores</p>
+                <p class="text-2xl font-800 text-slate-800" id="dash-cont">0</p>
+            </div>
+            <div class="card p-4 text-center border-b-4 border-b-blue-600">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total SKUs</p>
+                <p class="text-2xl font-800 text-blue-600" id="dash-skus">0</p>
+            </div>
         </div>
-        
-        <div class="flex items-center gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-            <i class="ph-bold ph-calendar-blank ml-2 text-slate-400"></i>
-            <select id="monthFilter" onchange="app.render()" class="w-full py-2 bg-transparent text-xs font-bold uppercase outline-none">
-                <option value="ALL">Todos los meses</option>
-                <option value="01">Enero</option>
-                <option value="02">Febrero</option>
-                <option value="03">Marzo</option>
-                <option value="04">Abril</option>
-                <option value="05">Mayo</option>
-                <option value="06">Junio</option>
-                <option value="07">Julio</option>
-                <option value="08">Agosto</option>
-                <option value="09">Septiembre</option>
-                <option value="10">Octubre</option>
-                <option value="11">Noviembre</option>
-                <option value="12">Diciembre</option>
-            </select>
+
+        <div id="feed" class="space-y-4 pb-24">
+            <p class="text-center text-slate-400 text-xs py-10 font-bold uppercase tracking-widest">Sincroniza para cargar la Base de Datos</p>
         </div>
     </div>
-
-    <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="card p-4 text-center border-b-4 border-b-slate-900">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Contenedores Mes</p>
-            <p class="text-2xl font-800 text-slate-800" id="dash-cont">0</p>
-        </div>
-        <div class="card p-4 text-center border-b-4 border-b-blue-600">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Cajas Mes</p>
-            <p class="text-2xl font-800 text-blue-600" id="dash-cajas">0</p>
-        </div>
-    </div>
-
-    <div id="feed" class="space-y-4 pb-24"></div>
-</div>
 
     <div id="view-counter" class="modal">
         <header class="p-6 border-b flex justify-between items-center bg-white sticky top-0 z-10">
@@ -107,96 +82,42 @@
                 }
             },
 
-          render: function() {
-    const feed = document.getElementById('feed');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const selectedMonth = document.getElementById('monthFilter').value;
-    
-    if (!this.data || this.data.length === 0) {
-        feed.innerHTML = "<p class='text-center text-slate-400 py-10 uppercase text-[10px] font-bold'>Sin datos. Sincroniza la App.</p>";
-        return;
-    }
+            render: function() {
+                const feed = document.getElementById('feed');
+                if (this.data.length === 0) return;
 
-    // 1. FILTRADO DINÁMICO
-    const filteredData = this.data.filter(item => {
-        // Buscamos en Código o Descripción
-        const codigo = (item["CODIGO"] || "").toString().toLowerCase();
-        const desc = (item["DESC. EN ESPAÑOL"] || "").toString().toLowerCase();
-        const matchText = codigo.includes(searchTerm) || desc.includes(searchTerm);
+                const groups = {};
+                this.data.forEach(item => {
+                    let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
+                    if (!groups[id]) groups[id] = [];
+                    groups[id].push(item);
+                });
 
-        // Buscamos el mes en "FECHA DE DESCARGA"
-        let matchMonth = true;
-        if (selectedMonth !== "ALL") {
-            const fechaRaw = item["FECHA DE DESCARGA"] || "";
-            // Separamos por "/" (Día/Mes/Año)
-            const partes = fechaRaw.split('/');
-            
-            if (partes.length >= 2) {
-                // El mes es la segunda parte. Quitamos espacios y aseguramos 2 dígitos (03, 04...)
-                let mesItem = partes[1].trim().padStart(2, '0');
-                matchMonth = (mesItem === selectedMonth);
-            } else {
-                // Si la fecha no tiene el formato correcto, no la mostramos si hay un mes seleccionado
-                matchMonth = false;
-            }
-        }
-        return matchText && matchMonth;
-    });
+                const groupKeys = Object.keys(groups).sort();
+                document.getElementById('dash-cont').innerText = groupKeys.length;
+                document.getElementById('dash-skus').innerText = this.data.length;
 
-    // 2. CONTEO DE CAJAS Y GRUPOS
-    const groups = {};
-    let totalCajas = 0;
-
-    filteredData.forEach(item => {
-        let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
-        if (!groups[id]) groups[id] = [];
-        groups[id].push(item);
-        
-        // Sumamos las cajas de la columna D
-        let valorCajas = parseInt(item["CAJAS"]) || 0;
-        totalCajas += valorCajas;
-    });
-
-    const groupKeys = Object.keys(groups).sort();
-    
-    // Actualizamos los cuadros superiores
-    document.getElementById('dash-cont').innerText = groupKeys.length;
-    document.getElementById('dash-cajas').innerText = totalCajas;
-
-    if (groupKeys.length === 0) {
-        feed.innerHTML = `
-            <div class="text-center py-10 opacity-40">
-                <i class="ph-bold ph-calendar-x text-5xl mb-3"></i>
-                <p class="text-[10px] font-black uppercase tracking-widest">No hay registros para este filtro</p>
-            </div>`;
-        return;
-    }
-
-    // 3. GENERAR TARJETAS
-    feed.innerHTML = groupKeys.map(id => {
-        const items = groups[id];
-        const status = (items[0]["ESTADO"] || "PENDIENTE").toString().toUpperCase();
-        const isDone = status === "COMPLETADO";
-        
-        return `
-        <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 class="text-lg font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${items.length} SKUs encontrados</p>
-                </div>
-                <div class="text-right">
-                    <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[8px] font-black uppercase">
-                        ${status}
-                    </span>
-                </div>
-            </div>
-            <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all shadow-md">
-                Iniciar Revisión
-            </button>
-        </div>`;
-    }).join('');
-}
+                feed.innerHTML = groupKeys.map(id => {
+                    const status = groups[id][0]["ESTADO"] || "PENDIENTE";
+                    const isDone = status === "COMPLETADO";
+                    
+                    return `
+                    <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-900 text-slate-900 uppercase">CONT. ${id}</h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${groups[id].length} Items</p>
+                            </div>
+                            <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[9px] font-black uppercase">
+                                ${status}
+                            </span>
+                        </div>
+                        <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-magnifying-glass"></i> ${isDone ? 'Ver Auditoría' : 'Iniciar Auditoría'}
+                        </button>
+                    </div>`;
+                }).join('');
+            },
 
             startWork: function(id) {
                 this.activeContenedor = id;
