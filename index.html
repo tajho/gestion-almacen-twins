@@ -9,8 +9,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-        .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 24px; border: 1px solid #F1F5F9; transition: all 0.2s; }
         .modal { display: none; position: fixed; inset: 0; background: white; z-index: 100; flex-direction: column; }
+        .btn-primary { @apply w-full py-5 bg-slate-900 text-white rounded-2xl font-900 text-xs uppercase tracking-[0.2em] active:scale-95 transition-all; }
     </style>
 </head>
 <body>
@@ -32,48 +33,50 @@
                 <p class="text-2xl font-800 text-slate-800" id="dash-cont">0</p>
             </div>
             <div class="card p-4 text-center border-b-4 border-b-blue-600">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">SKUs Totales</p>
-                <p class="text-2xl font-800 text-blue-600" id="dash-cajas">0</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total SKUs</p>
+                <p class="text-2xl font-800 text-blue-600" id="dash-skus">0</p>
             </div>
         </div>
 
-        <div id="feed" class="space-y-4 pb-10">
-            <p class="text-center text-slate-400 text-xs py-10 font-bold uppercase tracking-widest">Sincroniza para ver los contenedores</p>
+        <div id="feed" class="space-y-4 pb-24">
+            <p class="text-center text-slate-400 text-xs py-10 font-bold uppercase tracking-widest">Sincroniza para cargar la Base de Datos</p>
         </div>
     </div>
 
     <div id="view-counter" class="modal">
         <header class="p-6 border-b flex justify-between items-center bg-white sticky top-0 z-10">
-            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl"></i></button>
+            <button onclick="app.closeCounter()" class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center"><i class="ph-bold ph-caret-left text-xl text-slate-600"></i></button>
             <div class="text-center">
-                <h2 class="text-[10px] font-black text-slate-400 uppercase">Auditando</h2>
+                <h2 class="text-[10px] font-black text-slate-400 uppercase">Revisión</h2>
                 <p class="text-sm font-900 uppercase text-slate-900" id="counter-title">...</p>
             </div>
             <div class="w-10"></div>
         </header>
         <div id="counterList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
         <div class="p-6 border-t bg-white">
-            <button onclick="app.saveWork()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-900 text-xs uppercase tracking-[0.2em]">Guardar Cambios</button>
-            <p class="text-center text-[8px] font-bold text-slate-400 uppercase mt-4">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
+            <button onclick="app.finishAudit()" class="btn-primary shadow-xl mb-3">Finalizar y Completar</button>
+            <p class="text-center text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Revisión autorizada por J. Angelo Nuñez Durand Asist. Inventario Logístico</p>
         </div>
     </div>
 
     <script>
         const app = {
+            // TU LINK INTEGRADO
+            apiUrl: "https://script.google.com/macros/s/AKfycbz7cvPcYPceJqw46humeMDrXcX277fpk1Zk9nZ_Uf7J5a2NtTJt95hqTwzUgUU78E-n/exec",
             data: JSON.parse(localStorage.getItem('twins_elite_data')) || [],
+            activeContenedor: null,
 
             sync: async function() {
                 const icon = document.getElementById('syncIcon');
                 icon.classList.add('animate-spin');
                 try {
-                    // REEMPLAZAR CON TU URL DE IMPLEMENTACIÓN
-                    const res = await fetch("TU_URL_DE_APPS_SCRIPT"); 
+                    const res = await fetch(this.apiUrl);
                     const json = await res.json();
-                    this.data = Array.isArray(json) ? json : (json.historial || json.data || []);
+                    this.data = Array.isArray(json) ? json : [];
                     localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
                     this.render();
                 } catch(e) { 
-                    alert("Error de conexión. Verifica que el script esté publicado como 'Cualquiera'."); 
+                    alert("Error de conexión. Verifica que el Apps Script esté publicado como 'Cualquiera'."); 
                 } finally { 
                     icon.classList.remove('animate-spin'); 
                 }
@@ -83,53 +86,51 @@
                 const feed = document.getElementById('feed');
                 if (this.data.length === 0) return;
 
-                // AGRUPACIÓN BASADA EN TU COLUMNA "CONTENEDORES"
                 const groups = {};
                 this.data.forEach(item => {
-                    // Buscamos la columna E de tu imagen
-                    let cId = item["CONTENEDORES"] || item["Contenedores"] || "S/N";
-                    let id = cId.toString().trim();
-                    
+                    let id = (item["CONTENEDORES"] || "S/N").toString().trim().toUpperCase();
                     if (!groups[id]) groups[id] = [];
                     groups[id].push(item);
                 });
 
-                const groupKeys = Object.keys(groups);
+                const groupKeys = Object.keys(groups).sort();
                 document.getElementById('dash-cont').innerText = groupKeys.length;
-                document.getElementById('dash-cajas').innerText = this.data.length;
+                document.getElementById('dash-skus').innerText = this.data.length;
 
-                feed.innerHTML = groupKeys.map(id => `
-                    <div class="card p-5 mb-4 border-l-4 border-l-blue-600 shadow-sm">
+                feed.innerHTML = groupKeys.map(id => {
+                    const status = groups[id][0]["ESTADO"] || "PENDIENTE";
+                    const isDone = status === "COMPLETADO";
+                    
+                    return `
+                    <div class="card p-5 mb-4 border-l-4 ${isDone ? 'border-l-green-500' : 'border-l-blue-600'}">
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h3 class="text-xl font-900 text-slate-900 uppercase">CONT. ${id}</h3>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${groups[id].length} Items en lista</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${groups[id].length} Items</p>
                             </div>
-                            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-[10px] font-black italic">LISTO</span>
+                            <span class="${isDone ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'} px-2 py-1 rounded text-[9px] font-black uppercase">
+                                ${status}
+                            </span>
                         </div>
                         <button onclick="app.startWork('${id}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-pencil-simple"></i> Abrir Auditoría
+                            <i class="ph-bold ph-magnifying-glass"></i> ${isDone ? 'Ver Auditoría' : 'Iniciar Auditoría'}
                         </button>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             },
 
             startWork: function(id) {
-                // Filtramos por la columna exacta de tu Excel
-                const filtrados = this.data.filter(i => (i["CONTENEDORES"] || i["Contenedores"]).toString().trim() === id);
-                
+                this.activeContenedor = id;
+                const filtrados = this.data.filter(i => (i["CONTENEDORES"] || "").toString().trim().toUpperCase() === id);
                 document.getElementById('counter-title').innerText = "CONTENEDOR " + id;
+                
                 document.getElementById('counterList').innerHTML = filtrados.map((item) => {
                     const globalIdx = this.data.indexOf(item);
-                    // Usamos los nombres exactos de tu Excel: "CODIGO" y "DESC. EN ESPAÑOL"
-                    const sku = item["CODIGO"] || "S/C";
-                    const desc = item["DESC. EN ESPAÑOL"] || "Sin descripción";
-                    
                     return `
                     <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
                         <div class="flex-1 pr-3">
-                            <p class="text-[9px] font-black text-blue-600 uppercase mb-0.5">${sku}</p>
-                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${desc}</p>
+                            <p class="text-[9px] font-black text-blue-600 uppercase mb-0.5">${item["CODIGO"] || "S/C"}</p>
+                            <p class="text-[11px] font-bold text-slate-800 uppercase leading-tight line-clamp-2">${item["DESC. EN ESPAÑOL"] || "Sin detalle"}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button class="w-9 h-9 rounded-lg bg-slate-100 font-bold" onclick="app.adjust(${globalIdx}, -1)">-</button>
@@ -146,10 +147,28 @@
                 document.getElementById(`val-${idx}`).innerText = this.data[idx].audit;
             },
 
-            saveWork: function() { 
-                localStorage.setItem('twins_elite_data', JSON.stringify(this.data)); 
-                this.render(); 
-                this.closeCounter(); 
+            finishAudit: async function() {
+                if(!confirm("¿Deseas marcar el Contenedor " + this.activeContenedor + " como COMPLETADO en el Excel?")) return;
+                
+                // Guardar localmente
+                localStorage.setItem('twins_elite_data', JSON.stringify(this.data));
+
+                // Enviar al Excel vía POST
+                try {
+                    await fetch(this.apiUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify({
+                            contenedor: this.activeContenedor,
+                            estado: "COMPLETADO"
+                        })
+                    });
+                    alert("¡Estado actualizado en Base de Datos Tajho!");
+                    this.closeCounter();
+                    this.sync(); // Recargar para ver los cambios
+                } catch(e) {
+                    alert("Error al conectar con el Excel.");
+                }
             },
 
             closeCounter: function() { document.getElementById('view-counter').style.display = 'none'; }
