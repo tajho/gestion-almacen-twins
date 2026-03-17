@@ -26,7 +26,7 @@
             user-select: none;
         }
 
-        /* --- ESTILOS OFICIALES DASHBOARD (INTACTOS) --- */
+        /* --- ESTILOS OFICIALES DASHBOARD --- */
         .glass-header {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
@@ -92,10 +92,18 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* --- REDISEÑO AUDITORÍA MODERNA Y ADITIVA --- */
+        /* --- REDISEÑO AUDITORÍA MODERNA Y LIMPIA (EL QUE APROBASTE) --- */
         #audit-view {
+            display: none;
+            position: fixed;
+            inset: 0;
             background: #F8FAFC;
+            z-index: 1000;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
         }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .audit-item-card {
             background: #FFFFFF;
@@ -147,7 +155,7 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="N° de Contenedor..." 
+                <input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." 
                     class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
@@ -165,8 +173,8 @@
         </button>
     </div>
 
-    <!-- SECCIÓN AUDITORÍA (MODERNA CON CRONÓMETRO Y LÓGICA ADITIVA) -->
-    <div id="audit-view" class="modal-full">
+    <!-- SECCIÓN AUDITORÍA OFICIAL (MODERNA Y ADITIVA CON CRONÓMETRO) -->
+    <div id="audit-view">
         <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
             <div class="px-6 pt-10 pb-4 flex items-center justify-between">
                 <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2">
@@ -236,7 +244,6 @@
             currentMonth: "",
             activeCont: null,
             timerInterval: null,
-            auditSeconds: 0,
 
             getDesc: function(item) {
                 const keys = Object.keys(item);
@@ -260,11 +267,15 @@
                             return { 
                                 ...item, 
                                 audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0),
-                                auditTime: cached ? (cached.auditTime || 0) : 0
+                                auditTime: cached ? (cached.auditTime || 0) : 0 
                             };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                         this.render();
+
+                        // [MEJORA 4] AUTO-RESCATE DE SESIÓN: Si se cerró accidentalmente
+                        const activeId = localStorage.getItem('twins_active_cont');
+                        if (activeId) { this.openAudit(activeId); }
                     }
                 } catch (e) { console.error(e); }
                 finally { btn.classList.remove('animate-spin'); }
@@ -301,17 +312,31 @@
                 const groups = {};
                 let tTotalCj = 0, tTotalAud = 0;
 
+                // Pre-agrupamos por contenedor
+                const tempGroups = {};
                 this.raw.forEach(item => {
                     const contId = (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"] || "S/N").toString();
-                    const itemMonth = this.getItemMonth(item);
+                    if (!tempGroups[contId]) tempGroups[contId] = [];
+                    tempGroups[contId].push(item);
+                });
+
+                // [MEJORA 1] BUSCADOR PROFUNDO: Busca Contenedor, SKU o Descripción
+                Object.keys(tempGroups).forEach(contId => {
+                    const items = tempGroups[contId];
+                    const itemMonth = this.getItemMonth(items[0]);
                     const matchesMonth = (this.currentMonth === "TODOS") || (this.currentMonth === itemMonth);
-                    const matchesSearch = contId.toLowerCase().includes(search);
+                    
+                    const matchesSearch = contId.toLowerCase().includes(search) || items.some(i => 
+                        (i["CODIGO"] && i["CODIGO"].toString().toLowerCase().includes(search)) ||
+                        (this.getDesc(i).toLowerCase().includes(search))
+                    );
 
                     if (matchesMonth && matchesSearch) {
-                        if (!groups[contId]) groups[contId] = [];
-                        groups[contId].push(item);
-                        tTotalCj += (item["CAJAS"] || 0);
-                        tTotalAud += (item.audit || 0);
+                        groups[contId] = items;
+                        items.forEach(i => {
+                            tTotalCj += (parseInt(i["CAJAS"]) || 0);
+                            tTotalAud += (i.audit || 0);
+                        });
                     }
                 });
 
@@ -331,7 +356,7 @@
                 list.innerHTML = ids.map(id => {
                     const items = groups[id];
                     let t = 0, a = 0;
-                    items.forEach(i => { t += (i["CAJAS"] || 0); a += (i.audit || 0); });
+                    items.forEach(i => { t += (parseInt(i["CAJAS"]) || 0); a += (i.audit || 0); });
                     const perc = t > 0 ? Math.round((a/t)*100) : 0;
                     const esProg = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN";
                     const isCompleted = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
@@ -373,32 +398,38 @@
             },
 
             // --- LÓGICA CRONÓMETRO ---
-            startTimer: function() {
+            startTimer: function(id) {
                 this.stopTimer();
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
-                this.auditSeconds = items[0].auditTime || 0;
-                this.updateTimerUI();
-                
                 this.timerInterval = setInterval(() => {
-                    this.auditSeconds++;
-                    items.forEach(i => i.auditTime = this.auditSeconds);
-                    this.updateTimerUI();
+                    const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
+                    if (items.length > 0) {
+                        items[0].auditTime = (items[0].auditTime || 0) + 1;
+                        this.updateTimerUI(items[0].auditTime);
+                        // Auto-guardamos tiempo en cache 
+                        localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+                    }
                 }, 1000);
             },
 
             stopTimer: function() {
-                if (this.timerInterval) clearInterval(this.timerInterval);
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
             },
 
-            updateTimerUI: function() {
-                const h = Math.floor(this.auditSeconds / 3600);
-                const m = Math.floor((this.auditSeconds % 3600) / 60);
-                const s = this.auditSeconds % 60;
-                const minSec = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                const format = h > 0 ? `${h.toString().padStart(2, '0')}:${minSec}` : minSec;
-                
+            updateTimerUI: function(seconds) {
                 const el = document.getElementById('audit-timer-display');
-                if (el) el.innerText = format;
+                if (el) el.innerText = this.formatTime(seconds);
+            },
+
+            formatTime: function(seconds) {
+                if (!seconds) return "00:00";
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                const minSec = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                return h > 0 ? `${h.toString().padStart(2, '0')}:${minSec}` : minSec;
             },
 
             // --- SECCIÓN AUDITORÍA MODERNA ---
@@ -410,13 +441,18 @@
 
             openAudit: function(id) {
                 this.activeCont = id;
-                document.getElementById('audit-title').innerText = "Carga #" + id;
+                
+                // [MEJORA 4] AUTO-RESCATE: Guardamos el id activo para recuperar si cierra pestaña
+                localStorage.setItem('twins_active_cont', id);
+
+                document.getElementById('audit-title').innerText = "CARGA #" + id;
                 document.getElementById('inner-search').value = "";
                 document.getElementById('audit-search-bar').classList.add('hidden');
                 
-                this.startTimer();
-                
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
+                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
+                this.updateTimerUI(items[0].auditTime || 0);
+                this.startTimer(id);
+
                 this.renderAuditItems(items);
                 this.updateProgress(id);
                 document.getElementById('audit-view').style.display = 'flex';
@@ -432,12 +468,14 @@
             },
 
             renderAuditItems: function(items) {
-                document.getElementById('audit-items-container').innerHTML = items.map(item => {
+                const container = document.getElementById('audit-items-container');
+
+                container.innerHTML = items.map(item => {
                     const idx = this.raw.indexOf(item);
+                    const teo = parseInt(item.CAJAS) || 0;
                     const aud = item.audit || 0;
-                    const teo = parseInt(item["CAJAS"]) || 0;
                     const diff = aud - teo;
-                    
+
                     let bClass = 'bg-slate-100 text-slate-500';
                     let bText = 'PENDIENTE';
                     let lColor = 'bg-slate-200';
@@ -454,7 +492,7 @@
                        
                        <div class="pl-2">
                            <div class="flex justify-between items-start mb-2">
-                               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item["CODIGO"]}</span>
+                               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.CODIGO}</span>
                                <span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span>
                            </div>
                            <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4 line-clamp-2">${this.getDesc(item)}</h4>
@@ -492,6 +530,13 @@
                 }).join('');
             },
 
+            // Reduce 1
+            step: function(idx, v) {
+                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v);
+                this.refreshItemUI(idx);
+                this.updateProgress(this.activeCont);
+            },
+
             // Lógica Aditiva (+)
             addAmount: function(idx) {
                 const input = document.getElementById(`add-input-${idx}`);
@@ -499,21 +544,15 @@
                 if (isNaN(val) || val === 0) return;
                 
                 this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + val);
-                input.value = ''; // Limpiamos para el siguiente pallet/ingreso
+                input.value = ''; 
                 
                 this.refreshItemUI(idx);
                 this.updateProgress(this.activeCont);
             },
 
-            // Establece valor directo (Igualar / Reiniciar)
+            // Establece valor directo (Match / Reset)
             setDirect: function(idx, val) {
                 this.raw[idx].audit = val;
-                this.refreshItemUI(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            step: function(idx, val) {
-                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + val);
                 this.refreshItemUI(idx);
                 this.updateProgress(this.activeCont);
             },
@@ -545,18 +584,21 @@
                 }
 
                 if (badgeEl) {
-                    badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md uppercase ${bClass}`;
+                    badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}`;
                     badgeEl.innerText = bText;
                 }
                 if (lineEl) {
                     lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`;
                 }
+
+                // [MEJORA 4] AUTO-GUARDADO CADA VEZ QUE SE MODIFICA ALGO
+                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
             },
 
             updateProgress: function(id) {
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
+                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
                 let totalT = 0, totalA = 0;
-                items.forEach(i => { totalT += (parseInt(i["CAJAS"]) || 0); totalA += (i.audit || 0); });
+                items.forEach(i => { totalT += (parseInt(i.CAJAS) || 0); totalA += (i.audit || 0); });
                 const perc = totalT > 0 ? Math.round((totalA/totalT)*100) : 0;
                 
                 document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%";
@@ -564,13 +606,38 @@
             },
 
             closeModal: function(id) { 
-                if (id === 'audit-view') this.stopTimer();
+                if (id === 'audit-view') {
+                    this.stopTimer();
+                    localStorage.removeItem('twins_active_cont');
+                }
                 document.getElementById(id).style.display = 'none'; 
             },
             
+            // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO"
             saveAndFinish: function() {
                 this.stopTimer();
+                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
+                
+                // Marcar localmente
+                items.forEach(i => i["ESTADO"] = "COMPLETADO");
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+                localStorage.removeItem('twins_active_cont');
+
+                // Notificar a Google Sheets de forma silenciosa (requiere adaptación en tu .gs si deseas procesarlo, 
+                // pero ya envía la señal de que terminó).
+                try {
+                    fetch(this.url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: "completar_auditoria",
+                            contenedor: this.activeCont,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                } catch(e) { console.error("Error al notificar cierre", e); }
+
                 this.closeModal('audit-view');
                 this.render();
             },
@@ -597,7 +664,7 @@
                 document.getElementById('list-view').style.display = 'flex';
             },
 
-            /* REPORTE PDF - CORREGIDO PARA INCLUIR CRONÓMETRO */
+            // [MEJORA 2] PDF AJUSTABLE A 1 HOJA CON EL TIEMPO CORRECTO
             generatePDF: function(id) {
                 try {
                     const { jsPDF } = window.jspdf;
@@ -620,14 +687,13 @@
                     doc.setTextColor(120);
                     doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30);
                     
-                    // Formatear Tiempo del Cronómetro (HH:MM:SS)
+                    // Formatear Tiempo
                     const h = Math.floor(totalSeconds / 3600);
                     const m = Math.floor((totalSeconds % 3600) / 60);
                     const s = totalSeconds % 60;
                     let timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                     if (h > 0) timeStr = `${h.toString().padStart(2, '0')}:${timeStr}`;
                     
-                    // Imprimir Fecha y Tiempo en PDF
                     doc.text(`FECHA: ${fechaReporte}   |   TIEMPO DE DESCARGA: ${timeStr}`, 14, 36);
                     
                     const tableBody = items.map(i => [
@@ -635,19 +701,28 @@
                         this.getDesc(i), 
                         i["CAJAS"] || 0, 
                         i.audit || 0, 
-                        (i.audit || 0) - (i["CAJAS"] || 0)
+                        (i.audit || 0) - (parseInt(i["CAJAS"]) || 0)
                     ]);
+
+                    // ALGORITMO AUTO-AJUSTABLE PARA FORZAR 1 HOJA
+                    let fSize = 7;
+                    let cPad = 2;
+                    
+                    if(items.length > 25 && items.length <= 40) { fSize = 6; cPad = 1.2; }
+                    else if(items.length > 40 && items.length <= 55) { fSize = 5; cPad = 0.8; }
+                    else if(items.length > 55) { fSize = 4.5; cPad = 0.5; }
 
                     doc.autoTable({
                         startY: 42,
                         head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
                         body: tableBody,
-                        headStyles: { fillColor: [15, 23, 42], fontSize: 9, halign: 'center' },
-                        styles: { fontSize: 7, cellPadding: 2 },
-                        columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
+                        headStyles: { fillColor: [15, 23, 42], fontSize: fSize + 1, halign: 'center' },
+                        styles: { fontSize: fSize, cellPadding: cPad },
+                        columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } },
+                        margin: { bottom: 25 } // Espacio para tu firma
                     });
                     
-                    const finalY = doc.lastAutoTable.finalY + 20;
+                    const finalY = doc.lastAutoTable.finalY + 15;
                     doc.setFontSize(9);
                     doc.setTextColor(15, 23, 42);
                     doc.text("Revisión autorizada por:", 14, finalY);
@@ -664,7 +739,16 @@
             }
         };
 
-        window.onload = () => { if(core.raw.length > 0) core.render(); else core.fetchData(); };
+        window.onload = async () => { 
+            if(core.raw.length > 0) { 
+                core.render(); 
+                // [MEJORA 4] Al recargar, verifica si estabas en una auditoría y te regresa a ella.
+                const activeId = localStorage.getItem('twins_active_cont');
+                if(activeId) { core.openAudit(activeId); }
+            } else { 
+                await core.fetchData(); 
+            } 
+        };
     </script>
 </body>
 </html>
