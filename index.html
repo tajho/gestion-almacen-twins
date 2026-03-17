@@ -95,60 +95,71 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* --- NUEVA SECCIÓN AUDITORÍA MINIMALISTA --- */
-        .audit-header-sticky {
+        /* --- SECCIÓN AUDITORÍA ULTRA-LIMPIA --- */
+        .audit-header-clean {
+            background: white;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F1F5F9;
             position: sticky;
             top: 0;
             z-index: 60;
-            background: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(10px);
-            padding-bottom: 16px;
-            border-bottom: 1px solid #E2E8F0;
         }
 
-        .count-item-card {
-            @apply bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm transition-all duration-300 mb-4;
+        .item-audit-card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid #F1F5F9;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
         }
 
-        .count-item-card.is-matched { @apply border-emerald-100 bg-emerald-50/20; }
-        .count-item-card.has-diff { @apply border-blue-100 bg-blue-50/20; }
-        .count-item-card.has-error { @apply border-orange-100 bg-orange-50/20; }
+        .item-audit-card.match { border-left: 4px solid #10B981; }
+        .item-audit-card.diff { border-left: 4px solid #F59E0B; }
 
-        .count-input {
-            @apply w-full bg-transparent border-none text-center text-5xl font-[900] py-2 focus:ring-0 outline-none text-slate-900;
-        }
-        
-        .btn-count {
-            @apply h-14 w-14 rounded-2xl flex items-center justify-center transition-all active:scale-90 font-black text-xl;
+        .btn-action-audit {
+            @apply h-12 w-12 rounded-full flex items-center justify-center transition-all active:scale-90;
+            background: #F8FAFC;
+            color: #0F172A;
+            border: 1px solid #E2E8F0;
         }
 
-        .quick-tag {
-            @apply px-4 py-2 rounded-xl text-[11px] font-[800] bg-slate-50 text-slate-500 border border-slate-100 active:bg-slate-900 active:text-white active:border-slate-900 transition-all;
+        .btn-plus-audit {
+            background: #0F172A;
+            color: white;
+            border: none;
         }
 
-        .badge-status {
-            @apply px-3 py-1 rounded-full text-[10px] font-[800] tracking-tight uppercase;
+        .audit-input {
+            @apply text-3xl font-extrabold text-center bg-transparent w-20 outline-none;
+            font-variant-numeric: tabular-nums;
         }
 
-        .summary-box {
-            @apply bg-white p-3 rounded-2xl flex flex-col items-center justify-center min-w-[75px] border border-slate-100;
+        .tag-minimal {
+            @apply px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider;
+            background: #F1F5F9;
+            color: #64748B;
         }
+
+        .tag-minimal.success { background: #ECFDF5; color: #059669; }
+        .tag-minimal.warning { background: #FFF7ED; color: #D97706; }
     </style>
 </head>
 <body class="antialiased">
 
+    <!-- HOME / LISTA DE CARGAS (MANTENIDO) -->
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">Almacén Pro</p>
-                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">Twins Elite</h1>
+                <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Almacén Pro</p>
+                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Twins Elite</h1>
             </div>
             <div class="relative flex items-center justify-center">
                 <svg class="w-12 h-12">
                     <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                 </svg>
-                <span id="global-perc" class="absolute text-[10px] font-[800]">0%</span>
+                <span id="global-perc" class="absolute text-[10px] font-bold">0%</span>
             </div>
         </div>
     </div>
@@ -157,12 +168,12 @@
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-50 shadow-sm">
                 <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
-                <p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p>
+                <p id="stat-containers" class="text-2xl font-extrabold text-slate-900">0</p>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p>
             </div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-50 shadow-sm">
                 <i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i>
-                <p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p>
+                <p id="stat-skus" class="text-2xl font-extrabold text-slate-900">0</p>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p>
             </div>
         </div>
@@ -170,7 +181,7 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="N° de Contenedor..." 
+                <input type="text" id="main-search" oninput="core.render()" placeholder="Buscar contenedor..." 
                     class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
@@ -179,80 +190,79 @@
             </div>
         </div>
 
-        <div id="container-list" class="space-y-4">
-            <div class="py-20 text-center text-slate-300 font-medium">Cargando inventario...</div>
-        </div>
+        <div id="container-list" class="space-y-4"></div>
 
         <button onclick="core.fetchData()" class="fab-sync">
             <i id="sync-icon" class="ph-bold ph-arrows-clockwise text-white text-2xl"></i>
         </button>
     </div>
 
-    <!-- MODAL DE AUDITORÍA REDISEÑADO -->
+    <!-- SECCIÓN DE AUDITORÍA (MODIFICADA: LIMPIA Y MODERNA) -->
     <div id="audit-view" class="modal-full">
-        <div class="audit-header-sticky px-6 pt-4">
-            <div class="flex items-center justify-between mb-5">
-                <button onclick="core.closeModal('audit-view')" class="w-11 h-11 rounded-2xl flex items-center justify-center bg-white border border-slate-200">
-                    <i class="ph-bold ph-caret-left text-xl text-slate-900"></i>
+        <div class="audit-header-clean">
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="core.closeModal('audit-view')" class="text-slate-900">
+                    <i class="ph-bold ph-arrow-left text-2xl"></i>
                 </button>
                 <div class="text-center">
-                    <h2 id="audit-title" class="text-sm font-[900] text-slate-900 tracking-tighter uppercase mb-0.5">Carga #---</h2>
-                    <p id="audit-date" class="text-[9px] font-bold text-slate-400">AUDITORÍA EN VIVO</p>
+                    <h2 id="audit-title" class="text-sm font-extrabold text-slate-900 uppercase tracking-tight">Carga #---</h2>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Auditoría en proceso</p>
                 </div>
-                <button onclick="core.searchInAudit()" class="w-11 h-11 rounded-2xl flex items-center justify-center bg-white border border-slate-200">
-                    <i class="ph-bold ph-magnifying-glass text-lg text-slate-400"></i>
-                </button>
+                <div class="w-8"></div>
             </div>
 
-            <div class="flex gap-2 mb-4">
-                <div class="summary-box">
-                    <span id="audit-count-total" class="text-sm font-[900] text-slate-900">0</span>
-                    <span class="text-[7px] font-black text-slate-400 uppercase">Teórico</span>
+            <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl">
+                <div class="flex-1">
+                    <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase mb-2">
+                        <span>Progreso General</span>
+                        <span id="audit-perc-text">0%</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                        <div id="audit-perc-bar" class="h-full bg-slate-900 transition-all duration-500" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="summary-box">
-                    <span id="audit-count-done" class="text-sm font-[900] text-blue-600">0</span>
-                    <span class="text-[7px] font-black text-slate-400 uppercase">Auditado</span>
+                <div class="h-10 w-[1px] bg-slate-200"></div>
+                <div class="text-center px-2">
+                    <p id="audit-count-done" class="text-lg font-black text-slate-900 leading-none">0</p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">Auditado</p>
                 </div>
-                <div class="flex-1 bg-white p-3 rounded-2xl border border-slate-100 flex flex-col justify-center">
-                     <div class="flex justify-between items-center mb-1.5 px-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase">Progreso</span>
-                        <p id="audit-perc-text" class="text-[10px] font-[900] text-slate-900">0%</p>
-                     </div>
-                     <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div id="audit-perc-bar" class="h-full bg-slate-900 rounded-full transition-all duration-700"></div>
-                     </div>
-                </div>
-            </div>
-
-            <div id="audit-search-box" class="hidden px-1">
-                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU..." 
-                class="w-full bg-white border-2 border-slate-900 rounded-2xl px-5 py-3 text-sm font-bold outline-none shadow-xl shadow-slate-200/50">
             </div>
         </div>
 
-        <div id="audit-items-container" class="flex-1 overflow-y-auto px-6 py-6 space-y-2 no-scrollbar"></div>
+        <!-- Buscador Interno Minimalista -->
+        <div class="px-6 py-4 bg-white">
+            <div class="relative">
+                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" 
+                placeholder="Escribe SKU o nombre..." 
+                class="w-full bg-slate-100 rounded-xl py-3 pl-11 pr-4 text-sm font-semibold outline-none focus:ring-2 ring-slate-200 transition-all">
+            </div>
+        </div>
 
-        <div class="px-6 py-6 bg-white border-t border-slate-100 safe-area-bottom">
-            <button onclick="core.saveAndFinish()" class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-[900] text-xs shadow-2xl active:scale-95 transition-all tracking-[0.2em] flex items-center justify-center gap-3">
-                GUARDAR Y CERRAR
-                <i class="ph-bold ph-arrow-right text-lg"></i>
+        <!-- Contenedor de Items -->
+        <div id="audit-items-container" class="flex-1 overflow-y-auto px-6 pb-24 no-scrollbar"></div>
+
+        <!-- Botón Guardar -->
+        <div class="p-6 bg-white border-t border-slate-50 safe-area-bottom">
+            <button onclick="core.saveAndFinish()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs tracking-widest uppercase shadow-lg active:scale-95 transition-all">
+                Finalizar Auditoría
             </button>
         </div>
     </div>
 
-    <!-- VISTA LISTA -->
+    <!-- VISTA LISTA (MANTENIDO) -->
     <div id="list-view" class="modal-full">
         <div class="px-6 py-8 flex items-center justify-between bg-white border-b">
             <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
             <div class="text-center">
-                <h2 class="text-base font-[800] text-slate-900 uppercase tracking-tighter">Contenido Carga</h2>
+                <h2 class="text-base font-extrabold text-slate-900 uppercase tracking-tighter">Contenido Carga</h2>
                 <p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p>
             </div>
             <div class="w-12"></div>
         </div>
-        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
+        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar"></div>
     </div>
 
     <script>
@@ -337,11 +347,6 @@
                 document.getElementById('stat-containers').innerText = ids.length;
                 document.getElementById('stat-skus').innerText = this.raw.length;
 
-                if(ids.length === 0) {
-                    list.innerHTML = `<div class="py-10 text-center text-slate-300 font-bold uppercase tracking-widest text-[10px]">Sin resultados</div>`;
-                    return;
-                }
-
                 list.innerHTML = ids.map(id => {
                     const items = groups[id];
                     let t = 0, a = 0;
@@ -351,59 +356,43 @@
                     const isCompleted = items[0]["ESTADO"]?.toString().toUpperCase() === "COMPLETADO";
 
                     return `
-                    <div class="native-card p-6 border-b-4 ${perc >= 100 ? 'border-emerald-400' : 'border-slate-50'}">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex flex-col">
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">CARGA #${id}</span>
-                                <h3 class="text-sm font-[900] text-slate-900 uppercase">CONTENEDOR ${id}</h3>
-                            </div>
-                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">${esProg ? 'EN ESPERA' : items[0]["FECHA_LIMPIA"]}</span>
-                        </div>
-                        <div class="flex items-end justify-between mb-6">
+                    <div class="native-card p-5 border-b-2 ${perc >= 100 ? 'border-emerald-500' : 'border-slate-100'}">
+                        <div class="flex justify-between items-center mb-4">
                             <div>
-                                <p class="text-[8px] font-black text-slate-300 uppercase mb-1">Items registrados</p>
-                                <div class="flex gap-1.5">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
-                                    <span class="text-xs font-black text-slate-900">${items.length} SKUs</span>
-                                </div>
+                                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Contenedor ${id}</h3>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase">${esProg ? 'En Espera' : items[0]["FECHA_LIMPIA"]}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[20px] font-[900] leading-none ${perc >= 100 ? 'text-emerald-500' : 'text-slate-900'}">${perc}%</p>
-                                <p class="text-[8px] font-black text-slate-300 uppercase tracking-tighter">AVANCE TOTAL</p>
+                                <p class="text-lg font-black text-slate-900 leading-none">${perc}%</p>
+                                <p class="text-[7px] font-bold text-slate-400 uppercase">Avance</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
                             ${!isCompleted ? `
-                            <button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-[900] text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                                AUDITAR
+                            <button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-11 rounded-xl font-bold text-[9px] uppercase tracking-widest active:scale-95 transition-all">
+                                Auditar
                             </button>
                             ` : ''}
-                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-12 rounded-2xl flex items-center justify-center gap-2 font-[900] text-[10px] text-slate-600 uppercase tracking-widest shadow-sm active:scale-95 transition-all">
-                                LISTA
+                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-11 rounded-xl font-bold text-[9px] text-slate-600 uppercase tracking-widest active:scale-95 transition-all">
+                                Detalles
                             </button>
-                            <button onclick="core.generatePDF('${id}')" class="w-12 bg-red-50 text-red-600 h-12 rounded-2xl flex items-center justify-center active:scale-95 transition-all">
-                                <i class="ph-bold ph-file-pdf text-xl"></i>
+                            <button onclick="core.generatePDF('${id}')" class="w-11 bg-red-50 text-red-600 h-11 rounded-xl flex items-center justify-center active:scale-95">
+                                <i class="ph-bold ph-file-pdf"></i>
                             </button>
                         </div>
                     </div>`;
                 }).join('');
             },
 
+            /* LOGICA DE AUDITORIA MODERNA Y LIMPIA */
             openAudit: function(id) {
                 this.activeCont = id;
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
                 document.getElementById('audit-title').innerText = "Carga #" + id;
                 document.getElementById('inner-search').value = "";
-                document.getElementById('audit-search-box').classList.add('hidden');
                 this.renderAuditItems(items);
                 this.updateProgress(id);
                 document.getElementById('audit-view').style.display = 'flex';
-            },
-
-            searchInAudit: function() {
-                const box = document.getElementById('audit-search-box');
-                box.classList.toggle('hidden');
-                if(!box.classList.contains('hidden')) document.getElementById('inner-search').focus();
             },
 
             filterAuditItems: function(val) {
@@ -423,55 +412,38 @@
                     const diff = auditVal - theoreticalVal;
                     
                     let stateClass = '';
-                    let badgeClass = 'bg-slate-100 text-slate-400';
-                    let badgeLabel = 'PENDIENTE';
+                    let tagClass = '';
+                    let tagText = 'Pendiente';
 
                     if (auditVal > 0) {
-                        if (diff === 0) {
-                            stateClass = 'is-matched';
-                            badgeClass = 'bg-emerald-100 text-emerald-600';
-                            badgeLabel = 'CORRECTO';
-                        } else if (diff > 0) {
-                            stateClass = 'has-diff';
-                            badgeClass = 'bg-blue-100 text-blue-600';
-                            badgeLabel = `SOBRANTE (+${diff})`;
-                        } else {
-                            stateClass = 'has-error';
-                            badgeClass = 'bg-orange-100 text-orange-600';
-                            badgeLabel = `FALTANTE (${diff})`;
-                        }
+                        if (diff === 0) { stateClass = 'match'; tagClass = 'success'; tagText = 'Correcto'; }
+                        else { stateClass = 'diff'; tagClass = 'warning'; tagText = diff > 0 ? `Sobrante (+${diff})` : `Faltante (${diff})`; }
                     }
 
                     return `
-                    <div id="card-${idx}" class="count-item-card ${stateClass}">
+                    <div id="card-${idx}" class="item-audit-card ${stateClass}">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="flex-1 pr-3">
+                            <div class="flex-1 pr-4">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="text-[10px] font-black text-slate-900">${item["CODIGO"]}</span>
-                                    <span id="badge-${idx}" class="badge-status ${badgeClass}">${badgeLabel}</span>
+                                    <span id="tag-${idx}" class="tag-minimal ${tagClass}">${tagText}</span>
                                 </div>
-                                <h4 class="text-[11px] font-bold text-slate-500 leading-tight uppercase line-clamp-2">${this.getDesc(item)}</h4>
+                                <h4 class="text-xs font-bold text-slate-500 uppercase leading-tight">${this.getDesc(item)}</h4>
                             </div>
                             <div class="text-right">
-                                <p class="text-[8px] font-black text-slate-300 uppercase">Teórico</p>
-                                <p class="text-base font-[900] text-slate-900">${theoreticalVal}</p>
+                                <p class="text-[8px] font-bold text-slate-400 uppercase">Teórico</p>
+                                <p class="text-sm font-black text-slate-900">${theoreticalVal}</p>
                             </div>
                         </div>
-                        <div class="flex flex-col gap-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <button onclick="core.step(${idx}, -1)" class="btn-count bg-white border border-slate-200 text-slate-900">
-                                    <i class="ph-bold ph-minus"></i>
-                                </button>
-                                <input type="number" id="input-${idx}" inputmode="numeric" value="${auditVal}" onchange="core.manualCount(${idx}, this.value)" class="count-input">
-                                <button onclick="core.step(${idx}, 1)" class="btn-count bg-slate-900 text-white">
-                                    <i class="ph-bold ph-plus"></i>
-                                </button>
+                        <div class="flex items-center justify-between">
+                            <div class="flex gap-2">
+                                <button onclick="core.step(${idx}, -1)" class="btn-action-audit"><i class="ph-bold ph-minus"></i></button>
+                                <button onclick="core.step(${idx}, 1)" class="btn-action-audit btn-plus-audit"><i class="ph-bold ph-plus"></i></button>
                             </div>
-                            <div class="flex justify-center gap-2">
-                                <button onclick="core.step(${idx}, 5)" class="quick-tag">+5</button>
-                                <button onclick="core.step(${idx}, 10)" class="quick-tag">+10</button>
-                                <button onclick="core.manualCount(${idx}, ${theoreticalVal})" class="quick-tag bg-emerald-500 text-white border-none">IGUALAR</button>
-                                <button onclick="core.manualCount(${idx}, 0)" class="quick-tag">BORRAR</button>
+                            <input type="number" id="input-${idx}" value="${auditVal}" onchange="core.manualCount(${idx}, this.value)" class="audit-input">
+                            <div class="flex gap-2">
+                                <button onclick="core.step(${idx}, 5)" class="px-3 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-500">+5</button>
+                                <button onclick="core.manualCount(${idx}, ${theoreticalVal})" class="px-3 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-blue-600">Max</button>
                             </div>
                         </div>
                     </div>`;
@@ -498,32 +470,27 @@
             updateUIItem: function(idx) {
                 const item = this.raw[idx];
                 const card = document.getElementById(`card-${idx}`);
-                const badge = document.getElementById(`badge-${idx}`);
+                const tag = document.getElementById(`tag-${idx}`);
                 const auditVal = item.audit || 0;
                 const theoreticalVal = item["CAJAS"] || 0;
                 const diff = auditVal - theoreticalVal;
 
-                card.classList.remove('is-matched', 'has-diff', 'has-error');
-                let badgeClass = 'bg-slate-100 text-slate-400';
-                let badgeLabel = 'PENDIENTE';
-
+                card.classList.remove('match', 'diff');
+                tag.className = 'tag-minimal';
+                
                 if (auditVal > 0) {
-                    if (diff === 0) {
-                        card.classList.add('is-matched');
-                        badgeClass = 'bg-emerald-100 text-emerald-600';
-                        badgeLabel = 'CORRECTO';
-                    } else if (diff > 0) {
-                        card.classList.add('has-diff');
-                        badgeClass = 'bg-blue-100 text-blue-600';
-                        badgeLabel = `SOBRANTE (+${diff})`;
-                    } else {
-                        card.classList.add('has-error');
-                        badgeClass = 'bg-orange-100 text-orange-600';
-                        badgeLabel = `FALTANTE (${diff})`;
+                    if (diff === 0) { 
+                        card.classList.add('match'); 
+                        tag.classList.add('success'); 
+                        tag.innerText = 'Correcto'; 
+                    } else { 
+                        card.classList.add('diff'); 
+                        tag.classList.add('warning'); 
+                        tag.innerText = diff > 0 ? `Sobrante (+${diff})` : `Faltante (${diff})`; 
                     }
+                } else {
+                    tag.innerText = 'Pendiente';
                 }
-                badge.innerText = badgeLabel;
-                badge.className = `badge-status ${badgeClass}`;
             },
 
             updateProgress: function(id) {
@@ -533,22 +500,20 @@
                 const perc = tT > 0 ? Math.round((tA/tT)*100) : 0;
                 document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%";
                 document.getElementById('audit-perc-text').innerText = perc + "%";
-                document.getElementById('audit-count-total').innerText = tT;
                 document.getElementById('audit-count-done').innerText = tA;
             },
 
             viewList: function(id) {
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
-                document.getElementById('list-cont-id').innerText = "REF: " + id;
+                document.getElementById('list-cont-id').innerText = id;
                 document.getElementById('list-items-content').innerHTML = items.map(item => `
-                    <div class="bg-white px-6 py-5 rounded-[22px] border border-slate-50 flex justify-between items-center shadow-sm">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-50 flex justify-between items-center">
                         <div class="flex-1 pr-4">
-                            <p class="text-[9px] font-[900] text-blue-600 mb-0.5 tracking-wider uppercase">${item["CODIGO"]}</p>
-                            <p class="text-xs font-[800] text-slate-800 uppercase line-clamp-1">${this.getDesc(item)}</p>
+                            <p class="text-[9px] font-bold text-blue-600 mb-1 tracking-wider uppercase">${item["CODIGO"]}</p>
+                            <p class="text-xs font-bold text-slate-800 uppercase line-clamp-1">${this.getDesc(item)}</p>
                         </div>
                         <div class="text-right">
-                             <span class="text-xs font-[900] ${item.audit >= item["CAJAS"] ? 'text-emerald-500' : 'text-slate-900'}">${item.audit || 0} / ${item["CAJAS"] || 0}</span>
-                             <p class="text-[7px] font-black text-slate-300 uppercase tracking-tighter">UNIDADES</p>
+                             <span class="text-sm font-black text-slate-900">${item.audit || 0} / ${item["CAJAS"] || 0}</span>
                         </div>
                     </div>
                 `).join('');
@@ -595,14 +560,13 @@
                 
                 const finalY = doc.lastAutoTable.finalY + 20;
                 doc.setFontSize(9);
-                doc.setTextColor(15, 23, 42);
                 doc.text("Revisión autorizada por:", 14, finalY);
                 doc.setFont("helvetica", "bold");
                 doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
                 doc.setFont("helvetica", "normal");
                 doc.text("Asist. Inventario Logístico", 14, finalY + 11);
                 
-                doc.save(`Reporte_Carga_${id}.pdf`);
+                doc.save(`Reporte_${id}.pdf`);
             }
         };
 
