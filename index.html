@@ -24,17 +24,14 @@
             color: var(--primary); 
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            overflow-x: hidden;
         }
 
-        .safe-area-top { padding-top: env(safe-area-inset-top); }
-        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
+        /* --- ESTILOS OFICIALES DASHBOARD (INTACTOS) --- */
         .glass-header {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             position: sticky;
             top: 0;
             z-index: 50;
@@ -43,12 +40,12 @@
         .native-card {
             background: #FFFFFF;
             border-radius: 24px;
-            border: 1px solid #F1F5F9;
+            border: 1px solid #E2E8F0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .native-card:active { transform: scale(0.98); }
+        .native-card:active { transform: scale(0.97); }
 
         .search-bar {
             background: #FFFFFF;
@@ -64,7 +61,7 @@
             width: 64px;
             height: 64px;
             background: var(--primary);
-            border-radius: 22px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -76,7 +73,7 @@
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: #F8FAFC; 
+            background: #F1F5F9; 
             z-index: 100; 
             flex-direction: column;
             animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
@@ -95,85 +92,54 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* --- SECCIÓN AUDITORÍA ULTRA-LIMPIA --- */
-        .audit-header-clean {
-            background: white;
-            padding: 20px 24px;
-            border-bottom: 1px solid #F1F5F9;
-            position: sticky;
-            top: 0;
-            z-index: 60;
-        }
-
-        .item-audit-card {
-            background: white;
-            padding: 24px;
-            border-radius: 24px;
-            border: 1px solid #F1F5F9;
-            margin-bottom: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .item-audit-card.match { border-left: 4px solid #10B981; }
-        .item-audit-card.diff { border-left: 4px solid #F59E0B; }
-
-        .btn-action-audit {
-            @apply h-12 w-12 rounded-full flex items-center justify-center transition-all active:scale-90;
+        /* --- REDISEÑO AUDITORÍA MODERNA Y ADITIVA --- */
+        #audit-view {
             background: #F8FAFC;
-            color: #0F172A;
-            border: 1px solid #E2E8F0;
         }
 
-        .btn-plus-audit {
-            background: #0F172A;
-            color: white;
-            border: none;
+        .audit-item-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #F1F5F9;
+            box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
         }
-
-        .audit-input {
-            @apply text-3xl font-extrabold text-center bg-transparent w-20 outline-none;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .tag-minimal {
-            @apply px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider;
-            background: #F1F5F9;
-            color: #64748B;
-        }
-
-        .tag-minimal.success { background: #ECFDF5; color: #059669; }
-        .tag-minimal.warning { background: #FFF7ED; color: #D97706; }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- HOME / LISTA DE CARGAS (MANTENIDO) -->
+    <!-- HEADER DASHBOARD OFICIAL -->
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Almacén Pro</p>
-                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Twins Elite</h1>
+                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">Almacén Pro</p>
+                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">Twins Elite</h1>
             </div>
             <div class="relative flex items-center justify-center">
                 <svg class="w-12 h-12">
                     <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                 </svg>
-                <span id="global-perc" class="absolute text-[10px] font-bold">0%</span>
+                <span id="global-perc" class="absolute text-[10px] font-[800]">0%</span>
             </div>
         </div>
     </div>
 
+    <!-- MAIN CONTENT OFICIAL -->
     <div id="app-shell" class="max-w-md mx-auto px-6 pb-24">
+        
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-50 shadow-sm">
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
                 <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
-                <p id="stat-containers" class="text-2xl font-extrabold text-slate-900">0</p>
+                <p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p>
             </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-50 shadow-sm">
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
                 <i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i>
-                <p id="stat-skus" class="text-2xl font-extrabold text-slate-900">0</p>
+                <p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p>
             </div>
         </div>
@@ -181,7 +147,7 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="Buscar contenedor..." 
+                <input type="text" id="main-search" oninput="core.render()" placeholder="N° de Contenedor..." 
                     class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
@@ -190,79 +156,76 @@
             </div>
         </div>
 
-        <div id="container-list" class="space-y-4"></div>
+        <div id="container-list" class="space-y-4">
+            <div class="py-20 text-center text-slate-400 font-medium">Cargando inventario...</div>
+        </div>
 
         <button onclick="core.fetchData()" class="fab-sync">
             <i id="sync-icon" class="ph-bold ph-arrows-clockwise text-white text-2xl"></i>
         </button>
     </div>
 
-    <!-- SECCIÓN DE AUDITORÍA (MODIFICADA: LIMPIA Y MODERNA) -->
+    <!-- SECCIÓN AUDITORÍA (MODERNA CON CRONÓMETRO Y LÓGICA ADITIVA) -->
     <div id="audit-view" class="modal-full">
-        <div class="audit-header-clean">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="core.closeModal('audit-view')" class="text-slate-900">
+        <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
+            <div class="px-6 pt-10 pb-4 flex items-center justify-between">
+                <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2">
                     <i class="ph-bold ph-arrow-left text-2xl"></i>
                 </button>
                 <div class="text-center">
-                    <h2 id="audit-title" class="text-sm font-extrabold text-slate-900 uppercase tracking-tight">Carga #---</h2>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Auditoría en proceso</p>
+                    <h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2>
+                    <div class="flex items-center justify-center gap-1.5 mt-0.5">
+                        <i class="ph-fill ph-clock text-[12px] text-blue-500"></i>
+                        <span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span>
+                    </div>
                 </div>
-                <div class="w-8"></div>
+                <button onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2">
+                    <i class="ph-bold ph-magnifying-glass text-2xl"></i>
+                </button>
+            </div>
+            
+            <div id="audit-search-bar" class="hidden px-6 pb-4">
+                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
             </div>
 
-            <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl">
-                <div class="flex-1">
-                    <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase mb-2">
-                        <span>Progreso General</span>
-                        <span id="audit-perc-text">0%</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                        <div id="audit-perc-bar" class="h-full bg-slate-900 transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="h-10 w-[1px] bg-slate-200"></div>
-                <div class="text-center px-2">
-                    <p id="audit-count-done" class="text-lg font-black text-slate-900 leading-none">0</p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase">Auditado</p>
-                </div>
+            <div class="px-6 pb-4">
+                 <div class="flex justify-between items-end mb-1.5">
+                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso del Contenedor</span>
+                     <span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span>
+                 </div>
+                 <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                     <div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div>
+                 </div>
             </div>
         </div>
 
-        <!-- Buscador Interno Minimalista -->
-        <div class="px-6 py-4 bg-white">
-            <div class="relative">
-                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" 
-                placeholder="Escribe SKU o nombre..." 
-                class="w-full bg-slate-100 rounded-xl py-3 pl-11 pr-4 text-sm font-semibold outline-none focus:ring-2 ring-slate-200 transition-all">
-            </div>
-        </div>
+        <!-- Lista de Items para Conteo -->
+        <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
 
-        <!-- Contenedor de Items -->
-        <div id="audit-items-container" class="flex-1 overflow-y-auto px-6 pb-24 no-scrollbar"></div>
-
-        <!-- Botón Guardar -->
-        <div class="p-6 bg-white border-t border-slate-50 safe-area-bottom">
-            <button onclick="core.saveAndFinish()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs tracking-widest uppercase shadow-lg active:scale-95 transition-all">
-                Finalizar Auditoría
+        <!-- Botones Inferiores -->
+        <div class="p-6 bg-white border-t border-slate-100 safe-area-bottom flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200">
+                <i class="ph-bold ph-file-pdf text-2xl"></i>
+            </button>
+            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
+                Finalizar Conteo
             </button>
         </div>
     </div>
 
-    <!-- VISTA LISTA (MANTENIDO) -->
+    <!-- MODAL DETALLES OFICIAL -->
     <div id="list-view" class="modal-full">
         <div class="px-6 py-8 flex items-center justify-between bg-white border-b">
             <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
             <div class="text-center">
-                <h2 class="text-base font-extrabold text-slate-900 uppercase tracking-tighter">Contenido Carga</h2>
+                <h2 class="text-base font-[800] text-slate-900">Contenido del Contenedor</h2>
                 <p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p>
             </div>
             <div class="w-12"></div>
         </div>
-        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar"></div>
+        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
     </div>
 
     <script>
@@ -272,11 +235,16 @@
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "",
             activeCont: null,
+            timerInterval: null,
+            auditSeconds: 0,
 
             getDesc: function(item) {
                 const keys = Object.keys(item);
-                const descKey = keys.find(k => k.toString().toUpperCase().includes("DESC") || k.toString().toUpperCase().includes("PRODUCTO"));
-                return descKey ? item[descKey] : "PRODUCTO SIN DESCRIPCIÓN";
+                const descKey = keys.find(k => {
+                    const ck = k.toString().toUpperCase();
+                    return ck.includes("DESC") || ck.includes("PRODUCTO") || ck.includes("DETALLE");
+                });
+                return descKey ? item[descKey] : "Producto sin descripción";
             },
 
             fetchData: async function() {
@@ -287,11 +255,12 @@
                     const data = await response.json();
                     if (data && Array.isArray(data)) {
                         this.raw = data.map(item => {
-                            const isCompleted = item["ESTADO"]?.toString().toUpperCase() === "COMPLETADO";
+                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
                             const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
                             return { 
                                 ...item, 
-                                audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0) 
+                                audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0),
+                                auditTime: cached ? (cached.auditTime || 0) : 0
                             };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
@@ -303,9 +272,11 @@
 
             getItemMonth: function(item) {
                 const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
-                if (!fecha) return "EN PROGRAMACIÓN";
+                if (!fecha || fecha === "") return "EN PROGRAMACIÓN";
                 const partes = fecha.split("/");
-                return this.mesesNombre[parseInt(partes[1]) - 1] || "EN PROGRAMACIÓN";
+                if (partes.length < 2) return "EN PROGRAMACIÓN";
+                const mesIdx = parseInt(partes[1]) - 1;
+                return this.mesesNombre[mesIdx] || "EN PROGRAMACIÓN";
             },
 
             filterMonth: function(m) { this.currentMonth = m; this.render(); },
@@ -314,7 +285,9 @@
                 const list = document.getElementById('container-list');
                 const search = document.getElementById('main-search').value.toLowerCase();
                 const now = new Date();
-                if (!this.currentMonth) this.currentMonth = this.mesesNombre[now.getMonth()];
+                const mesActualNom = this.mesesNombre[now.getMonth()];
+
+                if (!this.currentMonth) this.currentMonth = mesActualNom;
 
                 const select = document.getElementById('month-select');
                 const uniqueMonths = new Set(this.raw.map(i => this.getItemMonth(i)));
@@ -331,7 +304,10 @@
                 this.raw.forEach(item => {
                     const contId = (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"] || "S/N").toString();
                     const itemMonth = this.getItemMonth(item);
-                    if (((this.currentMonth === "TODOS") || (this.currentMonth === itemMonth)) && contId.toLowerCase().includes(search)) {
+                    const matchesMonth = (this.currentMonth === "TODOS") || (this.currentMonth === itemMonth);
+                    const matchesSearch = contId.toLowerCase().includes(search);
+
+                    if (matchesMonth && matchesSearch) {
                         if (!groups[contId]) groups[contId] = [];
                         groups[contId].push(item);
                         tTotalCj += (item["CAJAS"] || 0);
@@ -347,49 +323,100 @@
                 document.getElementById('stat-containers').innerText = ids.length;
                 document.getElementById('stat-skus').innerText = this.raw.length;
 
+                if(ids.length === 0) {
+                    list.innerHTML = `<div class="py-10 text-center text-slate-400 font-medium">Sin datos para este mes</div>`;
+                    return;
+                }
+
                 list.innerHTML = ids.map(id => {
                     const items = groups[id];
                     let t = 0, a = 0;
                     items.forEach(i => { t += (i["CAJAS"] || 0); a += (i.audit || 0); });
                     const perc = t > 0 ? Math.round((a/t)*100) : 0;
                     const esProg = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN";
-                    const isCompleted = items[0]["ESTADO"]?.toString().toUpperCase() === "COMPLETADO";
+                    const isCompleted = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
 
                     return `
-                    <div class="native-card p-5 border-b-2 ${perc >= 100 ? 'border-emerald-500' : 'border-slate-100'}">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Contenedor ${id}</h3>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">${esProg ? 'En Espera' : items[0]["FECHA_LIMPIA"]}</p>
+                    <div class="native-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase">CARGA #${id}</div>
+                            <span class="text-[10px] font-bold text-slate-400">${esProg ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span>
+                        </div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
+                                <i class="ph-bold ph-truck text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3>
+                                <p class="text-[9px] font-bold text-slate-400">DETALLE: ${items.length} SKUs REGISTRADOS</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-lg font-black text-slate-900 leading-none">${perc}%</p>
-                                <p class="text-[7px] font-bold text-slate-400 uppercase">Avance</p>
+                                <p class="text-xs font-[900] ${perc >= 100 ? 'text-green-500' : 'text-slate-900'}">${perc}%</p>
+                                <p class="text-[8px] font-black text-slate-300 uppercase">AVANCE</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
                             ${!isCompleted ? `
-                            <button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-11 rounded-xl font-bold text-[9px] uppercase tracking-widest active:scale-95 transition-all">
-                                Auditar
+                            <button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider">
+                                <i class="ph-bold ph-selection-all text-lg"></i> Conteo
                             </button>
                             ` : ''}
-                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-11 rounded-xl font-bold text-[9px] text-slate-600 uppercase tracking-widest active:scale-95 transition-all">
-                                Detalles
+                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-14 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] text-slate-600 uppercase tracking-wider shadow-sm">
+                                <i class="ph-bold ph-list-bullets text-lg"></i> Lista
                             </button>
-                            <button onclick="core.generatePDF('${id}')" class="w-11 bg-red-50 text-red-600 h-11 rounded-xl flex items-center justify-center active:scale-95">
-                                <i class="ph-bold ph-file-pdf"></i>
+                            <button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 h-14 rounded-2xl flex items-center justify-center">
+                                <i class="ph-bold ph-file-pdf text-xl"></i>
                             </button>
                         </div>
                     </div>`;
                 }).join('');
             },
 
-            /* LOGICA DE AUDITORIA MODERNA Y LIMPIA */
+            // --- LÓGICA CRONÓMETRO ---
+            startTimer: function() {
+                this.stopTimer();
+                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
+                this.auditSeconds = items[0].auditTime || 0;
+                this.updateTimerUI();
+                
+                this.timerInterval = setInterval(() => {
+                    this.auditSeconds++;
+                    items.forEach(i => i.auditTime = this.auditSeconds);
+                    this.updateTimerUI();
+                }, 1000);
+            },
+
+            stopTimer: function() {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+            },
+
+            updateTimerUI: function() {
+                const h = Math.floor(this.auditSeconds / 3600);
+                const m = Math.floor((this.auditSeconds % 3600) / 60);
+                const s = this.auditSeconds % 60;
+                const minSec = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                const format = h > 0 ? `${h.toString().padStart(2, '0')}:${minSec}` : minSec;
+                
+                const el = document.getElementById('audit-timer-display');
+                if (el) el.innerText = format;
+            },
+
+            // --- SECCIÓN AUDITORÍA MODERNA ---
+            toggleAuditSearch: function() {
+                const b = document.getElementById('audit-search-bar');
+                b.classList.toggle('hidden');
+                if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus();
+            },
+
             openAudit: function(id) {
                 this.activeCont = id;
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
                 document.getElementById('audit-title').innerText = "Carga #" + id;
                 document.getElementById('inner-search').value = "";
+                document.getElementById('audit-search-bar').classList.add('hidden');
+                
+                this.startTimer();
+                
+                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
                 this.renderAuditItems(items);
                 this.updateProgress(id);
                 document.getElementById('audit-view').style.display = 'flex';
@@ -407,166 +434,233 @@
             renderAuditItems: function(items) {
                 document.getElementById('audit-items-container').innerHTML = items.map(item => {
                     const idx = this.raw.indexOf(item);
-                    const auditVal = item.audit || 0;
-                    const theoreticalVal = item["CAJAS"] || 0;
-                    const diff = auditVal - theoreticalVal;
+                    const aud = item.audit || 0;
+                    const teo = parseInt(item["CAJAS"]) || 0;
+                    const diff = aud - teo;
                     
-                    let stateClass = '';
-                    let tagClass = '';
-                    let tagText = 'Pendiente';
+                    let bClass = 'bg-slate-100 text-slate-500';
+                    let bText = 'PENDIENTE';
+                    let lColor = 'bg-slate-200';
 
-                    if (auditVal > 0) {
-                        if (diff === 0) { stateClass = 'match'; tagClass = 'success'; tagText = 'Correcto'; }
-                        else { stateClass = 'diff'; tagClass = 'warning'; tagText = diff > 0 ? `Sobrante (+${diff})` : `Faltante (${diff})`; }
+                    if (aud > 0) {
+                        if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; }
+                        else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; }
+                        else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; }
                     }
 
                     return `
-                    <div id="card-${idx}" class="item-audit-card ${stateClass}">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex-1 pr-4">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-black text-slate-900">${item["CODIGO"]}</span>
-                                    <span id="tag-${idx}" class="tag-minimal ${tagClass}">${tagText}</span>
-                                </div>
-                                <h4 class="text-xs font-bold text-slate-500 uppercase leading-tight">${this.getDesc(item)}</h4>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[8px] font-bold text-slate-400 uppercase">Teórico</p>
-                                <p class="text-sm font-black text-slate-900">${theoreticalVal}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex gap-2">
-                                <button onclick="core.step(${idx}, -1)" class="btn-action-audit"><i class="ph-bold ph-minus"></i></button>
-                                <button onclick="core.step(${idx}, 1)" class="btn-action-audit btn-plus-audit"><i class="ph-bold ph-plus"></i></button>
-                            </div>
-                            <input type="number" id="input-${idx}" value="${auditVal}" onchange="core.manualCount(${idx}, this.value)" class="audit-input">
-                            <div class="flex gap-2">
-                                <button onclick="core.step(${idx}, 5)" class="px-3 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-500">+5</button>
-                                <button onclick="core.manualCount(${idx}, ${theoreticalVal})" class="px-3 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-blue-600">Max</button>
-                            </div>
-                        </div>
+                    <div id="card-${idx}" class="audit-item-card">
+                       <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}"></div>
+                       
+                       <div class="pl-2">
+                           <div class="flex justify-between items-start mb-2">
+                               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item["CODIGO"]}</span>
+                               <span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span>
+                           </div>
+                           <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4 line-clamp-2">${this.getDesc(item)}</h4>
+                           
+                           <div class="flex justify-between items-end mb-4 mt-2">
+                               <div>
+                                   <p class="text-[9px] font-bold text-slate-400 uppercase">Teórico</p>
+                                   <p class="text-xl font-black text-slate-300">${teo}</p>
+                               </div>
+                               <div class="text-right">
+                                   <p class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">Total Contado</p>
+                                   <p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p>
+                               </div>
+                           </div>
+
+                           <div class="flex items-center gap-3">
+                               <button onclick="core.step(${idx}, -1)" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center active:scale-90 transition-all border border-slate-100">
+                                   <i class="ph-bold ph-minus text-lg"></i>
+                               </button>
+                               
+                               <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                                   <input type="number" id="add-input-${idx}" placeholder="Agregar cajas..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') core.addAmount(${idx})">
+                                   <button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md active:scale-90 transition-all">
+                                       <i class="ph-bold ph-plus text-lg"></i>
+                                   </button>
+                               </div>
+                           </div>
+                           
+                           <div class="grid grid-cols-2 gap-2 mt-4">
+                               <button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl uppercase tracking-wider active:bg-emerald-100 transition-colors">Igualar Teórico</button>
+                               <button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl uppercase tracking-wider active:bg-red-100 transition-colors">Reiniciar</button>
+                           </div>
+                       </div>
                     </div>`;
                 }).join('');
             },
 
-            step: function(idx, val) {
-                const item = this.raw[idx];
-                item.audit = Math.max(0, (item.audit || 0) + val);
-                document.getElementById(`input-${idx}`).value = item.audit;
-                this.updateUIItem(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            manualCount: function(idx, val) {
-                const item = this.raw[idx];
-                item.audit = Math.max(0, parseInt(val) || 0);
-                const input = document.getElementById(`input-${idx}`);
-                if(input) input.value = item.audit;
-                this.updateUIItem(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            updateUIItem: function(idx) {
-                const item = this.raw[idx];
-                const card = document.getElementById(`card-${idx}`);
-                const tag = document.getElementById(`tag-${idx}`);
-                const auditVal = item.audit || 0;
-                const theoreticalVal = item["CAJAS"] || 0;
-                const diff = auditVal - theoreticalVal;
-
-                card.classList.remove('match', 'diff');
-                tag.className = 'tag-minimal';
+            // Lógica Aditiva (+)
+            addAmount: function(idx) {
+                const input = document.getElementById(`add-input-${idx}`);
+                const val = parseInt(input.value);
+                if (isNaN(val) || val === 0) return;
                 
-                if (auditVal > 0) {
+                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + val);
+                input.value = ''; // Limpiamos para el siguiente pallet/ingreso
+                
+                this.refreshItemUI(idx);
+                this.updateProgress(this.activeCont);
+            },
+
+            // Establece valor directo (Igualar / Reiniciar)
+            setDirect: function(idx, val) {
+                this.raw[idx].audit = val;
+                this.refreshItemUI(idx);
+                this.updateProgress(this.activeCont);
+            },
+
+            step: function(idx, val) {
+                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + val);
+                this.refreshItemUI(idx);
+                this.updateProgress(this.activeCont);
+            },
+
+            refreshItemUI: function(idx) {
+                const item = this.raw[idx];
+                const totalEl = document.getElementById(`total-audit-${idx}`);
+                const badgeEl = document.getElementById(`badge-${idx}`);
+                const lineEl = document.getElementById(`line-${idx}`);
+                
+                const aud = item.audit || 0;
+                const teo = parseInt(item["CAJAS"]) || 0;
+                const diff = aud - teo;
+
+                if (totalEl) totalEl.innerText = aud;
+
+                let bClass = 'bg-slate-100 text-slate-500';
+                let bText = 'PENDIENTE';
+                let lColor = 'bg-slate-200';
+
+                if (aud > 0) {
                     if (diff === 0) { 
-                        card.classList.add('match'); 
-                        tag.classList.add('success'); 
-                        tag.innerText = 'Correcto'; 
+                        bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500';
+                    } else if (diff > 0) { 
+                        bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500';
                     } else { 
-                        card.classList.add('diff'); 
-                        tag.classList.add('warning'); 
-                        tag.innerText = diff > 0 ? `Sobrante (+${diff})` : `Faltante (${diff})`; 
+                        bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500';
                     }
-                } else {
-                    tag.innerText = 'Pendiente';
+                }
+
+                if (badgeEl) {
+                    badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md uppercase ${bClass}`;
+                    badgeEl.innerText = bText;
+                }
+                if (lineEl) {
+                    lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`;
                 }
             },
 
             updateProgress: function(id) {
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
-                let tT = 0, tA = 0;
-                items.forEach(i => { tT += (i["CAJAS"] || 0); tA += (i.audit || 0); });
-                const perc = tT > 0 ? Math.round((tA/tT)*100) : 0;
+                let totalT = 0, totalA = 0;
+                items.forEach(i => { totalT += (parseInt(i["CAJAS"]) || 0); totalA += (i.audit || 0); });
+                const perc = totalT > 0 ? Math.round((totalA/totalT)*100) : 0;
+                
                 document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%";
                 document.getElementById('audit-perc-text').innerText = perc + "%";
-                document.getElementById('audit-count-done').innerText = tA;
             },
 
+            closeModal: function(id) { 
+                if (id === 'audit-view') this.stopTimer();
+                document.getElementById(id).style.display = 'none'; 
+            },
+            
+            saveAndFinish: function() {
+                this.stopTimer();
+                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+                this.closeModal('audit-view');
+                this.render();
+            },
+
+            /* VISTA LISTA OFICIAL (NO TOCADO) */
             viewList: function(id) {
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
-                document.getElementById('list-cont-id').innerText = id;
+                document.getElementById('list-cont-id').innerText = "Ref: " + id;
                 document.getElementById('list-items-content').innerHTML = items.map(item => `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-50 flex justify-between items-center">
+                    <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm">
                         <div class="flex-1 pr-4">
-                            <p class="text-[9px] font-bold text-blue-600 mb-1 tracking-wider uppercase">${item["CODIGO"]}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase line-clamp-1">${this.getDesc(item)}</p>
+                            <p class="text-[10px] font-[900] text-blue-600 mb-1 tracking-wider uppercase">${item["CODIGO"]}</p>
+                            <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${this.getDesc(item)}</p>
                         </div>
-                        <div class="text-right">
-                             <span class="text-sm font-black text-slate-900">${item.audit || 0} / ${item["CAJAS"] || 0}</span>
+                        <div class="text-right flex items-center gap-4">
+                             <div class="flex flex-col items-end">
+                                <span class="text-sm font-[900] ${item.audit >= item["CAJAS"] ? 'text-emerald-500' : 'text-slate-900'}">${item.audit || 0} / ${item["CAJAS"] || 0}</span>
+                                <span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span>
+                             </div>
+                             <i class="ph-fill ph-check-circle ${item.audit >= item["CAJAS"] ? 'text-emerald-400' : 'text-slate-100'} text-2xl"></i>
                         </div>
                     </div>
                 `).join('');
                 document.getElementById('list-view').style.display = 'flex';
             },
 
-            closeModal: function(id) { document.getElementById(id).style.display = 'none'; },
-            
-            saveAndFinish: function() {
-                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                this.closeModal('audit-view');
-                this.render();
-            },
-
+            /* REPORTE PDF - CORREGIDO PARA INCLUIR CRONÓMETRO */
             generatePDF: function(id) {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
-                const fechaReporte = items[0]["FECHA_LIMPIA"] || "PENDIENTE";
-                
-                doc.setFontSize(22);
-                doc.setTextColor(15, 23, 42);
-                doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9);
-                doc.setTextColor(120);
-                doc.text(`REPORTE DE AUDITORÍA • CONTENEDOR: ${id} • FECHA: ${fechaReporte}`, 14, 30);
-                
-                const tableBody = items.map(i => [
-                    i["CODIGO"] || "---", 
-                    this.getDesc(i), 
-                    i["CAJAS"] || 0, 
-                    i.audit || 0, 
-                    (i.audit || 0) - (i["CAJAS"] || 0)
-                ]);
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
+                    
+                    if (!items || items.length === 0) {
+                        alert("No hay datos para este contenedor.");
+                        return;
+                    }
 
-                doc.autoTable({
-                    startY: 40,
-                    head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
-                    body: tableBody,
-                    headStyles: { fillColor: [15, 23, 42], fontSize: 9, halign: 'center' },
-                    styles: { fontSize: 7, cellPadding: 2 },
-                    columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
-                });
-                
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.setFontSize(9);
-                doc.text("Revisión autorizada por:", 14, finalY);
-                doc.setFont("helvetica", "bold");
-                doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
-                doc.setFont("helvetica", "normal");
-                doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                
-                doc.save(`Reporte_${id}.pdf`);
+                    const fechaReporte = items[0]["FECHA_LIMPIA"] || items[0]["FECHA"] || "PENDIENTE";
+                    const totalSeconds = items[0].auditTime || 0;
+                    
+                    doc.setFontSize(22);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text("TWINS ALMACEN", 14, 22);
+                    
+                    doc.setFontSize(9);
+                    doc.setTextColor(120);
+                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30);
+                    
+                    // Formatear Tiempo del Cronómetro (HH:MM:SS)
+                    const h = Math.floor(totalSeconds / 3600);
+                    const m = Math.floor((totalSeconds % 3600) / 60);
+                    const s = totalSeconds % 60;
+                    let timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    if (h > 0) timeStr = `${h.toString().padStart(2, '0')}:${timeStr}`;
+                    
+                    // Imprimir Fecha y Tiempo en PDF
+                    doc.text(`FECHA: ${fechaReporte}   |   TIEMPO DE DESCARGA: ${timeStr}`, 14, 36);
+                    
+                    const tableBody = items.map(i => [
+                        i["CODIGO"] || "---", 
+                        this.getDesc(i), 
+                        i["CAJAS"] || 0, 
+                        i.audit || 0, 
+                        (i.audit || 0) - (i["CAJAS"] || 0)
+                    ]);
+
+                    doc.autoTable({
+                        startY: 42,
+                        head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
+                        body: tableBody,
+                        headStyles: { fillColor: [15, 23, 42], fontSize: 9, halign: 'center' },
+                        styles: { fontSize: 7, cellPadding: 2 },
+                        columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
+                    });
+                    
+                    const finalY = doc.lastAutoTable.finalY + 20;
+                    doc.setFontSize(9);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text("Revisión autorizada por:", 14, finalY);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                    
+                    doc.save(`Reporte_Conteo_${id}.pdf`);
+                } catch (error) {
+                    console.error("Error generando PDF:", error);
+                    alert("Ocurrió un error al generar el PDF.");
+                }
             }
         };
 
@@ -574,3 +668,5 @@
     </script>
 </body>
 </html>
+
+
