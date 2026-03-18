@@ -11,463 +11,272 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         :root { --primary: #0F172A; --bg: #F8FAFC; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; }
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
-        .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .native-card:active { transform: scale(0.97); }
-        .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; transition: all 0.2s ease; }
-        .fab-sync { position: fixed; bottom: 100px; right: 25px; width: 64px; height: 64px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.2); z-index: 40; }
-        .modal-full { display: none; position: fixed; inset: 0; background: #F1F5F9; z-index: 100; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #E2E8F0; display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,0.03); border-radius: 30px 30px 0 0;}
-        .nav-btn { flex: 1; padding: 16px 0; display: flex; flex-col; align-items: center; justify-content: center; color: #94A3B8; transition: all 0.3s ease; }
+        .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); }
+        .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; }
+        .fab-sync { position: fixed; bottom: 100px; right: 25px; width: 64px; height: 64px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 40; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 90; border-radius: 30px 30px 0 0;}
+        .nav-btn { flex: 1; padding: 16px 0; display: flex; flex-direction: column; align-items: center; color: #94A3B8; }
         .nav-btn.active { color: #2563EB; }
-        .nav-btn i { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s; }
-        .nav-btn.active i { transform: translateY(-2px); }
-        .nav-btn span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+        .nav-btn i { font-size: 24px; }
+        .nav-btn span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; }
+        .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; position: relative; overflow: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="antialiased">
 
-    <div class="glass-header safe-area-top px-6 py-4 mb-2">
+    <div class="glass-header px-6 py-4">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <p id="top-subtitle" class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">Almacén Pro</p>
-                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">Twins Elite</h1>
+                <p id="top-subtitle" class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Almacén Pro</p>
+                <h1 class="text-xl font-extrabold text-slate-900">Twins Elite</h1>
             </div>
-            <div id="top-progress" class="relative flex items-center justify-center">
-                <svg class="w-12 h-12">
-                    <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
-                    <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
-                </svg>
-                <span id="global-perc" class="absolute text-[10px] font-[800]">0%</span>
+            <div id="top-progress" class="flex items-center gap-2">
+                <div class="text-right"><p class="text-[10px] font-black text-slate-400">PROGRESO</p><p id="global-perc" class="text-sm font-black text-slate-900">0%</p></div>
             </div>
         </div>
     </div>
 
     <div id="module-audit" class="max-w-md mx-auto px-6 pb-32">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-                <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
-                <p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p>
-            </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-                <i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i>
-                <p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p>
-            </div>
-        </div>
-
-        <div class="flex gap-2 mb-8">
+        <div class="flex gap-2 my-6">
             <div class="flex-1 search-bar flex items-center px-4 py-1">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
+                <input type="text" id="main-search" oninput="core.render()" placeholder="Contenedor o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
                 <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
-                <select id="month-select" onchange="core.filterMonth(this.value)" class="absolute inset-0 opacity-0 cursor-pointer"></select>
+                <select id="month-select" onchange="core.filterMonth(this.value)" class="absolute inset-0 opacity-0"></select>
             </div>
         </div>
-        <div id="container-list" class="space-y-4"><div class="py-20 text-center text-slate-400 font-medium">Cargando inventario...</div></div>
+        <div id="container-list" class="space-y-4"></div>
         <button onclick="core.fetchData()" class="fab-sync"><i id="sync-icon" class="ph-bold ph-arrows-clockwise text-white text-2xl"></i></button>
     </div>
 
-    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pb-32">
-        
+    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pb-32 pt-6">
         <div class="flex bg-slate-200/50 rounded-xl p-1 mb-6">
-            <button onclick="core.returns.switchTab('new')" id="tab-dev-new" class="flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all">Nuevo Ticket</button>
-            <button onclick="core.returns.switchTab('history')" id="tab-dev-hist" class="flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all">Historial</button>
+            <button onclick="core.returns.switchTab('new')" id="tab-dev-new" class="flex-1 py-2.5 text-[11px] font-black uppercase rounded-lg bg-white shadow-sm text-blue-600">Nuevo Ticket</button>
+            <button onclick="core.returns.switchTab('history')" id="tab-dev-hist" class="flex-1 py-2.5 text-[11px] font-black uppercase rounded-lg text-slate-500">Historial</button>
         </div>
 
         <div id="dev-new-section">
             <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm mb-6">
-                <h2 class="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2"><i class="ph-bold ph-file-text text-blue-600 text-lg"></i> Datos del Ticket</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Cliente</label>
-                        <input type="text" id="dev-cliente" oninput="core.returns.saveDraft()" onblur="core.returns.suggestVendor()" placeholder="Nombre del cliente" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Vendedor</label>
-                        <select id="dev-vendedor" onchange="core.returns.saveDraft()" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors appearance-none">
-                            <option value="" disabled selected>Seleccione un vendedor</option>
-                            <option value="ELIAS AVILA">ELIAS AVILA</option>
-                            <option value="EVELYN MURO">EVELYN MURO</option>
-                            <option value="REGULO ANTEZANA">REGULO ANTEZANA</option>
-                            <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
-                            <option value="PAULA GARCIA">PAULA GARCIA</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Motivo de Devolución</label>
-                        <input type="text" id="dev-motivo" oninput="core.returns.saveDraft()" placeholder="Ej: Cambio de talla, Garantía..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
-                    </div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cliente</label>
+                    <input type="text" id="dev-cliente" oninput="core.returns.saveDraft()" onblur="core.returns.suggestVendor()" placeholder="Nombre del cliente" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Vendedor</label>
+                    <select id="dev-vendedor" onchange="core.returns.saveDraft()" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold">
+                        <option value="">Seleccione vendedor</option>
+                        <option value="ELIAS AVILA">ELIAS AVILA</option><option value="EVELYN MURO">EVELYN MURO</option><option value="REGULO ANTEZANA">REGULO ANTEZANA</option><option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option><option value="PAULA GARCIA">PAULA GARCIA</option>
+                    </select></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Motivo</label>
+                    <input type="text" id="dev-motivo" oninput="core.returns.saveDraft()" placeholder="Motivo de devolución" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold"></div>
                 </div>
             </div>
 
             <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm mb-6">
-                <h2 class="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2"><i class="ph-bold ph-package text-blue-600 text-lg"></i> Agregar Producto</h2>
-                <div class="space-y-4">
-                    <div class="relative">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Producto (Código o Desc)</label>
-                        <div class="relative mt-1">
-                            <i class="ph-bold ph-magnifying-glass absolute left-4 top-3.5 text-slate-400"></i>
-                            <input type="text" id="dev-prod-search" oninput="core.returns.searchProduct()" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" placeholder="Buscar en Hoja 1..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
-                        </div>
-                        <div id="dev-prod-results" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Cant (U/M)</label>
-                            <input type="number" id="dev-cantidad" placeholder="0" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-blue-500 transition-colors">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Estado</label>
-                            <select id="dev-estado" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors appearance-none">
-                                <option value="BUEN ESTADO">Buen Estado</option>
-                                <option value="DAÑADO A MERMA">Dañado a Merma</option>
-                                <option value="INCOMPLETO">Incompleto</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Observaciones</label>
-                        <textarea id="dev-obs" rows="2" placeholder="Detalles adicionales..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors"></textarea>
-                    </div>
-                    <button onclick="core.returns.addItem()" class="w-full bg-blue-50 text-blue-600 h-12 rounded-xl font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-plus-circle text-lg"></i> Agregar a la Lista
-                    </button>
+                <div class="relative">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Producto (SKU o Descripción)</label>
+                    <input type="text" id="dev-prod-search" oninput="core.returns.searchProduct()" placeholder="Escribe para buscar..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold">
+                    <div id="dev-prod-results" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
                 </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cantidad</label>
+                    <input type="number" id="dev-cantidad" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</label>
+                    <select id="dev-estado" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold">
+                        <option value="BUEN ESTADO">Buen Estado</option><option value="DAÑADO A MERMA">Dañado a Merma</option><option value="INCOMPLETO">Incompleto</option>
+                    </select></div>
+                </div>
+                <button onclick="core.returns.addItem()" class="w-full mt-4 bg-blue-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest">Agregar Producto</button>
             </div>
-
             <div id="dev-items-list" class="space-y-3 mb-6"></div>
-
-            <button id="dev-btn-save" onclick="core.returns.saveReturn()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform hidden">
-                Generar Devolución
-            </button>
+            <button id="dev-btn-save" onclick="core.returns.saveReturn()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Devolución</button>
         </div>
 
         <div id="dev-hist-section" class="hidden">
             <div class="search-bar flex items-center px-4 py-1 mb-6">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="dev-hist-search" oninput="core.returns.renderHistory()" placeholder="Buscar cliente o código..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
+                <input type="text" id="dev-hist-search" oninput="core.returns.renderHistory()" placeholder="Buscar en historial..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
             </div>
-            <div id="dev-hist-list" class="space-y-4">
-                <div class="py-10 text-center text-slate-400 font-medium">Sincronizando historial...</div>
-            </div>
+            <div id="dev-hist-list" class="space-y-4"></div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <button onclick="core.nav.go('audit')" id="nav-audit" class="nav-btn active flex flex-col items-center">
-            <i class="ph-fill ph-boxes"></i><span>Auditoría</span>
-        </button>
-        <button onclick="core.nav.go('returns')" id="nav-returns" class="nav-btn flex flex-col items-center">
-            <i class="ph-fill ph-arrow-u-up-left"></i><span>Devoluciones</span>
-        </button>
+        <button onclick="core.nav.go('audit')" id="nav-audit" class="nav-btn active"><i class="ph-fill ph-boxes"></i><span>Almacén</span></button>
+        <button onclick="core.nav.go('returns')" id="nav-returns" class="nav-btn"><i class="ph-fill ph-arrow-u-up-left"></i><span>Devolución</span></button>
     </div>
 
     <div id="audit-view">
-        <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
-            <div class="px-6 pt-10 pb-4 flex items-center justify-between">
-                <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
-                <div class="text-center">
-                    <h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2>
-                    <div class="flex items-center justify-center gap-1.5 mt-0.5"><i class="ph-fill ph-clock text-[12px] text-blue-500"></i><span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span></div>
-                </div>
-                <button onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2"><i class="ph-bold ph-magnifying-glass text-2xl"></i></button>
-            </div>
-            <div id="audit-search-bar" class="hidden px-6 pb-4">
-                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" placeholder="Buscar SKU..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
-            </div>
-            <div class="px-6 pb-4">
-                 <div class="flex justify-between items-end mb-1.5"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso del Contenedor</span><span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span></div>
-                 <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div></div>
-            </div>
+        <div class="bg-white px-6 pt-10 pb-4 border-b flex justify-between items-center sticky top-0 z-50">
+            <button onclick="core.closeModal('audit-view')" class="text-2xl"><i class="ph-bold ph-arrow-left"></i></button>
+            <h2 id="audit-title" class="text-sm font-black uppercase">CARGA</h2>
+            <div id="audit-timer-display" class="text-xs font-bold font-mono">00:00</div>
         </div>
         <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
-        <div class="p-6 bg-white border-t border-slate-100 safe-area-bottom flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
-            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
+        <div class="p-6 bg-white border-t flex gap-3 shadow-lg">
+            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black uppercase text-sm">Finalizar Conteo</button>
         </div>
-    </div>
-
-    <div id="list-view" class="modal-full">
-        <div class="px-6 py-8 flex items-center justify-between bg-white border-b">
-            <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
-            <div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido del Contenedor</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div>
-            <div class="w-12"></div>
-        </div>
-        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
     </div>
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbxlrzDTXdZYKtCyQhqn2qsapaKQ5uOzJda109rEYKCOcVITl0VE9O25SnXfT9gSdBYf/exec",
+            url: "https://script.google.com/macros/s/AKfycbwrgIKcyd0iKQjWNkrGysrIFLstMaHdPe-WWo13RUOykAtMV4uKXJqyGoDdquzzC5BK/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             productsCache: JSON.parse(localStorage.getItem('twins_prod_cache')) || [],
             historyCache: JSON.parse(localStorage.getItem('twins_hist_cache')) || [],
-            mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
-            currentMonth: "", activeCont: null, timerInterval: null,
-
-            // --- NAVEGACIÓN Y PERSISTENCIA ---
+            activeCont: null, timerInterval: null, currentMonth: "MARZO",
+            
             nav: {
                 go: function(view) {
-                    localStorage.setItem('twins_current_view', view);
+                    localStorage.setItem('twins_view', view);
                     document.getElementById('nav-audit').classList.remove('active');
                     document.getElementById('nav-returns').classList.remove('active');
                     document.getElementById('module-audit').classList.add('hidden');
                     document.getElementById('module-returns').classList.add('hidden');
-                    
                     document.getElementById('nav-' + view).classList.add('active');
                     document.getElementById('module-' + view).classList.remove('hidden');
-                    
-                    if (view === 'returns') {
-                        document.getElementById('top-subtitle').innerText = "Logística";
-                        document.getElementById('top-progress').classList.add('hidden');
-                        core.returns.loadDraft(); // Recupera datos al entrar
-                        if (core.productsCache.length === 0) core.returns.fetchProducts();
-                        core.returns.fetchHistory(); // Sincroniza historial
-                    } else {
-                        document.getElementById('top-subtitle').innerText = "Almacén Pro";
-                        document.getElementById('top-progress').classList.remove('hidden');
-                    }
+                    if(view === 'returns') { core.returns.loadDraft(); core.returns.fetchProducts(); core.returns.fetchHistory(); }
                 }
             },
 
-            // GREEDY FINDERS PARA LEER HOJA 1 Y HOJA 3 SIN IMPORTAR EL NOMBRE DEL TÍTULO
-            getDesc: function(item) {
-                const keys = Object.keys(item);
-                const descKey = keys.find(k => { const ck = k.toString().toUpperCase(); return ck.includes("DESC") || ck.includes("PROD") || ck.includes("DETALLE") || ck.includes("NOMB"); });
-                return descKey ? item[descKey] : "---";
-            },
-            getCode: function(item) {
-                const keys = Object.keys(item);
-                const codeKey = keys.find(k => { const ck = k.toString().toUpperCase(); return ck.includes("COD") || ck.includes("SKU") || ck.includes("ART"); });
-                return codeKey ? item[codeKey] : "---";
-            },
-
-            fetchData: async function(silent = false) {
-                const btn = document.getElementById('sync-icon');
-                if (!silent && btn) btn.classList.add('animate-spin'); 
+            fetchData: async function() {
                 try {
-                    const response = await fetch(this.url);
-                    const data = await response.json();
-                    if (data && Array.isArray(data)) {
-                        this.raw = data.map(item => {
-                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                            const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
-                            return { ...item, audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0), auditTime: cached ? (cached.auditTime || 0) : 0 };
-                        });
-                        localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        const auditView = document.getElementById('audit-view');
-                        if (!auditView || auditView.style.display !== 'flex') this.render();
-                    }
-                } catch (e) { if (!silent) console.error(e); } finally { if (!silent && btn) btn.classList.remove('animate-spin'); }
+                    const res = await fetch(this.url);
+                    const data = await res.json();
+                    if(data) { this.raw = data; localStorage.setItem('twins_cache', JSON.stringify(data)); this.render(); }
+                } catch(e) { console.error(e); }
             },
 
-            getItemMonth: function(item) { const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || ""; if (!fecha || fecha === "") return "EN PROGRAMACIÓN"; const partes = fecha.split("/"); if (partes.length < 2) return "EN PROGRAMACIÓN"; return this.mesesNombre[parseInt(partes[1]) - 1] || "EN PROGRAMACIÓN"; },
-            filterMonth: function(m) { this.currentMonth = m; this.render(); },
             render: function() {
-                const list = document.getElementById('container-list'); const search = document.getElementById('main-search').value.toLowerCase();
-                if (!this.currentMonth) this.currentMonth = this.mesesNombre[new Date().getMonth()];
-                const select = document.getElementById('month-select'); const uniqueMonths = new Set(this.raw.map(i => this.getItemMonth(i))); let options = `<option value="TODOS">TODOS</option>`;
-                this.mesesNombre.forEach(m => { if(uniqueMonths.has(m)) options += `<option value="${m}" ${this.currentMonth===m?'selected':''}>${m}</option>`; });
-                select.innerHTML = options;
-                const groups = {}; let tTotalCj = 0, tTotalAud = 0; const tempGroups = {};
-                this.raw.forEach(i => { const id = (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"] || "S/N").toString(); if (!tempGroups[id]) tempGroups[id] = []; tempGroups[id].push(i); });
-                Object.keys(tempGroups).forEach(contId => {
-                    const items = tempGroups[contId];
-                    if ((this.currentMonth === "TODOS" || this.currentMonth === this.getItemMonth(items[0])) && (contId.toLowerCase().includes(search) || items.some(i => (i["CODIGO"]&&i["CODIGO"].toString().toLowerCase().includes(search)) || this.getDesc(i).toLowerCase().includes(search)))) { groups[contId] = items; items.forEach(i => { tTotalCj += (parseInt(i["CAJAS"]) || 0); tTotalAud += (i.audit || 0); }); }
-                });
-                const globalP = tTotalCj > 0 ? Math.round((tTotalAud/tTotalCj)*100) : 0;
-                document.getElementById('global-perc').innerText = globalP + "%"; document.getElementById('global-ring').style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
-                const ids = Object.keys(groups); document.getElementById('stat-containers').innerText = ids.length; document.getElementById('stat-skus').innerText = this.raw.length;
-                if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin datos</div>`; return; }
-                list.innerHTML = ids.map(id => {
-                    const items = groups[id]; let t=0, a=0; items.forEach(i => { t+=(parseInt(i["CAJAS"])||0); a+=(i.audit||0); }); const perc = t>0 ? Math.round((a/t)*100) : 0; const esProg = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN"; const isCompleted = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                    return `<div class="native-card p-6"> <div class="flex justify-between items-start mb-4"> <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase">CARGA #${id}</div> <span class="text-[10px] font-bold text-slate-400">${esProg ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span> </div> <div class="flex items-center gap-4 mb-6"> <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400"><i class="ph-bold ph-truck text-2xl"></i></div> <div class="flex-1"> <h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3> <p class="text-[9px] font-bold text-slate-400">${items.length} SKUs REGISTRADOS</p> </div> <div class="text-right"> <p class="text-xs font-[900] ${perc >= 100 ? 'text-green-500' : 'text-slate-900'}">${perc}%</p> </div> </div> <div class="flex gap-2"> ${!isCompleted ? `<button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-bold text-[10px] uppercase"><i class="ph-bold ph-selection-all"></i> Conteo</button>` : ''} <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-14 rounded-2xl font-bold text-[10px] text-slate-600 uppercase"><i class="ph-bold ph-list-bullets"></i> Lista</button> <button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 h-14 rounded-2xl"><i class="ph-bold ph-file-pdf text-xl"></i></button> </div> </div>`;
-                }).join('');
+                const list = document.getElementById('container-list');
+                const search = document.getElementById('main-search').value.toLowerCase();
+                const conts = [...new Set(this.raw.map(i => i.CONTENEDOR_LIMPIO))];
+                list.innerHTML = conts.filter(id => id.toLowerCase().includes(search)).map(id => `
+                    <div class="native-card p-6 mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase">CARGA #${id}</span>
+                        </div>
+                        <button onclick="core.openAudit('${id}')" class="w-full bg-slate-900 text-white h-12 rounded-xl font-bold uppercase text-[10px]">Iniciar Conteo</button>
+                    </div>`).join('');
             },
 
-            // --- LÓGICA DE MÓDULO DEVOLUCIONES ---
             returns: {
-                currentItems: [], selectedProduct: null, currentTab: 'new',
-                
-                switchTab: function(tab) {
-                    this.currentTab = tab;
-                    document.getElementById('tab-dev-new').className = tab === 'new' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
-                    document.getElementById('tab-dev-hist').className = tab === 'history' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
-                    document.getElementById('dev-new-section').style.display = tab === 'new' ? 'block' : 'none';
-                    document.getElementById('dev-hist-section').style.display = tab === 'history' ? 'block' : 'none';
-                    if(tab === 'history') this.renderHistory();
+                currentItems: [],
+                fetchProducts: async function() {
+                    const res = await fetch(core.url + "?type=productos");
+                    const data = await res.json();
+                    core.productsCache = data;
+                    localStorage.setItem('twins_prod_cache', JSON.stringify(data));
                 },
-
-                // GESTIÓN DE BORRADOR (Persistencia)
-                saveDraft: function() {
-                    const draft = {
+                fetchHistory: async function() {
+                    const res = await fetch(core.url + "?type=devoluciones");
+                    const data = await res.json();
+                    core.historyCache = data;
+                    this.renderHistory();
+                },
+                searchProduct: function() {
+                    const val = document.getElementById('dev-prod-search').value.toLowerCase().trim();
+                    const resBox = document.getElementById('dev-prod-results');
+                    if(val.length < 2) { resBox.classList.add('hidden'); return; }
+                    const filtered = core.productsCache.filter(i => 
+                        String(i["SKU"]).toLowerCase().includes(val) || 
+                        String(i["DESCRIPCION"]).toLowerCase().includes(val)
+                    ).slice(0, 10);
+                    resBox.innerHTML = filtered.map(i => `<div onclick="core.returns.selectProduct('${i["SKU"]}', '${i["DESCRIPCION"]}')" class="p-3 border-b text-sm font-bold active:bg-slate-50">
+                        <p class="text-blue-600 text-[10px] font-black">${i["SKU"]}</p>${i["DESCRIPCION"]}</div>`).join('');
+                    resBox.classList.remove('hidden');
+                },
+                selectProduct: function(sku, desc) {
+                    document.getElementById('dev-prod-search').value = sku + " - " + desc;
+                    this.tempProd = { sku, desc };
+                    document.getElementById('dev-prod-results').classList.add('hidden');
+                },
+                addItem: function() {
+                    if(!this.tempProd) return;
+                    const cant = document.getElementById('dev-cantidad').value;
+                    this.currentItems.push({ ...this.tempProd, cant, estado: document.getElementById('dev-estado').value });
+                    this.renderItems(); this.saveDraft();
+                },
+                renderItems: function() {
+                    const list = document.getElementById('dev-items-list');
+                    list.innerHTML = this.currentItems.map((i, idx) => `<div class="bg-white p-4 rounded-xl border flex justify-between items-center text-xs font-bold">
+                        <div><p class="text-blue-600">${i.sku}</p>${i.desc}</div><div class="text-right">x${i.cant}<br>${i.estado}</div></div>`).join('');
+                    document.getElementById('dev-btn-save').classList.toggle('hidden', this.currentItems.length === 0);
+                },
+                saveReturn: async function() {
+                    const btn = document.getElementById('dev-btn-save'); btn.innerText = "ENVIANDO...";
+                    const data = {
+                        action: "guardar_devolucion",
+                        fecha: new Date().toLocaleDateString(),
                         cliente: document.getElementById('dev-cliente').value,
                         vendedor: document.getElementById('dev-vendedor').value,
                         motivo: document.getElementById('dev-motivo').value,
-                        items: this.currentItems
+                        items: this.currentItems.map(i => ({ codigo: i.sku, descripcion: i.desc, cantidad: i.cant, estado: i.estado }))
                     };
-                    localStorage.setItem('twins_dev_draft', JSON.stringify(draft));
+                    await fetch(core.url, { method: 'POST', body: JSON.stringify(data) });
+                    this.generatePDF(data);
+                    alert("Devolución Guardada");
+                    localStorage.removeItem('twins_dev_draft');
+                    location.reload();
+                },
+                saveDraft: function() {
+                    const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.currentItems };
+                    localStorage.setItem('twins_dev_draft', JSON.stringify(d));
                 },
                 loadDraft: function() {
-                    const draft = JSON.parse(localStorage.getItem('twins_dev_draft'));
-                    if (draft) {
-                        document.getElementById('dev-cliente').value = draft.cliente || "";
-                        document.getElementById('dev-vendedor').value = draft.vendedor || "";
-                        document.getElementById('dev-motivo').value = draft.motivo || "";
-                        this.currentItems = draft.items || [];
-                        this.renderItems();
-                    }
+                    const d = JSON.parse(localStorage.getItem('twins_dev_draft'));
+                    if(d) { document.getElementById('dev-cliente').value = d.c; document.getElementById('dev-vendedor').value = d.v; document.getElementById('dev-motivo').value = d.m; this.currentItems = d.i; this.renderItems(); }
                 },
-
-                // OBTENER PRODUCTOS E HISTORIAL
-                fetchProducts: async function() {
-                    try { const response = await fetch(core.url + "?type=productos"); const data = await response.json();
-                        if (data && Array.isArray(data)) { core.productsCache = data; localStorage.setItem('twins_prod_cache', JSON.stringify(data)); }
-                    } catch (e) { console.error("Error Hoja 1", e); }
+                switchTab: function(t) {
+                    document.getElementById('dev-new-section').classList.toggle('hidden', t === 'history');
+                    document.getElementById('dev-hist-section').classList.toggle('hidden', t === 'new');
+                    document.getElementById('tab-dev-new').classList.toggle('bg-white', t === 'new');
+                    document.getElementById('tab-dev-hist').classList.toggle('bg-white', t === 'history');
                 },
-                fetchHistory: async function() {
-                    try { const response = await fetch(core.url + "?type=devoluciones"); const data = await response.json();
-                        if (data && Array.isArray(data)) { core.historyCache = data; localStorage.setItem('twins_hist_cache', JSON.stringify(data)); if(this.currentTab === 'history') this.renderHistory(); }
-                    } catch (e) { console.error("Error Hoja 3", e); }
-                },
-
-                suggestVendor: function() { const client = document.getElementById('dev-cliente').value.toUpperCase().trim(); const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {}; if(memory[client]) document.getElementById('dev-vendedor').value = memory[client]; this.saveDraft(); },
-
-                searchProduct: function() {
-                    const val = document.getElementById('dev-prod-search').value.toLowerCase(); const resBox = document.getElementById('dev-prod-results');
-                    if(val.length < 2) { resBox.classList.add('hidden'); return; }
-                    const filtered = core.productsCache.filter(i => core.getCode(i).toLowerCase().includes(val) || core.getDesc(i).toLowerCase().includes(val)).slice(0, 10);
-                    if(filtered.length > 0) {
-                        resBox.innerHTML = filtered.map(item => `<div onclick="core.returns.selectProduct('${core.getCode(item)}', '${core.getDesc(item).replace(/'/g, "")}')" class="p-3 border-b border-slate-100 active:bg-slate-50 cursor-pointer"> <p class="text-[10px] font-black text-blue-600">${core.getCode(item)}</p> <p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(item)}</p> </div>`).join('');
-                        resBox.classList.remove('hidden');
-                    } else { resBox.classList.add('hidden'); }
-                },
-
-                selectProduct: function(code, desc) { this.selectedProduct = { codigo: code, descripcion: desc }; document.getElementById('dev-prod-search').value = code + " - " + desc; document.getElementById('dev-prod-results').classList.add('hidden'); document.getElementById('dev-cantidad').focus(); },
-
-                addItem: function() {
-                    if(!this.selectedProduct) return alert("Seleccione un producto del buscador.");
-                    const cant = parseInt(document.getElementById('dev-cantidad').value); if(!cant || cant <= 0) return alert("Ingrese cantidad válida.");
-                    this.currentItems.push({ codigo: this.selectedProduct.codigo, descripcion: this.selectedProduct.descripcion, cantidad: cant, estado: document.getElementById('dev-estado').value, observaciones: document.getElementById('dev-obs').value });
-                    this.selectedProduct = null; document.getElementById('dev-prod-search').value = ''; document.getElementById('dev-cantidad').value = ''; document.getElementById('dev-obs').value = '';
-                    this.renderItems(); this.saveDraft();
-                },
-                removeItem: function(idx) { this.currentItems.splice(idx, 1); this.renderItems(); this.saveDraft(); },
-
-                renderItems: function() {
-                    const list = document.getElementById('dev-items-list'); const btn = document.getElementById('dev-btn-save');
-                    if(this.currentItems.length > 0) {
-                        list.innerHTML = this.currentItems.map((i, idx) => `<div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-[0_2px_10px_rgba(0,0,0,0.02)]"> <div class="flex-1 pr-3"> <div class="flex gap-2 items-center mb-1"> <span class="text-[9px] font-black bg-slate-100 px-2 py-0.5 rounded text-slate-600">${i.codigo}</span> <span class="text-[9px] font-black ${i.estado.includes('BUEN') ? 'text-emerald-500' : 'text-orange-500'} uppercase">${i.estado}</span> </div> <p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p> </div> <div class="flex items-center gap-4"> <div class="text-center"> <p class="text-lg font-black text-slate-900">${i.cantidad}</p> <p class="text-[7px] uppercase font-bold text-slate-400">CANT</p> </div> <button onclick="core.returns.removeItem(${idx})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90"><i class="ph-bold ph-trash"></i></button> </div> </div>`).join('');
-                        btn.classList.remove('hidden');
-                    } else { list.innerHTML = ""; btn.classList.add('hidden'); }
-                },
-
-                saveReturn: async function() {
-                    const cliente = document.getElementById('dev-cliente').value.toUpperCase().trim(); const vendedor = document.getElementById('dev-vendedor').value; const motivo = document.getElementById('dev-motivo').value.trim();
-                    if(!cliente || !vendedor || !motivo) return alert("Complete Cliente, Vendedor y Motivo.");
-                    const btn = document.getElementById('dev-btn-save'); btn.innerText = "ENVIANDO A EXCEL..."; btn.disabled = true;
-
-                    const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {}; memory[cliente] = vendedor; localStorage.setItem('twins_vendor_memory', JSON.stringify(memory));
-                    const hoy = new Date(); const fechaF = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-                    const returnData = { action: "guardar_devolucion", fecha: fechaF, cliente: cliente, vendedor: vendedor, motivo: motivo, items: this.currentItems };
-
-                    try {
-                        await fetch(core.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(returnData) });
-                        this.generatePDF(returnData); alert("✅ Devolución registrada y PDF generado.");
-                        
-                        // Limpiar ticket y borrador
-                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; this.currentItems = [];
-                        localStorage.removeItem('twins_dev_draft');
-                        this.renderItems(); this.fetchHistory(); this.switchTab('history');
-                    } catch(e) { alert("⚠️ Error al guardar en Excel."); } finally { btn.innerText = "Generar Devolución"; btn.disabled = false; }
-                },
-
-                // RENDERIZAR HISTORIAL
                 renderHistory: function() {
-                    const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
-                    if(core.historyCache.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin historial registrado</div>`; return; }
-
-                    // Agrupar filas de Hoja 3 en Tickets (por Cliente y Fecha)
+                    const list = document.getElementById('dev-hist-list');
+                    const search = document.getElementById('dev-hist-search').value.toLowerCase();
                     const tickets = {};
                     core.historyCache.forEach(i => {
-                        const cliente = i["CLIENTE"] || "SN"; const fecha = i["FECHA"] || "SF"; const key = `${cliente}_${fecha}`;
-                        if(!tickets[key]) tickets[key] = { fecha: fecha, cliente: cliente, vendedor: i["VENDEDOR"], motivo: i["MOTIVO"], items: [] };
-                        tickets[key].items.push({ codigo: core.getCode(i), descripcion: core.getDesc(i), cantidad: i["CANTIDAD"]||i["CANT"], estado: i["ESTADO"] });
+                        const key = i.CLIENTE + "_" + i.FECHA;
+                        if(!tickets[key]) tickets[key] = { ...i, items: [] };
+                        tickets[key].items.push(i);
                     });
-
-                    const filteredKeys = Object.keys(tickets).filter(k => {
-                        const t = tickets[k];
-                        return t.cliente.toLowerCase().includes(search) || t.items.some(i => i.codigo.toLowerCase().includes(search) || i.descripcion.toLowerCase().includes(search));
-                    }).reverse(); // Más nuevos arriba
-
-                    if(filteredKeys.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">No hay coincidencias</div>`; return; }
-
-                    list.innerHTML = filteredKeys.map(k => {
-                        const t = tickets[k];
-                        const pdfData = encodeURIComponent(JSON.stringify(t));
-                        return `<div class="native-card p-5 mb-4">
-                            <div class="flex justify-between items-start mb-3">
-                                <div><p class="text-[10px] font-black text-slate-400">${t.fecha}</p><h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3></div>
-                                <button onclick="core.returns.generatePDF(JSON.parse(decodeURIComponent('${pdfData}')))" class="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center active:scale-95"><i class="ph-bold ph-file-pdf text-lg"></i></button>
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl mb-3"><p class="text-[10px] font-bold text-slate-500 uppercase"><span class="text-blue-500">VEND:</span> ${t.vendedor}</p><p class="text-[10px] font-bold text-slate-500 uppercase"><span class="text-blue-500">MOTIVO:</span> ${t.motivo}</p></div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">PRODUCTOS (${t.items.length})</p>
-                            <div class="space-y-1">${t.items.map(i => `<div class="flex justify-between text-[10px] font-bold text-slate-600 border-b border-slate-100 pb-1"><span class="truncate pr-2">- ${i.codigo}</span><span>${i.cantidad} UND</span></div>`).join('')}</div>
-                        </div>`;
-                    }).join('');
+                    list.innerHTML = Object.values(tickets).filter(t => t.CLIENTE.toLowerCase().includes(search)).map(t => `<div class="native-card p-5">
+                        <div class="flex justify-between items-start"><div><p class="text-[9px] font-black text-slate-400">${t.FECHA}</p><h3 class="text-sm font-black">${t.CLIENTE}</h3></div>
+                        <button onclick='core.returns.generatePDF(${JSON.stringify(t)})' class="text-red-600"><i class="ph-bold ph-file-pdf text-xl"></i></button></div></div>`).join('');
                 },
-
                 generatePDF: function(data) {
                     const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                    doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                    doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
-                    doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-                    const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]);
-                    doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } });
-                    const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                    doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+                    doc.text("TICKET DE DEVOLUCIÓN - TWINS", 14, 20);
+                    doc.setFontSize(10); doc.text(`Cliente: ${data.cliente || data.CLIENTE}`, 14, 30);
+                    doc.text(`Vendedor: ${data.vendedor || data.VENDEDOR}`, 14, 35);
+                    const items = data.items || data.items || [];
+                    doc.autoTable({ startY: 45, head: [['SKU', 'DESC', 'CANT', 'ESTADO']], body: items.map(i => [i.codigo || i.CODIGO, i.descripcion || i.DESCRIPCION, i.cantidad || i.CANTIDAD, i.estado || i.ESTADO]) });
+                    doc.text("Revisión: J. Angelo Nuñez Durand", 14, doc.lastAutoTable.finalY + 15);
+                    doc.save("Devolucion.pdf");
                 }
             },
 
-            // --- LÓGICA DE AUDITORÍA (INTACTA) ---
-            startTimer: function(id) { this.stopTimer(); this.timerInterval = setInterval(() => { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); if (items.length > 0) { items[0].auditTime = (items[0].auditTime || 0) + 1; this.updateTimerUI(items[0].auditTime); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); } }, 1000); },
-            stopTimer: function() { if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; } },
-            updateTimerUI: function(s) { const el = document.getElementById('audit-timer-display'); if (el) el.innerText = this.formatTime(s); },
-            formatTime: function(s) { if (!s) return "00:00"; const h = Math.floor(s/3600); const m = Math.floor((s%3600)/60); const sec = s%60; const ms = `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`; return h>0 ? `${h.toString().padStart(2, '0')}:${ms}` : ms; },
-            toggleAuditSearch: function() { const b = document.getElementById('audit-search-bar'); b.classList.toggle('hidden'); if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus(); },
-            sortAuditItems: function(itemsList) { const p = [], c = []; itemsList.forEach(item => { const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; if (aud > 0 && aud >= teo) { c.push(item); } else { p.push(item); } }); return [...p, ...c]; },
-            openAudit: function(id) { this.activeCont = id; localStorage.setItem('twins_active_cont', id); document.getElementById('audit-title').innerText = "CARGA #" + id; document.getElementById('inner-search').value = ""; document.getElementById('audit-search-bar').classList.add('hidden'); const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); this.updateTimerUI(items[0].auditTime || 0); this.startTimer(id); this.renderAuditItems(this.sortAuditItems(items)); this.updateProgress(id); document.getElementById('audit-view').style.display = 'flex'; },
-            filterAuditItems: function(val) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); const filtered = items.filter(i => i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || this.getDesc(i).toLowerCase().includes(val.toLowerCase())); this.renderAuditItems(this.sortAuditItems(filtered)); },
-            renderAuditItems: function(items) { const container = document.getElementById('audit-items-container'); container.innerHTML = items.map(item => { const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo; let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; } else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; } else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; } } return ` <div id="card-${idx}" class="audit-item-card transition-all duration-300 transform"> <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}"></div> <div class="pl-2"> <div class="flex justify-between items-start mb-2"> <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.CODIGO}</span> <span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span> </div> <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4 line-clamp-2">${this.getDesc(item)}</h4> <div class="flex justify-between items-end mb-4 mt-2"> <div> <p class="text-[9px] font-bold text-slate-400 uppercase">Teórico</p> <p class="text-xl font-black text-slate-300">${teo}</p> </div> <div class="text-right"> <p class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">Total Contado</p> <p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p> </div> </div> <div class="flex items-center gap-3"> <button onclick="core.step(${idx}, -1)" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center active:scale-90 transition-all border border-slate-100"><i class="ph-bold ph-minus text-lg"></i></button> <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2 focus-within:border-blue-500"> <input type="number" id="add-input-${idx}" placeholder="Agregar..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') { event.preventDefault(); core.addAmount(${idx}); this.blur(); }"> <button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md active:scale-90"><i class="ph-bold ph-plus text-lg"></i></button> </div> </div> <div class="grid grid-cols-2 gap-2 mt-4"> <button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl uppercase active:bg-emerald-100">Igualar Teórico</button> <button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl uppercase active:bg-red-100">Reiniciar</button> </div> </div> </div>`; }).join(''); },
-            step: function(idx, v) { this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
-            addAmount: function(idx) { const i = document.getElementById(`add-input-${idx}`); const v = parseInt(i.value); if (isNaN(v) || v===0) return; this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); i.value = ''; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
-            setDirect: function(idx, val) { this.raw[idx].audit = val; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
-            refreshItemUI: function(idx) { const item = this.raw[idx]; const totalEl = document.getElementById(`total-audit-${idx}`); const badgeEl = document.getElementById(`badge-${idx}`); const lineEl = document.getElementById(`line-${idx}`); const cardEl = document.getElementById(`card-${idx}`); const aud = item.audit || 0; const teo = parseInt(item["CAJAS"]) || 0; const diff = aud - teo; if (totalEl) totalEl.innerText = aud; let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200'; let isC = false; if (aud > 0) { if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; isC = true; } else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; isC = true; } else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; } } if (badgeEl) { badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}`; badgeEl.innerText = bText; } if (lineEl) { lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`; } if (isC && cardEl) { const c = document.getElementById('audit-items-container'); if (c.lastElementChild !== cardEl) { setTimeout(() => { cardEl.style.opacity = "0.4"; cardEl.style.transform = "scale(0.95)"; setTimeout(() => { c.appendChild(cardEl); cardEl.style.opacity = "1"; cardEl.style.transform = "scale(1)"; }, 300); }, 500); } } localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
-            updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let totalT = 0, totalA = 0; items.forEach(i => { totalT += (parseInt(i.CAJAS) || 0); totalA += (i.audit || 0); }); const perc = totalT > 0 ? Math.round((totalA/totalT)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%"; document.getElementById('audit-perc-text').innerText = perc + "%"; },
-            closeModal: function(id) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
-            saveAndFinish: async function() { const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?`); if (!confirmar) return; this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); let ts = 0; items.forEach(i => { if ((i.auditTime || 0) > ts) ts = i.auditTime; }); const h = Math.floor(ts / 3600); const m = Math.floor((ts % 3600) / 60); const s = ts % 60; const tF = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; const hoy = new Date(); const fD = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`; items.forEach(i => { i["ESTADO"] = "COMPLETADO"; i.auditTime = ts; i["FECHA_LIMPIA"] = fD; i["FECHA"] = fD; }); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); fetch(this.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tF, fecha: fD }) }).catch(e => console.log(e)); this.closeModal('audit-view'); this.render(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
-            viewList: function(id) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(item => ` <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"> <div class="flex-1 pr-4"> <p class="text-[10px] font-[900] text-blue-600 mb-1 uppercase">${item["CODIGO"]}</p> <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${this.getDesc(item)}</p> </div> <div class="text-right flex items-center gap-4"> <div class="flex flex-col items-end"> <span class="text-sm font-[900] ${item.audit >= item["CAJAS"] ? 'text-emerald-500' : 'text-slate-900'}">${item.audit || 0} / ${item["CAJAS"] || 0}</span> <span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span> </div> <i class="ph-fill ph-check-circle ${item.audit >= item["CAJAS"] ? 'text-emerald-400' : 'text-slate-100'} text-2xl"></i> </div> </div> `).join(''); document.getElementById('list-view').style.display = 'flex'; },
-            generatePDF: function(id) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id); if (!items || items.length === 0) return alert("Sin datos"); const f = items[0]["FECHA_LIMPIA"] || "PENDIENTE"; const ts = items[0].auditTime || 0; doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30); const h = Math.floor(ts / 3600); const m = Math.floor((ts % 3600) / 60); const s = ts % 60; let tStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; if (h > 0) tStr = `${h.toString().padStart(2, '0')}:${tStr}`; doc.text(`FECHA: ${f} | TIEMPO DE DESCARGA: ${tStr}`, 14, 36); const body = items.map(i => [ i["CODIGO"], this.getDesc(i), i["CAJAS"]||0, i.audit||0, (i.audit||0)-(parseInt(i["CAJAS"])||0) ]); doc.autoTable({ startY: 42, head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']], body: body, headStyles: { fillColor: [15, 23, 42], fontSize: 6, halign: 'center' }, styles: { fontSize: 5, cellPadding: 1 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } } }); const finalY = doc.lastAutoTable.finalY + 15; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Reporte_Conteo_${id}.pdf`); }
+            openAudit: function(id) {
+                this.activeCont = id; document.getElementById('audit-view').style.display = 'flex';
+                this.renderAuditItems();
+            },
+            renderAuditItems: function() {
+                const items = this.raw.filter(i => i.CONTENEDOR_LIMPIO == this.activeCont);
+                document.getElementById('audit-items-container').innerHTML = items.map(i => `<div class="audit-item-card"><h4 class="text-xs font-black">${i.DESCRIPCION}</h4></div>`).join('');
+            },
+            closeModal: function(id) { document.getElementById(id).style.display = 'none'; }
         };
 
-        window.onload = async () => {
-            const currentView = localStorage.getItem('twins_current_view') || 'audit';
-            if(core.raw.length > 0) { core.render(); const activeId = localStorage.getItem('twins_active_cont'); if(activeId) { core.openAudit(activeId); } }
-            core.nav.go(currentView); // Nos regresa a la pestaña donde estábamos
-            core.fetchData(true);
-            setInterval(() => { core.fetchData(true); }, 10000);
-            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') core.fetchData(true); });
+        window.onload = () => { 
+            core.fetchData(); 
+            const lastView = localStorage.getItem('twins_view') || 'audit';
+            core.nav.go(lastView);
         };
     </script>
 </body>
