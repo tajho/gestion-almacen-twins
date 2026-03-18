@@ -252,39 +252,31 @@
             },
 
             fetchData: async function() {
+                const btn = document.getElementById('sync-icon');
+                btn.classList.add('animate-spin');
                 try {
                     const response = await fetch(this.url);
                     const data = await response.json();
                     if (data && Array.isArray(data)) {
                         this.raw = data.map(item => {
-                            const isCompletedSheet = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
                             const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
-                            const wasCompletedLocal = cached && cached["ESTADO"] === "COMPLETADO";
-
-                            let currentAudit = 0;
-                            // Si en el Excel borraste "COMPLETADO", reinicia a 0. Si ya estaba en proceso, lo mantiene.
-                            if (isCompletedSheet) {
-                                currentAudit = item["CAJAS"] || 0;
-                            } else if (cached) {
-                                currentAudit = wasCompletedLocal ? 0 : (cached.audit || 0);
-                            }
-
                             return { 
                                 ...item, 
-                                audit: currentAudit,
-                                // Reinicia también el tiempo si se borró el completado en el Excel
-                                auditTime: cached ? (wasCompletedLocal && !isCompletedSheet ? 0 : (cached.auditTime || 0)) : 0 
+                                audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0),
+                                auditTime: cached ? (cached.auditTime || 0) : 0 
                             };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                         this.render();
 
-                        // AUTO-RESCATE DE SESIÓN
                         const activeId = localStorage.getItem('twins_active_cont');
                         if (activeId) { this.openAudit(activeId); }
                     }
-                } catch (e) { console.error("Fallo de sincronización silenciosa", e); }
+                } catch (e) { console.error(e); }
+                finally { btn.classList.remove('animate-spin'); }
             },
+
             getItemMonth: function(item) {
                 const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
                 if (!fecha || fecha === "") return "EN PROGRAMACIÓN";
@@ -316,7 +308,6 @@
                 const groups = {};
                 let tTotalCj = 0, tTotalAud = 0;
 
-                // Pre-agrupamos por contenedor
                 const tempGroups = {};
                 this.raw.forEach(item => {
                     const contId = (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"] || "S/N").toString();
@@ -324,7 +315,6 @@
                     tempGroups[contId].push(item);
                 });
 
-                // [MEJORA 1] BUSCADOR PROFUNDO: Busca Contenedor, SKU o Descripción
                 Object.keys(tempGroups).forEach(contId => {
                     const items = tempGroups[contId];
                     const itemMonth = this.getItemMonth(items[0]);
@@ -401,24 +391,14 @@
                 }).join('');
             },
 
-            // --- LÓGICA CRONÓMETRO (SEGUNDO PLANO) ---
             startTimer: function(id) {
                 this.stopTimer();
-                this.lastTimerTick = Date.now(); // Guarda la hora exacta de inicio del ciclo
-                
                 this.timerInterval = setInterval(() => {
                     const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
                     if (items.length > 0) {
-                        const now = Date.now();
-                        // Calcula el tiempo real transcurrido (incluso con la pantalla apagada)
-                        const segundosPasados = Math.floor((now - this.lastTimerTick) / 1000);
-                        
-                        if (segundosPasados > 0) {
-                            items[0].auditTime = (items[0].auditTime || 0) + segundosPasados;
-                            this.updateTimerUI(items[0].auditTime);
-                            this.lastTimerTick = now; // Reinicia la marca de tiempo
-                            localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        }
+                        items[0].auditTime = (items[0].auditTime || 0) + 1;
+                        this.updateTimerUI(items[0].auditTime);
+                        localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                     }
                 }, 1000);
             },
@@ -444,17 +424,27 @@
                 return h > 0 ? `${h.toString().padStart(2, '0')}:${minSec}` : minSec;
             },
 
-            // --- SECCIÓN AUDITORÍA MODERNA ---
             toggleAuditSearch: function() {
                 const b = document.getElementById('audit-search-bar');
                 b.classList.toggle('hidden');
                 if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus();
             },
 
+            // NUEVA FUNCIÓN: Ordena la lista mandando completados al fondo
+            sortAuditItems: function(itemsList) {
+                const pendientes = [];
+                const completados = [];
+                itemsList.forEach(item => {
+                    const teo = parseInt(item.CAJAS) || 0;
+                    const aud = item.audit || 0;
+                    if (aud > 0 && aud >= teo) { completados.push(item); } 
+                    else { pendientes.push(item); }
+                });
+                return [...pendientes, ...completados];
+            },
+
             openAudit: function(id) {
                 this.activeCont = id;
-                
-                // [MEJORA 4] AUTO-RESCATE: Guardamos el id activo para recuperar si cierra pestaña
                 localStorage.setItem('twins_active_cont', id);
 
                 document.getElementById('audit-title').innerText = "CARGA #" + id;
@@ -465,7 +455,9 @@
                 this.updateTimerUI(items[0].auditTime || 0);
                 this.startTimer(id);
 
-                this.renderAuditItems(items);
+                const sortedItems = this.sortAuditItems(items);
+                this.renderAuditItems(sortedItems);
+                
                 this.updateProgress(id);
                 document.getElementById('audit-view').style.display = 'flex';
             },
@@ -476,7 +468,9 @@
                     i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || 
                     this.getDesc(i).toLowerCase().includes(val.toLowerCase())
                 );
-                this.renderAuditItems(filtered);
+                
+                const sortedFiltered = this.sortAuditItems(filtered);
+                this.renderAuditItems(sortedFiltered);
             },
 
             renderAuditItems: function(items) {
@@ -499,7 +493,7 @@
                     }
 
                     return `
-                    <div id="card-${idx}" class="audit-item-card">
+                    <div id="card-${idx}" class="audit-item-card transition-all duration-300 transform">
                        <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}"></div>
                        
                        <div class="pl-2">
@@ -526,7 +520,7 @@
                                </button>
                                
                                <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-                                   <input type="number" id="add-input-${idx}" placeholder="Agregar cajas..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') core.addAmount(${idx})">
+                                   <input type="number" id="add-input-${idx}" placeholder="Agregar cajas..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') { event.preventDefault(); core.addAmount(${idx}); this.blur(); }">
                                    <button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md active:scale-90 transition-all">
                                        <i class="ph-bold ph-plus text-lg"></i>
                                    </button>
@@ -542,14 +536,12 @@
                 }).join('');
             },
 
-            // Reduce 1
             step: function(idx, v) {
                 this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v);
                 this.refreshItemUI(idx);
                 this.updateProgress(this.activeCont);
             },
 
-            // Lógica Aditiva (+)
             addAmount: function(idx) {
                 const input = document.getElementById(`add-input-${idx}`);
                 const val = parseInt(input.value);
@@ -562,7 +554,6 @@
                 this.updateProgress(this.activeCont);
             },
 
-            // Establece valor directo (Match / Reset)
             setDirect: function(idx, val) {
                 this.raw[idx].audit = val;
                 this.refreshItemUI(idx);
@@ -574,6 +565,7 @@
                 const totalEl = document.getElementById(`total-audit-${idx}`);
                 const badgeEl = document.getElementById(`badge-${idx}`);
                 const lineEl = document.getElementById(`line-${idx}`);
+                const cardEl = document.getElementById(`card-${idx}`);
                 
                 const aud = item.audit || 0;
                 const teo = parseInt(item["CAJAS"]) || 0;
@@ -584,12 +576,15 @@
                 let bClass = 'bg-slate-100 text-slate-500';
                 let bText = 'PENDIENTE';
                 let lColor = 'bg-slate-200';
+                let isComplete = false;
 
                 if (aud > 0) {
                     if (diff === 0) { 
                         bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500';
+                        isComplete = true;
                     } else if (diff > 0) { 
                         bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500';
+                        isComplete = true;
                     } else { 
                         bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500';
                     }
@@ -603,7 +598,21 @@
                     lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`;
                 }
 
-                // [MEJORA 4] AUTO-GUARDADO CADA VEZ QUE SE MODIFICA ALGO
+                if (isComplete && cardEl) {
+                    const container = document.getElementById('audit-items-container');
+                    if (container.lastElementChild !== cardEl) {
+                        setTimeout(() => {
+                            cardEl.style.opacity = "0.4";
+                            cardEl.style.transform = "scale(0.95)";
+                            setTimeout(() => {
+                                container.appendChild(cardEl);
+                                cardEl.style.opacity = "1";
+                                cardEl.style.transform = "scale(1)";
+                            }, 300);
+                        }, 500);
+                    }
+                }
+
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
             },
 
@@ -625,10 +634,6 @@
                 document.getElementById(id).style.display = 'none'; 
             },
             
-            // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO"
-                        // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN
-                        // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN Y TIEMPO
-            // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" Y ENVÍO DE TIEMPO
             saveAndFinish: async function() {
                 const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, se guardará el tiempo y el contenedor se marcará como COMPLETADO.`);
                 if (!confirmar) return;
@@ -636,17 +641,14 @@
                 this.stopTimer();
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
                 
-                // 1. Rescatar el tiempo mayor acumulado
                 let tiempoSegundos = 0;
                 items.forEach(i => { if ((i.auditTime || 0) > tiempoSegundos) tiempoSegundos = i.auditTime; });
 
-                // 2. Formatear el tiempo a HH:MM:SS para mandarlo al Excel
                 const h = Math.floor(tiempoSegundos / 3600);
                 const m = Math.floor((tiempoSegundos % 3600) / 60);
                 const s = tiempoSegundos % 60;
                 const tiempoFormateado = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
-                // 3. Marcar localmente
                 items.forEach(i => {
                     i["ESTADO"] = "COMPLETADO";
                     i.auditTime = tiempoSegundos; 
@@ -655,7 +657,6 @@
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                 localStorage.removeItem('twins_active_cont');
 
-                // 4. Enviar los datos exactos a Google Sheets (Incluyendo el TIEMPO)
                 try {
                     await fetch(this.url, {
                         method: 'POST',
@@ -663,7 +664,7 @@
                         body: JSON.stringify({
                             action: "completar_auditoria",
                             contenedor: this.activeCont,
-                            tiempo: tiempoFormateado, // <--- AQUÍ ENVIAMOS EL TIEMPO
+                            tiempo: tiempoFormateado,
                             timestamp: new Date().toISOString()
                         })
                     });
@@ -671,13 +672,11 @@
                     console.error("Error al notificar cierre a la hoja de cálculo", e); 
                 }
 
-                // 5. Mandar a la pantalla de inicio
                 this.closeModal('audit-view');
                 this.render();
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Asegura que vuelva a la parte superior de la vista principal
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
-            /* VISTA LISTA OFICIAL (NO TOCADO) */
             viewList: function(id) {
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
                 document.getElementById('list-cont-id').innerText = "Ref: " + id;
@@ -699,8 +698,6 @@
                 document.getElementById('list-view').style.display = 'flex';
             },
 
-            // [MEJORA 2] PDF AJUSTABLE A 1 HOJA CON EL TIEMPO CORRECTO
-            // [MEJORA 2] PDF AJUSTABLE A 1 HOJA CON EL TIEMPO CORRECTO Y DISEÑO PROFESIONAL
             generatePDF: function(id) {
                 try {
                     const { jsPDF } = window.jspdf;
@@ -712,49 +709,25 @@
                         return;
                     }
 
-                    // Obtiene la fecha exacta del día en que se genera el reporte
-                    const hoy = new Date();
-                    const fechaReporte = hoy.toLocaleDateString('es-PE');
+                    const fechaReporte = items[0]["FECHA_LIMPIA"] || items[0]["FECHA"] || "PENDIENTE";
                     const totalSeconds = items[0].auditTime || 0;
                     
-                    // --- INICIO CABECERA MEJORADA ---
                     doc.setFontSize(22);
                     doc.setTextColor(15, 23, 42);
                     doc.text("TWINS ALMACEN", 14, 22);
                     
                     doc.setFontSize(9);
-                    doc.setTextColor(100, 116, 139);
-                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 28);
+                    doc.setTextColor(120);
+                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30);
                     
-                    // Formatear Tiempo
                     const h = Math.floor(totalSeconds / 3600);
                     const m = Math.floor((totalSeconds % 3600) / 60);
                     const s = totalSeconds % 60;
                     let timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                     if (h > 0) timeStr = `${h.toString().padStart(2, '0')}:${timeStr}`;
                     
-                    // Caja de información profesional (Fondo suave y esquinas redondeadas)
-                    doc.setFillColor(248, 250, 252); // Gris muy claro
-                    doc.setDrawColor(226, 232, 240); // Borde sutil
-                    doc.roundedRect(14, 32, 182, 10, 2, 2, 'FD'); 
+                    doc.text(`FECHA: ${fechaReporte}   |   T. DE DESCARGA: ${timeStr}`, 14, 36);
                     
-                    // Textos dentro de la caja
-                    doc.setFontSize(8);
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(100, 116, 139); 
-                    doc.text("FECHA DE DESCARGA:", 18, 38.5);
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(15, 23, 42); 
-                    doc.text(fechaReporte, 55, 38.5);
-                    
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(100, 116, 139);
-                    doc.text("T. DE DESCARGA:", 135, 38.5);
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(37, 99, 235); // Resalte en azul para el tiempo
-                    doc.text(timeStr, 163, 38.5);
-                    // --- FIN CABECERA MEJORADA ---
-
                     const tableBody = items.map(i => [
                         i["CODIGO"] || "---", 
                         this.getDesc(i), 
@@ -763,7 +736,6 @@
                         (i.audit || 0) - (parseInt(i["CAJAS"]) || 0)
                     ]);
 
-                    // ALGORITMO AUTO-AJUSTABLE PARA FORZAR 1 HOJA
                     let fSize = 7;
                     let cPad = 2;
                     
@@ -772,17 +744,16 @@
                     else if(items.length > 55) { fSize = 4.5; cPad = 0.5; }
 
                     doc.autoTable({
-                        startY: 46, // Movido ligeramente hacia abajo para que no choque con la caja
+                        startY: 42,
                         head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
                         body: tableBody,
                         headStyles: { fillColor: [15, 23, 42], fontSize: fSize + 1, halign: 'center' },
                         styles: { fontSize: fSize, cellPadding: cPad },
                         columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } },
-                        margin: { bottom: 25 } // Espacio para tu firma
+                        margin: { bottom: 25 }
                     });
                     
                     const finalY = doc.lastAutoTable.finalY + 15;
-                    // ... (DE AQUÍ PARA ABAJO ES TU CÓDIGO DE FIRMA QUE NO DEBES TOCAR) ...
                     doc.setFontSize(9);
                     doc.setTextColor(15, 23, 42);
                     doc.text("Revisión autorizada por:", 14, finalY);
