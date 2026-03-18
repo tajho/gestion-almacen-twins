@@ -627,23 +627,28 @@
             
             // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO"
                         // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN
+                        // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN Y TIEMPO
             saveAndFinish: async function() {
-                // Confirmación de seguridad antes de finalizar (útil para emergencias o revisión final)
                 const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, el contenedor se marcará como COMPLETADO en la base de datos.`);
-                if (!confirmar) return; // Si cancela, no hace nada y permite seguir editando
+                if (!confirmar) return;
 
                 this.stopTimer();
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
                 
-                // 1. Marcar localmente para que la app reaccione de inmediato
-                items.forEach(i => i["ESTADO"] = "COMPLETADO");
+                // 1. Rescatar el tiempo mayor acumulado (evita que el PDF marque 0)
+                let tiempoFinal = 0;
+                items.forEach(i => { if ((i.auditTime || 0) > tiempoFinal) tiempoFinal = i.auditTime; });
+
+                // 2. Marcar localmente y asegurar que TODOS los items guarden el tiempo final
+                items.forEach(i => {
+                    i["ESTADO"] = "COMPLETADO";
+                    i.auditTime = tiempoFinal; 
+                });
+                
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                 localStorage.removeItem('twins_active_cont');
 
-                // 2. Enviar la señal exacta a Google Sheets
                 try {
-                    // Cambiamos el fetch para que envíe un POST robusto.
-                    // Usamos text/plain para evitar bloqueos de seguridad (CORS) de Google.
                     await fetch(this.url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -657,11 +662,9 @@
                     console.error("Error al notificar cierre a la hoja de cálculo", e); 
                 }
 
-                // 3. Cerrar la vista y refrescar el panel principal
                 this.closeModal('audit-view');
                 this.render();
             },
-
 
             /* VISTA LISTA OFICIAL (NO TOCADO) */
             viewList: function(id) {
