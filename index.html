@@ -123,8 +123,8 @@
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">Almacén Pro</p>
-                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">Twins Elite</h1>
+                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">tajho</p>
+                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
             </div>
             <div class="relative flex items-center justify-center">
                 <svg class="w-12 h-12">
@@ -168,9 +168,6 @@
             <div class="py-20 text-center text-slate-400 font-medium">Cargando inventario...</div>
         </div>
 
-        <button onclick="core.fetchData()" class="fab-sync">
-            <i id="sync-icon" class="ph-bold ph-arrows-clockwise text-white text-2xl"></i>
-        </button>
     </div>
 
     <!-- SECCIÓN AUDITORÍA OFICIAL (MODERNA Y ADITIVA CON CRONÓMETRO) -->
@@ -255,32 +252,39 @@
             },
 
             fetchData: async function() {
-                const btn = document.getElementById('sync-icon');
-                btn.classList.add('animate-spin');
                 try {
                     const response = await fetch(this.url);
                     const data = await response.json();
                     if (data && Array.isArray(data)) {
                         this.raw = data.map(item => {
-                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                            const isCompletedSheet = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
                             const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
+                            const wasCompletedLocal = cached && cached["ESTADO"] === "COMPLETADO";
+
+                            let currentAudit = 0;
+                            // Si en el Excel borraste "COMPLETADO", reinicia a 0. Si ya estaba en proceso, lo mantiene.
+                            if (isCompletedSheet) {
+                                currentAudit = item["CAJAS"] || 0;
+                            } else if (cached) {
+                                currentAudit = wasCompletedLocal ? 0 : (cached.audit || 0);
+                            }
+
                             return { 
                                 ...item, 
-                                audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0),
-                                auditTime: cached ? (cached.auditTime || 0) : 0 
+                                audit: currentAudit,
+                                // Reinicia también el tiempo si se borró el completado en el Excel
+                                auditTime: cached ? (wasCompletedLocal && !isCompletedSheet ? 0 : (cached.auditTime || 0)) : 0 
                             };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                         this.render();
 
-                        // [MEJORA 4] AUTO-RESCATE DE SESIÓN: Si se cerró accidentalmente
+                        // AUTO-RESCATE DE SESIÓN
                         const activeId = localStorage.getItem('twins_active_cont');
                         if (activeId) { this.openAudit(activeId); }
                     }
-                } catch (e) { console.error(e); }
-                finally { btn.classList.remove('animate-spin'); }
+                } catch (e) { console.error("Fallo de sincronización silenciosa", e); }
             },
-
             getItemMonth: function(item) {
                 const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
                 if (!fecha || fecha === "") return "EN PROGRAMACIÓN";
@@ -751,12 +755,14 @@
         window.onload = async () => { 
             if(core.raw.length > 0) { 
                 core.render(); 
-                // [MEJORA 4] Al recargar, verifica si estabas en una auditoría y te regresa a ella.
                 const activeId = localStorage.getItem('twins_active_cont');
                 if(activeId) { core.openAudit(activeId); }
             } else { 
                 await core.fetchData(); 
             } 
+            
+            // Sincronización invisible en segundo plano cada 30 segundos (30000 ms)
+            setInterval(() => { core.fetchData(); }, 30000);
         };
     </script>
 </body>
