@@ -235,7 +235,7 @@
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbyPpLyf17KlX82chvM5V9s14FuTybacw3jkEkobXvsp4JWyNevL8QGAHAiOM0tEJ0mn/exec",
+            url: "https://script.google.com/macros/s/AKfycbwkSjWKWL9mbjYnPnj6sux1misXfa0itOMPnwHbZlCq8qhGRP5FKdSbDjEkcCc4lg/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "",
@@ -649,6 +649,7 @@
                 const s = tiempoSegundos % 60;
                 const tiempoFormateado = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
+                // Marcamos localmente
                 items.forEach(i => {
                     i["ESTADO"] = "COMPLETADO";
                     i.auditTime = tiempoSegundos; 
@@ -657,26 +658,22 @@
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                 localStorage.removeItem('twins_active_cont');
 
-                try {
-                    await fetch(this.url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            action: "completar_auditoria",
-                            contenedor: this.activeCont,
-                            tiempo: tiempoFormateado,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
-                } catch(e) { 
-                    console.error("Error al notificar cierre a la hoja de cálculo", e); 
-                }
+                // ENVÍO A EXCEL: Directo y sin bloqueos
+                fetch(this.url, {
+                    redirect: "follow",
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "completar_auditoria",
+                        contenedor: this.activeCont,
+                        tiempo: tiempoFormateado
+                    })
+                }).catch(e => console.log("Envío en segundo plano:", e));
 
                 this.closeModal('audit-view');
                 this.render();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
-
             viewList: function(id) {
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
                 document.getElementById('list-cont-id').innerText = "Ref: " + id;
