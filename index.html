@@ -235,7 +235,7 @@
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbxdyzSrAbN8dmGsk1Vdl0l-ZbmPU3zasfFfrtHqxM1GRbFaw0T4f7P_Y0SvJAqZvsfB/exec",
+            url: "https://script.google.com/macros/s/AKfycbwR2ea98byqsGCdvjmJC4za48kRYXmnNjH4oe3egXJbKe0zdo5jrKz_AUDQdbQcHEju/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "",
@@ -628,26 +628,34 @@
             // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO"
                         // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN
                         // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" CON CONFIRMACIÓN Y TIEMPO
+            // [MEJORA 3] ACTUALIZACIÓN DE ESTADO A "COMPLETADO" Y ENVÍO DE TIEMPO
             saveAndFinish: async function() {
-                const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, el contenedor se marcará como COMPLETADO en la base de datos.`);
+                const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, se guardará el tiempo y el contenedor se marcará como COMPLETADO.`);
                 if (!confirmar) return;
 
                 this.stopTimer();
                 const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
                 
-                // 1. Rescatar el tiempo mayor acumulado (evita que el PDF marque 0)
-                let tiempoFinal = 0;
-                items.forEach(i => { if ((i.auditTime || 0) > tiempoFinal) tiempoFinal = i.auditTime; });
+                // 1. Rescatar el tiempo mayor acumulado
+                let tiempoSegundos = 0;
+                items.forEach(i => { if ((i.auditTime || 0) > tiempoSegundos) tiempoSegundos = i.auditTime; });
 
-                // 2. Marcar localmente y asegurar que TODOS los items guarden el tiempo final
+                // 2. Formatear el tiempo a HH:MM:SS para mandarlo al Excel
+                const h = Math.floor(tiempoSegundos / 3600);
+                const m = Math.floor((tiempoSegundos % 3600) / 60);
+                const s = tiempoSegundos % 60;
+                const tiempoFormateado = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+                // 3. Marcar localmente
                 items.forEach(i => {
                     i["ESTADO"] = "COMPLETADO";
-                    i.auditTime = tiempoFinal; 
+                    i.auditTime = tiempoSegundos; 
                 });
                 
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                 localStorage.removeItem('twins_active_cont');
 
+                // 4. Enviar los datos exactos a Google Sheets (Incluyendo el TIEMPO)
                 try {
                     await fetch(this.url, {
                         method: 'POST',
@@ -655,6 +663,7 @@
                         body: JSON.stringify({
                             action: "completar_auditoria",
                             contenedor: this.activeCont,
+                            tiempo: tiempoFormateado, // <--- AQUÍ ENVIAMOS EL TIEMPO
                             timestamp: new Date().toISOString()
                         })
                     });
@@ -662,8 +671,10 @@
                     console.error("Error al notificar cierre a la hoja de cálculo", e); 
                 }
 
+                // 5. Mandar a la pantalla de inicio
                 this.closeModal('audit-view');
                 this.render();
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Asegura que vuelva a la parte superior de la vista principal
             },
 
             /* VISTA LISTA OFICIAL (NO TOCADO) */
