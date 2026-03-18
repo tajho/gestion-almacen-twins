@@ -251,32 +251,40 @@
                 return descKey ? item[descKey] : "Producto sin descripción";
             },
 
-            fetchData: async function() {
+            fetchData: async function(silent = false) {
                 const btn = document.getElementById('sync-icon');
-                btn.classList.add('animate-spin');
+                if (!silent && btn) btn.classList.add('animate-spin'); // Solo gira si tocas el botón manualmente
+                
                 try {
                     const response = await fetch(this.url);
                     const data = await response.json();
+                    
                     if (data && Array.isArray(data)) {
+                        // El Excel es el jefe: si allá dice COMPLETADO, la app lo marca como completado.
                         this.raw = data.map(item => {
                             const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
                             const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
+                            
                             return { 
                                 ...item, 
-                                audit: isCompleted ? (item["CAJAS"] || 0) : (cached ? (cached.audit || 0) : 0),
+                                audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0),
                                 auditTime: cached ? (cached.auditTime || 0) : 0 
                             };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        this.render();
-
-                        const activeId = localStorage.getItem('twins_active_cont');
-                        if (activeId) { this.openAudit(activeId); }
+                        
+                        // Solo refresca la vista si estás en la pantalla principal (no dentro de una auditoría)
+                        const auditView = document.getElementById('audit-view');
+                        if (!auditView || auditView.style.display !== 'flex') {
+                            this.render();
+                        }
                     }
-                } catch (e) { console.error(e); }
-                finally { btn.classList.remove('animate-spin'); }
+                } catch (e) { 
+                    if (!silent) console.error("Error en sincronización:", e); 
+                } finally { 
+                    if (!silent && btn) btn.classList.remove('animate-spin'); 
+                }
             },
-
             getItemMonth: function(item) {
                 const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
                 if (!fecha || fecha === "") return "EN PROGRAMACIÓN";
@@ -767,26 +775,27 @@
             }
         };
 
-       window.onload = async () => { 
-            if(core.raw.length > 0) { 
-                core.render(); 
+       window.onload = async () => {
+            // 1. Cargar lo que hay en memoria para que la app abra instantáneamente
+            if(core.raw.length > 0) {
+                core.render();
                 const activeId = localStorage.getItem('twins_active_cont');
                 if(activeId) { core.openAudit(activeId); }
-            } else { 
-                await core.fetchData(); 
-            } 
+            }
             
-            // Sincronización silenciosa cada 15 segundos (para no saturar Google)
-            setInterval(() => { core.fetchData(); }, 15000);
+            // 2. Actualizar desde Excel de inmediato pero en silencio
+            core.fetchData(true);
 
-            // ACTUALIZACIÓN INMEDIATA: Se activa al prender la pantalla o abrir la app
+            // 3. MOTOR 1: Buscar cambios en el Excel cada 10 segundos de forma invisible
+            setInterval(() => {
+                core.fetchData(true);
+            }, 10000);
+
+            // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
-                    core.fetchData();
+                    core.fetchData(true);
                 }
-            });
-            window.addEventListener('focus', () => {
-                core.fetchData();
             });
         };
     </script>
