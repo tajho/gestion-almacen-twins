@@ -686,6 +686,7 @@
             },
 
             // [MEJORA 2] PDF AJUSTABLE A 1 HOJA CON EL TIEMPO CORRECTO
+            // [MEJORA 2] PDF AJUSTABLE A 1 HOJA CON EL TIEMPO CORRECTO Y DISEÑO PROFESIONAL
             generatePDF: function(id) {
                 try {
                     const { jsPDF } = window.jspdf;
@@ -698,17 +699,18 @@
                     }
 
                     // Obtiene la fecha exacta del día en que se genera el reporte
-const hoy = new Date();
-const fechaReporte = hoy.toLocaleDateString('es-PE');
+                    const hoy = new Date();
+                    const fechaReporte = hoy.toLocaleDateString('es-PE');
                     const totalSeconds = items[0].auditTime || 0;
                     
+                    // --- INICIO CABECERA MEJORADA ---
                     doc.setFontSize(22);
                     doc.setTextColor(15, 23, 42);
                     doc.text("TWINS ALMACEN", 14, 22);
                     
                     doc.setFontSize(9);
-                    doc.setTextColor(120);
-                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30);
+                    doc.setTextColor(100, 116, 139);
+                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 28);
                     
                     // Formatear Tiempo
                     const h = Math.floor(totalSeconds / 3600);
@@ -717,8 +719,28 @@ const fechaReporte = hoy.toLocaleDateString('es-PE');
                     let timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                     if (h > 0) timeStr = `${h.toString().padStart(2, '0')}:${timeStr}`;
                     
-                    doc.text(`FECHA: ${fechaReporte}   |   TIEMPO DE DESCARGA: ${timeStr}`, 14, 36);
+                    // Caja de información profesional (Fondo suave y esquinas redondeadas)
+                    doc.setFillColor(248, 250, 252); // Gris muy claro
+                    doc.setDrawColor(226, 232, 240); // Borde sutil
+                    doc.roundedRect(14, 32, 182, 10, 2, 2, 'FD'); 
                     
+                    // Textos dentro de la caja
+                    doc.setFontSize(8);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(100, 116, 139); 
+                    doc.text("FECHA DE DESCARGA:", 18, 38.5);
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(15, 23, 42); 
+                    doc.text(fechaReporte, 55, 38.5);
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(100, 116, 139);
+                    doc.text("TIEMPO TOTAL:", 135, 38.5);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(37, 99, 235); // Resalte en azul para el tiempo
+                    doc.text(timeStr, 163, 38.5);
+                    // --- FIN CABECERA MEJORADA ---
+
                     const tableBody = items.map(i => [
                         i["CODIGO"] || "---", 
                         this.getDesc(i), 
@@ -736,7 +758,7 @@ const fechaReporte = hoy.toLocaleDateString('es-PE');
                     else if(items.length > 55) { fSize = 4.5; cPad = 0.5; }
 
                     doc.autoTable({
-                        startY: 42,
+                        startY: 46, // Movido ligeramente hacia abajo para que no choque con la caja
                         head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
                         body: tableBody,
                         headStyles: { fillColor: [15, 23, 42], fontSize: fSize + 1, halign: 'center' },
@@ -746,6 +768,7 @@ const fechaReporte = hoy.toLocaleDateString('es-PE');
                     });
                     
                     const finalY = doc.lastAutoTable.finalY + 15;
+                    // ... (DE AQUÍ PARA ABAJO ES TU CÓDIGO DE FIRMA QUE NO DEBES TOCAR) ...
                     doc.setFontSize(9);
                     doc.setTextColor(15, 23, 42);
                     doc.text("Revisión autorizada por:", 14, finalY);
