@@ -235,7 +235,7 @@
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbwkSjWKWL9mbjYnPnj6sux1misXfa0itOMPnwHbZlCq8qhGRP5FKdSbDjEkcCc4lg/exec",
+            url: "https://script.google.com/macros/s/AKfycbwznj3aeqlTbhDx_iwlR7E-TyvcH0HPzvDZxeAYTFMoXXs7JVv9NJX6ko26vsIAPuP3/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "",
@@ -643,7 +643,7 @@
             },
             
             saveAndFinish: async function() {
-                const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, se guardará el tiempo y el contenedor se marcará como COMPLETADO.`);
+                const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, se guardará el tiempo, la fecha de descarga y se marcará como COMPLETADO.`);
                 if (!confirmar) return;
 
                 this.stopTimer();
@@ -657,16 +657,25 @@
                 const s = tiempoSegundos % 60;
                 const tiempoFormateado = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
-                // Marcamos localmente
+                // 1. CREAMOS LA FECHA EXACTA DE DESCARGA (DD/MM/YYYY)
+                const hoy = new Date();
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anio = hoy.getFullYear();
+                const fechaDescarga = `${dia}/${mes}/${anio}`;
+
+                // 2. Marcamos localmente (Estado, Tiempo y Fecha)
                 items.forEach(i => {
                     i["ESTADO"] = "COMPLETADO";
                     i.auditTime = tiempoSegundos; 
+                    i["FECHA_LIMPIA"] = fechaDescarga; // Actualiza la tarjeta de inmediato
+                    i["FECHA"] = fechaDescarga;
                 });
                 
                 localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                 localStorage.removeItem('twins_active_cont');
 
-                // ENVÍO A EXCEL: Directo y sin bloqueos
+                // 3. ENVÍO A EXCEL: Directo y sin bloqueos (Añadimos la fecha)
                 fetch(this.url, {
                     redirect: "follow",
                     method: 'POST',
@@ -674,7 +683,8 @@
                     body: JSON.stringify({
                         action: "completar_auditoria",
                         contenedor: this.activeCont,
-                        tiempo: tiempoFormateado
+                        tiempo: tiempoFormateado,
+                        fecha: fechaDescarga // Enviamos la fecha al Excel
                     })
                 }).catch(e => console.log("Envío en segundo plano:", e));
 
