@@ -11,122 +11,40 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        :root { 
-            --primary: #0F172A; 
-            --accent: #2563EB; 
-            --success: #10B981;
-            --bg: #F8FAFC; 
-        }
+        :root { --primary: #0F172A; --bg: #F8FAFC; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--primary); 
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        /* --- ESTILOS OFICIALES DASHBOARD --- */
-        .glass-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .native-card {
-            background: #FFFFFF;
-            border-radius: 24px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
+        .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
+        .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .native-card:active { transform: scale(0.97); }
-
-        .search-bar {
-            background: #FFFFFF;
-            border: 1.5px solid #E2E8F0;
-            border-radius: 18px;
-            transition: all 0.2s ease;
-        }
-
-        .fab-sync {
-            position: fixed;
-            bottom: 30px;
-            right: 25px;
-            width: 64px;
-            height: 64px;
-            background: var(--primary);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.2);
-            z-index: 40;
-        }
-
-        .modal-full { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: #F1F5F9; 
-            z-index: 100; 
-            flex-direction: column;
-            animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .progress-ring {
-            transition: stroke-dashoffset 0.35s;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
+        .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; transition: all 0.2s ease; }
+        .fab-sync { position: fixed; bottom: 100px; right: 25px; width: 64px; height: 64px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.2); z-index: 40; }
+        .modal-full { display: none; position: fixed; inset: 0; background: #F1F5F9; z-index: 100; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-
-        /* --- REDISEÑO AUDITORÍA MODERNA Y LIMPIA (EL QUE APROBASTE) --- */
-        #audit-view {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #F8FAFC;
-            z-index: 1000;
-            flex-direction: column;
-            animation: slideUp 0.3s ease-out;
-        }
-
+        #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .audit-item-card {
-            background: #FFFFFF;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid #F1F5F9;
-            box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03);
-            position: relative;
-            overflow: hidden;
-        }
+        .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
+        
+        /* ESTILOS DE NAVEGACIÓN INFERIOR */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #E2E8F0; display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,0.03); border-radius: 30px 30px 0 0;}
+        .nav-btn { flex: 1; padding: 16px 0; display: flex; flex-col; align-items: center; justify-content: center; color: #94A3B8; transition: all 0.3s ease; }
+        .nav-btn.active { color: #2563EB; }
+        .nav-btn i { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s; }
+        .nav-btn.active i { transform: translateY(-2px); }
+        .nav-btn span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- HEADER DASHBOARD OFICIAL -->
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">tajho</p>
-                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
+                <p id="top-subtitle" class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">Almacén Pro</p>
+                <h1 class="text-xl font-[800] text-slate-900 tracking-tight">Twins Elite</h1>
             </div>
-            <div class="relative flex items-center justify-center">
+            <div id="top-progress" class="relative flex items-center justify-center">
                 <svg class="w-12 h-12">
                     <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
@@ -136,9 +54,7 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT OFICIAL -->
-    <div id="app-shell" class="max-w-md mx-auto px-6 pb-24">
-        
+    <div id="module-audit" class="max-w-md mx-auto px-6 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
                 <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
@@ -155,8 +71,7 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1">
                 <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." 
-                    class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
+                <input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
                 <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
@@ -168,9 +83,101 @@
             <div class="py-20 text-center text-slate-400 font-medium">Cargando inventario...</div>
         </div>
 
+        <button onclick="core.fetchData()" class="fab-sync">
+            <i id="sync-icon" class="ph-bold ph-arrows-clockwise text-white text-2xl"></i>
+        </button>
     </div>
 
-    <!-- SECCIÓN AUDITORÍA OFICIAL (MODERNA Y ADITIVA CON CRONÓMETRO) -->
+    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pb-32">
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm mb-6">
+            <h2 class="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
+                <i class="ph-bold ph-file-text text-blue-600 text-lg"></i> Datos del Ticket
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Cliente</label>
+                    <input type="text" id="dev-cliente" onblur="core.returns.suggestVendor()" placeholder="Nombre del cliente" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Vendedor</label>
+                    <select id="dev-vendedor" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors appearance-none">
+                        <option value="" disabled selected>Seleccione un vendedor</option>
+                        <option value="ELIAS AVILA">ELIAS AVILA</option>
+                        <option value="EVELYN MURO">EVELYN MURO</option>
+                        <option value="REGULO ANTEZANA">REGULO ANTEZANA</option>
+                        <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
+                        <option value="PAULA GARCIA">PAULA GARCIA</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Motivo de Devolución</label>
+                    <input type="text" id="dev-motivo" placeholder="Ej: Cambio de talla, Garantía..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm mb-6">
+            <h2 class="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
+                <i class="ph-bold ph-package text-blue-600 text-lg"></i> Agregar Producto
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="relative">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Producto (Código o Desc)</label>
+                    <div class="relative mt-1">
+                        <i class="ph-bold ph-magnifying-glass absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="text" id="dev-prod-search" oninput="core.returns.searchProduct()" placeholder="Buscar SKU..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                    <div id="dev-prod-results" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Cant (U/M)</label>
+                        <input type="number" id="dev-cantidad" placeholder="0" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Estado</label>
+                        <select id="dev-estado" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors appearance-none">
+                            <option value="BUEN ESTADO">Buen Estado</option>
+                            <option value="DAÑADO A MERMA">Dañado a Merma</option>
+                            <option value="INCOMPLETO">Incompleto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Observaciones</label>
+                    <textarea id="dev-obs" rows="2" placeholder="Detalles adicionales..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors"></textarea>
+                </div>
+
+                <button onclick="core.returns.addItem()" class="w-full bg-blue-50 text-blue-600 h-12 rounded-xl font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-plus-circle text-lg"></i> Agregar a la Lista
+                </button>
+            </div>
+        </div>
+
+        <div id="dev-items-list" class="space-y-3 mb-6"></div>
+
+        <button id="dev-btn-save" onclick="core.returns.saveReturn()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform hidden">
+            Generar Devolución
+        </button>
+    </div>
+
+    <div class="bottom-nav">
+        <button onclick="core.nav.go('audit')" id="nav-audit" class="nav-btn active flex flex-col items-center">
+            <i class="ph-fill ph-boxes"></i>
+            <span>Auditoría</span>
+        </button>
+        <button onclick="core.nav.go('returns')" id="nav-returns" class="nav-btn flex flex-col items-center">
+            <i class="ph-fill ph-arrow-u-up-left"></i>
+            <span>Devoluciones</span>
+        </button>
+    </div>
+
     <div id="audit-view">
         <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
             <div class="px-6 pt-10 pb-4 flex items-center justify-between">
@@ -190,7 +197,7 @@
             </div>
             
             <div id="audit-search-bar" class="hidden px-6 pb-4">
-                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
+                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
             </div>
 
             <div class="px-6 pb-4">
@@ -203,27 +210,16 @@
                  </div>
             </div>
         </div>
-
-        <!-- Lista de Items para Conteo -->
         <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
-
-        <!-- Botones Inferiores -->
         <div class="p-6 bg-white border-t border-slate-100 safe-area-bottom flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200">
-                <i class="ph-bold ph-file-pdf text-2xl"></i>
-            </button>
-            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
-                Finalizar Conteo
-            </button>
+            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
+            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
         </div>
     </div>
 
-    <!-- MODAL DETALLES OFICIAL -->
     <div id="list-view" class="modal-full">
         <div class="px-6 py-8 flex items-center justify-between bg-white border-b">
-            <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center">
-                <i class="ph-bold ph-x text-xl"></i>
-            </button>
+            <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
             <div class="text-center">
                 <h2 class="text-base font-[800] text-slate-900">Contenido del Contenedor</h2>
                 <p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p>
@@ -235,131 +231,105 @@
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbwznj3aeqlTbhDx_iwlR7E-TyvcH0HPzvDZxeAYTFMoXXs7JVv9NJX6ko26vsIAPuP3/exec",
+            url: "https://script.google.com/macros/s/AKfycbwPbzu6vOzl_atJ5ix9q7ERcxJJF7ylWCHIcKRqcGVo6OsHVg8mN2e9e0emmM06uNrJ/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
+            productsCache: JSON.parse(localStorage.getItem('twins_prod_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
-            currentMonth: "",
-            activeCont: null,
-            timerInterval: null,
+            currentMonth: "", activeCont: null, timerInterval: null,
+
+            // --- NAVEGACIÓN ---
+            nav: {
+                go: function(view) {
+                    document.getElementById('nav-audit').classList.remove('active');
+                    document.getElementById('nav-returns').classList.remove('active');
+                    document.getElementById('module-audit').classList.add('hidden');
+                    document.getElementById('module-returns').classList.add('hidden');
+                    
+                    document.getElementById('nav-' + view).classList.add('active');
+                    document.getElementById('module-' + view).classList.remove('hidden');
+                    
+                    if (view === 'returns') {
+                        document.getElementById('top-subtitle').innerText = "Logística";
+                        document.getElementById('top-progress').classList.add('hidden');
+                        if (core.productsCache.length === 0) core.returns.fetchProducts();
+                    } else {
+                        document.getElementById('top-subtitle').innerText = "Almacén Pro";
+                        document.getElementById('top-progress').classList.remove('hidden');
+                    }
+                }
+            },
 
             getDesc: function(item) {
                 const keys = Object.keys(item);
-                const descKey = keys.find(k => {
-                    const ck = k.toString().toUpperCase();
-                    return ck.includes("DESC") || ck.includes("PRODUCTO") || ck.includes("DETALLE");
-                });
+                const descKey = keys.find(k => { const ck = k.toString().toUpperCase(); return ck.includes("DESC") || ck.includes("PRODUCTO") || ck.includes("DETALLE"); });
                 return descKey ? item[descKey] : "Producto sin descripción";
+            },
+            getCode: function(item) {
+                const keys = Object.keys(item);
+                const codeKey = keys.find(k => { const ck = k.toString().toUpperCase(); return ck.includes("COD") || ck.includes("SKU"); });
+                return codeKey ? item[codeKey] : "---";
             },
 
             fetchData: async function(silent = false) {
                 const btn = document.getElementById('sync-icon');
-                if (!silent && btn) btn.classList.add('animate-spin'); // Solo gira si tocas el botón manualmente
-                
+                if (!silent && btn) btn.classList.add('animate-spin'); 
                 try {
                     const response = await fetch(this.url);
                     const data = await response.json();
-                    
                     if (data && Array.isArray(data)) {
-                        // El Excel es el jefe: si allá dice COMPLETADO, la app lo marca como completado.
                         this.raw = data.map(item => {
                             const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
                             const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
-                            
-                            return { 
-                                ...item, 
-                                audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0),
-                                auditTime: cached ? (cached.auditTime || 0) : 0 
-                            };
+                            return { ...item, audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0), auditTime: cached ? (cached.auditTime || 0) : 0 };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        
-                        // Solo refresca la vista si estás en la pantalla principal (no dentro de una auditoría)
                         const auditView = document.getElementById('audit-view');
-                        if (!auditView || auditView.style.display !== 'flex') {
-                            this.render();
-                        }
+                        if (!auditView || auditView.style.display !== 'flex') this.render();
                     }
-                } catch (e) { 
-                    if (!silent) console.error("Error en sincronización:", e); 
-                } finally { 
-                    if (!silent && btn) btn.classList.remove('animate-spin'); 
-                }
+                } catch (e) { if (!silent) console.error(e); } finally { if (!silent && btn) btn.classList.remove('animate-spin'); }
             },
+
+            // --- LÓGICA DE ALMACÉN (INTACTA) ---
             getItemMonth: function(item) {
                 const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
                 if (!fecha || fecha === "") return "EN PROGRAMACIÓN";
                 const partes = fecha.split("/");
                 if (partes.length < 2) return "EN PROGRAMACIÓN";
-                const mesIdx = parseInt(partes[1]) - 1;
-                return this.mesesNombre[mesIdx] || "EN PROGRAMACIÓN";
+                return this.mesesNombre[parseInt(partes[1]) - 1] || "EN PROGRAMACIÓN";
             },
-
             filterMonth: function(m) { this.currentMonth = m; this.render(); },
-
             render: function() {
                 const list = document.getElementById('container-list');
                 const search = document.getElementById('main-search').value.toLowerCase();
-                const now = new Date();
-                const mesActualNom = this.mesesNombre[now.getMonth()];
-
-                if (!this.currentMonth) this.currentMonth = mesActualNom;
-
+                if (!this.currentMonth) this.currentMonth = this.mesesNombre[new Date().getMonth()];
+                
                 const select = document.getElementById('month-select');
                 const uniqueMonths = new Set(this.raw.map(i => this.getItemMonth(i)));
-                let options = `<option value="TODOS">TODOS LOS MESES</option>`;
-                this.mesesNombre.forEach(m => {
-                    if(uniqueMonths.has(m)) options += `<option value="${m}" ${this.currentMonth === m ? 'selected' : ''}>${m}</option>`;
-                });
-                if(uniqueMonths.has("EN PROGRAMACIÓN")) options += `<option value="EN PROGRAMACIÓN" ${this.currentMonth === "EN PROGRAMACIÓN" ? 'selected' : ''}>EN PROGRAMACIÓN</option>`;
+                let options = `<option value="TODOS">TODOS</option>`;
+                this.mesesNombre.forEach(m => { if(uniqueMonths.has(m)) options += `<option value="${m}" ${this.currentMonth===m?'selected':''}>${m}</option>`; });
                 select.innerHTML = options;
 
-                const groups = {};
-                let tTotalCj = 0, tTotalAud = 0;
-
+                const groups = {}; let tTotalCj = 0, tTotalAud = 0;
                 const tempGroups = {};
-                this.raw.forEach(item => {
-                    const contId = (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"] || "S/N").toString();
-                    if (!tempGroups[contId]) tempGroups[contId] = [];
-                    tempGroups[contId].push(item);
-                });
-
+                this.raw.forEach(i => { const id = (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"] || "S/N").toString(); if (!tempGroups[id]) tempGroups[id] = []; tempGroups[id].push(i); });
                 Object.keys(tempGroups).forEach(contId => {
                     const items = tempGroups[contId];
-                    const itemMonth = this.getItemMonth(items[0]);
-                    const matchesMonth = (this.currentMonth === "TODOS") || (this.currentMonth === itemMonth);
-                    
-                    const matchesSearch = contId.toLowerCase().includes(search) || items.some(i => 
-                        (i["CODIGO"] && i["CODIGO"].toString().toLowerCase().includes(search)) ||
-                        (this.getDesc(i).toLowerCase().includes(search))
-                    );
-
-                    if (matchesMonth && matchesSearch) {
-                        groups[contId] = items;
-                        items.forEach(i => {
-                            tTotalCj += (parseInt(i["CAJAS"]) || 0);
-                            tTotalAud += (i.audit || 0);
-                        });
+                    if ((this.currentMonth === "TODOS" || this.currentMonth === this.getItemMonth(items[0])) && (contId.toLowerCase().includes(search) || items.some(i => (i["CODIGO"]&&i["CODIGO"].toString().toLowerCase().includes(search)) || this.getDesc(i).toLowerCase().includes(search)))) {
+                        groups[contId] = items; items.forEach(i => { tTotalCj += (parseInt(i["CAJAS"]) || 0); tTotalAud += (i.audit || 0); });
                     }
                 });
 
                 const globalP = tTotalCj > 0 ? Math.round((tTotalAud/tTotalCj)*100) : 0;
                 document.getElementById('global-perc').innerText = globalP + "%";
                 document.getElementById('global-ring').style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
-
                 const ids = Object.keys(groups);
-                document.getElementById('stat-containers').innerText = ids.length;
-                document.getElementById('stat-skus').innerText = this.raw.length;
+                document.getElementById('stat-containers').innerText = ids.length; document.getElementById('stat-skus').innerText = this.raw.length;
 
-                if(ids.length === 0) {
-                    list.innerHTML = `<div class="py-10 text-center text-slate-400 font-medium">Sin datos para este mes</div>`;
-                    return;
-                }
+                if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin datos</div>`; return; }
 
                 list.innerHTML = ids.map(id => {
-                    const items = groups[id];
-                    let t = 0, a = 0;
-                    items.forEach(i => { t += (parseInt(i["CAJAS"]) || 0); a += (i.audit || 0); });
-                    const perc = t > 0 ? Math.round((a/t)*100) : 0;
+                    const items = groups[id]; let t=0, a=0; items.forEach(i => { t+=(parseInt(i["CAJAS"])||0); a+=(i.audit||0); });
+                    const perc = t>0 ? Math.round((a/t)*100) : 0;
                     const esProg = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN";
                     const isCompleted = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
 
@@ -370,446 +340,241 @@
                             <span class="text-[10px] font-bold text-slate-400">${esProg ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span>
                         </div>
                         <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
-                                <i class="ph-bold ph-truck text-2xl"></i>
-                            </div>
+                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400"><i class="ph-bold ph-truck text-2xl"></i></div>
                             <div class="flex-1">
                                 <h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3>
-                                <p class="text-[9px] font-bold text-slate-400">DETALLE: ${items.length} SKUs REGISTRADOS</p>
+                                <p class="text-[9px] font-bold text-slate-400">${items.length} SKUs REGISTRADOS</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-xs font-[900] ${perc >= 100 ? 'text-green-500' : 'text-slate-900'}">${perc}%</p>
-                                <p class="text-[8px] font-black text-slate-300 uppercase">AVANCE</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            ${!isCompleted ? `
-                            <button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider">
-                                <i class="ph-bold ph-selection-all text-lg"></i> Conteo
-                            </button>
-                            ` : ''}
-                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-14 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] text-slate-600 uppercase tracking-wider shadow-sm">
-                                <i class="ph-bold ph-list-bullets text-lg"></i> Lista
-                            </button>
-                            <button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 h-14 rounded-2xl flex items-center justify-center">
-                                <i class="ph-bold ph-file-pdf text-xl"></i>
-                            </button>
+                            ${!isCompleted ? `<button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-bold text-[10px] uppercase"><i class="ph-bold ph-selection-all"></i> Conteo</button>` : ''}
+                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 h-14 rounded-2xl font-bold text-[10px] text-slate-600 uppercase"><i class="ph-bold ph-list-bullets"></i> Lista</button>
+                            <button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 h-14 rounded-2xl"><i class="ph-bold ph-file-pdf text-xl"></i></button>
                         </div>
                     </div>`;
                 }).join('');
             },
 
-            startTimer: function(id) {
-                this.stopTimer();
-                this.timerInterval = setInterval(() => {
-                    const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                    if (items.length > 0) {
-                        items[0].auditTime = (items[0].auditTime || 0) + 1;
-                        this.updateTimerUI(items[0].auditTime);
-                        localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+            // --- LÓGICA DE MÓDULO DEVOLUCIONES ---
+            returns: {
+                currentItems: [],
+                selectedProduct: null,
+
+                fetchProducts: async function() {
+                    try {
+                        const response = await fetch(core.url + "?type=productos");
+                        const data = await response.json();
+                        if (data && Array.isArray(data)) {
+                            core.productsCache = data;
+                            localStorage.setItem('twins_prod_cache', JSON.stringify(data));
+                        }
+                    } catch (e) { console.error("Error al cargar productos", e); }
+                },
+
+                // Sugerir vendedor automáticamente si el cliente ya existe en memoria
+                suggestVendor: function() {
+                    const client = document.getElementById('dev-cliente').value.toUpperCase().trim();
+                    const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
+                    if(memory[client]) document.getElementById('dev-vendedor').value = memory[client];
+                },
+
+                searchProduct: function() {
+                    const val = document.getElementById('dev-prod-search').value.toLowerCase();
+                    const resBox = document.getElementById('dev-prod-results');
+                    if(val.length < 2) { resBox.classList.add('hidden'); return; }
+                    
+                    const filtered = core.productsCache.filter(i => 
+                        core.getCode(i).toLowerCase().includes(val) || 
+                        core.getDesc(i).toLowerCase().includes(val)
+                    ).slice(0, 10); // Solo mostramos los 10 mejores para no saturar
+
+                    if(filtered.length > 0) {
+                        resBox.innerHTML = filtered.map(item => `
+                            <div onclick="core.returns.selectProduct('${core.getCode(item)}', '${core.getDesc(item).replace(/'/g, "")}')" class="p-3 border-b border-slate-100 active:bg-slate-50 cursor-pointer">
+                                <p class="text-[10px] font-black text-blue-600">${core.getCode(item)}</p>
+                                <p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(item)}</p>
+                            </div>
+                        `).join('');
+                        resBox.classList.remove('hidden');
+                    } else { resBox.classList.add('hidden'); }
+                },
+
+                selectProduct: function(code, desc) {
+                    this.selectedProduct = { codigo: code, descripcion: desc };
+                    document.getElementById('dev-prod-search').value = code + " - " + desc;
+                    document.getElementById('dev-prod-results').classList.add('hidden');
+                    document.getElementById('dev-cantidad').focus();
+                },
+
+                addItem: function() {
+                    if(!this.selectedProduct) return alert("Por favor, seleccione un producto de la lista.");
+                    const cant = parseInt(document.getElementById('dev-cantidad').value);
+                    if(!cant || cant <= 0) return alert("Ingrese una cantidad válida.");
+                    
+                    this.currentItems.push({
+                        codigo: this.selectedProduct.codigo,
+                        descripcion: this.selectedProduct.descripcion,
+                        cantidad: cant,
+                        estado: document.getElementById('dev-estado').value,
+                        observaciones: document.getElementById('dev-obs').value
+                    });
+
+                    // Limpiar formulario interno
+                    this.selectedProduct = null;
+                    document.getElementById('dev-prod-search').value = '';
+                    document.getElementById('dev-cantidad').value = '';
+                    document.getElementById('dev-obs').value = '';
+                    
+                    this.renderItems();
+                },
+
+                removeItem: function(idx) {
+                    this.currentItems.splice(idx, 1);
+                    this.renderItems();
+                },
+
+                renderItems: function() {
+                    const list = document.getElementById('dev-items-list');
+                    const btn = document.getElementById('dev-btn-save');
+                    
+                    if(this.currentItems.length > 0) {
+                        list.innerHTML = this.currentItems.map((i, idx) => `
+                            <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                                <div class="flex-1 pr-3">
+                                    <div class="flex gap-2 items-center mb-1">
+                                        <span class="text-[9px] font-black bg-slate-100 px-2 py-0.5 rounded text-slate-600">${i.codigo}</span>
+                                        <span class="text-[9px] font-black ${i.estado.includes('BUEN') ? 'text-emerald-500' : 'text-orange-500'} uppercase">${i.estado}</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-center">
+                                        <p class="text-lg font-black text-slate-900">${i.cantidad}</p>
+                                        <p class="text-[7px] uppercase font-bold text-slate-400">CANT</p>
+                                    </div>
+                                    <button onclick="core.returns.removeItem(${idx})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90"><i class="ph-bold ph-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join('');
+                        btn.classList.remove('hidden');
+                    } else {
+                        list.innerHTML = "";
+                        btn.classList.add('hidden');
                     }
-                }, 1000);
-            },
+                },
 
-            stopTimer: function() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                    this.timerInterval = null;
-                }
-            },
+                saveReturn: async function() {
+                    const cliente = document.getElementById('dev-cliente').value.toUpperCase().trim();
+                    const vendedor = document.getElementById('dev-vendedor').value;
+                    const motivo = document.getElementById('dev-motivo').value.trim();
 
-            updateTimerUI: function(seconds) {
-                const el = document.getElementById('audit-timer-display');
-                if (el) el.innerText = this.formatTime(seconds);
-            },
+                    if(!cliente || !vendedor || !motivo) return alert("Complete Cliente, Vendedor y Motivo.");
 
-            formatTime: function(seconds) {
-                if (!seconds) return "00:00";
-                const h = Math.floor(seconds / 3600);
-                const m = Math.floor((seconds % 3600) / 60);
-                const s = seconds % 60;
-                const minSec = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                return h > 0 ? `${h.toString().padStart(2, '0')}:${minSec}` : minSec;
-            },
+                    const btn = document.getElementById('dev-btn-save');
+                    btn.innerText = "ENVIANDO A EXCEL..."; btn.disabled = true;
 
-            toggleAuditSearch: function() {
-                const b = document.getElementById('audit-search-bar');
-                b.classList.toggle('hidden');
-                if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus();
-            },
+                    // Memorizar vendedor favorito del cliente
+                    const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
+                    memory[cliente] = vendedor;
+                    localStorage.setItem('twins_vendor_memory', JSON.stringify(memory));
 
-            // NUEVA FUNCIÓN: Ordena la lista mandando completados al fondo
-            sortAuditItems: function(itemsList) {
-                const pendientes = [];
-                const completados = [];
-                itemsList.forEach(item => {
-                    const teo = parseInt(item.CAJAS) || 0;
-                    const aud = item.audit || 0;
-                    if (aud > 0 && aud >= teo) { completados.push(item); } 
-                    else { pendientes.push(item); }
-                });
-                return [...pendientes, ...completados];
-            },
+                    const hoy = new Date();
+                    const fechaF = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
 
-            openAudit: function(id) {
-                this.activeCont = id;
-                localStorage.setItem('twins_active_cont', id);
+                    const returnData = {
+                        action: "guardar_devolucion",
+                        fecha: fechaF,
+                        cliente: cliente, vendedor: vendedor, motivo: motivo,
+                        items: this.currentItems
+                    };
 
-                document.getElementById('audit-title').innerText = "CARGA #" + id;
-                document.getElementById('inner-search').value = "";
-                document.getElementById('audit-search-bar').classList.add('hidden');
-                
-                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                this.updateTimerUI(items[0].auditTime || 0);
-                this.startTimer(id);
+                    try {
+                        fetch(core.url, {
+                            redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(returnData)
+                        });
 
-                const sortedItems = this.sortAuditItems(items);
-                this.renderAuditItems(sortedItems);
-                
-                this.updateProgress(id);
-                document.getElementById('audit-view').style.display = 'flex';
-            },
+                        this.generatePDF(returnData);
+                        
+                        alert("✅ Devolución registrada y PDF generado.");
+                        
+                        // Limpiar ticket
+                        document.getElementById('dev-cliente').value = '';
+                        document.getElementById('dev-vendedor').value = '';
+                        document.getElementById('dev-motivo').value = '';
+                        this.currentItems = [];
+                        this.renderItems();
 
-            filterAuditItems: function(val) {
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
-                const filtered = items.filter(i => 
-                    i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || 
-                    this.getDesc(i).toLowerCase().includes(val.toLowerCase())
-                );
-                
-                const sortedFiltered = this.sortAuditItems(filtered);
-                this.renderAuditItems(sortedFiltered);
-            },
-
-            renderAuditItems: function(items) {
-                const container = document.getElementById('audit-items-container');
-
-                container.innerHTML = items.map(item => {
-                    const idx = this.raw.indexOf(item);
-                    const teo = parseInt(item.CAJAS) || 0;
-                    const aud = item.audit || 0;
-                    const diff = aud - teo;
-
-                    let bClass = 'bg-slate-100 text-slate-500';
-                    let bText = 'PENDIENTE';
-                    let lColor = 'bg-slate-200';
-
-                    if (aud > 0) {
-                        if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; }
-                        else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; }
-                        else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; }
+                    } catch(e) {
+                        alert("⚠️ Error al guardar.");
+                    } finally {
+                        btn.innerText = "Generar Devolución"; btn.disabled = false;
                     }
+                },
 
-                    return `
-                    <div id="card-${idx}" class="audit-item-card transition-all duration-300 transform">
-                       <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}"></div>
-                       
-                       <div class="pl-2">
-                           <div class="flex justify-between items-start mb-2">
-                               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.CODIGO}</span>
-                               <span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span>
-                           </div>
-                           <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4 line-clamp-2">${this.getDesc(item)}</h4>
-                           
-                           <div class="flex justify-between items-end mb-4 mt-2">
-                               <div>
-                                   <p class="text-[9px] font-bold text-slate-400 uppercase">Teórico</p>
-                                   <p class="text-xl font-black text-slate-300">${teo}</p>
-                               </div>
-                               <div class="text-right">
-                                   <p class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">Total Contado</p>
-                                   <p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p>
-                               </div>
-                           </div>
-
-                           <div class="flex items-center gap-3">
-                               <button onclick="core.step(${idx}, -1)" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center active:scale-90 transition-all border border-slate-100">
-                                   <i class="ph-bold ph-minus text-lg"></i>
-                               </button>
-                               
-                               <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-                                   <input type="number" id="add-input-${idx}" placeholder="Agregar cajas..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') { event.preventDefault(); core.addAmount(${idx}); this.blur(); }">
-                                   <button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md active:scale-90 transition-all">
-                                       <i class="ph-bold ph-plus text-lg"></i>
-                                   </button>
-                               </div>
-                           </div>
-                           
-                           <div class="grid grid-cols-2 gap-2 mt-4">
-                               <button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl uppercase tracking-wider active:bg-emerald-100 transition-colors">Igualar Teórico</button>
-                               <button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl uppercase tracking-wider active:bg-red-100 transition-colors">Reiniciar</button>
-                           </div>
-                       </div>
-                    </div>`;
-                }).join('');
-            },
-
-            step: function(idx, v) {
-                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v);
-                this.refreshItemUI(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            addAmount: function(idx) {
-                const input = document.getElementById(`add-input-${idx}`);
-                const val = parseInt(input.value);
-                if (isNaN(val) || val === 0) return;
-                
-                this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + val);
-                input.value = ''; 
-                
-                this.refreshItemUI(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            setDirect: function(idx, val) {
-                this.raw[idx].audit = val;
-                this.refreshItemUI(idx);
-                this.updateProgress(this.activeCont);
-            },
-
-            refreshItemUI: function(idx) {
-                const item = this.raw[idx];
-                const totalEl = document.getElementById(`total-audit-${idx}`);
-                const badgeEl = document.getElementById(`badge-${idx}`);
-                const lineEl = document.getElementById(`line-${idx}`);
-                const cardEl = document.getElementById(`card-${idx}`);
-                
-                const aud = item.audit || 0;
-                const teo = parseInt(item["CAJAS"]) || 0;
-                const diff = aud - teo;
-
-                if (totalEl) totalEl.innerText = aud;
-
-                let bClass = 'bg-slate-100 text-slate-500';
-                let bText = 'PENDIENTE';
-                let lColor = 'bg-slate-200';
-                let isComplete = false;
-
-                if (aud > 0) {
-                    if (diff === 0) { 
-                        bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500';
-                        isComplete = true;
-                    } else if (diff > 0) { 
-                        bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500';
-                        isComplete = true;
-                    } else { 
-                        bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500';
-                    }
-                }
-
-                if (badgeEl) {
-                    badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}`;
-                    badgeEl.innerText = bText;
-                }
-                if (lineEl) {
-                    lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`;
-                }
-
-                if (isComplete && cardEl) {
-                    const container = document.getElementById('audit-items-container');
-                    if (container.lastElementChild !== cardEl) {
-                        setTimeout(() => {
-                            cardEl.style.opacity = "0.4";
-                            cardEl.style.transform = "scale(0.95)";
-                            setTimeout(() => {
-                                container.appendChild(cardEl);
-                                cardEl.style.opacity = "1";
-                                cardEl.style.transform = "scale(1)";
-                            }, 300);
-                        }, 500);
-                    }
-                }
-
-                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-            },
-
-            updateProgress: function(id) {
-                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                let totalT = 0, totalA = 0;
-                items.forEach(i => { totalT += (parseInt(i.CAJAS) || 0); totalA += (i.audit || 0); });
-                const perc = totalT > 0 ? Math.round((totalA/totalT)*100) : 0;
-                
-                document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%";
-                document.getElementById('audit-perc-text').innerText = perc + "%";
-            },
-
-            closeModal: function(id) { 
-                if (id === 'audit-view') {
-                    this.stopTimer();
-                    localStorage.removeItem('twins_active_cont');
-                }
-                document.getElementById(id).style.display = 'none'; 
-            },
-            
-            saveAndFinish: async function() {
-                const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?\n\nAl aceptar, se guardará el tiempo, la fecha de descarga y se marcará como COMPLETADO.`);
-                if (!confirmar) return;
-
-                this.stopTimer();
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
-                
-                let tiempoSegundos = 0;
-                items.forEach(i => { if ((i.auditTime || 0) > tiempoSegundos) tiempoSegundos = i.auditTime; });
-
-                const h = Math.floor(tiempoSegundos / 3600);
-                const m = Math.floor((tiempoSegundos % 3600) / 60);
-                const s = tiempoSegundos % 60;
-                const tiempoFormateado = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-
-                // 1. CREAMOS LA FECHA EXACTA DE DESCARGA (DD/MM/YYYY)
-                const hoy = new Date();
-                const dia = String(hoy.getDate()).padStart(2, '0');
-                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                const anio = hoy.getFullYear();
-                const fechaDescarga = `${dia}/${mes}/${anio}`;
-
-                // 2. Marcamos localmente (Estado, Tiempo y Fecha)
-                items.forEach(i => {
-                    i["ESTADO"] = "COMPLETADO";
-                    i.auditTime = tiempoSegundos; 
-                    i["FECHA_LIMPIA"] = fechaDescarga; // Actualiza la tarjeta de inmediato
-                    i["FECHA"] = fechaDescarga;
-                });
-                
-                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                localStorage.removeItem('twins_active_cont');
-
-                // 3. ENVÍO A EXCEL: Directo y sin bloqueos (Añadimos la fecha)
-                fetch(this.url, {
-                    redirect: "follow",
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: "completar_auditoria",
-                        contenedor: this.activeCont,
-                        tiempo: tiempoFormateado,
-                        fecha: fechaDescarga // Enviamos la fecha al Excel
-                    })
-                }).catch(e => console.log("Envío en segundo plano:", e));
-
-                this.closeModal('audit-view');
-                this.render();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
-            viewList: function(id) {
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
-                document.getElementById('list-cont-id').innerText = "Ref: " + id;
-                document.getElementById('list-items-content').innerHTML = items.map(item => `
-                    <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm">
-                        <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-[900] text-blue-600 mb-1 tracking-wider uppercase">${item["CODIGO"]}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${this.getDesc(item)}</p>
-                        </div>
-                        <div class="text-right flex items-center gap-4">
-                             <div class="flex flex-col items-end">
-                                <span class="text-sm font-[900] ${item.audit >= item["CAJAS"] ? 'text-emerald-500' : 'text-slate-900'}">${item.audit || 0} / ${item["CAJAS"] || 0}</span>
-                                <span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span>
-                             </div>
-                             <i class="ph-fill ph-check-circle ${item.audit >= item["CAJAS"] ? 'text-emerald-400' : 'text-slate-100'} text-2xl"></i>
-                        </div>
-                    </div>
-                `).join('');
-                document.getElementById('list-view').style.display = 'flex';
-            },
-
-            generatePDF: function(id) {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id);
+                generatePDF: function(data) {
+                    const { jsPDF } = window.jspdf; const doc = new jsPDF();
                     
-                    if (!items || items.length === 0) {
-                        alert("No hay datos para este contenedor.");
-                        return;
-                    }
+                    doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+                    doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
+                    
+                    doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+                    doc.text(`FECHA: ${data.fecha}`, 14, 40);
+                    doc.text(`CLIENTE: ${data.cliente}`, 14, 46);
+                    doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
+                    doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
 
-                    const fechaReporte = items[0]["FECHA_LIMPIA"] || items[0]["FECHA"] || "PENDIENTE";
-                    const totalSeconds = items[0].auditTime || 0;
-                    
-                    doc.setFontSize(22);
-                    doc.setTextColor(15, 23, 42);
-                    doc.text("TWINS ALMACEN", 14, 22);
-                    
-                    doc.setFontSize(9);
-                    doc.setTextColor(120);
-                    doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30);
-                    
-                    const h = Math.floor(totalSeconds / 3600);
-                    const m = Math.floor((totalSeconds % 3600) / 60);
-                    const s = totalSeconds % 60;
-                    let timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                    if (h > 0) timeStr = `${h.toString().padStart(2, '0')}:${timeStr}`;
-                    
-                    doc.text(`FECHA: ${fechaReporte}   |   T. DE DESCARGA: ${timeStr}`, 14, 36);
-                    
-                    const tableBody = items.map(i => [
-                        i["CODIGO"] || "---", 
-                        this.getDesc(i), 
-                        i["CAJAS"] || 0, 
-                        i.audit || 0, 
-                        (i.audit || 0) - (parseInt(i["CAJAS"]) || 0)
-                    ]);
-
-                    let fSize = 7;
-                    let cPad = 2;
-                    
-                    if(items.length > 25 && items.length <= 40) { fSize = 6; cPad = 1.2; }
-                    else if(items.length > 40 && items.length <= 55) { fSize = 5; cPad = 0.8; }
-                    else if(items.length > 55) { fSize = 4.5; cPad = 0.5; }
+                    const tableBody = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]);
 
                     doc.autoTable({
-                        startY: 42,
-                        head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']],
+                        startY: 65,
+                        head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']],
                         body: tableBody,
-                        headStyles: { fillColor: [15, 23, 42], fontSize: fSize + 1, halign: 'center' },
-                        styles: { fontSize: fSize, cellPadding: cPad },
-                        columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } },
-                        margin: { bottom: 25 }
+                        headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' },
+                        styles: { fontSize: 7, cellPadding: 1.5 },
+                        columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } },
                     });
                     
-                    const finalY = doc.lastAutoTable.finalY + 15;
-                    doc.setFontSize(9);
-                    doc.setTextColor(15, 23, 42);
+                    const finalY = doc.lastAutoTable.finalY + 20;
+                    doc.setFontSize(9); doc.setTextColor(15, 23, 42);
                     doc.text("Revisión autorizada por:", 14, finalY);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                    doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
+                    doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
                     
-                    doc.save(`Reporte_Conteo_${id}.pdf`);
-                } catch (error) {
-                    console.error("Error generando PDF:", error);
-                    alert("Ocurrió un error al generar el PDF.");
+                    doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
                 }
-            }
+            },
+
+            // --- LÓGICA DE AUDITORÍA (INTACTA) ---
+            startTimer: function(id) { this.stopTimer(); this.timerInterval = setInterval(() => { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); if (items.length > 0) { items[0].auditTime = (items[0].auditTime || 0) + 1; this.updateTimerUI(items[0].auditTime); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); } }, 1000); },
+            stopTimer: function() { if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; } },
+            updateTimerUI: function(s) { const el = document.getElementById('audit-timer-display'); if (el) el.innerText = this.formatTime(s); },
+            formatTime: function(s) { if (!s) return "00:00"; const h = Math.floor(s/3600); const m = Math.floor((s%3600)/60); const sec = s%60; const ms = `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`; return h>0 ? `${h.toString().padStart(2, '0')}:${ms}` : ms; },
+            toggleAuditSearch: function() { const b = document.getElementById('audit-search-bar'); b.classList.toggle('hidden'); if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus(); },
+            sortAuditItems: function(itemsList) { const p = [], c = []; itemsList.forEach(item => { const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; if (aud > 0 && aud >= teo) { c.push(item); } else { p.push(item); } }); return [...p, ...c]; },
+            openAudit: function(id) { this.activeCont = id; localStorage.setItem('twins_active_cont', id); document.getElementById('audit-title').innerText = "CARGA #" + id; document.getElementById('inner-search').value = ""; document.getElementById('audit-search-bar').classList.add('hidden'); const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); this.updateTimerUI(items[0].auditTime || 0); this.startTimer(id); this.renderAuditItems(this.sortAuditItems(items)); this.updateProgress(id); document.getElementById('audit-view').style.display = 'flex'; },
+            filterAuditItems: function(val) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); const filtered = items.filter(i => i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || this.getDesc(i).toLowerCase().includes(val.toLowerCase())); this.renderAuditItems(this.sortAuditItems(filtered)); },
+            renderAuditItems: function(items) { const container = document.getElementById('audit-items-container'); container.innerHTML = items.map(item => { const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo; let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; } else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; } else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; } } return ` <div id="card-${idx}" class="audit-item-card transition-all duration-300 transform"> <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}"></div> <div class="pl-2"> <div class="flex justify-between items-start mb-2"> <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.CODIGO}</span> <span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span> </div> <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4 line-clamp-2">${this.getDesc(item)}</h4> <div class="flex justify-between items-end mb-4 mt-2"> <div> <p class="text-[9px] font-bold text-slate-400 uppercase">Teórico</p> <p class="text-xl font-black text-slate-300">${teo}</p> </div> <div class="text-right"> <p class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">Total Contado</p> <p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p> </div> </div> <div class="flex items-center gap-3"> <button onclick="core.step(${idx}, -1)" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center active:scale-90 transition-all border border-slate-100"><i class="ph-bold ph-minus text-lg"></i></button> <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2 focus-within:border-blue-500"> <input type="number" id="add-input-${idx}" placeholder="Agregar..." class="w-full bg-transparent text-center font-black text-base outline-none py-3 text-slate-700" inputmode="numeric" onkeypress="if(event.key === 'Enter') { event.preventDefault(); core.addAmount(${idx}); this.blur(); }"> <button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md active:scale-90"><i class="ph-bold ph-plus text-lg"></i></button> </div> </div> <div class="grid grid-cols-2 gap-2 mt-4"> <button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl uppercase active:bg-emerald-100">Igualar Teórico</button> <button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl uppercase active:bg-red-100">Reiniciar</button> </div> </div> </div>`; }).join(''); },
+            step: function(idx, v) { this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
+            addAmount: function(idx) { const i = document.getElementById(`add-input-${idx}`); const v = parseInt(i.value); if (isNaN(v) || v===0) return; this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); i.value = ''; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
+            setDirect: function(idx, val) { this.raw[idx].audit = val; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
+            refreshItemUI: function(idx) { const item = this.raw[idx]; const totalEl = document.getElementById(`total-audit-${idx}`); const badgeEl = document.getElementById(`badge-${idx}`); const lineEl = document.getElementById(`line-${idx}`); const cardEl = document.getElementById(`card-${idx}`); const aud = item.audit || 0; const teo = parseInt(item["CAJAS"]) || 0; const diff = aud - teo; if (totalEl) totalEl.innerText = aud; let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200'; let isC = false; if (aud > 0) { if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; isC = true; } else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; isC = true; } else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; } } if (badgeEl) { badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}`; badgeEl.innerText = bText; } if (lineEl) { lineEl.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300 ${lColor}`; } if (isC && cardEl) { const c = document.getElementById('audit-items-container'); if (c.lastElementChild !== cardEl) { setTimeout(() => { cardEl.style.opacity = "0.4"; cardEl.style.transform = "scale(0.95)"; setTimeout(() => { c.appendChild(cardEl); cardEl.style.opacity = "1"; cardEl.style.transform = "scale(1)"; }, 300); }, 500); } } localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
+            updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let totalT = 0, totalA = 0; items.forEach(i => { totalT += (parseInt(i.CAJAS) || 0); totalA += (i.audit || 0); }); const perc = totalT > 0 ? Math.round((totalA/totalT)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, perc) + "%"; document.getElementById('audit-perc-text').innerText = perc + "%"; },
+            closeModal: function(id) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
+            saveAndFinish: async function() { const confirmar = confirm(`¿Confirmas finalizar la auditoría de la carga #${this.activeCont}?`); if (!confirmar) return; this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); let ts = 0; items.forEach(i => { if ((i.auditTime || 0) > ts) ts = i.auditTime; }); const h = Math.floor(ts / 3600); const m = Math.floor((ts % 3600) / 60); const s = ts % 60; const tF = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; const hoy = new Date(); const fD = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`; items.forEach(i => { i["ESTADO"] = "COMPLETADO"; i.auditTime = ts; i["FECHA_LIMPIA"] = fD; i["FECHA"] = fD; }); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); fetch(this.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tF, fecha: fD }) }).catch(e => console.log(e)); this.closeModal('audit-view'); this.render(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+            viewList: function(id) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(item => ` <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"> <div class="flex-1 pr-4"> <p class="text-[10px] font-[900] text-blue-600 mb-1 uppercase">${item["CODIGO"]}</p> <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${this.getDesc(item)}</p> </div> <div class="text-right flex items-center gap-4"> <div class="flex flex-col items-end"> <span class="text-sm font-[900] ${item.audit >= item["CAJAS"] ? 'text-emerald-500' : 'text-slate-900'}">${item.audit || 0} / ${item["CAJAS"] || 0}</span> <span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span> </div> <i class="ph-fill ph-check-circle ${item.audit >= item["CAJAS"] ? 'text-emerald-400' : 'text-slate-100'} text-2xl"></i> </div> </div> `).join(''); document.getElementById('list-view').style.display = 'flex'; },
+            generatePDF: function(id) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == id); if (!items || items.length === 0) return alert("Sin datos"); const f = items[0]["FECHA_LIMPIA"] || "PENDIENTE"; const ts = items[0].auditTime || 0; doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`REPORTE DE AUDITORÍA • TAJHO • CONTENEDOR: ${id}`, 14, 30); const h = Math.floor(ts / 3600); const m = Math.floor((ts % 3600) / 60); const s = ts % 60; let tStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; if (h > 0) tStr = `${h.toString().padStart(2, '0')}:${tStr}`; doc.text(`FECHA: ${f} | TIEMPO DE DESCARGA: ${tStr}`, 14, 36); const body = items.map(i => [ i["CODIGO"], this.getDesc(i), i["CAJAS"]||0, i.audit||0, (i.audit||0)-(parseInt(i["CAJAS"])||0) ]); doc.autoTable({ startY: 42, head: [['SKU', 'DESCRIPCIÓN', 'TEO', 'AUD', 'DIF']], body: body, headStyles: { fillColor: [15, 23, 42], fontSize: 6, halign: 'center' }, styles: { fontSize: 5, cellPadding: 1 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } } }); const finalY = doc.lastAutoTable.finalY + 15; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Reporte_Conteo_${id}.pdf`); }
         };
 
-       window.onload = async () => {
-            // 1. Cargar lo que hay en memoria para que la app abra instantáneamente
-            if(core.raw.length > 0) {
-                core.render();
-                const activeId = localStorage.getItem('twins_active_cont');
-                if(activeId) { core.openAudit(activeId); }
-            }
-            
-            // 2. Actualizar desde Excel de inmediato pero en silencio
+        window.onload = async () => {
+            if(core.raw.length > 0) { core.render(); const activeId = localStorage.getItem('twins_active_cont'); if(activeId) { core.openAudit(activeId); } }
             core.fetchData(true);
-
-            // 3. MOTOR 1: Buscar cambios en el Excel cada 10 segundos de forma invisible
-            setInterval(() => {
-                core.fetchData(true);
-            }, 10000);
-
-            // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    core.fetchData(true);
-                }
-            });
+            setInterval(() => { core.fetchData(true); }, 10000);
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') core.fetchData(true); });
         };
     </script>
 </body>
 </html>
-
-
