@@ -235,7 +235,7 @@
 
     <script>
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbwsLVDBIDVFz2-QMUASr3DZ1Bh-K5LGQGJ-rD0RG2zAV_lZRCls_jByjkaMa5vq0J7L/exec",
+            url: "https://script.google.com/macros/s/AKfycbxdyzSrAbN8dmGsk1Vdl0l-ZbmPU3zasfFfrtHqxM1GRbFaw0T4f7P_Y0SvJAqZvsfB/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "",
@@ -689,7 +689,9 @@
                         return;
                     }
 
-                    const fechaReporte = items[0]["FECHA_LIMPIA"] || items[0]["FECHA"] || "PENDIENTE";
+                    // Obtiene la fecha exacta del día en que se genera el reporte
+const hoy = new Date();
+const fechaReporte = hoy.toLocaleDateString('es-PE');
                     const totalSeconds = items[0].auditTime || 0;
                     
                     doc.setFontSize(22);
