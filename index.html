@@ -401,16 +401,24 @@
                 }).join('');
             },
 
-            // --- LÓGICA CRONÓMETRO ---
+            // --- LÓGICA CRONÓMETRO (SEGUNDO PLANO) ---
             startTimer: function(id) {
                 this.stopTimer();
+                this.lastTimerTick = Date.now(); // Guarda la hora exacta de inicio del ciclo
+                
                 this.timerInterval = setInterval(() => {
                     const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
                     if (items.length > 0) {
-                        items[0].auditTime = (items[0].auditTime || 0) + 1;
-                        this.updateTimerUI(items[0].auditTime);
-                        // Auto-guardamos tiempo en cache 
-                        localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+                        const now = Date.now();
+                        // Calcula el tiempo real transcurrido (incluso con la pantalla apagada)
+                        const segundosPasados = Math.floor((now - this.lastTimerTick) / 1000);
+                        
+                        if (segundosPasados > 0) {
+                            items[0].auditTime = (items[0].auditTime || 0) + segundosPasados;
+                            this.updateTimerUI(items[0].auditTime);
+                            this.lastTimerTick = now; // Reinicia la marca de tiempo
+                            localStorage.setItem('twins_cache', JSON.stringify(this.raw));
+                        }
                     }
                 }, 1000);
             },
@@ -754,7 +762,7 @@ const fechaReporte = hoy.toLocaleDateString('es-PE');
             }
         };
 
-        window.onload = async () => { 
+       window.onload = async () => { 
             if(core.raw.length > 0) { 
                 core.render(); 
                 const activeId = localStorage.getItem('twins_active_cont');
@@ -763,8 +771,18 @@ const fechaReporte = hoy.toLocaleDateString('es-PE');
                 await core.fetchData(); 
             } 
             
-            // Sincronización invisible en segundo plano cada 30 segundos (30000 ms)
-            setInterval(() => { core.fetchData(); }, 30000);
+            // Sincronización silenciosa cada 15 segundos (para no saturar Google)
+            setInterval(() => { core.fetchData(); }, 15000);
+
+            // ACTUALIZACIÓN INMEDIATA: Se activa al prender la pantalla o abrir la app
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    core.fetchData();
+                }
+            });
+            window.addEventListener('focus', () => {
+                core.fetchData();
+            });
         };
     </script>
 </body>
