@@ -859,16 +859,22 @@
                 this.loadDraft();
                 if(this.prodMaster.length === 0) {
                     try {
-                        document.getElementById('dev-search-prod').placeholder = "Cargando catálogo...";
-                        const res = await fetch(core.url + "?type=productos");
+                        const searchInput = document.getElementById('dev-search-prod');
+                        searchInput.placeholder = "Cargando catálogo (Hoja 1)...";
+                        
+                        // Añadimos redirect: 'follow' para evitar bloqueos de Google
+                        const res = await fetch(core.url + "?type=productos", { redirect: "follow" });
                         const data = await res.json();
-                        if(Array.isArray(data)){
+                        
+                        if(Array.isArray(data) && data.length > 0){
                             this.prodMaster = data;
-                            document.getElementById('dev-search-prod').placeholder = "Buscar SKU o Descripción...";
+                            searchInput.placeholder = "Buscar SKU o Descripción...";
+                        } else {
+                            searchInput.placeholder = "⚠️ No se encontraron datos";
                         }
                     } catch(e) { 
-                        console.log(e); 
-                        document.getElementById('dev-search-prod').placeholder = "⚠️ Error al cargar Hoja 1";
+                        console.error(e); 
+                        document.getElementById('dev-search-prod').placeholder = "⚠️ Error de conexión con Apps Script";
                     }
                 }
                 this.fetchHistory();
@@ -887,12 +893,12 @@
                 const term = document.getElementById('dev-search-prod').value.toLowerCase().trim();
                 const box = document.getElementById('dev-results');
                 
-                this.selected = null; // Obliga a elegir de la lista
+                this.selected = null; // Obliga a elegir de la lista siempre
                 
                 if(term.length === 0 || term.length < 2) { box.classList.add('hidden'); return; }
                 
                 if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ Cargando datos de Hoja 1...</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ Sigue cargando o Apps Script no está actualizado.</div>`;
                     box.classList.remove('hidden');
                     return;
                 }
@@ -912,7 +918,7 @@
                     }).join('');
                     box.classList.remove('hidden');
                 } else { 
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo de Hoja 1.</div>`;
                     box.classList.remove('hidden'); 
                 }
             },
@@ -962,6 +968,15 @@
                 document.getElementById('btn-save-dev').classList.toggle('hidden', this.items.length === 0);
             },
             
+            suggestVendor: function() {
+                const client = document.getElementById('dev-cliente').value.toUpperCase().trim();
+                const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
+                if(memory[client]) {
+                    document.getElementById('dev-vendedor').value = memory[client];
+                }
+                this.saveDraft();
+            },
+
             saveDraft: function() {
                 const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items };
                 localStorage.setItem('twins_dev_draft', JSON.stringify(d));
@@ -975,6 +990,12 @@
             save: async function() {
                 const cliente = document.getElementById('dev-cliente').value.toUpperCase(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value;
                 if(!cliente || !vend || !mot) return alert("Complete Cliente, Vendedor y Motivo");
+                
+                // Guardar relación Cliente-Vendedor en memoria
+                const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
+                memory[cliente] = vend;
+                localStorage.setItem('twins_vendor_memory', JSON.stringify(memory));
+
                 const btn = document.getElementById('btn-save-dev'); btn.innerText = "ENVIANDO..."; btn.disabled = true;
                 const data = { action: "guardar_devolucion", fecha: new Date().toLocaleDateString('es-PE'), cliente: cliente, vendedor: vend, motivo: mot, items: this.items };
                 try {
@@ -988,7 +1009,7 @@
             
             fetchHistory: async function() {
                 try {
-                    const res = await fetch(core.url + "?type=historial_dev");
+                    const res = await fetch(core.url + "?type=historial_dev", { redirect: "follow" });
                     this.histMaster = await res.json();
                     if(this.currentTab === 'history') this.renderHistory();
                 } catch(e) { console.log(e); }
