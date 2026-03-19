@@ -857,29 +857,45 @@
             
             init: async function() {
                 this.loadDraft();
-                if(this.prodMaster.length === 0) {
-                    try {
-                        const searchInput = document.getElementById('dev-search-prod');
-                        searchInput.placeholder = "Cargando catálogo (Hoja 1)...";
-                        
-                        // Añadimos redirect: 'follow' para evitar bloqueos de Google
-                        const res = await fetch(core.url + "?type=productos", { redirect: "follow" });
-                        const data = await res.json();
-                        
-                        if(Array.isArray(data) && data.length > 0){
-                            this.prodMaster = data;
-                            searchInput.placeholder = "Buscar SKU o Descripción...";
-                        } else {
-                            searchInput.placeholder = "⚠️ No se encontraron datos";
-                        }
-                    } catch(e) { 
-                        console.error(e); 
-                        document.getElementById('dev-search-prod').placeholder = "⚠️ Error de conexión con Apps Script";
-                    }
-                }
+                this.fetchProducts();
                 this.fetchHistory();
             },
             
+            fetchProducts: async function() {
+                const input = document.getElementById('dev-search-prod');
+                if (this.prodMaster.length > 0) return; // Si ya están cargados, no vuelve a cargar
+                
+                input.placeholder = "⏳ Descargando catálogo de Hoja 1...";
+                input.disabled = true; // Bloquea mientras carga
+                
+                try {
+                    // Busca los productos en la Hoja 1
+                    const queryUrl = core.url.includes('?') ? core.url + "&type=productos" : core.url + "?type=productos";
+                    const res = await fetch(queryUrl, { redirect: "follow" });
+                    const text = await res.text(); 
+                    
+                    try {
+                        const data = JSON.parse(text);
+                        if(Array.isArray(data) && data.length > 0){
+                            this.prodMaster = data;
+                            input.placeholder = "✅ Buscar SKU o Descripción...";
+                            input.disabled = false;
+                        } else {
+                            input.placeholder = "⚠️ La Hoja 1 parece estar vacía";
+                            input.disabled = false;
+                        }
+                    } catch(err) {
+                        // Si entra aquí, es porque Google NO está devolviendo JSON (Faltó el paso de Nueva Versión)
+                        console.error("Error al leer JSON:", text);
+                        input.placeholder = "❌ ERROR: Actualiza Apps Script (Nueva Versión)";
+                        input.disabled = true;
+                    }
+                } catch(e) { 
+                    console.error("Error de red:", e); 
+                    input.placeholder = "❌ Error de conexión al Excel";
+                }
+            },
+
             switchTab: function(t) {
                 this.currentTab = t;
                 document.getElementById('dev-new-section').style.display = t === 'new' ? 'block' : 'none';
@@ -893,17 +909,17 @@
                 const term = document.getElementById('dev-search-prod').value.toLowerCase().trim();
                 const box = document.getElementById('dev-results');
                 
-                this.selected = null; // Obliga a elegir de la lista siempre
+                this.selected = null; // Obliga siempre a seleccionar de la lista
                 
                 if(term.length === 0 || term.length < 2) { box.classList.add('hidden'); return; }
                 
                 if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ Sigue cargando o Apps Script no está actualizado.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó correctamente. Recarga la página.</div>`;
                     box.classList.remove('hidden');
                     return;
                 }
 
-                // Busca en las columnas exactas de tu Excel (SKU y DESCRIPCION)
+                // Busca en SKU y DESCRIPCION
                 const matches = this.prodMaster.filter(p => {
                     const code = String(p.SKU || p.CODIGO || "").toLowerCase();
                     const desc = String(p.DESCRIPCION || "").toLowerCase();
@@ -914,11 +930,11 @@
                     box.innerHTML = matches.map(p => {
                         const c = p.SKU || p.CODIGO || "S/C";
                         const d = String(p.DESCRIPCION || "").replace(/'/g,"");
-                        return `<div onclick="coreDev.select('${c}','${d}')" class="p-3 border-b text-xs font-bold active:bg-blue-50 cursor-pointer"><p class="text-[10px] text-blue-600 font-black">${c}</p>${d}</div>`;
+                        return `<div onclick="coreDev.select('${c}','${d}')" class="p-3 border-b text-xs font-bold active:bg-blue-50 cursor-pointer hover:bg-slate-50"><p class="text-[10px] text-blue-600 font-black">${c}</p>${d}</div>`;
                     }).join('');
                     box.classList.remove('hidden');
                 } else { 
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo de Hoja 1.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo (Hoja 1).</div>`;
                     box.classList.remove('hidden'); 
                 }
             },
@@ -933,31 +949,14 @@
             addItem: function() {
                 const cant = document.getElementById('dev-cant').value;
                 
-                if(!this.selected) {
-                    alert("❌ OBLIGATORIO: Debes buscar y seleccionar un producto de la lista desplegable.");
-                    return;
-                }
-                if(!cant || cant <= 0) {
-                    alert("❌ OBLIGATORIO: Ingresa una cantidad válida.");
-                    return;
-                }
+                // CANDADOS DE SEGURIDAD
+                if(!this.selected) { alert("❌ OBLIGATORIO: Debes buscar y seleccionar un producto válido de la lista."); return; }
+                if(!cant || cant <= 0) { alert("❌ OBLIGATORIO: Ingresa una cantidad mayor a 0."); return; }
 
-                this.items.push({ 
-                    codigo: this.selected.c, 
-                    descripcion: this.selected.d, 
-                    cantidad: cant, 
-                    estado: document.getElementById('dev-estado').value, 
-                    observaciones: document.getElementById('dev-obs').value 
-                });
+                this.items.push({ codigo: this.selected.c, descripcion: this.selected.d, cantidad: cant, estado: document.getElementById('dev-estado').value, observaciones: document.getElementById('dev-obs').value });
                 
-                this.selected = null; 
-                document.getElementById('dev-search-prod').value = ''; 
-                document.getElementById('dev-cant').value = ''; 
-                document.getElementById('dev-obs').value = '';
-                document.getElementById('dev-results').classList.add('hidden');
-                
-                this.render(); 
-                this.saveDraft();
+                this.selected = null; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-cant').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-results').classList.add('hidden');
+                this.render(); this.saveDraft();
             },
             
             removeItem: function(idx) { this.items.splice(idx, 1); this.render(); this.saveDraft(); },
@@ -968,58 +967,29 @@
                 document.getElementById('btn-save-dev').classList.toggle('hidden', this.items.length === 0);
             },
             
-            suggestVendor: function() {
-                const client = document.getElementById('dev-cliente').value.toUpperCase().trim();
-                const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
-                if(memory[client]) {
-                    document.getElementById('dev-vendedor').value = memory[client];
-                }
-                this.saveDraft();
-            },
-
-            saveDraft: function() {
-                const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items };
-                localStorage.setItem('twins_dev_draft', JSON.stringify(d));
-            },
-            
-            loadDraft: function() {
-                const d = JSON.parse(localStorage.getItem('twins_dev_draft'));
-                if(d) { document.getElementById('dev-cliente').value = d.c || ""; document.getElementById('dev-vendedor').value = d.v || ""; document.getElementById('dev-motivo').value = d.m || ""; this.items = d.i || []; this.render(); }
-            },
+            saveDraft: function() { const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items }; localStorage.setItem('twins_dev_draft', JSON.stringify(d)); },
+            loadDraft: function() { const d = JSON.parse(localStorage.getItem('twins_dev_draft')); if(d) { document.getElementById('dev-cliente').value = d.c || ""; document.getElementById('dev-vendedor').value = d.v || ""; document.getElementById('dev-motivo').value = d.m || ""; this.items = d.i || []; this.render(); } },
             
             save: async function() {
                 const cliente = document.getElementById('dev-cliente').value.toUpperCase(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value;
                 if(!cliente || !vend || !mot) return alert("Complete Cliente, Vendedor y Motivo");
-                
-                // Guardar relación Cliente-Vendedor en memoria
-                const memory = JSON.parse(localStorage.getItem('twins_vendor_memory')) || {};
-                memory[cliente] = vend;
-                localStorage.setItem('twins_vendor_memory', JSON.stringify(memory));
-
                 const btn = document.getElementById('btn-save-dev'); btn.innerText = "ENVIANDO..."; btn.disabled = true;
                 const data = { action: "guardar_devolucion", fecha: new Date().toLocaleDateString('es-PE'), cliente: cliente, vendedor: vend, motivo: mot, items: this.items };
                 try {
                     await fetch(core.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
                     this.generatePDF(data);
-                    alert("✅ Devolución Registrada");
+                    alert("✅ Devolución Registrada en la Hoja 3");
                     this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
                     localStorage.removeItem('twins_dev_draft'); this.render(); this.fetchHistory(); this.switchTab('history');
                 } catch(e) { alert("Error de conexión"); } finally { btn.innerText = "Generar Reporte y Guardar"; btn.disabled = false; }
             },
             
-            fetchHistory: async function() {
-                try {
-                    const res = await fetch(core.url + "?type=historial_dev", { redirect: "follow" });
-                    this.histMaster = await res.json();
-                    if(this.currentTab === 'history') this.renderHistory();
-                } catch(e) { console.log(e); }
-            },
+            fetchHistory: async function() { try { const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev" : core.url + "?type=historial_dev"; const res = await fetch(queryUrl, { redirect: "follow" }); this.histMaster = await res.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
             
             renderHistory: function() {
                 const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
                 if(!this.histMaster || this.histMaster.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">Sin datos</div>`; return; }
-                const tickets = {};
-                this.histMaster.forEach(i => { const key = i.CLIENTE+"_"+i.FECHA+"_"+i.MOTIVO; if(!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); });
+                const tickets = {}; this.histMaster.forEach(i => { const key = i.CLIENTE+"_"+i.FECHA+"_"+i.MOTIVO; if(!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); });
                 const filtered = Object.values(tickets).filter(t => t.cliente.toLowerCase().includes(search)).reverse();
                 if(filtered.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">No hay resultados</div>`; return; }
                 list.innerHTML = filtered.map(t => `<div class="bg-white p-5 rounded-3xl border shadow-sm mb-4"><div class="flex justify-between items-start mb-2"><div><p class="text-[9px] font-black text-slate-400">${t.fecha}</p><h3 class="text-sm font-black text-slate-900 uppercase">${t.cliente}</h3></div><button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="text-red-500 bg-red-50 w-10 h-10 rounded-xl flex items-center justify-center"><i class="ph-bold ph-file-pdf text-lg"></i></button></div><p class="text-[9px] font-bold text-slate-500">Vendedor: ${t.vendedor} | Motivo: ${t.motivo}</p><div class="space-y-1 mt-3 border-t pt-2">${t.items.map(i => `<div class="flex justify-between text-[10px] font-bold text-slate-600 border-b border-slate-50 pb-1"><span>- ${i.codigo}</span><span>${i.cantidad} UND</span></div>`).join('')}</div></div>`).join('');
@@ -1027,14 +997,7 @@
             
             generatePDF: function(data) {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
-                doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-                doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-                const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]);
-                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } });
-                const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30); doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58); const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]); doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } }); const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
             }
         };
        window.onload = async () => {
