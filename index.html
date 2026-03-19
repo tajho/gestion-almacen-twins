@@ -232,7 +232,54 @@
         </div>
         <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
     </div>
+<div id="nav-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex justify-around p-2 z-[90] rounded-t-[30px] shadow-lg">
+        <button onclick="changeTab('audit')" class="flex flex-col items-center p-2 text-blue-600" id="btn-nav-audit">
+            <i class="ph-fill ph-boxes text-2xl"></i>
+            <span class="text-[10px] font-black uppercase">Auditoría</span>
+        </button>
+        <button onclick="changeTab('devo')" class="flex flex-col items-center p-2 text-slate-400" id="btn-nav-devo">
+            <i class="ph-fill ph-arrow-u-up-left text-2xl"></i>
+            <span class="text-[10px] font-black uppercase">Devolución</span>
+        </button>
+    </div>
 
+    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nueva Devolución</h2>
+            <div class="space-y-3">
+                <input type="text" id="dev-cliente" placeholder="Nombre del Cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
+                <select id="dev-vendedor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
+                    <option value="">Seleccionar Vendedor</option>
+                    <option value="ELIAS AVILA">ELIAS AVILA</option>
+                    <option value="EVELYN MURO">EVELYN MURO</option>
+                    <option value="REGULO ANTEZANA">REGULO ANTEZANA</option>
+                    <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
+                    <option value="PAULA GARCIA">PAULA GARCIA</option>
+                </select>
+                <input type="text" id="dev-motivo" placeholder="Motivo de Devolución" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+            <div class="relative">
+                <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
+                <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-3">
+                <input type="number" id="dev-cant" placeholder="Cant U/M" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center">
+                <select id="dev-estado" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold">
+                    <option value="BUEN ESTADO">BUEN ESTADO</option>
+                    <option value="DAÑADO A MERMA">DAÑADO A MERMA</option>
+                    <option value="INCOMPLETO">INCOMPLETO</option>
+                </select>
+            </div>
+            <textarea id="dev-obs" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none"></textarea>
+            <button onclick="coreDev.addItem()" class="w-full mt-4 bg-blue-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest">Agregar a la lista</button>
+        </div>
+
+        <div id="dev-items-list" class="space-y-2 mb-6"></div>
+        <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Reporte y Guardar</button>
+    </div>
     <script>
         const core = {
             url: "https://script.google.com/macros/s/AKfycbwznj3aeqlTbhDx_iwlR7E-TyvcH0HPzvDZxeAYTFMoXXs7JVv9NJX6ko26vsIAPuP3/exec",
@@ -782,6 +829,116 @@
                     console.error("Error generando PDF:", error);
                     alert("Ocurrió un error al generar el PDF.");
                 }
+            }
+        };
+        // --- LÓGICA DE DEVOLUCIONES (TOTALMENTE INDEPENDIENTE) ---
+        function changeTab(tab) {
+            const isAudit = tab === 'audit';
+            document.getElementById('app-shell').style.display = isAudit ? 'block' : 'none';
+            document.getElementById('module-returns').style.display = isAudit ? 'none' : 'block';
+            document.getElementById('nav-audit').classList.toggle('active', isAudit);
+            document.getElementById('nav-returns').classList.toggle('active', !isAudit);
+            document.querySelector('.glass-header h1').innerText = isAudit ? "TWINS AUDITORIA" : "DEVOLUCIONES";
+            if(!isAudit) { coreDev.init(); }
+        }
+
+        const coreDev = {
+            items: [], prodMaster: [], histMaster: [], currentTab: 'new',
+            init: async function() {
+                this.loadDraft();
+                if(this.prodMaster.length === 0) {
+                    try {
+                        document.getElementById('dev-search-prod').placeholder = "Cargando productos...";
+                        const res = await fetch(core.url + "?type=productos");
+                        this.prodMaster = await res.json();
+                        document.getElementById('dev-search-prod').placeholder = "Buscar SKU o Descripción...";
+                    } catch(e) { console.log(e); }
+                }
+                this.fetchHistory();
+            },
+            switchTab: function(t) {
+                this.currentTab = t;
+                document.getElementById('dev-new-section').style.display = t === 'new' ? 'block' : 'none';
+                document.getElementById('dev-hist-section').style.display = t === 'history' ? 'block' : 'none';
+                document.getElementById('tab-dev-new').className = t === 'new' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
+                document.getElementById('tab-dev-hist').className = t === 'history' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
+                if(t === 'history') this.renderHistory();
+            },
+            search: function() {
+                const term = document.getElementById('dev-search-prod').value.toLowerCase().trim();
+                const box = document.getElementById('dev-results');
+                if(term.length < 2) { box.classList.add('hidden'); return; }
+                const matches = this.prodMaster.filter(p => (p.SKU || "").toString().toLowerCase().includes(term) || (p.DESCRIPCION || "").toLowerCase().includes(term)).slice(0, 15);
+                if(matches.length > 0) {
+                    box.innerHTML = matches.map(p => `<div onclick="coreDev.select('${p.SKU}','${String(p.DESCRIPCION).replace(/'/g,"")}')" class="p-3 border-b text-xs font-bold active:bg-slate-100 cursor-pointer"><p class="text-[10px] text-blue-600 font-black">${p.SKU}</p>${p.DESCRIPCION}</div>`).join('');
+                    box.classList.remove('hidden');
+                } else { box.classList.add('hidden'); }
+            },
+            select: function(c, d) {
+                document.getElementById('dev-search-prod').value = c + " - " + d;
+                this.selected = { c, d };
+                document.getElementById('dev-results').classList.add('hidden');
+            },
+            addItem: function() {
+                const cant = document.getElementById('dev-cant').value;
+                if(!this.selected || !cant) return alert("Seleccione un producto y cantidad.");
+                this.items.push({ codigo: this.selected.c, descripcion: this.selected.d, cantidad: cant, estado: document.getElementById('dev-estado').value, observaciones: document.getElementById('dev-obs').value });
+                this.selected = null; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-cant').value = ''; document.getElementById('dev-obs').value = '';
+                this.render(); this.saveDraft();
+            },
+            removeItem: function(idx) { this.items.splice(idx, 1); this.render(); this.saveDraft(); },
+            render: function() {
+                const l = document.getElementById('dev-items-list');
+                l.innerHTML = this.items.map((i, idx) => `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="pr-2"><p class="text-[10px] font-black text-blue-600">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-400 mt-1">${i.estado}</p></div><div class="flex items-center gap-3"><div class="text-center"><p class="text-sm font-black">${i.cantidad}</p><p class="text-[7px] font-bold uppercase">Cant</p></div><button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center"><i class="ph-bold ph-trash"></i></button></div></div>`).join('');
+                document.getElementById('btn-save-dev').classList.toggle('hidden', this.items.length === 0);
+            },
+            saveDraft: function() {
+                const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items };
+                localStorage.setItem('twins_dev_draft', JSON.stringify(d));
+            },
+            loadDraft: function() {
+                const d = JSON.parse(localStorage.getItem('twins_dev_draft'));
+                if(d) { document.getElementById('dev-cliente').value = d.c || ""; document.getElementById('dev-vendedor').value = d.v || ""; document.getElementById('dev-motivo').value = d.m || ""; this.items = d.i || []; this.render(); }
+            },
+            save: async function() {
+                const cliente = document.getElementById('dev-cliente').value.toUpperCase(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value;
+                if(!cliente || !vend || !mot) return alert("Complete Cliente, Vendedor y Motivo");
+                const btn = document.getElementById('btn-save-dev'); btn.innerText = "ENVIANDO..."; btn.disabled = true;
+                const data = { action: "guardar_devolucion", fecha: new Date().toLocaleDateString('es-PE'), cliente: cliente, vendedor: vend, motivo: mot, items: this.items };
+                try {
+                    await fetch(core.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+                    this.generatePDF(data);
+                    alert("Devolución Registrada");
+                    this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
+                    localStorage.removeItem('twins_dev_draft'); this.render(); this.fetchHistory(); this.switchTab('history');
+                } catch(e) { alert("Error de conexión"); } finally { btn.innerText = "Generar Devolución"; btn.disabled = false; }
+            },
+            fetchHistory: async function() {
+                try {
+                    const res = await fetch(core.url + "?type=historial_dev");
+                    this.histMaster = await res.json();
+                    if(this.currentTab === 'history') this.renderHistory();
+                } catch(e) { console.log(e); }
+            },
+            renderHistory: function() {
+                const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
+                if(!this.histMaster || this.histMaster.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">Sin datos</div>`; return; }
+                const tickets = {};
+                this.histMaster.forEach(i => { const key = i.CLIENTE+"_"+i.FECHA+"_"+i.MOTIVO; if(!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); });
+                const filtered = Object.values(tickets).filter(t => t.cliente.toLowerCase().includes(search)).reverse();
+                if(filtered.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">No hay resultados</div>`; return; }
+                list.innerHTML = filtered.map(t => `<div class="bg-white p-5 rounded-3xl border shadow-sm mb-4"><div class="flex justify-between items-start mb-2"><div><p class="text-[9px] font-black text-slate-400">${t.fecha}</p><h3 class="text-sm font-black text-slate-900 uppercase">${t.cliente}</h3></div><button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="text-red-500 bg-red-50 w-10 h-10 rounded-xl flex items-center justify-center"><i class="ph-bold ph-file-pdf text-lg"></i></button></div><p class="text-[9px] font-bold text-slate-500">Vendedor: ${t.vendedor} | Motivo: ${t.motivo}</p><div class="space-y-1 mt-3 border-t pt-2">${t.items.map(i => `<div class="flex justify-between text-[10px] font-bold text-slate-600 border-b border-slate-50 pb-1"><span>- ${i.codigo}</span><span>${i.cantidad} UND</span></div>`).join('')}</div></div>`).join('');
+            },
+            generatePDF: function(data) {
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
+                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+                doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
+                doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+                doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
+                const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]);
+                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } });
+                const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
             }
         };
 
