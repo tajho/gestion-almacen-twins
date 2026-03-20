@@ -856,7 +856,14 @@
             items: [], prodMaster: [], histMaster: [], currentTab: 'new', selected: null,
             
             init: async function() {
-                this.loadDraft();
+                // 🧹 LIMPIEZA FORZADA: Borramos cualquier borrador viejo atrapado en la memoria
+                localStorage.removeItem('twins_dev_draft');
+                document.getElementById('dev-cliente').value = '';
+                document.getElementById('dev-vendedor').value = '';
+                document.getElementById('dev-motivo').value = '';
+                this.items = [];
+                this.render();
+
                 this.fetchProducts();
                 this.fetchHistory();
             },
@@ -866,36 +873,26 @@
                 if (this.prodMaster.length > 0) return; 
                 
                 input.value = "";
-                input.placeholder = "⏳ Rompiendo caché y descargando...";
+                input.placeholder = "⏳ Descargando catálogo fresco...";
                 input.disabled = true; // Bloquea el teclado
                 
                 try {
-                    // TRUCO ANTI-CACHÉ: Le agregamos la hora exacta al enlace para que el navegador piense que es un enlace nuevo siempre.
+                    // TRUCO ANTI-CACHÉ EXTREMO: Le sumamos la hora para que el navegador no use memoria vieja
                     const timestamp = new Date().getTime();
-                    const urlSegura = core.url.includes('?') ? 
-                        core.url + "&type=productos&t=" + timestamp : 
-                        core.url + "?type=productos&t=" + timestamp;
+                    const urlSegura = core.url.includes('?') ? core.url + "&type=productos&nocache=" + timestamp : core.url + "?type=productos&nocache=" + timestamp;
 
                     const response = await fetch(urlSegura);
-                    const text = await response.text(); // Leemos el código bruto primero
+                    const data = await response.json();
                     
-                    try {
-                        const data = JSON.parse(text);
-                        if(Array.isArray(data) && data.length > 0){
-                            this.prodMaster = data;
-                            input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
-                            input.disabled = false; // Desbloquea
-                        } else {
-                            input.placeholder = "⚠️ Hoja 1 parece estar vacía";
-                            alert("Google respondió bien, pero dice que la Hoja 1 está vacía.");
-                        }
-                    } catch(err) {
-                        // Si Google nos bloquea, esto nos mostrará exactamente qué dice el candado
-                        alert("⚠️ ERROR OCULTO DE GOOGLE:\n\nGoogle no devolvió la lista, devolvió esto:\n" + text.substring(0, 150));
-                        input.placeholder = "❌ Google bloqueó la conexión (Ver alerta)";
+                    if(Array.isArray(data) && data.length > 0){
+                        this.prodMaster = data;
+                        input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
+                        input.disabled = false; // Desbloquea
+                    } else {
+                        input.placeholder = "⚠️ La Hoja 1 parece estar vacía";
                     }
                 } catch(e) { 
-                    alert("⚠️ ERROR DE RED:\n\nTu navegador no pudo conectar con el enlace:\n" + e.message);
+                    alert("⚠️ ERROR DE CONEXIÓN:\n\nNo se pudo contactar al Excel. Asegúrate de haber publicado la 'Nueva Versión' en Apps Script y que tu enlace (core.url) sea el correcto.");
                     input.placeholder = "❌ Error de conexión al enlace";
                 }
             },
@@ -969,7 +966,6 @@
             },
             
             saveDraft: function() { const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items }; localStorage.setItem('twins_dev_draft', JSON.stringify(d)); },
-            loadDraft: function() { const d = JSON.parse(localStorage.getItem('twins_dev_draft')); if(d) { document.getElementById('dev-cliente').value = d.c || ""; document.getElementById('dev-vendedor').value = d.v || ""; document.getElementById('dev-motivo').value = d.m || ""; this.items = d.i || []; this.render(); } },
             
             save: async function() {
                 const cliente = document.getElementById('dev-cliente').value.toUpperCase(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value;
@@ -988,7 +984,7 @@
             fetchHistory: async function() { 
                 try { 
                     const ts = new Date().getTime();
-                    const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev&t="+ts : core.url + "?type=historial_dev&t="+ts; 
+                    const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev&nocache="+ts : core.url + "?type=historial_dev&nocache="+ts; 
                     const response = await fetch(queryUrl); 
                     this.histMaster = await response.json(); 
                     if(this.currentTab === 'history') this.renderHistory(); 
