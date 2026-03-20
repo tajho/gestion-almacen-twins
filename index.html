@@ -1236,9 +1236,7 @@
         if (document.visibilityState === 'visible') { core.fetchData(true); }
     });
 </script>
-
-<div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-        
+    <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
                 <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
@@ -1276,7 +1274,6 @@
             <i class="ph-bold ph-plus text-2xl"></i>
             <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
         </button>
-        
     </div> <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
@@ -1296,5 +1293,88 @@
             </div>
         </div>
     </div>
+
+    <script>
+        window.changeTab = function(tab) {
+            // Apagamos todas las pantallas
+            const pantallas = ['module-audit', 'module-dev', 'module-dev-history'];
+            pantallas.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.style.display = 'none';
+                }
+            });
+
+            // Encendemos la solicitada
+            const activo = document.getElementById('module-' + tab);
+            if(activo) {
+                activo.classList.remove('hidden');
+                activo.style.display = 'block';
+            }
+
+            // Cambiamos el título
+            const titulos = {
+                'audit': 'TWINS AUDITORIA',
+                'dev': 'NUEVA DEVOLUCIÓN',
+                'dev-history': 'HISTORIAL DEVOLUCIONES'
+            };
+            const tituloEl = document.querySelector('header h1');
+            if(tituloEl && titulos[tab]) tituloEl.innerText = titulos[tab];
+
+            // Cerramos menú
+            const menu = document.getElementById('twins-menu');
+            const panel = document.getElementById('twins-menu-panel');
+            if(menu && !menu.classList.contains('hidden')) {
+                if(panel) panel.classList.add('-translate-x-full');
+                setTimeout(() => menu.classList.add('hidden'), 300);
+            }
+
+            // Memoria
+            localStorage.setItem('twins_memoria_pantalla', tab);
+
+            // Cargar datos
+            if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
+                coreDev.renderHistory();
+            }
+        };
+
+        window.toggleMenu = function() {
+            const menu = document.getElementById('twins-menu');
+            const panel = document.getElementById('twins-menu-panel');
+            if (menu && panel) {
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
+                } else {
+                    panel.classList.add('-translate-x-full');
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }
+            }
+        };
+
+        window.onload = async () => {
+            if (typeof coreDev !== 'undefined') { coreDev.init(); }
+            
+            const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
+            changeTab(ultimaPantalla);
+            
+            if(typeof core !== 'undefined') {
+                if(core.raw && core.raw.length > 0) {
+                    core.render();
+                    const activeId = localStorage.getItem('twins_active_cont');
+                    if(activeId) { core.openAudit(activeId); }
+                }
+                core.fetchData(true);
+                setInterval(() => { core.fetchData(true); }, 10000);
+            }
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && typeof core !== 'undefined') { 
+                core.fetchData(true); 
+            }
+        });
+    </script>
 </body>
 </html>
