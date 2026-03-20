@@ -122,17 +122,25 @@
     <!-- HEADER DASHBOARD OFICIAL -->
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
-            <div>
-                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">tajho</p>
+            
+            <button onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 px-3 py-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex items-center gap-2">
+                <i class="ph-bold ph-list text-xl"></i>
+                <span class="text-xs font-black">MENÚ</span>
+            </button>
+
+            <div class="flex-1">
+                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">TAJHO</p>
                 <h1 class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
             </div>
-            <div class="relative flex items-center justify-center">
+
+            <div class="relative flex items-center justify-center flex-shrink-0">
                 <svg class="w-12 h-12">
                     <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                 </svg>
                 <span id="global-perc" class="absolute text-[10px] font-[800]">0%</span>
             </div>
+            
         </div>
     </div>
 
