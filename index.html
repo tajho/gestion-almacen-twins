@@ -866,23 +866,37 @@
                 if (this.prodMaster.length > 0) return; 
                 
                 input.value = "";
-                input.placeholder = "⏳ Descargando catálogo (espera por favor)...";
-                input.disabled = true; // 🔒 BLOQUEA EL TECLADO HASTA QUE DESCARGUE
+                input.placeholder = "⏳ Rompiendo caché y descargando...";
+                input.disabled = true; // Bloquea el teclado
                 
                 try {
-                    const separator = core.url.includes('?') ? '&' : '?';
-                    const response = await fetch(core.url + separator + "type=productos");
-                    const data = await response.json();
+                    // TRUCO ANTI-CACHÉ: Le agregamos la hora exacta al enlace para que el navegador piense que es un enlace nuevo siempre.
+                    const timestamp = new Date().getTime();
+                    const urlSegura = core.url.includes('?') ? 
+                        core.url + "&type=productos&t=" + timestamp : 
+                        core.url + "?type=productos&t=" + timestamp;
+
+                    const response = await fetch(urlSegura);
+                    const text = await response.text(); // Leemos el código bruto primero
                     
-                    if(Array.isArray(data) && data.length > 0){
-                        this.prodMaster = data;
-                        input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
-                        input.disabled = false; // 🔓 DESBLOQUEA EL TECLADO
-                    } else {
-                        input.placeholder = "⚠️ Hoja 1 está vacía";
+                    try {
+                        const data = JSON.parse(text);
+                        if(Array.isArray(data) && data.length > 0){
+                            this.prodMaster = data;
+                            input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
+                            input.disabled = false; // Desbloquea
+                        } else {
+                            input.placeholder = "⚠️ Hoja 1 parece estar vacía";
+                            alert("Google respondió bien, pero dice que la Hoja 1 está vacía.");
+                        }
+                    } catch(err) {
+                        // Si Google nos bloquea, esto nos mostrará exactamente qué dice el candado
+                        alert("⚠️ ERROR OCULTO DE GOOGLE:\n\nGoogle no devolvió la lista, devolvió esto:\n" + text.substring(0, 150));
+                        input.placeholder = "❌ Google bloqueó la conexión (Ver alerta)";
                     }
                 } catch(e) { 
-                    input.placeholder = "❌ Error de conexión al enlace (Verifica core.url)";
+                    alert("⚠️ ERROR DE RED:\n\nTu navegador no pudo conectar con el enlace:\n" + e.message);
+                    input.placeholder = "❌ Error de conexión al enlace";
                 }
             },
 
@@ -904,7 +918,7 @@
                 if(term.length === 0) { box.classList.add('hidden'); return; }
                 
                 if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ Sigue cargando... espera.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó. Recarga la página.</div>`;
                     box.classList.remove('hidden');
                     return;
                 }
@@ -965,13 +979,21 @@
                 try {
                     await fetch(core.url, { method: 'POST', body: JSON.stringify(data) });
                     this.generatePDF(data);
-                    alert("✅ Devolución Registrada");
+                    alert("✅ Devolución Registrada en la Hoja 3");
                     this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
                     localStorage.removeItem('twins_dev_draft'); this.render(); this.fetchHistory(); this.switchTab('history');
                 } catch(e) { alert("Error de conexión"); } finally { btn.innerText = "Generar Reporte y Guardar"; btn.disabled = false; }
             },
             
-            fetchHistory: async function() { try { const separator = core.url.includes('?') ? '&' : '?'; const response = await fetch(core.url + separator + "type=historial_dev"); this.histMaster = await response.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
+            fetchHistory: async function() { 
+                try { 
+                    const ts = new Date().getTime();
+                    const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev&t="+ts : core.url + "?type=historial_dev&t="+ts; 
+                    const response = await fetch(queryUrl); 
+                    this.histMaster = await response.json(); 
+                    if(this.currentTab === 'history') this.renderHistory(); 
+                } catch(e) { console.log(e); } 
+            },
             
             renderHistory: function() {
                 const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
