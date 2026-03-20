@@ -856,6 +856,20 @@
                 }
             }
         };
+
+        <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+        <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm mb-6">
+            <h2 class="text-sm font-black uppercase text-blue-600 mb-4 tracking-tighter">Buscador de Registros</h2>
+            <div class="relative">
+                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="dev-hist-search" placeholder="Cliente, producto o código..." 
+                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-slate-400 outline-none focus:border-blue-500 transition-all">
+            </div>
+        </div>
+        <div id="dev-history-cards" class="flex flex-col gap-4">
+            <p class="text-center text-[10px] font-bold text-slate-400 uppercase">Consultando base de datos...</p>
+        </div>
+    </div>
         // --- LÓGICA DE DEVOLUCIONES (TOTALMENTE INDEPENDIENTE) ---
         // 1. Control del Menú Hamburguesa
         function toggleMenu() {
@@ -885,30 +899,35 @@
         // 3. Cambio de Pestaña con MEMORIA
         function changeTab(tab) {
             const isAudit = tab === 'audit';
+            const isDev = tab === 'dev';
+            const isHist = tab === 'dev-history';
             
-            // Cambiar pantalla
-            const shell = document.getElementById('app-shell');
-            if (shell) shell.style.display = isAudit ? 'block' : 'none';
-            const moduleReturns = document.getElementById('module-returns');
-            if (moduleReturns) moduleReturns.style.display = isAudit ? 'none' : 'block';
+            // 1. Mostrar/Ocultar pantallas
+            if (document.getElementById('app-shell')) 
+                document.getElementById('app-shell').style.display = isAudit ? 'block' : 'none';
             
-            // Cambiar título
+            if (document.getElementById('module-returns')) 
+                document.getElementById('module-returns').style.display = isDev ? 'block' : 'none';
+            
+            if (document.getElementById('module-dev-history')) 
+                document.getElementById('module-dev-history').style.display = isHist ? 'block' : 'none';
+            
+            // 2. Cambiar Título del Header
             const header = document.querySelector('.glass-header h1');
-            if (header) header.innerText = isAudit ? "TWINS AUDITORIA" : "DEVOLUCIONES";
+            if (header) {
+                if (isAudit) header.innerText = "TWINS AUDITORIA";
+                if (isDev) header.innerText = "DEVOLUCIONES";
+                if (isHist) {
+                    header.innerText = "ARCHIVO REGISTROS";
+                    if (typeof cargarHistorialDev === 'function') cargarHistorialDev();
+                }
+            }
             
-            // GUARDAR MEMORIA: Recuerda en qué módulo estamos
+            // Guardar memoria y cerrar menú
             localStorage.setItem('twins_memoria_pantalla', tab);
-            
-            // Cerrar menú si está abierto
             const menu = document.getElementById('twins-menu');
             if(menu && !menu.classList.contains('hidden')) toggleMenu();
-
-            // Si es devoluciones, arrancar la descarga de productos
-            if (!isAudit) { 
-                if(typeof coreDev !== 'undefined') coreDev.init(); 
-            }
         }
-
         // 4. Protección contra recargas accidentales si hay datos a medias
         window.addEventListener('beforeunload', function (e) {
             if (typeof coreDev !== 'undefined' && coreDev.items && coreDev.items.length > 0) {
