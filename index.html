@@ -863,36 +863,24 @@
             
             fetchProducts: async function() {
                 const input = document.getElementById('dev-search-prod');
-                if (this.prodMaster.length > 0) return; // Si ya están cargados, no vuelve a cargar
+                if (this.prodMaster.length > 0) return; 
                 
-                input.placeholder = "⏳ Descargando catálogo de Hoja 1...";
-                input.disabled = true; // Bloquea mientras carga
+                input.placeholder = "⏳ Conectando con catálogo...";
                 
                 try {
-                    // Busca los productos en la Hoja 1
-                    const queryUrl = core.url.includes('?') ? core.url + "&type=productos" : core.url + "?type=productos";
-                    const res = await fetch(queryUrl, { redirect: "follow" });
-                    const text = await res.text(); 
+                    // Usamos la misma conexión simple que usaste en Auditoría
+                    const response = await fetch(core.url + "?type=productos");
+                    const data = await response.json();
                     
-                    try {
-                        const data = JSON.parse(text);
-                        if(Array.isArray(data) && data.length > 0){
-                            this.prodMaster = data;
-                            input.placeholder = "✅ Buscar SKU o Descripción...";
-                            input.disabled = false;
-                        } else {
-                            input.placeholder = "⚠️ La Hoja 1 parece estar vacía";
-                            input.disabled = false;
-                        }
-                    } catch(err) {
-                        // Si entra aquí, es porque Google NO está devolviendo JSON (Faltó el paso de Nueva Versión)
-                        console.error("Error al leer JSON:", text);
-                        input.placeholder = "❌ ERROR: Actualiza Apps Script (Nueva Versión)";
-                        input.disabled = true;
+                    if(Array.isArray(data) && data.length > 0){
+                        this.prodMaster = data;
+                        input.placeholder = "✅ Buscar SKU o Descripción...";
+                    } else {
+                        input.placeholder = "⚠️ Hoja 1 no encontrada o vacía";
                     }
                 } catch(e) { 
-                    console.error("Error de red:", e); 
-                    input.placeholder = "❌ Error de conexión al Excel";
+                    console.error(e);
+                    input.placeholder = "❌ Error. Verifica el enlace en GitHub.";
                 }
             },
 
@@ -909,32 +897,31 @@
                 const term = document.getElementById('dev-search-prod').value.toLowerCase().trim();
                 const box = document.getElementById('dev-results');
                 
-                this.selected = null; // Obliga siempre a seleccionar de la lista
+                this.selected = null; 
                 
-                if(term.length === 0 || term.length < 2) { box.classList.add('hidden'); return; }
+                if(term.length === 0) { box.classList.add('hidden'); return; }
                 
                 if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó correctamente. Recarga la página.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó correctamente. Revisa tu conexión o recarga la página.</div>`;
                     box.classList.remove('hidden');
                     return;
                 }
 
-                // Busca en SKU y DESCRIPCION
                 const matches = this.prodMaster.filter(p => {
-                    const code = String(p.SKU || p.CODIGO || "").toLowerCase();
-                    const desc = String(p.DESCRIPCION || "").toLowerCase();
+                    const code = String(p.SKU || p.CODIGO || p.ARTICULO || "").toLowerCase();
+                    const desc = String(p.DESCRIPCION || p.PRODUCTO || p.DETALLE || "").toLowerCase();
                     return code.includes(term) || desc.includes(term);
                 }).slice(0, 15);
                 
                 if(matches.length > 0) {
                     box.innerHTML = matches.map(p => {
-                        const c = p.SKU || p.CODIGO || "S/C";
-                        const d = String(p.DESCRIPCION || "").replace(/'/g,"");
+                        const c = p.SKU || p.CODIGO || p.ARTICULO || "S/C";
+                        const d = String(p.DESCRIPCION || p.PRODUCTO || p.DETALLE || "").replace(/'/g,"");
                         return `<div onclick="coreDev.select('${c}','${d}')" class="p-3 border-b text-xs font-bold active:bg-blue-50 cursor-pointer hover:bg-slate-50"><p class="text-[10px] text-blue-600 font-black">${c}</p>${d}</div>`;
                     }).join('');
                     box.classList.remove('hidden');
                 } else { 
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo (Hoja 1).</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo.</div>`;
                     box.classList.remove('hidden'); 
                 }
             },
@@ -948,10 +935,8 @@
             
             addItem: function() {
                 const cant = document.getElementById('dev-cant').value;
-                
-                // CANDADOS DE SEGURIDAD
-                if(!this.selected) { alert("❌ OBLIGATORIO: Debes buscar y seleccionar un producto válido de la lista."); return; }
-                if(!cant || cant <= 0) { alert("❌ OBLIGATORIO: Ingresa una cantidad mayor a 0."); return; }
+                if(!this.selected) { alert("❌ OBLIGATORIO: Selecciona un producto de la lista."); return; }
+                if(!cant || cant <= 0) { alert("❌ OBLIGATORIO: Ingresa una cantidad válida."); return; }
 
                 this.items.push({ codigo: this.selected.c, descripcion: this.selected.d, cantidad: cant, estado: document.getElementById('dev-estado').value, observaciones: document.getElementById('dev-obs').value });
                 
@@ -976,15 +961,15 @@
                 const btn = document.getElementById('btn-save-dev'); btn.innerText = "ENVIANDO..."; btn.disabled = true;
                 const data = { action: "guardar_devolucion", fecha: new Date().toLocaleDateString('es-PE'), cliente: cliente, vendedor: vend, motivo: mot, items: this.items };
                 try {
-                    await fetch(core.url, { redirect: "follow", method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+                    await fetch(core.url, { method: 'POST', body: JSON.stringify(data) });
                     this.generatePDF(data);
-                    alert("✅ Devolución Registrada en la Hoja 3");
+                    alert("✅ Devolución Registrada");
                     this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
                     localStorage.removeItem('twins_dev_draft'); this.render(); this.fetchHistory(); this.switchTab('history');
                 } catch(e) { alert("Error de conexión"); } finally { btn.innerText = "Generar Reporte y Guardar"; btn.disabled = false; }
             },
             
-            fetchHistory: async function() { try { const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev" : core.url + "?type=historial_dev"; const res = await fetch(queryUrl, { redirect: "follow" }); this.histMaster = await res.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
+            fetchHistory: async function() { try { const response = await fetch(core.url + "?type=historial_dev"); this.histMaster = await response.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
             
             renderHistory: function() {
                 const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
