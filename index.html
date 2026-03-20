@@ -899,17 +899,17 @@
         function changeTab(tab) {
             const isAudit = tab === 'audit';
             const isDev = tab === 'dev';
-            const isHist = tab === 'dev-history';
+            const isHist = tab === 'dev-history'; // Nueva pestaña
             
             // 1. Mostrar/Ocultar pantallas
-            if (document.getElementById('app-shell')) 
-                document.getElementById('app-shell').style.display = isAudit ? 'block' : 'none';
+            const shell = document.getElementById('app-shell');
+            if (shell) shell.style.display = isAudit ? 'block' : 'none';
             
-            if (document.getElementById('module-returns')) 
-                document.getElementById('module-returns').style.display = isDev ? 'block' : 'none';
+            const moduleReturns = document.getElementById('module-returns');
+            if (moduleReturns) moduleReturns.style.display = isDev ? 'block' : 'none';
             
-            if (document.getElementById('module-dev-history')) 
-                document.getElementById('module-dev-history').style.display = isHist ? 'block' : 'none';
+            const moduleHistory = document.getElementById('module-dev-history');
+            if (moduleHistory) moduleHistory.style.display = isHist ? 'block' : 'none';
             
             // 2. Cambiar Título del Header
             const header = document.querySelector('.glass-header h1');
@@ -918,7 +918,7 @@
                 if (isDev) header.innerText = "DEVOLUCIONES";
                 if (isHist) {
                     header.innerText = "ARCHIVO REGISTROS";
-                    if (typeof cargarHistorialDev === 'function') cargarHistorialDev();
+                    cargarHistorialDev(); // Lanzar la carga de datos del Excel
                 }
             }
             
