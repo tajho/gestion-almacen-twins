@@ -918,38 +918,42 @@
 
         // 3. Cambio de Pestaña con MEMORIA
         function changeTab(tab) {
-            console.log("Cambiando a:", tab); // Para rastrear errores
-            const isAudit = tab === 'audit';
-            const isDev = tab === 'dev';
-            const isHist = tab === 'dev-history';
-            
-            // 1. Control de Pantallas (con seguridad)
-            const s = document.getElementById('app-shell');
-            const d = document.getElementById('module-returns');
-            const h = document.getElementById('module-dev-history');
-            
-            if (s) s.style.display = isAudit ? 'block' : 'none';
-            if (d) d.style.display = isDev ? 'block' : 'none';
-            if (h) h.style.display = isHist ? 'block' : 'none';
-            
-            // 2. Control de Título
-            const header = document.querySelector('.glass-header h1');
-            if (header) {
-                if (isAudit) header.innerText = "TWINS AUDITORIA";
-                if (isDev) header.innerText = "DEVOLUCIONES";
-                if (isHist) header.innerText = "ARCHIVO REGISTROS";
-            }
-            
-            // 3. Cerrar Menú y Guardar Memoria
-            localStorage.setItem('twins_memoria_pantalla', tab);
-            
-            const menu = document.getElementById('twins-menu');
-            const panel = document.getElementById('twins-menu-panel');
-            if (menu && !menu.classList.contains('hidden')) {
-                panel.classList.add('-translate-x-full');
-                setTimeout(() => menu.classList.add('hidden'), 300);
-            }
+        // 1. Ocultamos todos los módulos de forma segura
+        const modulos = ['module-audit', 'module-dev', 'module-dev-history'];
+        modulos.forEach(id => {
+            const elemento = document.getElementById(id);
+            if(elemento) elemento.classList.add('hidden');
+        });
+
+        // 2. Mostramos SOLO el módulo que seleccionaste
+        const moduloActivo = document.getElementById('module-' + tab);
+        if(moduloActivo) moduloActivo.classList.remove('hidden');
+
+        // 3. Actualizamos el Título de la cabecera
+        const titulos = {
+            'audit': 'TWINS AUDITORIA',
+            'dev': 'NUEVA DEVOLUCIÓN',
+            'dev-history': 'ARCHIVO REGISTROS'
+        };
+        const tituloEl = document.querySelector('header h1');
+        if(tituloEl && titulos[tab]) tituloEl.innerText = titulos[tab];
+
+        // 4. Escondemos el menú lateral si estaba abierto
+        const menu = document.getElementById('twins-menu');
+        const panel = document.getElementById('twins-menu-panel');
+        if (panel && !panel.classList.contains('-translate-x-full')) {
+            panel.classList.add('-translate-x-full');
+            setTimeout(() => { if(menu) menu.classList.add('hidden'); }, 300);
         }
+
+        // 5. Guardamos en memoria para que al recargar te deje en la misma pantalla
+        localStorage.setItem('twins_memoria_pantalla', tab);
+
+        // 6. Si entras a devoluciones, forzamos que dibuje las tarjetas de la Hoja 3
+        if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
+            coreDev.renderHistory();
+        }
+    }
         async function cargarHistorialDev() {
             const contenedor = document.getElementById('dev-history-cards');
             try {
