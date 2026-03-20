@@ -1107,17 +1107,16 @@
                 } catch(e) { console.log(e); } 
             },
             
-            renderHistory: function() {
+           renderHistory: function() {
                 const contenedor = document.getElementById('dev-history-cards');
                 const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
                 const filtroVend = document.getElementById('dev-filter-vendedor') ? document.getElementById('dev-filter-vendedor').value : "TODOS";
                 
                 if (!this.histMaster || this.histMaster.length === 0) {
-                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros de Hoja 3...</div>`;
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros...</div>`;
                     return;
                 }
 
-                // Agrupamos por ticket (Cliente + Fecha + Motivo)
                 const tickets = {};
                 this.histMaster.forEach(i => {
                     const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
@@ -1127,15 +1126,10 @@
                     tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
                 });
 
-                // --- MOTOR DE FILTRADO (Corregido) ---
                 const filtrados = Object.values(tickets).filter(t => {
-                    // Filtro por texto (Buscador)
                     const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
                                           t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
-                    
-                    // Filtro por vendedor (Select)
                     const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-                    
                     return matchBusqueda && matchVendedor;
                 }).reverse();
 
@@ -1144,11 +1138,10 @@
                     return;
                 }
 
-                // Dibujamos las tarjetas (Diseño Auditoría)
                 contenedor.innerHTML = filtrados.map(t => `
                     <div class="native-card p-6 mb-4">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase tracking-tighter italic">REGISTRO DEVOLUCIÓN</div>
+                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">REGISTRO DEVOLUCIÓN</div>
                             <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
                         </div>
                         <div class="flex items-center gap-4 mb-6">
@@ -1161,7 +1154,6 @@
                             </div>
                         </div>
                         <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
-                            <p class="text-[8px] font-black text-slate-300 uppercase mb-2 tracking-widest">Resumen de Productos</p>
                             ${t.items.map(i => `
                                 <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1 border-b border-white pb-1">
                                     <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
@@ -1175,22 +1167,20 @@
                     </div>
                 `).join('');
             },
-          }, // Aquí cerramos renderHistory correctamente
 
-        // AGREGAMOS LA FUNCIÓN PDF DENTRO DEL OBJETO PARA QUE NO SE PIERDA
-        generatePDF: function(data) {
-            const { jsPDF } = window.jspdf; 
-            const doc = new jsPDF();
-            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-            doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
-            doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
-            doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
-            doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-            const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado || 'N/A' ]);
-            doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 } });
-            doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
-        }
-    }; // AQUÍ CERRAMOS EL OBJETO coreDev
+            generatePDF: function(data) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCION - TAJHO", 14, 30);
+                doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
+                doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
+                doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
+                const tableBody = data.items.map(i => [i.codigo, i.descripcion, i.cantidad]);
+                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: tableBody, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
+                doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+            }
+        }; 
 
     </script>
 
@@ -1202,13 +1192,10 @@
     </button>
 
     <script>
-        // MOTOR DE ARRANQUE (Sin errores de sintaxis)
         window.onload = async () => {
             if (typeof coreDev !== 'undefined') { coreDev.init(); }
-            
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
-
             if(core.raw && core.raw.length > 0) {
                 core.render();
                 const activeId = localStorage.getItem('twins_active_cont');
@@ -1222,7 +1209,6 @@
             if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
 
-        // ESTO REPARA EL ERROR DE LA LÍNEA 126
         window.toggleMenu = function() {
             const menu = document.getElementById('twins-menu');
             const panel = document.getElementById('twins-menu-panel');
