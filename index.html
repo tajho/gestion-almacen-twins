@@ -1126,10 +1126,11 @@
                 const filtroVend = document.getElementById('dev-filter-vendedor') ? document.getElementById('dev-filter-vendedor').value : "TODOS";
                 
                 if (!this.histMaster || this.histMaster.length === 0) {
-                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Sin datos en Hoja 3</div>`;
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros de Hoja 3...</div>`;
                     return;
                 }
 
+                // 1. Agrupamos por ticket (Hoja 3)
                 const tickets = {};
                 this.histMaster.forEach(i => {
                     const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
@@ -1139,6 +1140,7 @@
                     tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
                 });
 
+                // 2. Filtros Independientes
                 const filtrados = Object.values(tickets).filter(t => {
                     const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
                                           t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
@@ -1146,8 +1148,12 @@
                     return matchBusqueda && matchVendedor;
                 }).reverse();
 
-                document.getElementById('stat-dev-count').innerText = filtrados.length;
+                if (filtrados.length === 0) {
+                    contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
+                    return;
+                }
 
+                // 3. Renderizado de Tarjetas (Diseño Auditoría)
                 contenedor.innerHTML = filtrados.map(t => `
                     <div class="native-card p-6 mb-4">
                         <div class="flex justify-between items-start mb-4">
@@ -1155,7 +1161,7 @@
                             <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
                         </div>
                         <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100">
+                            <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm">
                                 <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
                             </div>
                             <div class="flex-1">
@@ -1182,36 +1188,19 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN - TAJHO", 14, 30);
-                doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
-                doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
+                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
+                doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
+                doc.text(`FECHA: ${data.fecha}`, 14, 40);
+                doc.text(`CLIENTE: ${data.cliente}`, 14, 46);
+                doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
                 doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
                 const tableBody = data.items.map(i => [i.codigo, i.descripcion, i.cantidad]);
                 doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: tableBody, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
-                
-                const finalY = doc.lastAutoTable.finalY + 15;
-                doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY);
-                doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
-                doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                
                 doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
             }
-        }; 
-
-        // MOTOR DE ARRANQUE (Sin errores de sintaxis)
-        window.onload = async () => {
-            if (typeof coreDev !== 'undefined') { coreDev.init(); }
-            const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
-            changeTab(ultimaPantalla);
-            if(core.raw && core.raw.length > 0) {
-                core.render();
-                const activeId = localStorage.getItem('twins_active_cont');
-                if(activeId) { core.openAudit(activeId); }
-            }
-            core.fetchData(true);
-            setInterval(() => { core.fetchData(true); }, 10000);
         };
 
+        // --- FUNCIONES GLOBALES (Indispensables para que el botón funcione) ---
         window.toggleMenu = function() {
             const menu = document.getElementById('twins-menu');
             const panel = document.getElementById('twins-menu-panel');
@@ -1226,9 +1215,54 @@
             }
         };
 
+        window.onload = async () => {
+            if (typeof coreDev !== 'undefined') { coreDev.init(); }
+            const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
+            changeTab(ultimaPantalla);
+            if(core.raw && core.raw.length > 0) {
+                core.render();
+                const activeId = localStorage.getItem('twins_active_cont');
+                if(activeId) { core.openAudit(activeId); }
+            }
+            core.fetchData(true);
+            setInterval(() => { core.fetchData(true); }, 10000);
+        };
+
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
+
     </script>
+
+    <div id="dev-fab-container">
+        <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 active:scale-90 transition-transform" style="position: fixed; right: 25px; bottom: 30px; width: 64px; height: 64px; border-radius: 20px; background: #7c3aed; display: flex; align-items: center; justify-content: center; z-index: 40; box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.3); border: none;">
+            <div class="flex flex-col items-center">
+                <i class="ph-bold ph-plus text-white text-2xl"></i>
+                <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
+            </div>
+        </button>
+    </div>
+
+    <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
+        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
+                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
+                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95 transition-transform">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="flex flex-col p-4 gap-3 mt-2">
+                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
+                    <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
+                </button>
+                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
+                    <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
+                </button>
+            </div>
+            <div class="mt-auto p-6 text-center border-t border-slate-50">
+                <p class="text-[9px] font-bold text-slate-400">J. Angelo Nuñez D. <br> Asist. Inventario Logístico</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
