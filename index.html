@@ -1181,41 +1181,35 @@
         <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
     </div>
 </button>
-            generatePDF: function(data) {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30); doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58); const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]); doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } }); const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
-            }
-        };
-       // --- MOTOR DE ARRANQUE ---
-        // --- MOTOR DE ARRANQUE ---
+           // --- MOTOR DE ARRANQUE ---
         window.onload = async () => {
-            // 1. Iniciamos el motor de devoluciones
+            // Iniciamos el motor de devoluciones
             if (typeof coreDev !== 'undefined') {
                 coreDev.init(); 
             }
             
-            // 2. Memoria de pestaña activa
+            // Memoria de pestaña activa
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
 
-            // 3. Carga de datos de inventario
-            if(core.raw.length > 0) {
+            // Carga de datos de inventario
+            if(core.raw && core.raw.length > 0) {
                 core.render();
                 const activeId = localStorage.getItem('twins_active_cont');
                 if(activeId) { core.openAudit(activeId); }
             }
             
-            // 4. Sincronización con Excel
+            // Sincronización con Excel
             core.fetchData(true);
             setInterval(() => { core.fetchData(true); }, 10000);
         };
 
-        // Refresco de datos al volver a la app
+        // Refresco al volver a la app
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
 
-        // FUNCIÓN DEL MENÚ (Global y limpia)
+        // FUNCIÓN DEL MENÚ (Esta es la que activa tu botón de la línea 126)
         window.toggleMenu = function() {
             const menuFondo = document.getElementById('twins-menu');
             const menuPanel = document.getElementById('twins-menu-panel');
