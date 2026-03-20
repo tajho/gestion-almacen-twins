@@ -1132,24 +1132,23 @@
             setInterval(() => {
                 core.fetchData(true);
             }, 10000);
-            
-            // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    core.fetchData(true);
-                }
-            });
-   // --- FUNCIÓN DEL MENÚ ---
-  function toggleMenu() {
-    const menu = document.getElementById('sidebar'); 
-    if (menu) {
-      menu.classList.toggle('hidden');
-    } else {
-      alert("Revisa tu código HTML: el menú no tiene el id='sidebar'");
+      // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        core.fetchData(true);
     }
+});
+
+// --- FUNCIÓN DEL MENÚ ---
+function toggleMenu() {
+  const menu = document.getElementById('sidebar'); 
+  if (menu) {
+    menu.classList.toggle('hidden');
+  } else {
+    alert("Revisa tu código HTML: el menú no tiene el id='sidebar'");
   }
+}
 </script>
 </body>
 </html>
-
 
