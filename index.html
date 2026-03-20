@@ -276,25 +276,25 @@
        <div id="dev-items-list" class="space-y-2 mb-6"></div>
         <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Reporte y Guardar</button>
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-   <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 border-none text-white">
-        <i class="ph-bold ph-plus text-2xl"></i>
-        <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
-    </button>
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
+            <i class="ph-fill ph-user-list text-purple-500 text-xl mb-2"></i>
+            <p id="stat-dev-count" class="text-2xl font-[800] text-slate-900">0</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Registros</p>
         </div>
         <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-            <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
-            <p id="stat-dev-items" class="text-2xl font-[800] text-slate-900">0</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Productos</p>
+            <i class="ph-fill ph-calendar-check text-blue-500 text-xl mb-2"></i>
+            <p id="stat-dev-month" class="text-2xl font-[800] text-slate-900">100%</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Efectividad</p>
         </div>
     </div>
 
     <div class="flex gap-2 mb-8">
-        <div class="flex-1 search-bar flex items-center px-4 py-1">
+        <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm">
             <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-            <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." 
-                class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
+            <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
         </div>
-        <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
+        <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
             <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
             <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
                 <option value="TODOS">TODOS</option>
@@ -308,16 +308,14 @@
     </div>
 
     <div id="dev-history-cards" class="space-y-4">
-        <div class="py-20 text-center text-slate-400 font-medium">Cargando registros...</div>
+        <div class="py-20 text-center text-slate-400 font-medium">Cargando registros de Hoja 3...</div>
     </div>
-</div>
 
-<button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 active:scale-90 transition-transform" style="bottom: 100px;">
-    <div class="flex flex-col items-center">
-        <i class="ph-bold ph-plus text-white text-2xl"></i>
-        <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
-    </div>
-</button>
+    <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 border-none text-white">
+        <i class="ph-bold ph-plus text-2xl"></i>
+        <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
+    </button>
+</div>
             
             <div class="flex flex-col p-4 gap-3 mt-2">
                 <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
@@ -1128,7 +1126,7 @@
                 const filtroVend = document.getElementById('dev-filter-vendedor') ? document.getElementById('dev-filter-vendedor').value : "TODOS";
                 
                 if (!this.histMaster || this.histMaster.length === 0) {
-                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros de Hoja 3...</div>`;
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Sin datos en Hoja 3</div>`;
                     return;
                 }
 
@@ -1147,6 +1145,8 @@
                     const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
                     return matchBusqueda && matchVendedor;
                 }).reverse();
+
+                document.getElementById('stat-dev-count').innerText = filtrados.length;
 
                 contenedor.innerHTML = filtrados.map(t => `
                     <div class="native-card p-6 mb-4">
@@ -1182,17 +1182,23 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
+                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN - TAJHO", 14, 30);
                 doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
                 doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
                 doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-                const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad ]);
-                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' } });
+                const tableBody = data.items.map(i => [i.codigo, i.descripcion, i.cantidad]);
+                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: tableBody, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
+                
+                const finalY = doc.lastAutoTable.finalY + 15;
+                doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY);
+                doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
+                doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+                
                 doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
             }
         }; 
 
-        // MOTOR DE ARRANQUE OFICIAL
+        // MOTOR DE ARRANQUE (Sin errores de sintaxis)
         window.onload = async () => {
             if (typeof coreDev !== 'undefined') { coreDev.init(); }
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
