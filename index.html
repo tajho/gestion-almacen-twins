@@ -865,22 +865,24 @@
                 const input = document.getElementById('dev-search-prod');
                 if (this.prodMaster.length > 0) return; 
                 
-                input.placeholder = "⏳ Conectando con catálogo...";
+                input.value = "";
+                input.placeholder = "⏳ Descargando catálogo (espera por favor)...";
+                input.disabled = true; // 🔒 BLOQUEA EL TECLADO HASTA QUE DESCARGUE
                 
                 try {
-                    // Usamos la misma conexión simple que usaste en Auditoría
-                    const response = await fetch(core.url + "?type=productos");
+                    const separator = core.url.includes('?') ? '&' : '?';
+                    const response = await fetch(core.url + separator + "type=productos");
                     const data = await response.json();
                     
                     if(Array.isArray(data) && data.length > 0){
                         this.prodMaster = data;
-                        input.placeholder = "✅ Buscar SKU o Descripción...";
+                        input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
+                        input.disabled = false; // 🔓 DESBLOQUEA EL TECLADO
                     } else {
-                        input.placeholder = "⚠️ Hoja 1 no encontrada o vacía";
+                        input.placeholder = "⚠️ Hoja 1 está vacía";
                     }
                 } catch(e) { 
-                    console.error(e);
-                    input.placeholder = "❌ Error. Verifica el enlace en GitHub.";
+                    input.placeholder = "❌ Error de conexión al enlace (Verifica core.url)";
                 }
             },
 
@@ -902,7 +904,7 @@
                 if(term.length === 0) { box.classList.add('hidden'); return; }
                 
                 if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó correctamente. Revisa tu conexión o recarga la página.</div>`;
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ Sigue cargando... espera.</div>`;
                     box.classList.remove('hidden');
                     return;
                 }
@@ -969,7 +971,7 @@
                 } catch(e) { alert("Error de conexión"); } finally { btn.innerText = "Generar Reporte y Guardar"; btn.disabled = false; }
             },
             
-            fetchHistory: async function() { try { const response = await fetch(core.url + "?type=historial_dev"); this.histMaster = await response.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
+            fetchHistory: async function() { try { const separator = core.url.includes('?') ? '&' : '?'; const response = await fetch(core.url + separator + "type=historial_dev"); this.histMaster = await response.json(); if(this.currentTab === 'history') this.renderHistory(); } catch(e) { console.log(e); } },
             
             renderHistory: function() {
                 const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
