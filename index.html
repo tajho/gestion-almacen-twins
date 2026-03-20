@@ -897,35 +897,53 @@
 
         // 3. Cambio de Pestaña con MEMORIA
         function changeTab(tab) {
+            console.log("Cambiando a:", tab); // Para rastrear errores
             const isAudit = tab === 'audit';
             const isDev = tab === 'dev';
-            const isHist = tab === 'dev-history'; // Nueva pestaña
+            const isHist = tab === 'dev-history';
             
-            // 1. Mostrar/Ocultar pantallas
-            const shell = document.getElementById('app-shell');
-            if (shell) shell.style.display = isAudit ? 'block' : 'none';
+            // 1. Control de Pantallas (con seguridad)
+            const s = document.getElementById('app-shell');
+            const d = document.getElementById('module-returns');
+            const h = document.getElementById('module-dev-history');
             
-            const moduleReturns = document.getElementById('module-returns');
-            if (moduleReturns) moduleReturns.style.display = isDev ? 'block' : 'none';
+            if (s) s.style.display = isAudit ? 'block' : 'none';
+            if (d) d.style.display = isDev ? 'block' : 'none';
+            if (h) h.style.display = isHist ? 'block' : 'none';
             
-            const moduleHistory = document.getElementById('module-dev-history');
-            if (moduleHistory) moduleHistory.style.display = isHist ? 'block' : 'none';
-            
-            // 2. Cambiar Título del Header
+            // 2. Control de Título
             const header = document.querySelector('.glass-header h1');
             if (header) {
                 if (isAudit) header.innerText = "TWINS AUDITORIA";
                 if (isDev) header.innerText = "DEVOLUCIONES";
-                if (isHist) {
-                    header.innerText = "ARCHIVO REGISTROS";
-                    cargarHistorialDev(); // Lanzar la carga de datos del Excel
-                }
+                if (isHist) header.innerText = "ARCHIVO REGISTROS";
             }
             
-            // Guardar memoria y cerrar menú
+            // 3. Cerrar Menú y Guardar Memoria
             localStorage.setItem('twins_memoria_pantalla', tab);
+            
             const menu = document.getElementById('twins-menu');
-            if(menu && !menu.classList.contains('hidden')) toggleMenu();
+            const panel = document.getElementById('twins-menu-panel');
+            if (menu && !menu.classList.contains('hidden')) {
+                panel.classList.add('-translate-x-full');
+                setTimeout(() => menu.classList.add('hidden'), 300);
+            }
+        }
+        async function cargarHistorialDev() {
+            const contenedor = document.getElementById('dev-history-cards');
+            try {
+                // Aquí llamaremos a tu Hoja 3 del Excel
+                const res = await fetch(core.url + "?type=get_historial");
+                const data = await res.json();
+                
+                if (data.length === 0) {
+                    contenedor.innerHTML = "<p class='text-center text-[10px] font-bold text-slate-400'>NO HAY REGISTROS</p>";
+                    return;
+                }
+                // Renderizar tarjetas (esto lo activaremos cuando el Excel esté listo)
+            } catch (e) {
+                console.log("Esperando conexión con Excel...");
+            }
         }
         // 4. Protección contra recargas accidentales si hay datos a medias
         window.addEventListener('beforeunload', function (e) {
