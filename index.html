@@ -1175,49 +1175,67 @@
                     </div>
                 `).join('');
             },
-            <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 !bottom-24 active:scale-90 transition-transform">
-    <div class="flex flex-col items-center">
-        <i class="ph-bold ph-plus text-white text-2xl"></i>
-        <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
-    </div>
-</button>
-           // --- MOTOR DE ARRANQUE ---
+          }, // Aquí cerramos renderHistory correctamente
+
+        // AGREGAMOS LA FUNCIÓN PDF DENTRO DEL OBJETO PARA QUE NO SE PIERDA
+        generatePDF: function(data) {
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF();
+            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+            doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
+            doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
+            doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
+            doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
+            const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado || 'N/A' ]);
+            doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 } });
+            doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+        }
+    }; // AQUÍ CERRAMOS EL OBJETO coreDev
+
+    </script>
+
+    <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 active:scale-90 transition-transform" style="position: fixed; right: 25px; bottom: 100px; width: 64px; height: 64px; border-radius: 20px; background: #7c3aed; display: flex; align-items: center; justify-content: center; z-index: 40; box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.3); border: none;">
+        <div class="flex flex-col items-center">
+            <i class="ph-bold ph-plus text-white text-2xl"></i>
+            <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
+        </div>
+    </button>
+
+    <script>
+        // MOTOR DE ARRANQUE (Sin errores de sintaxis)
         window.onload = async () => {
-            // Iniciamos el motor de devoluciones
-            if (typeof coreDev !== 'undefined') {
-                coreDev.init(); 
-            }
+            if (typeof coreDev !== 'undefined') { coreDev.init(); }
             
-            // Memoria de pestaña activa
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
 
-            // Carga de datos de inventario
             if(core.raw && core.raw.length > 0) {
                 core.render();
                 const activeId = localStorage.getItem('twins_active_cont');
                 if(activeId) { core.openAudit(activeId); }
             }
-            
-            // Sincronización con Excel
             core.fetchData(true);
             setInterval(() => { core.fetchData(true); }, 10000);
         };
 
-        // Refresco al volver a la app
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
 
-        // FUNCIÓN DEL MENÚ (Esta es la que activa tu botón de la línea 126)
+        // ESTO REPARA EL ERROR DE LA LÍNEA 126
         window.toggleMenu = function() {
-            const menuFondo = document.getElementById('twins-menu');
-            const menuPanel = document.getElementById('twins-menu-panel');
-            if (menuFondo) menuFondo.classList.toggle('hidden');
-            if (menuPanel) menuPanel.classList.toggle('-translate-x-full');
+            const menu = document.getElementById('twins-menu');
+            const panel = document.getElementById('twins-menu-panel');
+            if (menu && panel) {
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
+                } else {
+                    panel.classList.add('-translate-x-full');
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }
+            }
         };
-        window.abrirMenu = window.toggleMenu;
-
     </script>
 </body>
 </html>
