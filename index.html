@@ -276,11 +276,10 @@
        <div id="dev-items-list" class="space-y-2 mb-6"></div>
         <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Reporte y Guardar</button>
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-    <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-            <i class="ph-fill ph-users text-purple-500 text-xl mb-2"></i>
-            <p id="stat-dev-clients" class="text-2xl font-[800] text-slate-900">0</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Clientes</p>
+   <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 border-none text-white">
+        <i class="ph-bold ph-plus text-2xl"></i>
+        <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
+    </button>
         </div>
         <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
             <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
@@ -1124,93 +1123,76 @@
             },
             
            renderHistory: function() {
-    const contenedor = document.getElementById('dev-history-cards');
-    const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
-    const filtroVend = document.getElementById('dev-filter-vendedor').value;
-    
-    if (!this.histMaster || this.histMaster.length === 0) {
-        contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Sin registros en Hoja 3</div>`;
-        return;
-    }
+                const contenedor = document.getElementById('dev-history-cards');
+                const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
+                const filtroVend = document.getElementById('dev-filter-vendedor') ? document.getElementById('dev-filter-vendedor').value : "TODOS";
+                
+                if (!this.histMaster || this.histMaster.length === 0) {
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros de Hoja 3...</div>`;
+                    return;
+                }
 
-    // Agrupamos por ticket (Cliente + Fecha + Motivo)
-    const tickets = {};
-    this.histMaster.forEach(i => {
-        const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
-        if (!tickets[key]) {
-            tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
-        }
-        tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
-    });
+                const tickets = {};
+                this.histMaster.forEach(i => {
+                    const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
+                    if (!tickets[key]) {
+                        tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
+                    }
+                    tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
+                });
 
-    // MOTOR DE FILTRADO
-    const filtrados = Object.values(tickets).filter(t => {
-        const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
-                              t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
-        const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-        return matchBusqueda && matchVendedor;
-    }).reverse();
+                const filtrados = Object.values(tickets).filter(t => {
+                    const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
+                                          t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
+                    const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
+                    return matchBusqueda && matchVendedor;
+                }).reverse();
 
-    // Actualizamos estadísticas
-    document.getElementById('stat-dev-clients').innerText = filtrados.length;
-    let totalItems = 0;
-    filtrados.forEach(f => totalItems += f.items.length);
-    document.getElementById('stat-dev-items').innerText = totalItems;
-
-    contenedor.innerHTML = filtrados.map(t => `
-        <div class="native-card p-6">
-            <div class="flex justify-between items-start mb-4">
-                <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div>
-                <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
-            </div>
-            <div class="flex items-center gap-4 mb-6">
-                <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500">
-                    <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
-                </div>
-            </div>
-            <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
-                <p class="text-[8px] font-black text-slate-300 uppercase mb-2 tracking-widest">Resumen</p>
-                ${t.items.map(i => `
-                    <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1">
-                        <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
-                        <span class="text-purple-600 font-black">${i.cantidad} U</span>
+                contenedor.innerHTML = filtrados.map(t => `
+                    <div class="native-card p-6 mb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN REGISTRADA</div>
+                            <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
+                        </div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100">
+                                <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
+                            ${t.items.map(i => `
+                                <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1 border-b border-white pb-1">
+                                    <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
+                                    <span class="text-purple-600 font-black">${i.cantidad} U</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="w-full bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider active:scale-95 transition-transform shadow-md">
+                            <i class="ph-bold ph-file-pdf text-lg"></i> Reimprimir Ticket
+                        </button>
                     </div>
-                `).join('')}
-            </div>
-            <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="w-full bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider active:scale-95 transition-transform">
-                <i class="ph-bold ph-file-pdf text-lg"></i> Reimprimir Ticket
-            </button>
-        </div>
-    `).join('');
-}
+                `).join('');
+            },
+
             generatePDF: function(data) {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCION - TAJHO", 14, 30);
+                doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30);
                 doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40);
                 doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
                 doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-                const tableBody = data.items.map(i => [i.codigo, i.descripcion, i.cantidad]);
-                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: tableBody, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
+                const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad ]);
+                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' } });
                 doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
             }
         }; 
 
-    </script>
-
-    <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 active:scale-90 transition-transform" style="position: fixed; right: 25px; bottom: 100px; width: 64px; height: 64px; border-radius: 20px; background: #7c3aed; display: flex; align-items: center; justify-content: center; z-index: 40; box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.3); border: none;">
-        <div class="flex flex-col items-center">
-            <i class="ph-bold ph-plus text-white text-2xl"></i>
-            <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
-        </div>
-    </button>
-
-    <script>
+        // MOTOR DE ARRANQUE OFICIAL
         window.onload = async () => {
             if (typeof coreDev !== 'undefined') { coreDev.init(); }
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
@@ -1223,10 +1205,6 @@
             core.fetchData(true);
             setInterval(() => { core.fetchData(true); }, 10000);
         };
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') { core.fetchData(true); }
-        });
 
         window.toggleMenu = function() {
             const menu = document.getElementById('twins-menu');
@@ -1241,6 +1219,10 @@
                 }
             }
         };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') { core.fetchData(true); }
+        });
     </script>
 </body>
 </html>
