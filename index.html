@@ -276,17 +276,23 @@
        <div id="dev-items-list" class="space-y-2 mb-6"></div>
         <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Reporte y Guardar</button>
     </div> <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-        <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm mb-6">
-            <h2 class="text-sm font-black uppercase text-blue-600 mb-4 tracking-tighter">Buscador de Registros</h2>
-            <div class="relative">
-                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="dev-hist-search" placeholder="Cliente, producto o código..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-slate-400 outline-none focus:border-blue-500 transition-all">
-            </div>
-        </div>
-        <div id="dev-history-cards" class="flex flex-col gap-4">
-            <p class="text-center text-[10px] font-bold text-slate-400 uppercase">Consultando base de datos...</p>
-        </div>
+        <div class="flex gap-2 mb-6">
+    <div class="flex-1 search-bar flex items-center px-4 py-1">
+        <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
+        <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
     </div>
+    <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
+        <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
+        <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+            <option value="TODOS">TODOS</option>
+            <option value="ELIAS AVILA">ELIAS</option>
+            <option value="EVELYN MURO">EVELYN</option>
+            <option value="REGULO ANTEZANA">REGULO</option>
+            <option value="JHAYRO MAURICIO">JHAYRO</option>
+            <option value="PAULA GARCIA">PAULA</option>
+        </select>
+    </div>
+</div>
 
     <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
@@ -1102,14 +1108,79 @@
             },
             
             renderHistory: function() {
-                const list = document.getElementById('dev-hist-list'); const search = document.getElementById('dev-hist-search').value.toLowerCase();
-                if(!this.histMaster || this.histMaster.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">Sin datos</div>`; return; }
-                const tickets = {}; this.histMaster.forEach(i => { const key = i.CLIENTE+"_"+i.FECHA+"_"+i.MOTIVO; if(!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); });
-                const filtered = Object.values(tickets).filter(t => t.cliente.toLowerCase().includes(search)).reverse();
-                if(filtered.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold">No hay resultados</div>`; return; }
-                list.innerHTML = filtered.map(t => `<div class="bg-white p-5 rounded-3xl border shadow-sm mb-4"><div class="flex justify-between items-start mb-2"><div><p class="text-[9px] font-black text-slate-400">${t.fecha}</p><h3 class="text-sm font-black text-slate-900 uppercase">${t.cliente}</h3></div><button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="text-red-500 bg-red-50 w-10 h-10 rounded-xl flex items-center justify-center"><i class="ph-bold ph-file-pdf text-lg"></i></button></div><p class="text-[9px] font-bold text-slate-500">Vendedor: ${t.vendedor} | Motivo: ${t.motivo}</p><div class="space-y-1 mt-3 border-t pt-2">${t.items.map(i => `<div class="flex justify-between text-[10px] font-bold text-slate-600 border-b border-slate-50 pb-1"><span>- ${i.codigo}</span><span>${i.cantidad} UND</span></div>`).join('')}</div></div>`).join('');
-            },
-            
+    const contenedor = document.getElementById('dev-history-cards');
+    const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
+    const filtroVend = document.getElementById('dev-filter-vendedor').value;
+    
+    if (!this.histMaster || this.histMaster.length === 0) {
+        contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium">No hay registros en la Hoja 3</div>`;
+        return;
+    }
+
+    // Agrupamos por ticket (Hoja 3)
+    const tickets = {};
+    this.histMaster.forEach(i => {
+        const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
+        if (!tickets[key]) {
+            tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
+        }
+        tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
+    });
+
+    // --- MOTOR DE FILTRADO INDEPENDIENTE ---
+    const filtrados = Object.values(tickets).filter(t => {
+        // Filtro por Buscador (Cliente o SKU)
+        const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
+                              t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
+        
+        // Filtro por Vendedor
+        const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
+        
+        return matchBusqueda && matchVendedor;
+    }).reverse();
+
+    if (filtrados.length === 0) {
+        contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
+        return;
+    }
+
+    // Renderizado con diseño de Auditoría (Native Card)
+    contenedor.innerHTML = filtrados.map(t => `
+        <div class="native-card p-6 mb-4">
+            <div class="flex justify-between items-start mb-4">
+                <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase tracking-tighter">DEVOLUCIÓN #${t.fecha.split('/')[0]}${t.cliente.substring(0,2)}</div>
+                <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
+            </div>
+            <div class="flex items-center gap-4 mb-6">
+                <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500">
+                    <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
+                </div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
+                <p class="text-[8px] font-black text-slate-300 uppercase mb-2 tracking-widest">Resumen de Productos</p>
+                ${t.items.map(i => `
+                    <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1">
+                        <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
+                        <span class="text-purple-600 font-black">${i.cantidad} U</span>
+                    </div>
+                `).join('')}
+            </div>
+            <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="w-full bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider active:scale-95 transition-transform shadow-lg">
+                <i class="ph-bold ph-file-pdf text-lg"></i> Reimprimir Ticket
+            </button>
+        </div>
+    `).join('');
+}
+            <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 !bottom-24 active:scale-90 transition-transform">
+    <div class="flex flex-col items-center">
+        <i class="ph-bold ph-plus text-white text-2xl"></i>
+        <span class="text-[8px] font-black text-white uppercase mt-1">Registrar</span>
+    </div>
+</button>
             generatePDF: function(data) {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`TICKET DE DEVOLUCIÓN • TAJHO`, 14, 30); doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${data.fecha}`, 14, 40); doc.text(`CLIENTE: ${data.cliente}`, 14, 46); doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52); doc.text(`MOTIVO: ${data.motivo}`, 14, 58); const body = data.items.map(i => [ i.codigo, i.descripcion, i.cantidad, i.estado ]); doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8, halign: 'center' }, styles: { fontSize: 7, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 90 }, 2: { halign: 'center' }, 3: { halign: 'center' } } }); const finalY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
