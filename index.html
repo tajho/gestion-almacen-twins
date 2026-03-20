@@ -1117,17 +1117,20 @@
                 } catch(e) { console.log(e); } 
             },
             
-           renderHistory: function() {
+          renderHistory: function() {
                 const contenedor = document.getElementById('dev-history-cards');
-                const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
-                const filtroVend = document.getElementById('dev-filter-vendedor').value;
+                const busquedaInput = document.getElementById('dev-hist-search');
+                const filtroVendInput = document.getElementById('dev-filter-vendedor');
+
+                const busqueda = busquedaInput ? busquedaInput.value.toLowerCase().trim() : "";
+                const filtroVend = filtroVendInput ? filtroVendInput.value : "TODOS";
                 
                 if (!this.histMaster || this.histMaster.length === 0) {
-                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Consultando Hoja 3...</div>`;
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">No hay datos en Hoja 3...</div>`;
                     return;
                 }
 
-                // 1. AGRUPACIÓN LOGÍSTICA (Un solo ticket por cliente/fecha)
+                // 1. AGRUPAR POR TICKET (Cliente + Fecha + Motivo)
                 const tickets = {};
                 this.histMaster.forEach(i => {
                     const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
@@ -1137,7 +1140,7 @@
                     tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
                 });
 
-                // 2. FILTROS (Buscador + Vendedor)
+                // 2. FILTRAR (Buscador + Vendedor)
                 const filtrados = Object.values(tickets).filter(t => {
                     const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
                                           t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
@@ -1146,8 +1149,10 @@
                 }).reverse();
 
                 // 3. ACTUALIZAR INDICADORES
-                document.getElementById('stat-dev-total').innerText = filtrados.length;
-                document.getElementById('stat-dev-vendedor').innerText = (filtroVend === "TODOS") ? "Gral" : filtrados.length;
+                const indTotal = document.getElementById('stat-dev-total');
+                const indFiltrado = document.getElementById('stat-dev-filtrado');
+                if (indTotal) indTotal.innerText = Object.keys(tickets).length;
+                if (indFiltrado) indFiltrado.innerText = filtrados.length;
 
                 if (filtrados.length === 0) {
                     contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
@@ -1162,7 +1167,7 @@
                             <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
                         </div>
                         <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-purple-500 shadow-sm">
+                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
                                 <i class="ph-bold ph-user text-2xl"></i>
                             </div>
                             <div class="flex-1">
@@ -1172,11 +1177,11 @@
                         </div>
                         
                         <div class="grid grid-cols-3 gap-2">
-                            <button onclick='alert("Editar registro de ${t.cliente}")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
+                            <button onclick='alert("Editar: ${t.cliente}")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
                                 <i class="ph-bold ph-pencil-simple"></i> Editar
                             </button>
                             <button onclick='coreDev.viewTicketItems(${JSON.stringify(t)})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-blue-100 active:scale-95 transition-transform">
-                                <i class="ph-bold ph-list-bullets"></i> Ver Lista
+                                <i class="ph-bold ph-eye"></i> Lista
                             </button>
                             <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-red-100 active:scale-95 transition-transform">
                                 <i class="ph-bold ph-file-pdf"></i> PDF
@@ -1188,11 +1193,11 @@
 
             viewTicketItems: function(t) {
                 const listContainer = document.getElementById('list-items-content');
-                document.getElementById('list-cont-id').innerText = "CLIENTE: " + t.cliente;
+                document.getElementById('list-cont-id').innerText = "DETALLE: " + t.cliente;
                 listContainer.innerHTML = t.items.map(item => `
                     <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm mb-2">
                         <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-[900] text-purple-600 mb-1 tracking-wider uppercase">${item.codigo}</p>
+                            <p class="text-[10px] font-[900] text-purple-600 mb-1 uppercase">${item.codigo}</p>
                             <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${item.descripcion}</p>
                             <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">ESTADO: ${item.estado || 'BUENO'}</p>
                         </div>
@@ -1230,15 +1235,15 @@
 
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
                 <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
                 <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Dev.</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
             </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-                <i class="ph-fill ph-user-focus text-blue-500 text-xl mb-2"></i>
-                <p id="stat-dev-vendedor" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Filtrados</p>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
+                <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
+                <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
             </div>
         </div>
 
@@ -1248,9 +1253,9 @@
                 <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
             </div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
-                <i class="ph-bold ph-funnel text-purple-500 text-xl"></i>
+                <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
                 <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <option value="TODOS">VENDEDORES</option>
+                    <option value="TODOS">TODOS</option>
                     <option value="ELIAS AVILA">ELIAS</option>
                     <option value="EVELYN MURO">EVELYN</option>
                     <option value="REGULO ANTEZANA">REGULO</option>
@@ -1268,39 +1273,36 @@
         </button>
     </div>
 
-    <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
+    <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
-                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
-                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95 transition-transform"><i class="ph-bold ph-x text-xl"></i></button>
+                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú</h2>
+                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded"><i class="ph-bold ph-x"></i></button>
             </div>
-            <div class="flex flex-col p-4 gap-3 mt-2">
-                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
-                    <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
+            <div class="flex flex-col p-4 gap-3">
+                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
+                    <i class="ph-bold ph-clipboard-text text-xl"></i> AUDITORÍA
                 </button>
-                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
+                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
                     <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
                 </button>
             </div>
-            <div class="mt-auto p-6 text-center border-t border-slate-50">
-                <p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
+            <div class="mt-auto p-6 text-center border-t">
+                <p class="text-[9px] font-bold text-slate-400">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
             </div>
         </div>
     </div>
 
     <script>
-        // MOTOR DE ARRANQUE FINAL
         window.toggleMenu = function() {
             const menu = document.getElementById('twins-menu');
             const panel = document.getElementById('twins-menu-panel');
-            if (menu && panel) {
-                if (menu.classList.contains('hidden')) {
-                    menu.classList.remove('hidden');
-                    setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
-                } else {
-                    panel.classList.add('-translate-x-full');
-                    setTimeout(() => menu.classList.add('hidden'), 300);
-                }
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
+            } else {
+                panel.classList.add('-translate-x-full');
+                setTimeout(() => menu.classList.add('hidden'), 300);
             }
         };
 
