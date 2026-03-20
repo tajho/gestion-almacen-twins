@@ -844,12 +844,30 @@
 
         function changeTab(tab) {
             const isAudit = tab === 'audit';
-            document.getElementById('app-shell').style.display = isAudit ? 'block' : 'none';
-            document.getElementById('module-returns').style.display = isAudit ? 'none' : 'block';
-            document.getElementById('nav-audit').classList.toggle('active', isAudit);
-            document.getElementById('nav-returns').classList.toggle('active', !isAudit);
-            document.querySelector('.glass-header h1').innerText = isAudit ? "TWINS AUDITORIA" : "DEVOLUCIONES";
-            if(!isAudit) { coreDev.init(); }
+            
+            // 1. Cambiar la pantalla visible
+            const shell = document.getElementById('app-shell');
+            if (shell) shell.style.display = isAudit ? 'block' : 'none';
+            
+            const moduleReturns = document.getElementById('module-returns');
+            if (moduleReturns) moduleReturns.style.display = isAudit ? 'none' : 'block';
+            
+            // 2. Cambiar color de los botones (CON PROTECCIÓN ANTI-CRASH)
+            const navAudit = document.getElementById('nav-audit');
+            if (navAudit) navAudit.classList.toggle('active', isAudit);
+            
+            const navReturns = document.getElementById('nav-returns');
+            if (navReturns) navReturns.classList.toggle('active', !isAudit);
+            
+            // 3. Cambiar el título de arriba
+            const header = document.querySelector('.glass-header h1');
+            if (header) header.innerText = isAudit ? "TWINS AUDITORIA" : "DEVOLUCIONES";
+            
+            // 4. EL PASO MÁS IMPORTANTE: Arrancar el motor de devoluciones
+            if (!isAudit) { 
+                console.log("Iniciando descarga de productos..."); 
+                coreDev.init(); 
+            }
         }
 
         const coreDev = {
