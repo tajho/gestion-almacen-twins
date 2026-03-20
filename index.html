@@ -1125,27 +1125,19 @@
             // 2. Actualizar desde Excel de inmediato pero en silencio
             core.fetchData(true);
             
-            // 3. MOTOR 1: Buscar cambios en el Excel cada 10 segundos de forma invisible
+           // 3. MOTOR 1: Buscar cambios en el Excel cada 10 segundos de forma invisible
             setInterval(() => {
                 core.fetchData(true);
             }, 10000);
-      // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        core.fetchData(true);
-    }
-});
 
-}; // <--- ESTA ES LA LLAVE MÁGICA QUE FALTABA (Cierra la línea 1114)
+            // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    core.fetchData(true);
+                }
+            });
 
-// --- FUNCIÓN DEL MENÚ (Global y a prueba de fallos) ---
-// --- FUNCIÓN DEL MENÚ (Global y a prueba de fallos) ---
-// 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        core.fetchData(true);
-    }
-});
-</script>
+        }; // <--- ESTA ES LA ÚNICA LLAVE QUE CIERRA EL SISTEMA AL FINAL
+    </script>
 </body>
 </html>
