@@ -1108,73 +1108,73 @@
             },
             
             renderHistory: function() {
-    const contenedor = document.getElementById('dev-history-cards');
-    const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
-    const filtroVend = document.getElementById('dev-filter-vendedor').value;
-    
-    if (!this.histMaster || this.histMaster.length === 0) {
-        contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium">No hay registros en la Hoja 3</div>`;
-        return;
-    }
+                const contenedor = document.getElementById('dev-history-cards');
+                const busqueda = document.getElementById('dev-hist-search').value.toLowerCase().trim();
+                const filtroVend = document.getElementById('dev-filter-vendedor') ? document.getElementById('dev-filter-vendedor').value : "TODOS";
+                
+                if (!this.histMaster || this.histMaster.length === 0) {
+                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">Cargando registros de Hoja 3...</div>`;
+                    return;
+                }
 
-    // Agrupamos por ticket (Hoja 3)
-    const tickets = {};
-    this.histMaster.forEach(i => {
-        const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
-        if (!tickets[key]) {
-            tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
-        }
-        tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
-    });
+                // Agrupamos por ticket (Cliente + Fecha + Motivo)
+                const tickets = {};
+                this.histMaster.forEach(i => {
+                    const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
+                    if (!tickets[key]) {
+                        tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
+                    }
+                    tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD });
+                });
 
-    // --- MOTOR DE FILTRADO INDEPENDIENTE ---
-    const filtrados = Object.values(tickets).filter(t => {
-        // Filtro por Buscador (Cliente o SKU)
-        const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
-                              t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
-        
-        // Filtro por Vendedor
-        const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-        
-        return matchBusqueda && matchVendedor;
-    }).reverse();
+                // --- MOTOR DE FILTRADO (Corregido) ---
+                const filtrados = Object.values(tickets).filter(t => {
+                    // Filtro por texto (Buscador)
+                    const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
+                                          t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
+                    
+                    // Filtro por vendedor (Select)
+                    const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
+                    
+                    return matchBusqueda && matchVendedor;
+                }).reverse();
 
-    if (filtrados.length === 0) {
-        contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
-        return;
-    }
+                if (filtrados.length === 0) {
+                    contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
+                    return;
+                }
 
-    // Renderizado con diseño de Auditoría (Native Card)
-    contenedor.innerHTML = filtrados.map(t => `
-        <div class="native-card p-6 mb-4">
-            <div class="flex justify-between items-start mb-4">
-                <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase tracking-tighter">DEVOLUCIÓN #${t.fecha.split('/')[0]}${t.cliente.substring(0,2)}</div>
-                <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
-            </div>
-            <div class="flex items-center gap-4 mb-6">
-                <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500">
-                    <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
-                </div>
-            </div>
-            <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
-                <p class="text-[8px] font-black text-slate-300 uppercase mb-2 tracking-widest">Resumen de Productos</p>
-                ${t.items.map(i => `
-                    <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1">
-                        <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
-                        <span class="text-purple-600 font-black">${i.cantidad} U</span>
+                // Dibujamos las tarjetas (Diseño Auditoría)
+                contenedor.innerHTML = filtrados.map(t => `
+                    <div class="native-card p-6 mb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase tracking-tighter italic">REGISTRO DEVOLUCIÓN</div>
+                            <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
+                        </div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
+                                <i class="ph-bold ph-arrow-u-down-left text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-300 uppercase mb-2 tracking-widest">Resumen de Productos</p>
+                            ${t.items.map(i => `
+                                <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-1 border-b border-white pb-1">
+                                    <span class="truncate pr-4">${i.codigo} - ${i.descripcion}</span>
+                                    <span class="text-purple-600 font-black">${i.cantidad} U</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="w-full bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider active:scale-95 transition-transform shadow-md">
+                            <i class="ph-bold ph-file-pdf text-lg"></i> Reimprimir Ticket
+                        </button>
                     </div>
-                `).join('')}
-            </div>
-            <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="w-full bg-slate-900 text-white h-12 rounded-2xl flex items-center justify-center gap-2 font-bold text-[10px] uppercase tracking-wider active:scale-95 transition-transform shadow-lg">
-                <i class="ph-bold ph-file-pdf text-lg"></i> Reimprimir Ticket
-            </button>
-        </div>
-    `).join('');
-}
+                `).join('');
+            },
             <button onclick="changeTab('dev')" class="fab-sync !bg-purple-600 !bottom-24 active:scale-90 transition-transform">
     <div class="flex flex-col items-center">
         <i class="ph-bold ph-plus text-white text-2xl"></i>
