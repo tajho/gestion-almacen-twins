@@ -1187,13 +1187,14 @@
             }
         };
        // --- MOTOR DE ARRANQUE ---
+        // --- MOTOR DE ARRANQUE ---
         window.onload = async () => {
-            // 1. Iniciamos el buscador de devoluciones e historial
+            // 1. Iniciamos el motor de devoluciones
             if (typeof coreDev !== 'undefined') {
                 coreDev.init(); 
             }
             
-            // 2. Cargamos la última pestaña usada (Memoria)
+            // 2. Memoria de pestaña activa
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
 
@@ -1204,7 +1205,7 @@
                 if(activeId) { core.openAudit(activeId); }
             }
             
-            // 4. Sincronización automática con Excel
+            // 4. Sincronización con Excel
             core.fetchData(true);
             setInterval(() => { core.fetchData(true); }, 10000);
         };
@@ -1214,7 +1215,7 @@
             if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
 
-        // FUNCIÓN GLOBAL DEL MENÚ (Para que el botón siempre funcione)
+        // FUNCIÓN DEL MENÚ (Global y limpia)
         window.toggleMenu = function() {
             const menuFondo = document.getElementById('twins-menu');
             const menuPanel = document.getElementById('twins-menu-panel');
