@@ -1139,13 +1139,16 @@
                     core.fetchData(true);
                 }
             });
-        };
-    <script>
-</body>
-</html>
-</body>
-</html>
-    </script>
+   // --- FUNCIÓN DEL MENÚ ---
+  function toggleMenu() {
+    const menu = document.getElementById('sidebar'); 
+    if (menu) {
+      menu.classList.toggle('hidden');
+    } else {
+      alert("Revisa tu código HTML: el menú no tiene el id='sidebar'");
+    }
+  }
+</script>
 </body>
 </html>
 
