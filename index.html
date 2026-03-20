@@ -292,11 +292,14 @@
 
 <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
     <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
+        
         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
             <h2 class="font-black text-blue-600 tracking-widest text-sm">MENÚ PRINCIPAL</h2>
-            <button onclick="abrirMenu()" class="p-2 bg-blue-500 text-white rounded">
-  Menú
-</button>
+            <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95 transition-transform">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+        </div>
+        
         <div class="flex flex-col p-4 gap-3 mt-2">
             <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-slate-50 flex items-center gap-3">
                 <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
@@ -305,17 +308,11 @@
                 <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
             </button>
         </div>
+        
         <div class="mt-auto p-6 text-center">
             <p class="text-[9px] font-bold text-slate-400">J. Angelo Nuñez D. <br> Asist. Inventario Logístico</p>
         </div>
-    </div>
-</div>
-
-<div id="loading-modal" class="fixed inset-0 bg-slate-900/70 z-[200] hidden flex items-center justify-center backdrop-blur-sm">
-    <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center max-w-[80%] text-center border-4 border-blue-50">
-        <i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i>
-        <h3 class="font-black text-slate-800 text-lg uppercase tracking-wider">Sincronizando</h3>
-        <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">Conectando con base de datos.<br>Por favor, no actualices la página.</p>
+        
     </div>
 </div>
     <script>
@@ -1142,23 +1139,15 @@ document.addEventListener('visibilitychange', () => {
 }; // <--- ESTA ES LA LLAVE MÁGICA QUE FALTABA (Cierra la línea 1114)
 
 // --- FUNCIÓN DEL MENÚ (Global y a prueba de fallos) ---
-window.toggleMenu = function() {
-  const menuFondo = document.getElementById('twins-menu');
-  const menuPanel = document.getElementById('twins-menu-panel');
-  
-  // Muestra u oculta el fondo oscuro
-  if (menuFondo) {
-    menuFondo.classList.toggle('hidden');
-  }
-  // Desliza el panel del menú
-  if (menuPanel) {
-    menuPanel.classList.toggle('-translate-x-full');
-  }
-};
+// --- FUNCIÓN DEL MENÚ (Global y a prueba de fallos) ---
+// 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        core.fetchData(true);
+    }
+});
 
-// Por si tu otro botón sigue usando abrirMenu()
-window.abrirMenu = window.toggleMenu;
-
+}; // <--- ESTA ES LA LLAVE MÁGICA QUE FALTABA (Cierra la línea 1114)
 </script>
 </body>
 </html>
