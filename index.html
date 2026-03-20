@@ -1187,38 +1187,40 @@
             }
         };
        window.onload = async () => {
+            // 1. Encendemos el motor de devoluciones y su historial
+            if (typeof coreDev !== 'undefined') {
+                coreDev.init(); 
+            }
             
-            // --- CONEXIÓN DEL BUSCADOR DE DEVOLUCIONES (ESTO FALTABA) ---
-            coreDev.init();
-            // ------------------------------------------------------------
-            
-            // --- LEER LA MEMORIA DEL MENÚ PARA SABER EN QUÉ PANTALLA ESTÁBAMOS ---
+            // 2. Memoria de pestaña activa
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
 
-            // 1. Cargar lo que hay en memoria para que la app abra instantáneamente
+            // 3. Carga de datos de inventario
             if(core.raw.length > 0) {
                 core.render();
                 const activeId = localStorage.getItem('twins_active_cont');
                 if(activeId) { core.openAudit(activeId); }
             }
             
-            // 2. Actualizar desde Excel de inmediato pero en silencio
+            // 4. Sincronización con Excel
             core.fetchData(true);
-            
-            // 3. MOTOR 1: Buscar cambios en el Excel cada 10 segundos de forma invisible
-            setInterval(() => {
-                core.fetchData(true);
-            }, 10000);
+            setInterval(() => { core.fetchData(true); }, 10000);
+        };
 
-        }; // <--- ESTA LLAVE CIERRA PERFECTAMENTE EL ARRANQUE
-
-        // 4. MOTOR 2: Buscar cambios inmediatamente al prender la pantalla o regresar a la app
+        // Motor de refresco automático al volver a la app
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                core.fetchData(true);
-            }
+            if (document.visibilityState === 'visible') { core.fetchData(true); }
         });
+
+        // FUNCIÓN DEL MENÚ (Aseguramos que sea global)
+        window.toggleMenu = function() {
+            const menuFondo = document.getElementById('twins-menu');
+            const menuPanel = document.getElementById('twins-menu-panel');
+            if (menuFondo) menuFondo.classList.toggle('hidden');
+            if (menuPanel) menuPanel.classList.toggle('-translate-x-full');
+        };
+        window.abrirMenu = window.toggleMenu;
 
     </script>
 </body>
