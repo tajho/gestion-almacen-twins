@@ -1141,8 +1141,8 @@ document.addEventListener('visibilitychange', () => {
 
 }; // <--- ESTA ES LA LLAVE MÁGICA QUE FALTABA (Cierra la línea 1114)
 
-// --- FUNCIÓN DEL MENÚ ---
-function toggleMenu() {
+// --- FUNCIÓN DEL MENÚ (Global y a prueba de fallos) ---
+window.toggleMenu = function() {
   const menuFondo = document.getElementById('twins-menu');
   const menuPanel = document.getElementById('twins-menu-panel');
   
@@ -1150,9 +1150,14 @@ function toggleMenu() {
   if (menuFondo) {
     menuFondo.classList.toggle('hidden');
   }
-  // Desliza el panel del menú de izquierda a derecha
+  // Desliza el panel del menú
   if (menuPanel) {
     menuPanel.classList.toggle('-translate-x-full');
+  }
+};
+
+// Por si tu otro botón sigue usando abrirMenu()
+window.abrirMenu = window.toggleMenu;;
   }
 }
 </script>
