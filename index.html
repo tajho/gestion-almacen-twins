@@ -1119,26 +1119,54 @@
 
     // --- PARCHE MAESTRO PARA EVITAR LA PANTALLA BLANCA ---
     const oldChangeTab = window.changeTab;
-    window.changeTab = function(tab) {
-        // 1. Ocultamos TODAS las pantallas de forma segura
+        window.changeTab = function(tab) {
+        console.log("Viajando a la pestaña:", tab); // Para ver si el click funciona
+        
+        // 1. Apagamos TODOS los módulos a la fuerza
         const modulos = ['module-audit', 'module-dev', 'module-dev-history'];
         modulos.forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.classList.add('hidden');
+            if(el) {
+                el.classList.add('hidden');
+                el.style.display = 'none'; // Fuerza bruta para ocultar
+            }
         });
-        
-        // 2. Ejecutamos tu función original (para que cambie el título y porcentaje)
-        if(typeof oldChangeTab === 'function') { oldChangeTab(tab); }
 
-        // 3. ¡FORZAMOS a que la pantalla elegida se muestre!
+        // 2. Encendemos SOLO el que necesitamos
         const activo = document.getElementById('module-' + tab);
-        if(activo) { activo.classList.remove('hidden'); }
+        if(activo) {
+            activo.classList.remove('hidden');
+            activo.style.display = 'block'; // Fuerza bruta para mostrar
+        } else {
+            console.log("ERROR: No encuentro la caja HTML llamada: module-" + tab);
+        }
 
-        // 4. Si entraste al historial, lo actualizamos al instante
+        // 3. Actualizamos el título de arriba
+        const titulos = {
+            'audit': 'TWINS AUDITORIA',
+            'dev': 'NUEVA DEVOLUCIÓN',
+            'dev-history': 'ARCHIVO REGISTROS'
+        };
+        const tituloEl = document.querySelector('header h1');
+        if(tituloEl && titulos[tab]) tituloEl.innerText = titulos[tab];
+
+        // 4. Escondemos el menú si está abierto
+        const menu = document.getElementById('twins-menu');
+        const panel = document.getElementById('twins-menu-panel');
+        if (menu && !menu.classList.contains('hidden')) {
+            if (panel) panel.classList.add('-translate-x-full');
+            setTimeout(() => menu.classList.add('hidden'), 300);
+        }
+
+        // 5. Guardamos en memoria
+        localStorage.setItem('twins_memoria_pantalla', tab);
+
+        // 6. Si es el historial, forzamos que dibuje las tarjetas de la Hoja 3
         if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
             coreDev.renderHistory();
         }
     };
+
 
     window.toggleMenu = function() {
         const menu = document.getElementById('twins-menu');
