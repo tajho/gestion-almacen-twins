@@ -125,7 +125,7 @@
             
             <button onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 px-3 py-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex items-center gap-2">
                 <i class="ph-bold ph-list text-xl"></i>
-                <span class="text-xs font-black">MENÚ</span>
+                <span class="text-xs font-black"></span>
             </button>
 
             <div class="flex-1">
@@ -939,7 +939,7 @@
                 if (this.prodMaster.length > 0) return; 
                 
                 input.value = "";
-                input.placeholder = "⏳ Descargando catálogo fresco...";
+                input.placeholder = "⏳ ...";
                 input.disabled = true; // Bloquea el teclado
                 
                 try {
