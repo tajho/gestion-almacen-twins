@@ -973,330 +973,173 @@
                 e.returnValue = ''; 
             }
         });
-        const coreDev = {
-            items: [], prodMaster: [], histMaster: [], currentTab: 'new', selected: null,
+       const coreDev = {
+        histMaster: [],
+
+        init: async function() {
+            await this.fetchHist();
+            this.renderHistory();
+        },
+
+        fetchHist: async function() {
+            try {
+                const resp = await fetch(core.url);
+                const data = await resp.json();
+                this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3");
+            } catch (e) { console.error("Error al cargar historial:", e); }
+        },
+
+        renderHistory: function() {
+            const contenedor = document.getElementById('dev-history-cards');
+            if (!contenedor) return; // Evita errores si la pantalla aún no carga
+
+            const busquedaInput = document.getElementById('dev-hist-search');
+            const filtroVendInput = document.getElementById('dev-filter-vendedor');
+
+            const busqueda = busquedaInput ? busquedaInput.value.toLowerCase().trim() : "";
+            const filtroVend = filtroVendInput ? filtroVendInput.value : "TODOS";
             
-            init: async function() {
-                // 🧹 LIMPIEZA FORZADA: Borramos cualquier borrador viejo atrapado en la memoria
-                localStorage.removeItem('twins_dev_draft');
-                document.getElementById('dev-cliente').value = '';
-                document.getElementById('dev-vendedor').value = '';
-                document.getElementById('dev-motivo').value = '';
-                this.items = [];
-                this.render();
-
-                this.fetchProducts();
-                this.fetchHistory();
-            },
-            
-            fetchProducts: async function() {
-                const input = document.getElementById('dev-search-prod');
-                if (this.prodMaster.length > 0) return; 
-                
-                input.value = "";
-                input.placeholder = "⏳ ...";
-                input.disabled = true; // Bloquea el teclado
-                
-                try {
-                    // TRUCO ANTI-CACHÉ EXTREMO: Le sumamos la hora para que el navegador no use memoria vieja
-                    const timestamp = new Date().getTime();
-                    const urlSegura = core.url.includes('?') ? core.url + "&type=productos&nocache=" + timestamp : core.url + "?type=productos&nocache=" + timestamp;
-
-                    const response = await fetch(urlSegura);
-                    const data = await response.json();
-                    
-                    if(Array.isArray(data) && data.length > 0){
-                        this.prodMaster = data;
-                        input.placeholder = "✅ Listo. Buscar SKU o Descripción...";
-                        input.disabled = false; // Desbloquea
-                    } else {
-                        input.placeholder = "⚠️ La Hoja 1 parece estar vacía";
-                    }
-                } catch(e) { 
-                    alert("⚠️ ERROR DE CONEXIÓN:\n\nNo se pudo contactar al Excel. Asegúrate de haber publicado la 'Nueva Versión' en Apps Script y que tu enlace (core.url) sea el correcto.");
-                    input.placeholder = "❌ Error de conexión al enlace";
-                }
-            },
-
-            switchTab: function(t) {
-                this.currentTab = t;
-                document.getElementById('dev-new-section').style.display = t === 'new' ? 'block' : 'none';
-                document.getElementById('dev-hist-section').style.display = t === 'history' ? 'block' : 'none';
-                document.getElementById('tab-dev-new').className = t === 'new' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
-                document.getElementById('tab-dev-hist').className = t === 'history' ? "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg bg-white shadow-sm text-blue-600 transition-all" : "flex-1 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-lg text-slate-500 transition-all";
-                if(t === 'history') this.renderHistory();
-            },
-            
-            search: function() {
-                const term = document.getElementById('dev-search-prod').value.toLowerCase().trim();
-                const box = document.getElementById('dev-results');
-                
-                this.selected = null; 
-                
-                if(term.length === 0) { box.classList.add('hidden'); return; }
-                
-                if(this.prodMaster.length === 0) {
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">⚠️ El catálogo no se descargó. Recarga la página.</div>`;
-                    box.classList.remove('hidden');
-                    return;
-                }
-
-                const matches = this.prodMaster.filter(p => {
-                    const code = String(p.SKU || p.CODIGO || p.ARTICULO || "").toLowerCase();
-                    const desc = String(p.DESCRIPCION || p.PRODUCTO || p.DETALLE || "").toLowerCase();
-                    return code.includes(term) || desc.includes(term);
-                }).slice(0, 15);
-                
-                if(matches.length > 0) {
-                    box.innerHTML = matches.map(p => {
-                        const c = p.SKU || p.CODIGO || p.ARTICULO || "S/C";
-                        const d = String(p.DESCRIPCION || p.PRODUCTO || p.DETALLE || "").replace(/'/g,"");
-                        return `<div onclick="coreDev.select('${c}','${d}')" class="p-3 border-b text-xs font-bold active:bg-blue-50 cursor-pointer hover:bg-slate-50"><p class="text-[10px] text-blue-600 font-black">${c}</p>${d}</div>`;
-                    }).join('');
-                    box.classList.remove('hidden');
-                } else { 
-                    box.innerHTML = `<div class="p-3 text-[10px] text-red-500 font-bold">❌ El producto no existe en el catálogo.</div>`;
-                    box.classList.remove('hidden'); 
-                }
-            },
-            
-            select: function(c, d) {
-                document.getElementById('dev-search-prod').value = c + " - " + d;
-                this.selected = { c, d }; 
-                document.getElementById('dev-results').classList.add('hidden');
-                document.getElementById('dev-cant').focus(); 
-            },
-            
-            addItem: function() {
-                const cant = document.getElementById('dev-cant').value;
-                if(!this.selected) { alert("❌ OBLIGATORIO: Selecciona un producto de la lista."); return; }
-                if(!cant || cant <= 0) { alert("❌ OBLIGATORIO: Ingresa una cantidad válida."); return; }
-
-                this.items.push({ codigo: this.selected.c, descripcion: this.selected.d, cantidad: cant, estado: document.getElementById('dev-estado').value, observaciones: document.getElementById('dev-obs').value });
-                
-                this.selected = null; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-cant').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-results').classList.add('hidden');
-                this.render(); this.saveDraft();
-            },
-            
-            removeItem: function(idx) { this.items.splice(idx, 1); this.render(); this.saveDraft(); },
-            
-            render: function() {
-                const l = document.getElementById('dev-items-list');
-                l.innerHTML = this.items.map((i, idx) => `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="pr-2"><p class="text-[10px] font-black text-blue-600">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-400 mt-1">${i.estado}</p></div><div class="flex items-center gap-3"><div class="text-center"><p class="text-sm font-black">${i.cantidad}</p><p class="text-[7px] font-bold uppercase">Cant</p></div><button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center"><i class="ph-bold ph-trash"></i></button></div></div>`).join('');
-                document.getElementById('btn-save-dev').classList.toggle('hidden', this.items.length === 0);
-            },
-            
-            saveDraft: function() { const d = { c: document.getElementById('dev-cliente').value, v: document.getElementById('dev-vendedor').value, m: document.getElementById('dev-motivo').value, i: this.items }; localStorage.setItem('twins_dev_draft', JSON.stringify(d)); },
-            
-            save: async function() {
-                const cliente = document.getElementById('dev-cliente').value.toUpperCase(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value;
-                if(!cliente || !vend || !mot) return alert("Complete Cliente, Vendedor y Motivo");
-                const btn = document.getElementById('btn-save-dev'); btn.innerText = "ENVIANDO..."; btn.disabled = true;
-                const data = { action: "guardar_devolucion", fecha: new Date().toLocaleDateString('es-PE'), cliente: cliente, vendedor: vend, motivo: mot, items: this.items };
-                try {
-                    showLoading(); // <--- ENCIENDE EL MENSAJE DE CARGA
-                    await fetch(core.url, { method: 'POST', body: JSON.stringify(data) });
-                    this.generatePDF(data);
-                    // ... resto del código
-                } catch(e) { 
-                    alert("Error de conexión"); 
-                } finally { 
-                    hideLoading(); // <--- APAGA EL MENSAJE DE CARGA
-                    btn.innerText = "Generar Reporte y Guardar"; 
-                    btn.disabled = false; 
-                }
-            },
-            
-            fetchHistory: async function() { 
-                try { 
-                    const ts = new Date().getTime();
-                    const queryUrl = core.url.includes('?') ? core.url + "&type=historial_dev&nocache="+ts : core.url + "?type=historial_dev&nocache="+ts; 
-                    const response = await fetch(queryUrl); 
-                    this.histMaster = await response.json(); 
-                    if(this.currentTab === 'history') this.renderHistory(); 
-                } catch(e) { console.log(e); } 
-            },
-            
-          renderHistory: function() {
-                const contenedor = document.getElementById('dev-history-cards');
-                const busquedaInput = document.getElementById('dev-hist-search');
-                const filtroVendInput = document.getElementById('dev-filter-vendedor');
-
-                const busqueda = busquedaInput ? busquedaInput.value.toLowerCase().trim() : "";
-                const filtroVend = filtroVendInput ? filtroVendInput.value : "TODOS";
-                
-                if (!this.histMaster || this.histMaster.length === 0) {
-                    contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-medium uppercase text-[10px]">No hay datos en Hoja 3...</div>`;
-                    return;
-                }
-
-                // 1. AGRUPAR POR TICKET (Cliente + Fecha + Motivo)
-                const tickets = {};
-                this.histMaster.forEach(i => {
-                    const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
-                    if (!tickets[key]) {
-                        tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] };
-                    }
-                    tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
-                });
-
-                // 2. FILTRAR (Buscador + Vendedor)
-                const filtrados = Object.values(tickets).filter(t => {
-                    const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
-                                          t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
-                    const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-                    return matchBusqueda && matchVendedor;
-                }).reverse();
-
-                // 3. ACTUALIZAR INDICADORES
-                const indTotal = document.getElementById('stat-dev-total');
-                const indFiltrado = document.getElementById('stat-dev-filtrado');
-                if (indTotal) indTotal.innerText = Object.keys(tickets).length;
-                if (indFiltrado) indFiltrado.innerText = filtrados.length;
-
-                if (filtrados.length === 0) {
-                    contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
-                    return;
-                }
-
-                // 4. RENDER DE TARJETAS (DISEÑO AUDITORÍA)
-                contenedor.innerHTML = filtrados.map(t => `
-                    <div class="native-card p-6 mb-4 border-l-4 border-purple-500">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic tracking-tighter">DEVOLUCIÓN REGISTRADA</div>
-                            <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
-                        </div>
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
-                                <i class="ph-bold ph-user text-2xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-sm font-[800] text-slate-900 uppercase">${t.cliente}</h3>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">VENDEDOR: ${t.vendedor}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick='alert("Editar: ${t.cliente}")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
-                                <i class="ph-bold ph-pencil-simple"></i> Editar
-                            </button>
-                            <button onclick='coreDev.viewTicketItems(${JSON.stringify(t)})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-blue-100 active:scale-95 transition-transform">
-                                <i class="ph-bold ph-eye"></i> Lista
-                            </button>
-                            <button onclick='coreDev.generatePDF(${JSON.stringify(t)})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-red-100 active:scale-95 transition-transform">
-                                <i class="ph-bold ph-file-pdf"></i> PDF
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            },
-
-            viewTicketItems: function(t) {
-                const listContainer = document.getElementById('list-items-content');
-                document.getElementById('list-cont-id').innerText = "DETALLE: " + t.cliente;
-                listContainer.innerHTML = t.items.map(item => `
-                    <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm mb-2">
-                        <div class="flex-1 pr-4">
-                            <p class="text-[10px] font-[900] text-purple-600 mb-1 uppercase">${item.codigo}</p>
-                            <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${item.descripcion}</p>
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">ESTADO: ${item.estado || 'BUENO'}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm font-[900] text-slate-900">${item.cantidad} UND</span>
-                        </div>
-                    </div>
-                `).join('');
-                document.getElementById('list-view').style.display = 'flex';
-            },
-
-            generatePDF: function(data) {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
-                doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
-                doc.text(`FECHA: ${data.fecha}`, 14, 40);
-                doc.text(`CLIENTE: ${data.cliente}`, 14, 46);
-                doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
-                doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
-                
-                const tableBody = data.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'BUENO']);
-                doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: tableBody, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
-                
-                const finalY = doc.lastAutoTable.finalY + 20;
-                doc.setFontSize(9); doc.text("Revisión autorizada por:", 14, finalY);
-                doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
-                doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                
-                doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+            if (!this.histMaster || this.histMaster.length === 0) {
+                contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">Sin registros en Hoja 3</div>`;
+                return;
             }
-        }; 
-    </script>
 
-    <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-                <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
-                <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
-            </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-                <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
-                <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
-            </div>
-        </div>
+            // Agrupar por Ticket
+            const tickets = {};
+            this.histMaster.forEach(i => {
+                const key = i.CLIENTE + "_" + i.FECHA + "_" + i.MOTIVO;
+                if (!tickets[key]) {
+                    tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO || "DEVOLUCIÓN", items: [] };
+                }
+                tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
+            });
 
-        <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm">
-                <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
-            </div>
-            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
-                <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
-                <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <option value="TODOS">TODOS</option>
-                    <option value="ELIAS AVILA">ELIAS</option>
-                    <option value="EVELYN MURO">EVELYN</option>
-                    <option value="REGULO ANTEZANA">REGULO</option>
-                    <option value="JHAYRO MAURICIO">JHAYRO</option>
-                    <option value="PAULA GARCIA">PAULA</option>
-                </select>
-            </div>
-        </div>
+            // Filtrar
+            const filtrados = Object.values(tickets).filter(t => {
+                const matchBusqueda = t.cliente.toLowerCase().includes(busqueda) || 
+                                      t.items.some(item => item.codigo.toString().toLowerCase().includes(busqueda));
+                const matchVendedor = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
+                return matchBusqueda && matchVendedor;
+            }).reverse();
 
-        <div id="dev-history-cards" class="space-y-4"></div>
+            // Actualizar Indicadores Superiores
+            const indTotal = document.getElementById('stat-dev-total');
+            const indFiltrado = document.getElementById('stat-dev-filtrado');
+            if (indTotal) indTotal.innerText = Object.keys(tickets).length;
+            if (indFiltrado) indFiltrado.innerText = (filtroVend === "TODOS") ? "Gral" : filtrados.length;
 
-        <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none">
-            <i class="ph-bold ph-plus text-2xl"></i>
-            <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
-        </button>
-    </div>
+            if (filtrados.length === 0) {
+                contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`;
+                return;
+            }
 
-    <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden">
-        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
-                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú</h2>
-                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <div class="flex flex-col p-4 gap-3">
-                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
-                    <i class="ph-bold ph-clipboard-text text-xl"></i> AUDITORÍA
-                </button>
-                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
-                    <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
-                </button>
-            </div>
-            <div class="mt-auto p-6 text-center border-t">
-                <p class="text-[9px] font-bold text-slate-400">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
-            </div>
-        </div>
-    </div>
+            // Renderizado de las 3 opciones por Tarjeta
+            contenedor.innerHTML = filtrados.map(t => {
+                const ticketJSON = JSON.stringify(t).replace(/'/g, "&#39;"); // Protege contra errores si el nombre tiene comillas
+                return `
+                <div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic tracking-tighter">REGISTRO DEVOLUCIÓN</div>
+                        <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
+                            <i class="ph-bold ph-user text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-[800] text-slate-900 uppercase leading-tight">${t.cliente}</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">VENDEDOR: ${t.vendedor}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-pencil-simple text-sm"></i> Editar
+                        </button>
+                        <button onclick='coreDev.viewTicketItems(${ticketJSON})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-blue-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-eye text-sm"></i> Lista
+                        </button>
+                        <button onclick='coreDev.generatePDF(${ticketJSON})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-red-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-file-pdf text-sm"></i> PDF
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+        },
 
-    <script>
-        window.toggleMenu = function() {
-            const menu = document.getElementById('twins-menu');
-            const panel = document.getElementById('twins-menu-panel');
+        viewTicketItems: function(t) {
+            const listContainer = document.getElementById('list-items-content');
+            const listTitle = document.getElementById('list-cont-id');
+            const modal = document.getElementById('list-view');
+            
+            if(!listContainer || !listTitle || !modal) return;
+
+            listTitle.innerText = "CLIENTE: " + t.cliente;
+            listContainer.innerHTML = t.items.map(item => `
+                <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm mb-2">
+                    <div class="flex-1 pr-4">
+                        <p class="text-[10px] font-[900] text-purple-600 mb-1 uppercase tracking-widest">${item.codigo}</p>
+                        <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${item.descripcion}</p>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">ESTADO: ${item.estado || 'OK'}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-[900] text-slate-900">${item.cantidad} U</span>
+                    </div>
+                </div>
+            `).join('');
+            modal.style.display = 'flex';
+        },
+
+        generatePDF: function(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+            doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
+            doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
+            doc.text(`FECHA: ${data.fecha}`, 14, 40);
+            doc.text(`CLIENTE: ${data.cliente}`, 14, 46);
+            doc.text(`VENDEDOR: ${data.vendedor}`, 14, 52);
+            doc.text(`MOTIVO: ${data.motivo}`, 14, 58);
+            
+            const body = data.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'OK']);
+            doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: body, headStyles: { fillColor: [37, 99, 235], fontSize: 8 } });
+            
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setFontSize(9); doc.text("Revisión autorizada por:", 14, finalY);
+            doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
+            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
+            
+            doc.save(`Devolucion_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+        }
+    }; 
+
+    // --- PARCHE MAESTRO PARA EVITAR LA PANTALLA BLANCA ---
+    const oldChangeTab = window.changeTab;
+    window.changeTab = function(tab) {
+        // 1. Ocultamos TODAS las pantallas de forma segura
+        const modulos = ['module-audit', 'module-dev', 'module-dev-history'];
+        modulos.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
+        });
+        
+        // 2. Ejecutamos tu función original (para que cambie el título y porcentaje)
+        if(typeof oldChangeTab === 'function') { oldChangeTab(tab); }
+
+        // 3. ¡FORZAMOS a que la pantalla elegida se muestre!
+        const activo = document.getElementById('module-' + tab);
+        if(activo) { activo.classList.remove('hidden'); }
+
+        // 4. Si entraste al historial, lo actualizamos al instante
+        if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
+            coreDev.renderHistory();
+        }
+    };
+
+    window.toggleMenu = function() {
+        const menu = document.getElementById('twins-menu');
+        const panel = document.getElementById('twins-menu-panel');
+        if (menu && panel) {
             if (menu.classList.contains('hidden')) {
                 menu.classList.remove('hidden');
                 setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
@@ -1304,24 +1147,85 @@
                 panel.classList.add('-translate-x-full');
                 setTimeout(() => menu.classList.add('hidden'), 300);
             }
-        };
+        }
+    };
 
-        window.onload = async () => {
-            if (typeof coreDev !== 'undefined') { coreDev.init(); }
-            const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
-            changeTab(ultimaPantalla);
-            if(core.raw && core.raw.length > 0) {
-                core.render();
-                const activeId = localStorage.getItem('twins_active_cont');
-                if(activeId) { core.openAudit(activeId); }
-            }
-            core.fetchData(true);
-            setInterval(() => { core.fetchData(true); }, 10000);
-        };
+    window.onload = async () => {
+        if (typeof coreDev !== 'undefined') { coreDev.init(); }
+        const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
+        changeTab(ultimaPantalla);
+        if(core.raw && core.raw.length > 0) {
+            core.render();
+            const activeId = localStorage.getItem('twins_active_cont');
+            if(activeId) { core.openAudit(activeId); }
+        }
+        core.fetchData(true);
+        setInterval(() => { core.fetchData(true); }, 10000);
+    };
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') { core.fetchData(true); }
-        });
-    </script>
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') { core.fetchData(true); }
+    });
+</script>
+
+<div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
+            <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
+            <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
+        </div>
+        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
+            <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
+            <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
+        </div>
+    </div>
+
+    <div class="flex gap-2 mb-8">
+        <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm rounded-[18px] bg-white border border-slate-100">
+            <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
+            <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
+        </div>
+        <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
+            <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
+            <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                <option value="TODOS">TODOS</option>
+                <option value="ELIAS AVILA">ELIAS</option>
+                <option value="EVELYN MURO">EVELYN</option>
+                <option value="REGULO ANTEZANA">REGULO</option>
+                <option value="JHAYRO MAURICIO">JHAYRO</option>
+                <option value="PAULA GARCIA">PAULA</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="dev-history-cards" class="space-y-4"></div>
+
+    <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none">
+        <i class="ph-bold ph-plus text-2xl"></i>
+        <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
+    </button>
+</div>
+
+<div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
+    <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
+            <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
+            <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="flex flex-col p-4 gap-3 mt-2">
+            <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
+                <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
+            </button>
+            <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
+                <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
+            </button>
+        </div>
+        <div class="mt-auto p-6 text-center border-t border-slate-50">
+            <p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
+        </div>
+    </div>
+</div>
 </body>
 </html>
