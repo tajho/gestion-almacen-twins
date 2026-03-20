@@ -917,13 +917,50 @@
         }
 
         // 3. Cambio de Pestaña con MEMORIA
-        function changeTab(tab) {
-        // 1. Ocultamos todos los módulos de forma segura
-        const modulos = ['module-audit', 'module-dev', 'module-dev-history'];
-        modulos.forEach(id => {
-            const elemento = document.getElementById(id);
-            if(elemento) elemento.classList.add('hidden');
+            window.changeTab = function(tab) {
+        // 1. Apagamos todas las pantallas por seguridad
+        const pantallas = ['module-audit', 'module-dev', 'module-dev-history'];
+        pantallas.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
         });
+
+        // 2. Encendemos SOLO la pantalla a la que hiciste clic
+        const activo = document.getElementById('module-' + tab);
+        if(activo) {
+            activo.classList.remove('hidden');
+            activo.style.display = 'block';
+        }
+
+        // 3. Cambiamos el título de arriba automáticamente
+        const titulos = {
+            'audit': 'TWINS AUDITORIA',
+            'dev': 'NUEVA DEVOLUCIÓN',
+            'dev-history': 'HISTORIAL DEVOLUCIONES'
+        };
+        const tituloEl = document.querySelector('header h1');
+        if(tituloEl && titulos[tab]) tituloEl.innerText = titulos[tab];
+
+        // 4. Cerramos el menú lateral con animación
+        const menu = document.getElementById('twins-menu');
+        const panel = document.getElementById('twins-menu-panel');
+        if(menu && !menu.classList.contains('hidden')) {
+            if(panel) panel.classList.add('-translate-x-full');
+            setTimeout(() => menu.classList.add('hidden'), 300);
+        }
+
+        // 5. Guardamos en memoria para no perder la vista al recargar
+        localStorage.setItem('twins_memoria_pantalla', tab);
+
+        // 6. Si entraste al Historial, cargamos las tarjetas del Excel
+        if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
+            coreDev.renderHistory();
+        }
+    };
+
 
         // 2. Mostramos SOLO el módulo que seleccionaste
         const moduloActivo = document.getElementById('module-' + tab);
@@ -1201,63 +1238,63 @@
 </script>
 
 <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
-    <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-            <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
-            <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
+        
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
+                <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
+                <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
+            </div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
+                <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
+                <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
+            </div>
         </div>
-        <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-            <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
-            <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
+
+        <div class="flex gap-2 mb-8">
+            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm rounded-[18px] bg-white border border-slate-100">
+                <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
+                <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
+            </div>
+            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
+                <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
+                <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <option value="TODOS">TODOS</option>
+                    <option value="ELIAS AVILA">ELIAS</option>
+                    <option value="EVELYN MURO">EVELYN</option>
+                    <option value="REGULO ANTEZANA">REGULO</option>
+                    <option value="JHAYRO MAURICIO">JHAYRO</option>
+                    <option value="PAULA GARCIA">PAULA</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="dev-history-cards" class="space-y-4"></div>
+
+        <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none">
+            <i class="ph-bold ph-plus text-2xl"></i>
+            <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
+        </button>
+        
+    </div> <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
+        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
+                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
+                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="flex flex-col p-4 gap-3 mt-2">
+                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3 hover:bg-slate-50">
+                    <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
+                </button>
+                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3 hover:bg-slate-50">
+                    <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
+                </button>
+            </div>
+            <div class="mt-auto p-6 text-center border-t border-slate-50">
+                <p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
+            </div>
         </div>
     </div>
-
-    <div class="flex gap-2 mb-8">
-        <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm rounded-[18px] bg-white border border-slate-100">
-            <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-            <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
-        </div>
-        <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
-            <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
-            <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
-                <option value="TODOS">TODOS</option>
-                <option value="ELIAS AVILA">ELIAS</option>
-                <option value="EVELYN MURO">EVELYN</option>
-                <option value="REGULO ANTEZANA">REGULO</option>
-                <option value="JHAYRO MAURICIO">JHAYRO</option>
-                <option value="PAULA GARCIA">PAULA</option>
-            </select>
-        </div>
-    </div>
-
-    <div id="dev-history-cards" class="space-y-4"></div>
-
-    <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none">
-        <i class="ph-bold ph-plus text-2xl"></i>
-        <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
-    </button>
-</div>
-
-<div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
-    <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
-            <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
-            <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded"><i class="ph-bold ph-x"></i></button>
-        </div>
-        <div class="flex flex-col p-4 gap-3 mt-2">
-            <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
-                <i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA
-            </button>
-            <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 border border-slate-50 flex items-center gap-3">
-                <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
-            </button>
-        </div>
-        <div class="mt-auto p-6 text-center border-t border-slate-50">
-            <p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p>
-        </div>
-    </div>
-</div>
 </body>
 </html>
