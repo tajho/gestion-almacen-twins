@@ -1295,34 +1295,43 @@
     </div>
 
     <script>
+            <script>
+        // EL VERDADERO INTERRUPTOR (CON LOS NOMBRES EXACTOS DE TUS CAJAS)
         window.changeTab = function(tab) {
-            // Apagamos todas las pantallas
-            const pantallas = ['module-audit', 'module-dev', 'module-dev-history'];
-            pantallas.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    el.classList.add('hidden');
-                    el.style.display = 'none';
-                }
-            });
+            console.log("Navegando a:", tab);
+            
+            // 1. Identificamos tus cajas ORIGINALES sin alterar su HTML
+            const cajaAuditoria = document.getElementById('app-shell'); 
+            const cajaFormDevolucion = document.getElementById('module-returns'); 
+            const cajaHistorial = document.getElementById('module-dev-history');
 
-            // Encendemos la solicitada
-            const activo = document.getElementById('module-' + tab);
-            if(activo) {
-                activo.classList.remove('hidden');
-                activo.style.display = 'block';
+            // 2. Apagamos todas por seguridad
+            if(cajaAuditoria) { cajaAuditoria.classList.add('hidden'); cajaAuditoria.style.display = 'none'; }
+            if(cajaFormDevolucion) { cajaFormDevolucion.classList.add('hidden'); cajaFormDevolucion.style.display = 'none'; }
+            if(cajaHistorial) { cajaHistorial.classList.add('hidden'); cajaHistorial.style.display = 'none'; }
+
+            // 3. Encendemos SOLO la que seleccionaste desde el menú
+            const tituloEl = document.querySelector('header h1');
+            
+            if(tab === 'audit' && cajaAuditoria) {
+                cajaAuditoria.classList.remove('hidden');
+                cajaAuditoria.style.display = 'block';
+                if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA';
+            }
+            else if(tab === 'dev' && cajaFormDevolucion) {
+                cajaFormDevolucion.classList.remove('hidden');
+                cajaFormDevolucion.style.display = 'block';
+                if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN';
+            }
+            else if(tab === 'dev-history' && cajaHistorial) {
+                cajaHistorial.classList.remove('hidden');
+                cajaHistorial.style.display = 'block';
+                if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS';
+                // Solo si entras al historial, cargamos las tarjetas
+                if(typeof coreDev !== 'undefined') coreDev.renderHistory();
             }
 
-            // Cambiamos el título
-            const titulos = {
-                'audit': 'TWINS AUDITORIA',
-                'dev': 'NUEVA DEVOLUCIÓN',
-                'dev-history': 'HISTORIAL DEVOLUCIONES'
-            };
-            const tituloEl = document.querySelector('header h1');
-            if(tituloEl && titulos[tab]) tituloEl.innerText = titulos[tab];
-
-            // Cerramos menú
+            // 4. Cerramos el menú lateral automáticamente
             const menu = document.getElementById('twins-menu');
             const panel = document.getElementById('twins-menu-panel');
             if(menu && !menu.classList.contains('hidden')) {
@@ -1330,13 +1339,8 @@
                 setTimeout(() => menu.classList.add('hidden'), 300);
             }
 
-            // Memoria
+            // 5. Guardamos en memoria
             localStorage.setItem('twins_memoria_pantalla', tab);
-
-            // Cargar datos
-            if(tab === 'dev-history' && typeof coreDev !== 'undefined') {
-                coreDev.renderHistory();
-            }
         };
 
         window.toggleMenu = function() {
@@ -1354,11 +1358,14 @@
         };
 
         window.onload = async () => {
+            // Arrancamos el motor de Devoluciones (Hoja 3)
             if (typeof coreDev !== 'undefined') { coreDev.init(); }
             
+            // Leemos dónde te quedaste la última vez
             const ultimaPantalla = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             changeTab(ultimaPantalla);
             
+            // Arrancamos el motor de Auditoría
             if(typeof core !== 'undefined') {
                 if(core.raw && core.raw.length > 0) {
                     core.render();
