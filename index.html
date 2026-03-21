@@ -752,9 +752,9 @@
 
                 doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
                 doc.text("REPORTE DE DEVOLUCIÓN", 40, 16);
-                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`REF: ${d.cliente.substring(0, 10).toUpperCase()}`, 165, 16);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(` ${d.cliente.substring(0, 10).toUpperCase()}`, 165, 16);
 
-                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38);
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("", 14, 38);
                 doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
 
                 doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(d.fecha || "---", 32, 48);
