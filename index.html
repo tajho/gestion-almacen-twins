@@ -160,26 +160,47 @@
 
         // MÓDULO 1: AUDITORÍA (INTACTO)
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbzgwO0KbfoYbukE0AN-DWtI9vAFv4IUXGNGfQOAXahMhMz5l2mzsAHkRFmc0ESaLDR0/exec",
+            url: "https://script.google.com/macros/s/AKfycbxqN14y9j9S_hQVYyPp8c2ODbv8E2s_6Kl0YmbCOXoIVnuRUmRwh-qEzPW2_ZRq7Q7v/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "", activeCont: null, timerInterval: null,
             getDesc: function(item) { const k = Object.keys(item).find(key => key.toUpperCase().includes("DESC") || key.toUpperCase().includes("PRODUCTO")); return k ? item[k] : "Sin descripción"; },
             
-            fetchData: async function(silent = false) {
+                        fetchData: async function(silent = false) {
                 try {
-                    const res = await fetch(this.url); const data = await res.json();
+                    // Agregamos redirección automática
+          
+                    
+                    
+            const response = await fetch(this.url, {
+                        method: 'GET',
+                        mode: 'cors', // Clave para evitar bloqueos
+                        redirect: 'follow' 
+                    });
+                    const data = await response.json();
+                    
                     if (data && Array.isArray(data)) {
-                        this.raw = data.map(i => {
-                            const isC = i["ESTADO"] && i["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                            const c = this.raw.find(old => old["CODIGO"] === i["CODIGO"] && (old["CONTENEDOR"]||old["CONTENEDOR_LIMPIO"]) === (i["CONTENEDOR"]||i["CONTENEDOR_LIMPIO"]));
-                            return { ...i, audit: isC ? (parseInt(i["CAJAS"])||0) : (c ? c.audit||0 : 0), auditTime: c ? c.auditTime||0 : 0 };
+                        this.raw = data.map(item => {
+                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                            const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
+                            return { 
+                                ...item, 
+                                audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0),
+                                auditTime: cached ? (cached.auditTime || 0) : 0 
+                            };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        const view = document.getElementById('audit-view'); if (!view || view.style.display !== 'flex') this.render();
+                        
+                        const auditView = document.getElementById('audit-view');
+                        if (!auditView || auditView.style.display !== 'flex') {
+                            this.render();
+                        }
                     }
-                } catch (e) { if (!silent) console.error(e); }
+                } catch (e) { 
+                    if (!silent) console.error("Error en sincronización:", e); 
+                }
             },
+
             getItemMonth: function(item) {
                 const f = item["FECHA_LIMPIA"] || item["FECHA"] || ""; if (!f) return "EN PROGRAMACIÓN";
                 const p = f.split("/"); return p.length >= 2 ? (this.mesesNombre[parseInt(p[1])-1] || "EN PROGRAMACIÓN") : "EN PROGRAMACIÓN";
