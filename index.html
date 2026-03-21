@@ -665,64 +665,271 @@
                     tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
                 });
 
-                const filtrados = Object.values(tickets).filter(t => {
-                    const mB = t.cliente.toLowerCase().includes(busqueda) || t.items.some(i => i.codigo.toString().toLowerCase().includes(busqueda));
-                    const mV = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-                    return mB && mV;
-                }).reverse();
+    const coreDev = {
+        histMaster: [], 
+        items: [],
 
-                const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado');
-                if(iT) iT.innerText = Object.keys(tickets).length; if(iF) iF.innerText = (filtroVend === "TODOS") ? "Gral" : filtrados.length;
+        init: async function() { 
+            await this.fetchHist(); 
+        },
 
-                if (filtrados.length === 0) { contenedor.innerHTML = `<div class="py-10 text-center text-slate-400">Sin coincidencias</div>`; return; }
-
-                contenedor.innerHTML = filtrados.map(t => {
-                    const tJSON = JSON.stringify(t).replace(/'/g, "&#39;");
-                    return `
-                    <div class="native-card p-6 mb-4 border-l-4 border-purple-500">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900]">DEVOLUCIÓN</div>
-                            <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
-                        </div>
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 rounded-2xl bg-purple-50 flex justify-center items-center text-purple-500"><i class="ph-bold ph-user text-2xl"></i></div>
-                            <div class="flex-1"><h3 class="text-sm font-[800] uppercase">${t.cliente}</h3><p class="text-[9px] font-bold text-slate-400">VEND: ${t.vendedor}</p></div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick='alert("Editar en mantenimiento")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px]"><i class="ph-bold ph-pencil-simple mr-1"></i> Editar</button>
-                            <button onclick='coreDev.viewTicketItems(${tJSON})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px]"><i class="ph-bold ph-eye mr-1"></i> Lista</button>
-                            <button onclick='coreDev.generatePDF(${tJSON})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px]"><i class="ph-bold ph-file-pdf mr-1"></i> PDF</button>
-                        </div>
-                    </div>`;
-                }).join('');
-            },
-
-            viewTicketItems: function(t) {
-                const lC = document.getElementById('list-items-content');
-                document.getElementById('list-cont-id').innerText = "CLIENTE: " + t.cliente;
-                lC.innerHTML = t.items.map(i => `
-                    <div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2">
-                        <div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-2">${i.descripcion}</p></div>
-                        <div class="text-right font-[900] text-slate-900">${i.cantidad} U</div>
-                    </div>`).join('');
-                document.getElementById('list-view').style.display = 'flex';
-            },
-
-            generatePDF: function(d) {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
-                doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
-                doc.text(`FECHA: ${d.fecha}`, 14, 40); doc.text(`CLIENTE: ${d.cliente}`, 14, 46); doc.text(`VEND: ${d.vendedor}`, 14, 52);
-                const b = d.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'OK']);
-                doc.autoTable({ startY: 60, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: b, headStyles: { fillColor: [37, 99, 235] } });
-                const fY = doc.lastAutoTable.finalY + 20;
-                doc.setFontSize(9); doc.text("Revisión autorizada por:", 14, fY);
-                doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, fY + 6);
-                doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, fY + 11);
-                doc.save(`Devolucion_${d.cliente}.pdf`);
+        fetchHist: async function() {
+            try {
+                // Llama al Excel general y extrae solo la Hoja 3
+                const resp = await fetch(core.url);
+                const data = await resp.json();
+                
+                this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3");
+                
+                // ¡ESTA ES LA LÍNEA CLAVE! Obliga a dibujar las tarjetas apenas llegan los datos
+                this.renderHistory();
+            } catch (e) { 
+                console.error("Error al cargar historial:", e);
+                const contenedor = document.getElementById('dev-history-cards');
+                if(contenedor) contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Error de conexión con la base de datos</div>`;
             }
-        };
+        },
+
+        search: function() {
+            const query = document.getElementById('dev-search-prod').value.toLowerCase();
+            const resBox = document.getElementById('dev-results');
+            if (query.length < 2) { resBox.classList.add('hidden'); return; }
+            
+            const unique = []; const seen = new Set();
+            core.raw.forEach(i => {
+                const code = (i.CODIGO || "").toString().toUpperCase();
+                const desc = core.getDesc(i).toLowerCase();
+                // Evitamos buscar dentro del propio historial
+                if (!seen.has(code) && i.ORIGEN !== "HOJA3" && (code.toLowerCase().includes(query) || desc.includes(query))) {
+                    seen.add(code); unique.push(i);
+                }
+            });
+            
+            if (unique.length > 0) {
+                resBox.innerHTML = unique.slice(0, 5).map(i => `
+                    <div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer">
+                        <p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p>
+                        <p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p>
+                    </div>
+                `).join('');
+            } else { 
+                resBox.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; 
+            }
+            resBox.classList.remove('hidden');
+        },
+
+        selectItem: function(cod, desc) {
+            const input = document.getElementById('dev-search-prod');
+            input.value = `${cod} - ${desc}`; 
+            input.dataset.cod = cod; 
+            input.dataset.desc = desc;
+            document.getElementById('dev-results').classList.add('hidden');
+        },
+
+        addItem: function() {
+            const input = document.getElementById('dev-search-prod');
+            const cant = parseInt(document.getElementById('dev-cant').value);
+            const est = document.getElementById('dev-estado').value;
+            const obs = document.getElementById('dev-obs').value;
+            
+            if (!input.dataset.cod || isNaN(cant) || cant <= 0) { alert("Selecciona producto y cantidad válida."); return; }
+            
+            this.items.push({ codigo: input.dataset.cod, descripcion: input.dataset.desc, cantidad: cant, estado: est, obs: obs });
+            
+            input.value = ''; input.removeAttribute('data-cod'); input.removeAttribute('data-desc');
+            document.getElementById('dev-cant').value = ''; 
+            document.getElementById('dev-obs').value = '';
+            
+            this.renderItems();
+        },
+
+        renderItems: function() {
+            const list = document.getElementById('dev-items-list'); 
+            const btn = document.getElementById('btn-save-dev');
+            
+            if (this.items.length === 0) { list.innerHTML = ''; btn.classList.add('hidden'); return; }
+            
+            list.innerHTML = this.items.map((i, idx) => `
+                <div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
+                    <div class="flex-1 pr-4">
+                        <p class="text-[10px] font-black text-purple-600">${i.codigo}</p>
+                        <p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p>
+                        <p class="text-[9px] font-bold text-slate-400 mt-1">${i.cantidad} U • ${i.estado}</p>
+                    </div>
+                    <button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+            btn.classList.remove('hidden');
+        },
+
+        removeItem: function(idx) { 
+            this.items.splice(idx, 1); 
+            this.renderItems(); 
+        },
+
+        save: async function() {
+            const cli = document.getElementById('dev-cliente').value.trim(); 
+            const vend = document.getElementById('dev-vendedor').value; 
+            const mot = document.getElementById('dev-motivo').value.trim();
+            
+            if (!cli || !vend || this.items.length === 0) { alert("Completa Cliente, Vendedor y agrega productos a la lista."); return; }
+            
+            showLoading(); 
+            const hoy = new Date(); 
+            const fecha = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
+            
+            const dataDev = { action: "registrar_devolucion", cliente: cli, vendedor: vend, motivo: mot || "DEVOLUCIÓN", fecha: fecha, items: this.items };
+            
+            try {
+                // Actualiza visualmente el historial al instante
+                const pseud = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: fecha, CLIENTE: cli, VENDEDOR: vend, MOTIVO: mot, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado }));
+                this.histMaster = [...pseud, ...this.histMaster];
+                
+                // Manda los datos a Excel
+                fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataDev) });
+                
+                // Genera el reporte PDF con tu firma
+                this.generatePDF({ cliente: cli, vendedor: vend, motivo: mot, fecha: fecha, items: this.items });
+                
+                // Limpia el formulario
+                this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
+                this.renderItems(); 
+                
+                alert("¡Devolución guardada con éxito!"); 
+                
+                // Te manda de regreso a la vista de las tarjetas
+                changeTab('dev-history');
+                this.renderHistory();
+            } catch(e) { 
+                alert("Error guardando."); 
+            } finally { 
+                hideLoading(); 
+            }
+        },
+
+        renderHistory: function() {
+            const contenedor = document.getElementById('dev-history-cards');
+            if (!contenedor) return;
+            
+            const bInput = document.getElementById('dev-hist-search'); 
+            const fInput = document.getElementById('dev-filter-vendedor');
+            const busqueda = bInput ? bInput.value.toLowerCase().trim() : ""; 
+            const filtroVend = fInput ? fInput.value : "TODOS";
+            
+            if (!this.histMaster || this.histMaster.length === 0) { 
+                contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">Cargando registros...</div>`; 
+                return; 
+            }
+
+            // Agrupa por Ticket (Cliente + Fecha)
+            const tickets = {};
+            this.histMaster.forEach(i => {
+                const key = i.CLIENTE + "_" + i.FECHA;
+                if (!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] };
+                tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
+            });
+
+            // Aplica los filtros
+            const filtrados = Object.values(tickets).filter(t => {
+                const mB = t.cliente.toLowerCase().includes(busqueda) || t.items.some(i => (i.codigo||"").toString().toLowerCase().includes(busqueda));
+                const mV = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
+                return mB && mV;
+            }).reverse();
+
+            // Muestra los números arriba
+            const iT = document.getElementById('stat-dev-total'); 
+            const iF = document.getElementById('stat-dev-filtrado');
+            if(iT) iT.innerText = Object.keys(tickets).length; 
+            if(iF) iF.innerText = (filtroVend === "TODOS") ? "Gral" : filtrados.length;
+
+            if (filtrados.length === 0) { 
+                contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; 
+                return; 
+            }
+
+            // DIBUJA LAS TARJETAS (Con los 3 Botones)
+            contenedor.innerHTML = filtrados.map(t => {
+                const tJSON = JSON.stringify(t).replace(/'/g, "&#39;");
+                return `
+                <div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic tracking-tighter">REGISTRO DEVOLUCIÓN</div>
+                        <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
+                            <i class="ph-bold ph-user text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-[800] text-slate-900 uppercase leading-tight">${t.cliente}</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">VEND: ${t.vendedor}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-pencil-simple text-sm"></i> Editar
+                        </button>
+                        <button onclick='coreDev.viewTicketItems(${tJSON})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-blue-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-eye text-sm"></i> Lista
+                        </button>
+                        <button onclick='coreDev.generatePDF(${tJSON})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-red-100 active:scale-95 transition-transform">
+                            <i class="ph-bold ph-file-pdf text-sm"></i> PDF
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        },
+
+        viewTicketItems: function(t) {
+            const lC = document.getElementById('list-items-content');
+            const mT = document.getElementById('list-cont-id');
+            const mod = document.getElementById('list-view');
+            
+            if(!lC || !mT || !mod) return;
+
+            mT.innerText = "CLIENTE: " + t.cliente;
+            lC.innerHTML = t.items.map(i => `
+                <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm mb-2">
+                    <div class="flex-1 pr-4">
+                        <p class="text-[10px] font-[900] text-purple-600 mb-1 uppercase tracking-widest">${i.codigo}</p>
+                        <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${i.descripcion}</p>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">ESTADO: ${i.estado || 'OK'}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-[900] text-slate-900">${i.cantidad} U</span>
+                    </div>
+                </div>
+            `).join('');
+            mod.style.display = 'flex';
+        },
+
+        generatePDF: function(d) {
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF();
+            
+            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
+            doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
+            doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
+            doc.text(`FECHA: ${d.fecha}`, 14, 40); 
+            doc.text(`CLIENTE: ${d.cliente}`, 14, 46); 
+            doc.text(`VENDEDOR: ${d.vendedor}`, 14, 52);
+            
+            const b = d.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'OK']);
+            doc.autoTable({ startY: 60, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: b, headStyles: { fillColor: [37, 99, 235] } });
+            
+            const fY = doc.lastAutoTable.finalY + 20;
+            doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, fY);
+            doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, fY + 6);
+            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, fY + 11);
+            doc.save(`Devolucion_${d.cliente.replace(/\s+/g, '_')}.pdf`);
+        }
+    };
+
 
         // --- EL INTERRUPTOR FINAL (NAVEGACIÓN) ---
         window.changeTab = function(tab) {
