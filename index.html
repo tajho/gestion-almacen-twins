@@ -11,102 +11,26 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        :root { 
-            --primary: #0F172A; 
-            --accent: #2563EB; 
-            --success: #10B981;
-            --bg: #F8FAFC; 
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--primary); 
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        .glass-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .native-card {
-            background: #FFFFFF;
-            border-radius: 24px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
+        :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; }
+        .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
+        .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .native-card:active { transform: scale(0.97); }
-
-        .search-bar {
-            background: #FFFFFF;
-            border: 1.5px solid #E2E8F0;
-            border-radius: 18px;
-            transition: all 0.2s ease;
-        }
-
-        .modal-full { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: #F1F5F9; 
-            z-index: 100; 
-            flex-direction: column;
-            animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .progress-ring {
-            transition: stroke-dashoffset 0.35s;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
+        .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; transition: all 0.2s ease; }
+        .modal-full { display: none; position: fixed; inset: 0; background: #F1F5F9; z-index: 100; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-
-        #audit-view {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #F8FAFC;
-            z-index: 1000;
-            flex-direction: column;
-            animation: slideUp 0.3s ease-out;
-        }
-
+        #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .audit-item-card {
-            background: #FFFFFF;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid #F1F5F9;
-            box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03);
-            position: relative;
-            overflow: hidden;
-        }
+        .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
     </style>
 </head>
 <body class="antialiased">
 
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
-            <button onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 p-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex-shrink-0">
-                <i class="ph-bold ph-list text-2xl"></i>
-            </button>
+            <button onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 p-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex-shrink-0"><i class="ph-bold ph-list text-2xl"></i></button>
             <div class="flex-1">
                 <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">TAJHO</p>
                 <h1 id="header-title" class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
@@ -123,84 +47,36 @@
 
     <div id="app-shell" class="max-w-md mx-auto px-6 pb-24 block">
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-                <i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i>
-                <p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p>
-            </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm">
-                <i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i>
-                <p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p>
-            </div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
         </div>
-
         <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1">
-                <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700">
-            </div>
-            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative">
-                <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
-                <select id="month-select" onchange="core.filterMonth(this.value)" class="absolute inset-0 opacity-0 cursor-pointer"></select>
-            </div>
+            <div class="flex-1 search-bar flex items-center px-4 py-1"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700"></div>
+            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative"><i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i><select id="month-select" onchange="core.filterMonth(this.value)" class="absolute inset-0 opacity-0 cursor-pointer"></select></div>
         </div>
-
         <div id="container-list" class="space-y-4">
-            <div class="py-20 text-center text-slate-400 font-medium">Cargando inventario...</div>
+            <div class="py-20 text-center text-slate-400 font-medium animate-pulse">Cargando inventario...</div>
         </div>
     </div>
 
     <div id="audit-view">
         <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
             <div class="px-6 pt-10 pb-4 flex items-center justify-between">
-                <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2">
-                    <i class="ph-bold ph-arrow-left text-2xl"></i>
-                </button>
-                <div class="text-center">
-                    <h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2>
-                    <div class="flex items-center justify-center gap-1.5 mt-0.5">
-                        <i class="ph-fill ph-clock text-[12px] text-blue-500"></i>
-                        <span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span>
-                    </div>
-                </div>
-                <button onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2">
-                    <i class="ph-bold ph-magnifying-glass text-2xl"></i>
-                </button>
+                <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
+                <div class="text-center"><h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2><div class="flex items-center justify-center gap-1.5 mt-0.5"><i class="ph-fill ph-clock text-[12px] text-blue-500"></i><span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span></div></div>
+                <button onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2"><i class="ph-bold ph-magnifying-glass text-2xl"></i></button>
             </div>
-            <div id="audit-search-bar" class="hidden px-6 pb-4">
-                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors">
-            </div>
-            <div class="px-6 pb-4">
-                 <div class="flex justify-between items-end mb-1.5">
-                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso del Contenedor</span>
-                     <span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span>
-                 </div>
-                 <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                     <div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div>
-                 </div>
-            </div>
+            <div id="audit-search-bar" class="hidden px-6 pb-4"><input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors"></div>
+            <div class="px-6 pb-4"><div class="flex justify-between items-end mb-1.5"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso</span><span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div></div></div>
         </div>
         <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
         <div class="p-6 bg-white border-t border-slate-100 safe-area-bottom flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200">
-                <i class="ph-bold ph-file-pdf text-2xl"></i>
-            </button>
-            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
-                Finalizar Conteo
-            </button>
+            <button onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
+            <button onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
         </div>
     </div>
-
     <div id="list-view" class="modal-full">
-        <div class="px-6 py-8 flex items-center justify-between bg-white border-b">
-            <button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button>
-            <div class="text-center">
-                <h2 class="text-base font-[800] text-slate-900">Contenido</h2>
-                <p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p>
-            </div>
-            <div class="w-12"></div>
-        </div>
+        <div class="px-6 py-8 flex items-center justify-between bg-white border-b"><button onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
         <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
     </div>
 
@@ -220,7 +96,6 @@
                 <input type="text" id="dev-motivo" placeholder="Motivo de Devolución" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
             </div>
         </div>
-
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <div class="relative">
                 <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
@@ -235,32 +110,19 @@
                 </select>
             </div>
             <textarea id="dev-obs" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none"></textarea>
-            <button onclick="coreDev.addItem()" class="w-full mt-4 bg-blue-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest">Agregar a la lista</button>
+            <button onclick="coreDev.addItem()" class="w-full mt-4 bg-blue-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
         </div>
-
         <div id="dev-items-list" class="space-y-2 mb-6"></div>
-        <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden">Generar Reporte y Guardar</button>
+        <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Generar Reporte y Guardar</button>
     </div>
 
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-                <i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i>
-                <p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p>
-            </div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center">
-                <i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i>
-                <p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p>
-            </div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
         </div>
-
         <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm">
-                <i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i>
-                <input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm">
-            </div>
+            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm"></div>
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
                 <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
                 <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
@@ -273,742 +135,160 @@
                 </select>
             </div>
         </div>
-
         <div id="dev-history-cards" class="space-y-4"></div>
-
-        <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none">
-            <i class="ph-bold ph-plus text-2xl"></i>
-            <span class="text-[8px] font-black uppercase mt-1">Registrar</span>
-        </button>
+        <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
     </div>
 
     <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
                 <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
-                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded"><i class="ph-bold ph-x"></i></button>
+                <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="flex flex-col p-4 gap-3 mt-2">
-                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-50 border border-slate-50 flex items-center gap-3">
-                    <i class="ph-bold ph-clipboard-text text-xl"></i> AUDITORÍA
-                </button>
-                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-blue-50 border border-slate-50 flex items-center gap-3">
-                    <i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES
-                </button>
+                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
+                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
             </div>
-            <div class="mt-auto p-6 text-center border-t">
-                <p class="text-[9px] font-bold text-slate-400">J. Angelo Nuñez Durand<br>Asist. Inventario Logístico</p>
-            </div>
+            <div class="mt-auto p-6 text-center border-t border-slate-50"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
         </div>
     </div>
-
-    <div id="loading-modal" class="fixed inset-0 bg-slate-900/70 z-[200] hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center">
-            <i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i>
-            <h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3>
-        </div>
-    </div>
+    <div id="loading-modal" class="fixed inset-0 bg-slate-900/70 z-[200] hidden flex items-center justify-center backdrop-blur-sm"><div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center"><i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i><h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3></div></div>
 
     <script>
         function showLoading() { document.getElementById('loading-modal').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loading-modal').classList.add('hidden'); }
 
-        // --- MOTOR 1: AUDITORÍA ---
+        // MÓDULO 1: AUDITORÍA (INTACTO)
         const core = {
             url: "https://script.google.com/macros/s/AKfycbz3-kLZvKdvU9NXw1ytJwUIYU0PYsc5dwheeda-5xj0an-vQRSez-BY9CiTOZxyu5f2/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
-            currentMonth: "",
-            activeCont: null,
-            timerInterval: null,
-
-            getDesc: function(item) {
-                const keys = Object.keys(item);
-                const descKey = keys.find(k => k.toString().toUpperCase().includes("DESC") || k.toString().toUpperCase().includes("PRODUCTO"));
-                return descKey ? item[descKey] : "Sin descripción";
-            },
-
+            currentMonth: "", activeCont: null, timerInterval: null,
+            getDesc: function(item) { const k = Object.keys(item).find(key => key.toUpperCase().includes("DESC") || key.toUpperCase().includes("PRODUCTO")); return k ? item[k] : "Sin descripción"; },
+            
             fetchData: async function(silent = false) {
                 try {
-                    const response = await fetch(this.url);
-                    const data = await response.json();
+                    const res = await fetch(this.url); const data = await res.json();
                     if (data && Array.isArray(data)) {
-                        this.raw = data.map(item => {
-                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                            const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
-                            return { ...item, audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0), auditTime: cached ? (cached.auditTime || 0) : 0 };
+                        this.raw = data.map(i => {
+                            const isC = i["ESTADO"] && i["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                            const c = this.raw.find(old => old["CODIGO"] === i["CODIGO"] && (old["CONTENEDOR"]||old["CONTENEDOR_LIMPIO"]) === (i["CONTENEDOR"]||i["CONTENEDOR_LIMPIO"]));
+                            return { ...i, audit: isC ? (parseInt(i["CAJAS"])||0) : (c ? c.audit||0 : 0), auditTime: c ? c.auditTime||0 : 0 };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        const auditView = document.getElementById('audit-view');
-                        if (!auditView || auditView.style.display !== 'flex') this.render();
+                        const view = document.getElementById('audit-view'); if (!view || view.style.display !== 'flex') this.render();
                     }
                 } catch (e) { if (!silent) console.error(e); }
             },
-
             getItemMonth: function(item) {
-                const fecha = item["FECHA_LIMPIA"] || item["FECHA"] || "";
-                if (!fecha) return "EN PROGRAMACIÓN";
-                const partes = fecha.split("/");
-                return partes.length >= 2 ? (this.mesesNombre[parseInt(partes[1]) - 1] || "EN PROGRAMACIÓN") : "EN PROGRAMACIÓN";
+                const f = item["FECHA_LIMPIA"] || item["FECHA"] || ""; if (!f) return "EN PROGRAMACIÓN";
+                const p = f.split("/"); return p.length >= 2 ? (this.mesesNombre[parseInt(p[1])-1] || "EN PROGRAMACIÓN") : "EN PROGRAMACIÓN";
             },
-
             filterMonth: function(m) { this.currentMonth = m; this.render(); },
-
             render: function() {
-                const list = document.getElementById('container-list');
-                const search = document.getElementById('main-search').value.toLowerCase();
+                const list = document.getElementById('container-list'); const search = document.getElementById('main-search').value.toLowerCase();
                 if (!this.currentMonth) this.currentMonth = this.mesesNombre[new Date().getMonth()];
-
-                const select = document.getElementById('month-select');
-                if(select) {
-                    const uniqueMonths = new Set(this.raw.map(i => this.getItemMonth(i)));
-                    let options = `<option value="TODOS">TODOS LOS MESES</option>`;
-                    this.mesesNombre.forEach(m => { if(uniqueMonths.has(m)) options += `<option value="${m}" ${this.currentMonth === m ? 'selected' : ''}>${m}</option>`; });
-                    if(uniqueMonths.has("EN PROGRAMACIÓN")) options += `<option value="EN PROGRAMACIÓN" ${this.currentMonth === "EN PROGRAMACIÓN" ? 'selected' : ''}>POR CONFIRMAR</option>`;
-                    select.innerHTML = options;
+                const sel = document.getElementById('month-select');
+                if(sel) {
+                    const uM = new Set(this.raw.map(i => this.getItemMonth(i))); let opts = `<option value="TODOS">TODOS</option>`;
+                    this.mesesNombre.forEach(m => { if(uM.has(m)) opts += `<option value="${m}" ${this.currentMonth === m ? 'selected' : ''}>${m}</option>`; });
+                    if(uM.has("EN PROGRAMACIÓN")) opts += `<option value="EN PROGRAMACIÓN" ${this.currentMonth === "EN PROGRAMACIÓN" ? 'selected' : ''}>EN PROG.</option>`;
+                    sel.innerHTML = opts;
                 }
-
-                const groups = {}; let tTotalCj = 0, tTotalAud = 0;
-                const tempGroups = {};
-                this.raw.forEach(item => {
-                    const contId = (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"] || "S/N").toString();
-                    if (!tempGroups[contId]) tempGroups[contId] = [];
-                    tempGroups[contId].push(item);
+                const groups = {}; let tCj = 0, tAud = 0; const tempGroups = {};
+                this.raw.forEach(i => { const id = (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"] || "S/N").toString(); if(!tempGroups[id]) tempGroups[id]=[]; tempGroups[id].push(i); });
+                Object.keys(tempGroups).forEach(id => {
+                    const items = tempGroups[id]; if(items[0].ORIGEN === "HOJA3") return;
+                    const matchM = (this.currentMonth === "TODOS") || (this.currentMonth === this.getItemMonth(items[0]));
+                    const matchS = id.toLowerCase().includes(search) || items.some(i => (i["CODIGO"]&&i["CODIGO"].toString().toLowerCase().includes(search)) || this.getDesc(i).toLowerCase().includes(search));
+                    if (matchM && matchS) { groups[id] = items; items.forEach(i => { tCj += (parseInt(i["CAJAS"])||0); tAud += (i.audit||0); }); }
                 });
-
-                Object.keys(tempGroups).forEach(contId => {
-                    const items = tempGroups[contId];
-                    if (items[0].ORIGEN === "HOJA3") return; // Ignorar devoluciones aquí
-
-                    const matchesMonth = (this.currentMonth === "TODOS") || (this.currentMonth === this.getItemMonth(items[0]));
-                    const matchesSearch = contId.toLowerCase().includes(search) || items.some(i => (i["CODIGO"] && i["CODIGO"].toString().toLowerCase().includes(search)) || this.getDesc(i).toLowerCase().includes(search));
-
-                    if (matchesMonth && matchesSearch) {
-                        groups[contId] = items;
-                        items.forEach(i => { tTotalCj += (parseInt(i["CAJAS"]) || 0); tTotalAud += (i.audit || 0); });
-                    }
-                });
-
-                const globalP = tTotalCj > 0 ? Math.round((tTotalAud/tTotalCj)*100) : 0;
-                const elP = document.getElementById('global-perc'); const elR = document.getElementById('global-ring');
-                if(elP) elP.innerText = globalP + "%";
-                if(elR) elR.style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
-
+                const globalP = tCj > 0 ? Math.round((tAud/tCj)*100) : 0;
+                const e1 = document.getElementById('global-perc'); const e2 = document.getElementById('global-ring');
+                if(e1) e1.innerText = globalP + "%"; if(e2) e2.style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
                 const ids = Object.keys(groups);
-                document.getElementById('stat-containers').innerText = ids.length;
-                document.getElementById('stat-skus').innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3").length;
-
-                if (!list) return;
-                if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-medium">Sin datos</div>`; return; }
-
+                const s1 = document.getElementById('stat-containers'); const s2 = document.getElementById('stat-skus');
+                if(s1) s1.innerText = ids.length; if(s2) s2.innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3").length;
+                if(!list) return; if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin datos</div>`; return; }
                 list.innerHTML = ids.map(id => {
-                    const items = groups[id];
-                    let t = 0, a = 0; items.forEach(i => { t += parseInt(i["CAJAS"]) || 0; a += i.audit || 0; });
-                    const perc = t > 0 ? Math.round((a/t)*100) : 0;
-                    const esProg = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN";
-                    const isCompleted = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-
-                    return `
-                    <div class="native-card p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase">CARGA #${id}</div>
-                            <span class="text-[10px] font-bold text-slate-400">${esProg ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span>
-                        </div>
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="h-12 w-12 bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400"><i class="ph-bold ph-truck text-2xl"></i></div>
-                            <div class="flex-1">
-                                <h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3>
-                                <p class="text-[9px] font-bold text-slate-400">${items.length} SKUS</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs font-[900] ${perc >= 100 ? 'text-green-500' : 'text-slate-900'}">${perc}%</p>
-                                <p class="text-[8px] font-black text-slate-300 uppercase">AVANCE</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            ${!isCompleted ? `<button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white rounded-2xl text-[10px] font-bold h-14 tracking-widest"><i class="ph-bold ph-selection-all"></i> CONTEO</button>` : ''}
-                            <button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 rounded-2xl text-[10px] font-bold text-slate-600 h-14 tracking-widest shadow-sm"><i class="ph-bold ph-list-bullets"></i> LISTA</button>
-                            <button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 rounded-2xl h-14 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-xl"></i></button>
-                        </div>
-                    </div>`;
+                    const items = groups[id]; let t=0, a=0; items.forEach(i => { t+=(parseInt(i["CAJAS"])||0); a+=(i.audit||0); });
+                    const perc = t>0 ? Math.round((a/t)*100) : 0; const esP = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN"; const isC = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                    return `<div class="native-card p-6"><div class="flex justify-between items-start mb-4"><div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase">CARGA #${id}</div><span class="text-[10px] font-bold text-slate-400">${esP ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400"><i class="ph-bold ph-truck text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3><p class="text-[9px] font-bold text-slate-400">${items.length} SKUS</p></div><div class="text-right"><p class="text-xs font-[900] ${perc >= 100 ? 'text-green-500' : 'text-slate-900'}">${perc}%</p><p class="text-[8px] font-black text-slate-300 uppercase">AVANCE</p></div></div><div class="flex gap-2">${!isC ? `<button onclick="core.openAudit('${id}')" class="flex-1 bg-slate-900 text-white rounded-2xl text-[10px] font-bold h-14 tracking-widest"><i class="ph-bold ph-selection-all"></i> CONTEO</button>` : ''}<button onclick="core.viewList('${id}')" class="flex-1 bg-white border border-slate-100 rounded-2xl text-[10px] font-bold text-slate-600 h-14 tracking-widest shadow-sm"><i class="ph-bold ph-list-bullets"></i> LISTA</button><button onclick="core.generatePDF('${id}')" class="w-14 bg-red-50 text-red-600 rounded-2xl h-14 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-xl"></i></button></div></div>`;
                 }).join('');
             },
-
-            startTimer: function(id) {
-                this.stopTimer();
-                this.timerInterval = setInterval(() => {
-                    const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                    if (items.length > 0) { items[0].auditTime = (items[0].auditTime || 0) + 1; document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); }
-                }, 1000);
-            },
+            startTimer: function(id) { this.stopTimer(); this.timerInterval = setInterval(() => { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); if (items.length > 0) { items[0].auditTime = (items[0].auditTime || 0) + 1; document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); } }, 1000); },
             stopTimer: function() { if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; } },
             formatTime: function(s) { const m = Math.floor((s % 3600) / 60); const sc = s % 60; return `${m.toString().padStart(2, '0')}:${sc.toString().padStart(2, '0')}`; },
-            
-            sortAuditItems: function(itemsList) {
-                const pen = []; const com = [];
-                itemsList.forEach(i => { if((i.audit || 0) > 0 && (i.audit || 0) >= (parseInt(i.CAJAS) || 0)) com.push(i); else pen.push(i); });
-                return [...pen, ...com];
-            },
-
+            sortAuditItems: function(list) { const p=[]; const c=[]; list.forEach(i => { if((i.audit||0) > 0 && (i.audit||0) >= (parseInt(i.CAJAS)||0)) c.push(i); else p.push(i); }); return [...p, ...c]; },
             toggleAuditSearch: function() { const b = document.getElementById('audit-search-bar'); b.classList.toggle('hidden'); if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus(); },
-
-            openAudit: function(id) {
-                this.activeCont = id; localStorage.setItem('twins_active_cont', id);
-                document.getElementById('audit-title').innerText = "CARGA #" + id;
-                document.getElementById('audit-search-bar').classList.add('hidden');
-                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime || 0);
-                this.startTimer(id);
-                this.renderAuditItems(this.sortAuditItems(items));
-                this.updateProgress(id);
-                document.getElementById('audit-view').style.display = 'flex';
-            },
-
-            filterAuditItems: function(val) {
-                const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
-                const filtered = items.filter(i => i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || this.getDesc(i).toLowerCase().includes(val.toLowerCase()));
-                this.renderAuditItems(this.sortAuditItems(filtered));
-            },
-
-            renderAuditItems: function(items) {
-                document.getElementById('audit-items-container').innerHTML = items.map(item => {
-                    const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo;
-                    let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200';
-                    if (aud > 0) {
-                        if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; }
-                        else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; }
-                        else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; }
-                    }
-                    return `
-                    <div id="card-${idx}" class="audit-item-card transition-all duration-300">
-                       <div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lColor}"></div>
-                       <div class="pl-2">
-                           <div class="flex justify-between items-start mb-2"><span class="text-[9px] font-black text-slate-400">${item.CODIGO}</span><span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}">${bText}</span></div>
-                           <h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4">${this.getDesc(item)}</h4>
-                           <div class="flex justify-between items-end mb-4 mt-2">
-                               <div><p class="text-[9px] font-bold text-slate-400">TEÓRICO</p><p class="text-xl font-black text-slate-300">${teo}</p></div>
-                               <div class="text-right"><p class="text-[9px] font-bold text-blue-500 tracking-widest">TOTAL CONTADO</p><p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p></div>
-                           </div>
-                           <div class="flex items-center gap-3">
-                               <button onclick="core.step(${idx}, -1)" class="w-12 h-12 bg-slate-50 text-slate-500 rounded-xl border"><i class="ph-bold ph-minus"></i></button>
-                               <div class="flex-1 flex items-center bg-slate-50 border rounded-xl px-2"><input type="number" id="add-input-${idx}" placeholder="Cant..." class="w-full bg-transparent text-center font-black text-base outline-none py-3" onkeypress="if(event.key === 'Enter') { core.addAmount(${idx}); }"><button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg"><i class="ph-bold ph-plus"></i></button></div>
-                           </div>
-                           <div class="grid grid-cols-2 gap-2 mt-4"><button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl tracking-wider">IGUALAR</button><button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl tracking-wider">REINICIAR</button></div>
-                       </div>
-                    </div>`;
-                }).join('');
-            },
-
+            openAudit: function(id) { this.activeCont = id; localStorage.setItem('twins_active_cont', id); document.getElementById('audit-title').innerText = "CARGA #" + id; document.getElementById('audit-search-bar').classList.add('hidden'); const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime || 0); this.startTimer(id); this.renderAuditItems(this.sortAuditItems(items)); this.updateProgress(id); document.getElementById('audit-view').style.display = 'flex'; },
+            filterAuditItems: function(val) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); const f = items.filter(i => i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || this.getDesc(i).toLowerCase().includes(val.toLowerCase())); this.renderAuditItems(this.sortAuditItems(f)); },
+            renderAuditItems: function(items) { document.getElementById('audit-items-container').innerHTML = items.map(item => { const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } return `<div id="card-${idx}" class="audit-item-card transition-all duration-300"><div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}"></div><div class="pl-2"><div class="flex justify-between items-start mb-2"><span class="text-[9px] font-black text-slate-400">${item.CODIGO}</span><span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}">${bT}</span></div><h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4">${this.getDesc(item)}</h4><div class="flex justify-between items-end mb-4 mt-2"><div><p class="text-[9px] font-bold text-slate-400">TEÓRICO</p><p class="text-xl font-black text-slate-300">${teo}</p></div><div class="text-right"><p class="text-[9px] font-bold text-blue-500 tracking-widest">TOTAL CONTADO</p><p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p></div></div><div class="flex items-center gap-3"><button onclick="core.step(${idx}, -1)" class="w-12 h-12 bg-slate-50 text-slate-500 rounded-xl border active:scale-95"><i class="ph-bold ph-minus text-lg"></i></button><div class="flex-1 flex items-center bg-slate-50 border rounded-xl px-2"><input type="number" id="add-input-${idx}" placeholder="Cant..." class="w-full bg-transparent text-center font-black text-base outline-none py-3" onkeypress="if(event.key === 'Enter') { core.addAmount(${idx}); }"><button onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg active:scale-95"><i class="ph-bold ph-plus text-lg"></i></button></div></div><div class="grid grid-cols-2 gap-2 mt-4"><button onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl tracking-wider">IGUALAR TEÓRICO</button><button onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl tracking-wider">REINICIAR</button></div></div></div>`; }).join(''); },
             step: function(idx, v) { this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
             addAmount: function(idx) { const i = document.getElementById(`add-input-${idx}`); const v = parseInt(i.value); if(isNaN(v) || v===0) return; this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); i.value = ''; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
             setDirect: function(idx, v) { this.raw[idx].audit = v; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
-            
-            refreshItemUI: function(idx) {
-                const item = this.raw[idx]; const aud = item.audit || 0; const teo = parseInt(item.CAJAS) || 0; const diff = aud - teo;
-                document.getElementById(`total-audit-${idx}`).innerText = aud;
-                let bClass = 'bg-slate-100 text-slate-500'; let bText = 'PENDIENTE'; let lColor = 'bg-slate-200';
-                if (aud > 0) {
-                    if (diff === 0) { bClass = 'bg-emerald-100 text-emerald-600'; bText = 'CORRECTO'; lColor = 'bg-emerald-500'; }
-                    else if (diff > 0) { bClass = 'bg-blue-100 text-blue-600'; bText = `SOBRA (+${diff})`; lColor = 'bg-blue-500'; }
-                    else { bClass = 'bg-orange-100 text-orange-600'; bText = `FALTA (${diff})`; lColor = 'bg-orange-500'; }
-                }
-                const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bClass}`; bdg.innerText = bText; }
-                const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lColor}`;
-                localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-            },
-
-            updateProgress: function(id) {
-                const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id);
-                let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); });
-                const p = t > 0 ? Math.round((a/t)*100) : 0;
-                document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%";
-            },
-
+            refreshItemUI: function(idx) { const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; document.getElementById(`total-audit-${idx}`).innerText = aud; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}`; bdg.innerText = bT; } const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
+            updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); }); const p = t > 0 ? Math.round((a/t)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%"; },
             closeModal: function(id) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
-
-            saveAndFinish: async function() {
-                if (!confirm(`¿Confirmas finalizar la auditoría #${this.activeCont}?`)) return;
-                this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont);
-                let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; });
-                const f = new Date(); const fD = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}/${f.getFullYear()}`;
-                const tForm = this.formatTime(tSeg);
-                items.forEach(i => { i.ESTADO = "COMPLETADO"; i.auditTime = tSeg; i.FECHA_LIMPIA = fD; });
-                localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont');
-                fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) });
-                this.closeModal('audit-view'); this.render();
-            },
-
-            viewList: function(id) {
-                const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id);
-                document.getElementById('list-cont-id').innerText = "Ref: " + id;
-                document.getElementById('list-items-content').innerHTML = items.map(i => `
-                    <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm">
-                        <div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1">${i.CODIGO}</p><p class="text-xs font-bold text-slate-800 line-clamp-2">${this.getDesc(i)}</p></div>
-                        <div class="text-right flex items-center gap-4">
-                             <div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : 'text-slate-900'}">${i.audit || 0} / ${i.CAJAS || 0}</span></div>
-                        </div>
-                    </div>`).join('');
-                document.getElementById('list-view').style.display = 'flex';
-            },
-
-            generatePDF: function(id) {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id);
-                if (items.length === 0) return;
-                doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-                doc.setFontSize(9); doc.setTextColor(120); doc.text(`REPORTE DE AUDITORÍA • CONTENEDOR: ${id}`, 14, 30);
-                const b = items.map(i => [ i.CODIGO || "---", this.getDesc(i), i.CAJAS || 0, i.audit || 0, (i.audit || 0) - (parseInt(i.CAJAS) || 0) ]);
-                doc.autoTable({ startY: 42, head: [['SKU', 'DESCRIPCION', 'TEO', 'AUD', 'DIF']], body: b, headStyles: { fillColor: [15, 23, 42], fontSize: 7 } });
-                const finalY = doc.lastAutoTable.finalY + 15;
-                doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY);
-                doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6);
-                doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11);
-                doc.save(`Reporte_${id}.pdf`);
-            }
+            saveAndFinish: async function() { if (!confirm(`¿Confirmas finalizar la auditoría #${this.activeCont}?`)) return; this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; }); const f = new Date(); const fD = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}/${f.getFullYear()}`; const tForm = this.formatTime(tSeg); items.forEach(i => { i.ESTADO = "COMPLETADO"; i.auditTime = tSeg; i.FECHA_LIMPIA = fD; }); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) }); this.closeModal('audit-view'); this.render(); },
+            viewList: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(i => `<div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1">${i.CODIGO}</p><p class="text-xs font-bold text-slate-800 line-clamp-2">${this.getDesc(i)}</p></div><div class="text-right flex items-center gap-4"><div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : 'text-slate-900'}">${i.audit || 0} / ${i.CAJAS || 0}</span><span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span></div></div></div>`).join(''); document.getElementById('list-view').style.display = 'flex'; },
+            generatePDF: function(id) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); if (items.length === 0) return; doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`REPORTE DE AUDITORÍA • CONTENEDOR: ${id}`, 14, 30); const b = items.map(i => [ i.CODIGO || "---", this.getDesc(i), i.CAJAS || 0, i.audit || 0, (i.audit || 0) - (parseInt(i.CAJAS) || 0) ]); doc.autoTable({ startY: 42, head: [['SKU', 'DESCRIPCION', 'TEO', 'AUD', 'DIF']], body: b, headStyles: { fillColor: [15, 23, 42], fontSize: 7 } }); const finalY = doc.lastAutoTable.finalY + 15; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Reporte_${id}.pdf`); }
         };
 
-        // --- MOTOR 2: DEVOLUCIONES ---
+        // MÓDULO 2: DEVOLUCIONES
         const coreDev = {
             histMaster: [], items: [],
-
-            init: async function() { this.fetchHist(); },
-
+            init: async function() { await this.fetchHist(); },
             fetchHist: async function() {
                 try {
-                    const resp = await fetch(core.url);
-                    const data = await resp.json();
+                    const resp = await fetch(core.url); const data = await resp.json();
                     this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3");
-                    this.renderHistory();
-                } catch (e) { console.error(e); }
+                    this.renderHistory(); // Esto asegura que la Hoja 3 se pinte al iniciar
+                } catch (e) { console.error("Error historial:", e); const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Error de conexión</div>`; }
             },
-
-            search: function() {
-                const query = document.getElementById('dev-search-prod').value.toLowerCase();
-                const resBox = document.getElementById('dev-results');
-                if (query.length < 2) { resBox.classList.add('hidden'); return; }
-                const unique = []; const seen = new Set();
-                core.raw.forEach(i => {
-                    const code = i.CODIGO.toString().toUpperCase();
-                    if (!seen.has(code) && i.ORIGEN !== "HOJA3" && (code.toLowerCase().includes(query) || core.getDesc(i).toLowerCase().includes(query))) {
-                        seen.add(code); unique.push(i);
-                    }
-                });
-                if (unique.length > 0) {
-                    resBox.innerHTML = unique.slice(0, 5).map(i => `
-                        <div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer">
-                            <p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p>
-                            <p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p>
-                        </div>
-                    `).join('');
-                } else { resBox.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; }
-                resBox.classList.remove('hidden');
-            },
-
-            selectItem: function(cod, desc) {
-                const input = document.getElementById('dev-search-prod');
-                input.value = `${cod} - ${desc}`; input.dataset.cod = cod; input.dataset.desc = desc;
-                document.getElementById('dev-results').classList.add('hidden');
-            },
-
-            addItem: function() {
-                const input = document.getElementById('dev-search-prod');
-                const cant = parseInt(document.getElementById('dev-cant').value);
-                const est = document.getElementById('dev-estado').value;
-                const obs = document.getElementById('dev-obs').value;
-                if (!input.dataset.cod || isNaN(cant) || cant <= 0) { alert("Completa SKU y cantidad."); return; }
-                this.items.push({ codigo: input.dataset.cod, descripcion: input.dataset.desc, cantidad: cant, estado: est, obs: obs });
-                input.value = ''; input.removeAttribute('data-cod'); input.removeAttribute('data-desc');
-                document.getElementById('dev-cant').value = ''; document.getElementById('dev-obs').value = '';
-                this.renderItems();
-            },
-
-            renderItems: function() {
-                const list = document.getElementById('dev-items-list'); const btn = document.getElementById('btn-save-dev');
-                if (this.items.length === 0) { list.innerHTML = ''; btn.classList.add('hidden'); return; }
-                list.innerHTML = this.items.map((i, idx) => `
-                    <div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
-                        <div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] text-slate-400">${i.cantidad} U • ${i.estado}</p></div>
-                        <button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button>
-                    </div>`).join('');
-                btn.classList.remove('hidden');
-            },
-
+            search: function() { const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
+            selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); },
+            addItem: function() { const i = document.getElementById('dev-search-prod'); const c = parseInt(document.getElementById('dev-cant').value); const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(c) || c <= 0) { alert("Completa SKU y cantidad."); return; } this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: c, estado: e, obs: o }); i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant').value = ''; document.getElementById('dev-obs').value = ''; this.renderItems(); },
+            renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-400 mt-1">${i.cantidad} U • ${i.estado}</p></div><button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`).join(''); b.classList.remove('hidden'); },
             removeItem: function(idx) { this.items.splice(idx, 1); this.renderItems(); },
+            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { alert("Completa Cliente, Vendedor y productos."); return; } showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; const d = { action: "registrar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items }; try { const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado })); this.histMaster = [...p, ...this.histMaster]; fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) }); this.generatePDF({ cliente: c, vendedor: v, motivo: m, fecha: f, items: this.items }); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; this.renderItems(); alert("Guardado con éxito"); changeTab('dev-history'); this.renderHistory(); } catch(e) { alert("Error guardando."); } finally { hideLoading(); } },
+            renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; if (!this.histMaster || this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">Cargando Hoja 3...</div>`; return; } const t = {}; this.histMaster.forEach(i => { const k = i.CLIENTE + "_" + i.FECHA; if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] }; t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); }); const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); return mB && mV; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } c.innerHTML = fil.map(tk => { const j = JSON.stringify(tk).replace(/'/g, "&#39;"); return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; }).join(''); },
+            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right font-[900] text-slate-900">${i.cantidad} U</div></div>`).join(''); mo.style.display = 'flex'; },
+            generatePDF: function(d) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30); doc.setFontSize(10); doc.setTextColor(15, 23, 42); doc.text(`FECHA: ${d.fecha}`, 14, 40); doc.text(`CLIENTE: ${d.cliente}`, 14, 46); doc.text(`VENDEDOR: ${d.vendedor}`, 14, 52); const b = d.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'OK']); doc.autoTable({ startY: 60, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: b, headStyles: { fillColor: [37, 99, 235] } }); const fY = doc.lastAutoTable.finalY + 20; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, fY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, fY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, fY + 11); doc.save(`Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); }
+        };
 
-            save: async function() {
-                const cli = document.getElementById('dev-cliente').value.trim(); const vend = document.getElementById('dev-vendedor').value; const mot = document.getElementById('dev-motivo').value.trim();
-                if (!cli || !vend || this.items.length === 0) { alert("Completa datos y productos."); return; }
-                showLoading(); const hoy = new Date(); const fecha = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
-                const dataDev = { action: "registrar_devolucion", cliente: cli, vendedor: vend, motivo: mot || "DEVOLUCIÓN", fecha: fecha, items: this.items };
-                try {
-                    const pseud = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: fecha, CLIENTE: cli, VENDEDOR: vend, MOTIVO: mot, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado }));
-                    this.histMaster = [...pseud, ...this.histMaster];
-                    fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataDev) });
-                    this.generatePDF({ cliente: cli, vendedor: vend, motivo: mot, fecha: fecha, items: this.items });
-                    this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
-                    this.renderItems(); alert("Guardado con éxito"); changeTab('dev-history');
-                } catch(e) { alert("Error guardando."); } finally { hideLoading(); }
-            },
-
-            renderHistory: function() {
-                const contenedor = document.getElementById('dev-history-cards');
-                if (!contenedor) return;
-                const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor');
-                const busqueda = bI ? bI.value.toLowerCase().trim() : ""; const filtroVend = fV ? fV.value : "TODOS";
-                
-                if (!this.histMaster || this.histMaster.length === 0) { contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold">Cargando registros...</div>`; return; }
-
-                const tickets = {};
-                this.histMaster.forEach(i => {
-                    const key = i.CLIENTE + "_" + i.FECHA;
-                    if (!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] };
-                    tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
-                });
-
-    const coreDev = {
-        histMaster: [], 
-        items: [],
-
-        init: async function() { 
-            await this.fetchHist(); 
-        },
-
-        fetchHist: async function() {
-            try {
-                // Llama al Excel general y extrae solo la Hoja 3
-                const resp = await fetch(core.url);
-                const data = await resp.json();
-                
-                this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3");
-                
-                // ¡ESTA ES LA LÍNEA CLAVE! Obliga a dibujar las tarjetas apenas llegan los datos
-                this.renderHistory();
-            } catch (e) { 
-                console.error("Error al cargar historial:", e);
-                const contenedor = document.getElementById('dev-history-cards');
-                if(contenedor) contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Error de conexión con la base de datos</div>`;
-            }
-        },
-
-        search: function() {
-            const query = document.getElementById('dev-search-prod').value.toLowerCase();
-            const resBox = document.getElementById('dev-results');
-            if (query.length < 2) { resBox.classList.add('hidden'); return; }
-            
-            const unique = []; const seen = new Set();
-            core.raw.forEach(i => {
-                const code = (i.CODIGO || "").toString().toUpperCase();
-                const desc = core.getDesc(i).toLowerCase();
-                // Evitamos buscar dentro del propio historial
-                if (!seen.has(code) && i.ORIGEN !== "HOJA3" && (code.toLowerCase().includes(query) || desc.includes(query))) {
-                    seen.add(code); unique.push(i);
-                }
-            });
-            
-            if (unique.length > 0) {
-                resBox.innerHTML = unique.slice(0, 5).map(i => `
-                    <div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer">
-                        <p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p>
-                        <p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p>
-                    </div>
-                `).join('');
-            } else { 
-                resBox.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; 
-            }
-            resBox.classList.remove('hidden');
-        },
-
-        selectItem: function(cod, desc) {
-            const input = document.getElementById('dev-search-prod');
-            input.value = `${cod} - ${desc}`; 
-            input.dataset.cod = cod; 
-            input.dataset.desc = desc;
-            document.getElementById('dev-results').classList.add('hidden');
-        },
-
-        addItem: function() {
-            const input = document.getElementById('dev-search-prod');
-            const cant = parseInt(document.getElementById('dev-cant').value);
-            const est = document.getElementById('dev-estado').value;
-            const obs = document.getElementById('dev-obs').value;
-            
-            if (!input.dataset.cod || isNaN(cant) || cant <= 0) { alert("Selecciona producto y cantidad válida."); return; }
-            
-            this.items.push({ codigo: input.dataset.cod, descripcion: input.dataset.desc, cantidad: cant, estado: est, obs: obs });
-            
-            input.value = ''; input.removeAttribute('data-cod'); input.removeAttribute('data-desc');
-            document.getElementById('dev-cant').value = ''; 
-            document.getElementById('dev-obs').value = '';
-            
-            this.renderItems();
-        },
-
-        renderItems: function() {
-            const list = document.getElementById('dev-items-list'); 
-            const btn = document.getElementById('btn-save-dev');
-            
-            if (this.items.length === 0) { list.innerHTML = ''; btn.classList.add('hidden'); return; }
-            
-            list.innerHTML = this.items.map((i, idx) => `
-                <div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
-                    <div class="flex-1 pr-4">
-                        <p class="text-[10px] font-black text-purple-600">${i.codigo}</p>
-                        <p class="text-xs font-bold text-slate-800 line-clamp-1">${i.descripcion}</p>
-                        <p class="text-[9px] font-bold text-slate-400 mt-1">${i.cantidad} U • ${i.estado}</p>
-                    </div>
-                    <button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
-                        <i class="ph-bold ph-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-            btn.classList.remove('hidden');
-        },
-
-        removeItem: function(idx) { 
-            this.items.splice(idx, 1); 
-            this.renderItems(); 
-        },
-
-        save: async function() {
-            const cli = document.getElementById('dev-cliente').value.trim(); 
-            const vend = document.getElementById('dev-vendedor').value; 
-            const mot = document.getElementById('dev-motivo').value.trim();
-            
-            if (!cli || !vend || this.items.length === 0) { alert("Completa Cliente, Vendedor y agrega productos a la lista."); return; }
-            
-            showLoading(); 
-            const hoy = new Date(); 
-            const fecha = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
-            
-            const dataDev = { action: "registrar_devolucion", cliente: cli, vendedor: vend, motivo: mot || "DEVOLUCIÓN", fecha: fecha, items: this.items };
-            
-            try {
-                // Actualiza visualmente el historial al instante
-                const pseud = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: fecha, CLIENTE: cli, VENDEDOR: vend, MOTIVO: mot, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado }));
-                this.histMaster = [...pseud, ...this.histMaster];
-                
-                // Manda los datos a Excel
-                fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataDev) });
-                
-                // Genera el reporte PDF con tu firma
-                this.generatePDF({ cliente: cli, vendedor: vend, motivo: mot, fecha: fecha, items: this.items });
-                
-                // Limpia el formulario
-                this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = '';
-                this.renderItems(); 
-                
-                alert("¡Devolución guardada con éxito!"); 
-                
-                // Te manda de regreso a la vista de las tarjetas
-                changeTab('dev-history');
-                this.renderHistory();
-            } catch(e) { 
-                alert("Error guardando."); 
-            } finally { 
-                hideLoading(); 
-            }
-        },
-
-        renderHistory: function() {
-            const contenedor = document.getElementById('dev-history-cards');
-            if (!contenedor) return;
-            
-            const bInput = document.getElementById('dev-hist-search'); 
-            const fInput = document.getElementById('dev-filter-vendedor');
-            const busqueda = bInput ? bInput.value.toLowerCase().trim() : ""; 
-            const filtroVend = fInput ? fInput.value : "TODOS";
-            
-            if (!this.histMaster || this.histMaster.length === 0) { 
-                contenedor.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">Cargando registros...</div>`; 
-                return; 
-            }
-
-            // Agrupa por Ticket (Cliente + Fecha)
-            const tickets = {};
-            this.histMaster.forEach(i => {
-                const key = i.CLIENTE + "_" + i.FECHA;
-                if (!tickets[key]) tickets[key] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] };
-                tickets[key].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO });
-            });
-
-            // Aplica los filtros
-            const filtrados = Object.values(tickets).filter(t => {
-                const mB = t.cliente.toLowerCase().includes(busqueda) || t.items.some(i => (i.codigo||"").toString().toLowerCase().includes(busqueda));
-                const mV = (filtroVend === "TODOS") || (t.vendedor === filtroVend);
-                return mB && mV;
-            }).reverse();
-
-            // Muestra los números arriba
-            const iT = document.getElementById('stat-dev-total'); 
-            const iF = document.getElementById('stat-dev-filtrado');
-            if(iT) iT.innerText = Object.keys(tickets).length; 
-            if(iF) iF.innerText = (filtroVend === "TODOS") ? "Gral" : filtrados.length;
-
-            if (filtrados.length === 0) { 
-                contenedor.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; 
-                return; 
-            }
-
-            // DIBUJA LAS TARJETAS (Con los 3 Botones)
-            contenedor.innerHTML = filtrados.map(t => {
-                const tJSON = JSON.stringify(t).replace(/'/g, "&#39;");
-                return `
-                <div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic tracking-tighter">REGISTRO DEVOLUCIÓN</div>
-                        <span class="text-[10px] font-bold text-slate-400">${t.fecha}</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
-                            <i class="ph-bold ph-user text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-sm font-[800] text-slate-900 uppercase leading-tight">${t.cliente}</h3>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">VEND: ${t.vendedor}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-slate-100 active:scale-95 transition-transform">
-                            <i class="ph-bold ph-pencil-simple text-sm"></i> Editar
-                        </button>
-                        <button onclick='coreDev.viewTicketItems(${tJSON})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-blue-100 active:scale-95 transition-transform">
-                            <i class="ph-bold ph-eye text-sm"></i> Lista
-                        </button>
-                        <button onclick='coreDev.generatePDF(${tJSON})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center gap-1 font-bold text-[9px] uppercase border border-red-100 active:scale-95 transition-transform">
-                            <i class="ph-bold ph-file-pdf text-sm"></i> PDF
-                        </button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        },
-
-        viewTicketItems: function(t) {
-            const lC = document.getElementById('list-items-content');
-            const mT = document.getElementById('list-cont-id');
-            const mod = document.getElementById('list-view');
-            
-            if(!lC || !mT || !mod) return;
-
-            mT.innerText = "CLIENTE: " + t.cliente;
-            lC.innerHTML = t.items.map(i => `
-                <div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm mb-2">
-                    <div class="flex-1 pr-4">
-                        <p class="text-[10px] font-[900] text-purple-600 mb-1 uppercase tracking-widest">${i.codigo}</p>
-                        <p class="text-xs font-bold text-slate-800 uppercase line-clamp-2">${i.descripcion}</p>
-                        <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">ESTADO: ${i.estado || 'OK'}</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-sm font-[900] text-slate-900">${i.cantidad} U</span>
-                    </div>
-                </div>
-            `).join('');
-            mod.style.display = 'flex';
-        },
-
-        generatePDF: function(d) {
-            const { jsPDF } = window.jspdf; 
-            const doc = new jsPDF();
-            
-            doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22);
-            doc.setFontSize(9); doc.setTextColor(120); doc.text("TICKET DE DEVOLUCIÓN • TAJHO", 14, 30);
-            doc.setFontSize(10); doc.setTextColor(15, 23, 42); 
-            doc.text(`FECHA: ${d.fecha}`, 14, 40); 
-            doc.text(`CLIENTE: ${d.cliente}`, 14, 46); 
-            doc.text(`VENDEDOR: ${d.vendedor}`, 14, 52);
-            
-            const b = d.items.map(i => [i.codigo, i.descripcion, i.cantidad, i.estado || 'OK']);
-            doc.autoTable({ startY: 60, head: [['SKU', 'PRODUCTO', 'CANT', 'ESTADO']], body: b, headStyles: { fillColor: [37, 99, 235] } });
-            
-            const fY = doc.lastAutoTable.finalY + 20;
-            doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, fY);
-            doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, fY + 6);
-            doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, fY + 11);
-            doc.save(`Devolucion_${d.cliente.replace(/\s+/g, '_')}.pdf`);
-        }
-    };
-
-
-        // --- EL INTERRUPTOR FINAL (NAVEGACIÓN) ---
+        // RUTAS Y NAVEGACIÓN
         window.changeTab = function(tab) {
-            const audit = document.getElementById('app-shell');
-            const devForm = document.getElementById('module-returns');
-            const devHist = document.getElementById('module-dev-history');
-
-            // Apagamos todo de forma segura
+            const audit = document.getElementById('app-shell'); const devForm = document.getElementById('module-returns'); const devHist = document.getElementById('module-dev-history');
             if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
             if(devForm) { devForm.style.display = 'none'; devForm.classList.add('hidden'); }
             if(devHist) { devHist.style.display = 'none'; devHist.classList.add('hidden'); }
+            const tituloEl = document.getElementById('header-title'); const progEl = document.getElementById('header-progress');
 
-            const tituloEl = document.getElementById('header-title');
-            const progEl = document.getElementById('header-progress');
+            if (tab === 'audit') { if(audit) { audit.style.display = 'block'; audit.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA'; if(progEl) progEl.style.display = 'flex'; } 
+            else if (tab === 'dev') { if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN'; if(progEl) progEl.style.display = 'none'; } 
+            else if (tab === 'dev-history') { if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS'; if(progEl) progEl.style.display = 'none'; if(typeof coreDev !== 'undefined') coreDev.renderHistory(); }
 
-            // Encendemos solo lo que el usuario pide
-            if (tab === 'audit') {
-                if(audit) { audit.style.display = 'block'; audit.classList.remove('hidden'); }
-                if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA';
-                if(progEl) progEl.style.display = 'flex';
-            } 
-            else if (tab === 'dev') {
-                if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); }
-                if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN';
-                if(progEl) progEl.style.display = 'none';
-            } 
-            else if (tab === 'dev-history') {
-                if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); }
-                if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS';
-                if(progEl) progEl.style.display = 'none';
-                if (typeof coreDev !== 'undefined') coreDev.renderHistory();
-            }
-
-            // Ocultar Menú Lateral
-            const menu = document.getElementById('twins-menu');
-            const panel = document.getElementById('twins-menu-panel');
-            if (menu && !menu.classList.contains('hidden')) {
-                if (panel) panel.classList.add('-translate-x-full');
-                setTimeout(() => menu.classList.add('hidden'), 300);
-            }
-            
+            const menu = document.getElementById('twins-menu'); const panel = document.getElementById('twins-menu-panel');
+            if (menu && !menu.classList.contains('hidden')) { if (panel) panel.classList.add('-translate-x-full'); setTimeout(() => menu.classList.add('hidden'), 300); }
             localStorage.setItem('twins_memoria_pantalla', tab);
         };
 
         window.toggleMenu = function() {
-            const menu = document.getElementById('twins-menu');
-            const panel = document.getElementById('twins-menu-panel');
-            if (menu && panel) {
-                if (menu.classList.contains('hidden')) {
-                    menu.classList.remove('hidden');
-                    setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
-                } else {
-                    panel.classList.add('-translate-x-full');
-                    setTimeout(() => menu.classList.add('hidden'), 300);
-                }
-            }
+            const m = document.getElementById('twins-menu'); const p = document.getElementById('twins-menu-panel');
+            if (m && p) { if (m.classList.contains('hidden')) { m.classList.remove('hidden'); setTimeout(() => p.classList.remove('-translate-x-full'), 10); } else { p.classList.add('-translate-x-full'); setTimeout(() => m.classList.add('hidden'), 300); } }
         };
 
-        // --- ARRANQUE ---
+        // ARRANQUE FINAL
         window.onload = async () => {
             if (typeof coreDev !== 'undefined') coreDev.init();
-            
-            const pantallaGuardada = localStorage.getItem('twins_memoria_pantalla') || 'audit';
-            changeTab(pantallaGuardada);
-            
+            const p = localStorage.getItem('twins_memoria_pantalla') || 'audit'; changeTab(p);
             if (typeof core !== 'undefined') {
-                if (core.raw && core.raw.length > 0) {
-                    core.render();
-                    const activeId = localStorage.getItem('twins_active_cont');
-                    if(activeId) core.openAudit(activeId);
-                }
-                core.fetchData(true);
-                setInterval(() => { core.fetchData(true); }, 10000);
+                if (core.raw && core.raw.length > 0) { core.render(); const a = localStorage.getItem('twins_active_cont'); if(a) core.openAudit(a); }
+                core.fetchData(true); setInterval(() => { core.fetchData(true); }, 10000);
             }
         };
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && typeof core !== 'undefined') core.fetchData(true);
-        });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && typeof core !== 'undefined') core.fetchData(true); });
     </script>
 </body>
 </html>
