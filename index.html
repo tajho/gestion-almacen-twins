@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins Elite Pro</title>
+    <title>Twins ALMACEN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -28,6 +28,7 @@
 </head>
 <body class="antialiased">
 
+    <!-- CABECERA GLOBAL -->
     <div class="glass-header safe-area-top px-6 py-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <button onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 p-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex-shrink-0"><i class="ph-bold ph-list text-2xl"></i></button>
@@ -45,6 +46,7 @@
         </div>
     </div>
 
+    <!-- MÓDULO 1: AUDITORÍA -->
     <div id="app-shell" class="max-w-md mx-auto px-6 pb-24 block">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
@@ -59,10 +61,11 @@
         </div>
     </div>
 
+    <!-- VISTAS INTERNAS DE AUDITORÍA -->
     <div id="audit-view">
         <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
             <div class="px-6 pt-10 pb-4 flex items-center justify-between">
-                <button onclick="core.closeModal('audit-view')" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
+                <button onclick="core.requestCloseAudit()" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
                 <div class="text-center"><h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2><div class="flex items-center justify-center gap-1.5 mt-0.5"><i class="ph-fill ph-clock text-[12px] text-blue-500"></i><span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span></div></div>
                 <button onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2"><i class="ph-bold ph-magnifying-glass text-2xl"></i></button>
             </div>
@@ -80,6 +83,7 @@
         <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
     </div>
 
+    <!-- MÓDULO 2: FORMULARIO NUEVA DEVOLUCIÓN -->
     <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nueva Devolución</h2>
@@ -101,30 +105,49 @@
                 <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
                 <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
             </div>
-            <div class="grid grid-cols-2 gap-3 mt-3">
-                <input type="number" id="dev-cant" placeholder="Cant U/M" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center">
-                <select id="dev-estado" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold">
-                    <option value="BUEN ESTADO">BUEN ESTADO</option>
-                    <option value="DAÑADO A MERMA">DAÑADO A MERMA</option>
-                    <option value="INCOMPLETO">INCOMPLETO</option>
-                </select>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="relative">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-purple-500 tracking-widest">CANT. GUÍA</span>
+                    <input type="number" id="dev-cant-guia" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors">
+                </div>
+                <div class="relative">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-blue-500 tracking-widest">CANT. REAL</span>
+                    <input type="number" id="dev-cant-real" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors">
+                </div>
             </div>
-            <textarea id="dev-obs" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none"></textarea>
-            <button onclick="coreDev.addItem()" class="w-full mt-4 bg-blue-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+            
+            <select id="dev-estado" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-purple-500 transition-colors">
+                <option value="BUEN ESTADO">BUEN ESTADO</option>
+                <option value="DAÑADO A MERMA">DAÑADO A MERMA</option>
+                <option value="INCOMPLETO">INCOMPLETO</option>
+            </select>
+            <textarea id="dev-obs" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-purple-500"></textarea>
+            <button onclick="coreDev.addItem()" class="w-full mt-4 bg-purple-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
         </div>
         <div id="dev-items-list" class="space-y-2 mb-6"></div>
-        <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Generar Reporte y Guardar</button>
+        <button id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Devolución</button>
     </div>
 
+    <!-- MÓDULO 3: HISTORIAL DEVOLUCIONES -->
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
         </div>
+        
         <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm"></div>
-            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative shadow-sm">
-                <i class="ph-bold ph-user-focus text-purple-500 text-xl"></i>
+            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm"></div>
+            
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+                <i class="ph-bold ph-calendar-blank text-purple-500 text-lg"></i>
+                <select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <option value="TODOS">Mes</option>
+                </select>
+            </div>
+            
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+                <i class="ph-bold ph-user-focus text-blue-500 text-lg"></i>
                 <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
                     <option value="TODOS">TODOS</option>
                     <option value="ELIAS AVILA">ELIAS</option>
@@ -135,10 +158,12 @@
                 </select>
             </div>
         </div>
+        
         <div id="dev-history-cards" class="space-y-4"></div>
-        <button onclick="changeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+        <button onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
     </div>
 
+    <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
     <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
@@ -146,68 +171,200 @@
                 <button onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="flex flex-col p-4 gap-3 mt-2">
-                <button onclick="changeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
-                <button onclick="changeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
+                <button onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
+                <button onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
             </div>
             <div class="mt-auto p-6 text-center border-t border-slate-50"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
         </div>
     </div>
+    
+    <!-- MODAL DE CARGA -->
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/70 z-[200] hidden flex items-center justify-center backdrop-blur-sm"><div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center"><i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i><h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3></div></div>
 
-    <script>
-        function showLoading() { document.getElementById('loading-modal').classList.remove('hidden'); }
-        function hideLoading() { document.getElementById('loading-modal').classList.add('hidden'); }
+    <!-- CUADRO DE DIÁLOGO MODERNO -->
+    <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm px-6 transition-opacity duration-300 opacity-0">
+        <div id="modern-modal-content" class="bg-white rounded-[28px] p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-all duration-300">
+            <div id="modern-modal-icon" class="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto shadow-inner"></div>
+            <h3 id="modern-modal-title" class="text-xl font-[800] text-slate-900 text-center tracking-tight mb-2"></h3>
+            <p id="modern-modal-text" class="text-sm font-bold text-slate-500 text-center mb-8"></p>
+            <div id="modern-modal-actions" class="flex gap-3"></div>
+        </div>
+    </div>
 
-        // MÓDULO 1: AUDITORÍA (INTACTO)
+    <script>
+        // CONTROLADOR DEL MODAL MODERNO
+        window.uiModal = {
+            show: function(type, title, msg, onConfirm) {
+                const modal = document.getElementById('modern-modal');
+                const content = document.getElementById('modern-modal-content');
+                document.getElementById('modern-modal-title').innerText = title;
+                document.getElementById('modern-modal-text').innerText = msg;
+                const iconBox = document.getElementById('modern-modal-icon');
+                const actionsEl = document.getElementById('modern-modal-actions');
+
+                if (type === 'confirm') {
+                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100";
+                    iconBox.innerHTML = '<i class="ph-fill ph-warning-circle text-3xl"></i>';
+                    actionsEl.innerHTML = `
+                        <button onclick="uiModal.close()" class="flex-1 bg-slate-50 text-slate-600 font-bold py-3.5 rounded-xl border border-slate-200 active:scale-95 transition-transform text-xs uppercase tracking-widest">Cancelar</button>
+                        <button id="modal-btn-confirm" class="flex-1 bg-orange-500 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Sí, confirmar</button>
+                    `;
+                    document.getElementById('modal-btn-confirm').onclick = () => { this.close(); if(onConfirm) onConfirm(); };
+                } else if (type === 'success') {
+                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100";
+                    iconBox.innerHTML = '<i class="ph-fill ph-check-circle text-3xl"></i>';
+                    actionsEl.innerHTML = `
+                        <button onclick="uiModal.close();" class="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Entendido</button>
+                    `;
+                } else if (type === 'alert') {
+                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100";
+                    iconBox.innerHTML = '<i class="ph-fill ph-info text-3xl"></i>';
+                    actionsEl.innerHTML = `
+                        <button onclick="uiModal.close()" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Aceptar</button>
+                    `;
+                }
+
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 10);
+            },
+            close: function() {
+                const modal = document.getElementById('modern-modal');
+                const content = document.getElementById('modern-modal-content');
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => { modal.style.display = 'none'; }, 300);
+            }
+        };
+
+        // Funciones Globales UI
+        window.showLoading = function() { document.getElementById('loading-modal').classList.remove('hidden'); };
+        window.hideLoading = function() { document.getElementById('loading-modal').classList.add('hidden'); };
+
+        window.changeTab = function(tab) {
+            const audit = document.getElementById('app-shell'); 
+            const devForm = document.getElementById('module-returns'); 
+            const devHist = document.getElementById('module-dev-history');
+            
+            if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
+            if(devForm) { devForm.style.display = 'none'; devForm.classList.add('hidden'); }
+            if(devHist) { devHist.style.display = 'none'; devHist.classList.add('hidden'); }
+            
+            const tituloEl = document.getElementById('header-title'); 
+            const progEl = document.getElementById('header-progress');
+
+            if (tab === 'audit') { 
+                if(audit) { audit.style.display = 'block'; audit.classList.remove('hidden'); } 
+                if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA'; 
+                if(progEl) progEl.style.display = 'flex'; 
+            } 
+            else if (tab === 'dev') { 
+                if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); } 
+                if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN'; 
+                if(progEl) progEl.style.display = 'none'; 
+            } 
+            else if (tab === 'dev-history') { 
+                if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); } 
+                if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS'; 
+                if(progEl) progEl.style.display = 'none'; 
+                if(typeof coreDev !== 'undefined') coreDev.renderHistory(); 
+            }
+
+            window.scrollTo(0, 0); // Mantiene tu scroll limpio al cambiar de módulo principal
+            const menu = document.getElementById('twins-menu'); 
+            const panel = document.getElementById('twins-menu-panel');
+            if (menu && !menu.classList.contains('hidden')) { 
+                if (panel) panel.classList.add('-translate-x-full'); 
+                setTimeout(() => menu.classList.add('hidden'), 300); 
+            }
+            localStorage.setItem('twins_memoria_pantalla', tab);
+        };
+
+        // PROTECCIÓN ANTI-PÉRDIDA
+        window.attemptChangeTab = function(targetTab) {
+            const currentTab = localStorage.getItem('twins_memoria_pantalla') || 'audit';
+            
+            // Protección: Si está en el formulario de devolución con datos
+            if (currentTab === 'dev' && targetTab !== 'dev') {
+                const hasItems = coreDev.items.length > 0;
+                const hasText = document.getElementById('dev-cliente').value.trim() !== '';
+                if (hasItems || hasText) {
+                    uiModal.show('confirm', '¿Cambiar de página?', 'Tienes una devolución en progreso. Si cambias de página, se descartarán los datos no guardados.', () => {
+                        coreDev.items = [];
+                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = '';
+                        coreDev.renderItems();
+                        window.changeTab(targetTab);
+                    });
+                    return;
+                }
+            }
+            
+            // Protección: Si cambia de tab mientras un conteo está activo
+            if (currentTab === 'audit' && targetTab !== 'audit' && core.activeCont !== null) {
+                uiModal.show('confirm', '¿Pausar Auditoría?', 'Estás en medio de un conteo físico. Se pausará y guardará tu avance en el dispositivo.', () => {
+                    core.closeModal('audit-view', true);
+                    window.changeTab(targetTab);
+                });
+                return;
+            }
+            window.changeTab(targetTab);
+        };
+
+        window.toggleMenu = function() {
+            const m = document.getElementById('twins-menu'); 
+            const p = document.getElementById('twins-menu-panel');
+            if (m && p) { 
+                if (m.classList.contains('hidden')) { 
+                    m.classList.remove('hidden'); 
+                    setTimeout(() => p.classList.remove('-translate-x-full'), 10); 
+                } else { 
+                    p.classList.add('-translate-x-full'); 
+                    setTimeout(() => m.classList.add('hidden'), 300); 
+                } 
+            }
+        };
+
+        // MOTOR 1: AUDITORÍA
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbxqN14y9j9S_hQVYyPp8c2ODbv8E2s_6Kl0YmbCOXoIVnuRUmRwh-qEzPW2_ZRq7Q7v/exec",
+            url: "https://script.google.com/macros/s/AKfycbz3-kLZvKdvU9NXw1ytJwUIYU0PYsc5dwheeda-5xj0an-vQRSez-BY9CiTOZxyu5f2/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "", activeCont: null, timerInterval: null,
             getDesc: function(item) { const k = Object.keys(item).find(key => key.toUpperCase().includes("DESC") || key.toUpperCase().includes("PRODUCTO")); return k ? item[k] : "Sin descripción"; },
             
-                        fetchData: async function(silent = false) {
+            fetchData: async function(silent = false) {
                 try {
-                    // Agregamos redirección automática
-          
-                    
-                    
-            const response = await fetch(this.url, {
-                        method: 'GET',
-                        mode: 'cors', // Clave para evitar bloqueos
-                        redirect: 'follow' 
-                    });
-                    const data = await response.json();
-                    
+                    const res = await fetch(this.url, { redirect: 'follow' }); 
+                    if (!res.ok) throw new Error("Error en red");
+                    const data = await res.json();
                     if (data && Array.isArray(data)) {
-                        this.raw = data.map(item => {
-                            const isCompleted = item["ESTADO"] && item["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                            const cached = this.raw.find(c => c["CODIGO"] === item["CODIGO"] && (c["CONTENEDOR"] || c["CONTENEDOR_LIMPIO"]) === (item["CONTENEDOR"] || item["CONTENEDOR_LIMPIO"]));
-                            return { 
-                                ...item, 
-                                audit: isCompleted ? (parseInt(item["CAJAS"]) || 0) : (cached ? (cached.audit || 0) : 0),
-                                auditTime: cached ? (cached.auditTime || 0) : 0 
-                            };
+                        this.raw = data.map(i => {
+                            const isC = i["ESTADO"] && i["ESTADO"].toString().toUpperCase() === "COMPLETADO";
+                            const c = this.raw.find(old => old["CODIGO"] === i["CODIGO"] && (old["CONTENEDOR"]||old["CONTENEDOR_LIMPIO"]) === (i["CONTENEDOR"]||i["CONTENEDOR_LIMPIO"]));
+                            return { ...i, audit: isC ? (parseInt(i["CAJAS"])||0) : (c ? c.audit||0 : 0), auditTime: c ? c.auditTime||0 : 0 };
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
-                        
-                        const auditView = document.getElementById('audit-view');
-                        if (!auditView || auditView.style.display !== 'flex') {
-                            this.render();
-                        }
+                        const view = document.getElementById('audit-view'); 
+                        if (!view || view.style.display !== 'flex') this.render(); // Respeta si estás dentro de una auditoría para no sacarte
                     }
                 } catch (e) { 
-                    if (!silent) console.error("Error en sincronización:", e); 
+                    if (!silent) console.error(e); 
                 }
             },
-
             getItemMonth: function(item) {
                 const f = item["FECHA_LIMPIA"] || item["FECHA"] || ""; if (!f) return "EN PROGRAMACIÓN";
                 const p = f.split("/"); return p.length >= 2 ? (this.mesesNombre[parseInt(p[1])-1] || "EN PROGRAMACIÓN") : "EN PROGRAMACIÓN";
             },
             filterMonth: function(m) { this.currentMonth = m; this.render(); },
             render: function() {
-                const list = document.getElementById('container-list'); const search = document.getElementById('main-search').value.toLowerCase();
+                const list = document.getElementById('container-list'); 
+                const searchEl = document.getElementById('main-search');
+                const search = searchEl ? searchEl.value.toLowerCase() : "";
+                
                 if (!this.currentMonth) this.currentMonth = this.mesesNombre[new Date().getMonth()];
                 const sel = document.getElementById('month-select');
                 if(sel) {
@@ -219,7 +376,7 @@
                 const groups = {}; let tCj = 0, tAud = 0; const tempGroups = {};
                 this.raw.forEach(i => { const id = (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"] || "S/N").toString(); if(!tempGroups[id]) tempGroups[id]=[]; tempGroups[id].push(i); });
                 Object.keys(tempGroups).forEach(id => {
-                    const items = tempGroups[id]; if(items[0].ORIGEN === "HOJA3") return;
+                    const items = tempGroups[id]; if(items[0].ORIGEN === "HOJA3" || items[0].VENDEDOR !== undefined) return;
                     const matchM = (this.currentMonth === "TODOS") || (this.currentMonth === this.getItemMonth(items[0]));
                     const matchS = id.toLowerCase().includes(search) || items.some(i => (i["CODIGO"]&&i["CODIGO"].toString().toLowerCase().includes(search)) || this.getDesc(i).toLowerCase().includes(search));
                     if (matchM && matchS) { groups[id] = items; items.forEach(i => { tCj += (parseInt(i["CAJAS"])||0); tAud += (i.audit||0); }); }
@@ -229,7 +386,7 @@
                 if(e1) e1.innerText = globalP + "%"; if(e2) e2.style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
                 const ids = Object.keys(groups);
                 const s1 = document.getElementById('stat-containers'); const s2 = document.getElementById('stat-skus');
-                if(s1) s1.innerText = ids.length; if(s2) s2.innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3").length;
+                if(s1) s1.innerText = ids.length; if(s2) s2.innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined).length;
                 if(!list) return; if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin datos</div>`; return; }
                 list.innerHTML = ids.map(id => {
                     const items = groups[id]; let t=0, a=0; items.forEach(i => { t+=(parseInt(i["CAJAS"])||0); a+=(i.audit||0); });
@@ -250,72 +407,282 @@
             setDirect: function(idx, v) { this.raw[idx].audit = v; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
             refreshItemUI: function(idx) { const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; document.getElementById(`total-audit-${idx}`).innerText = aud; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}`; bdg.innerText = bT; } const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
             updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); }); const p = t > 0 ? Math.round((a/t)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%"; },
-            closeModal: function(id) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
-            saveAndFinish: async function() { if (!confirm(`¿Confirmas finalizar la auditoría #${this.activeCont}?`)) return; this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; }); const f = new Date(); const fD = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}/${f.getFullYear()}`; const tForm = this.formatTime(tSeg); items.forEach(i => { i.ESTADO = "COMPLETADO"; i.auditTime = tSeg; i.FECHA_LIMPIA = fD; }); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) }); this.closeModal('audit-view'); this.render(); },
+            
+            // Pausar Auditoría con Diálogo Moderno
+            requestCloseAudit: function() {
+                uiModal.show('confirm', '¿Pausar Conteo?', 'Tu avance se guardará en tu dispositivo. Podrás retomarlo luego.', () => {
+                    this.closeModal('audit-view', true);
+                });
+            },
+            closeModal: function(id, skipWarning = false) { 
+                if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } 
+                document.getElementById(id).style.display = 'none'; 
+            },
+            
+            // Finalizar Auditoría con Diálogo Moderno
+            saveAndFinish: async function() { 
+                uiModal.show('confirm', '¿Finalizar Auditoría?', `¿Estás seguro de completar y enviar la Carga #${this.activeCont} al sistema central? No podrás deshacerlo.`, () => {
+                    this.stopTimer(); 
+                    const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); 
+                    let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; }); 
+                    const f = new Date(); const fD = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}/${f.getFullYear()}`; 
+                    const tForm = this.formatTime(tSeg); items.forEach(i => { i.ESTADO = "COMPLETADO"; i.auditTime = tSeg; i.FECHA_LIMPIA = fD; }); 
+                    localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); 
+                    
+                    fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) }); 
+                    
+                    this.closeModal('audit-view', true); 
+                    this.render();
+                    uiModal.show('success', '¡Auditoría Completada!', 'El conteo fue enviado y registrado correctamente.');
+                });
+            },
             viewList: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(i => `<div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1">${i.CODIGO}</p><p class="text-xs font-bold text-slate-800 line-clamp-2">${this.getDesc(i)}</p></div><div class="text-right flex items-center gap-4"><div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : 'text-slate-900'}">${i.audit || 0} / ${i.CAJAS || 0}</span><span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span></div></div></div>`).join(''); document.getElementById('list-view').style.display = 'flex'; },
-            generatePDF: function(id) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); if (items.length === 0) return; doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("TWINS ALMACEN", 14, 22); doc.setFontSize(9); doc.setTextColor(120); doc.text(`REPORTE DE AUDITORÍA • CONTENEDOR: ${id}`, 14, 30); const b = items.map(i => [ i.CODIGO || "---", this.getDesc(i), i.CAJAS || 0, i.audit || 0, (i.audit || 0) - (parseInt(i.CAJAS) || 0) ]); doc.autoTable({ startY: 42, head: [['SKU', 'DESCRIPCION', 'TEO', 'AUD', 'DIF']], body: b, headStyles: { fillColor: [15, 23, 42], fontSize: 7 } }); const finalY = doc.lastAutoTable.finalY + 15; doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Revisión autorizada por:", 14, finalY); doc.setFont("helvetica", "bold"); doc.text("J. Angelo Nuñez Durand", 14, finalY + 6); doc.setFont("helvetica", "normal"); doc.text("Asist. Inventario Logístico", 14, finalY + 11); doc.save(`Reporte_${id}.pdf`); }
+            
+            generatePDF: function(id) { 
+                const { jsPDF } = window.jspdf; 
+                const doc = new jsPDF(); 
+                const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); 
+                if (items.length === 0) return; 
+
+                const primaryColor = [30, 58, 138]; // Azul Corporativo Navy
+                const darkColor = [15, 23, 42]; 
+                const accentColor = [16, 185, 129]; 
+
+                doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
+                
+                // DIBUJO DE LOGO VECTORIAL (Monograma "TWINS")
+                doc.setFillColor(255, 255, 255);
+                doc.roundedRect(14, 6, 13, 13, 2, 2, 'F');
+                doc.setTextColor(...primaryColor);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.text("TWINS", 15.5, 14.5);
+
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
+                doc.text("TWINS- AUDITORÍA", 32, 16);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`CARGA N° ${id}`, 165, 16);
+
+                let tTeo = 0, tAud = 0; items.forEach(i => { tTeo += (parseInt(i.CAJAS) || 0); tAud += (i.audit || 0); });
+                const diff = tAud - tTeo;
+
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE CONTEO FÍSICO", 14, 38);
+                doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
+
+                doc.setFontSize(9); doc.text(`Total SKUs: ${items.length}`, 14, 48); doc.text(`Teórico Total: ${tTeo} U`, 70, 48); doc.text(`Físico Total: ${tAud} U`, 120, 48);
+                const cDiff = diff === 0 ? [16, 185, 129] : (diff > 0 ? [37, 99, 235] : [220, 38, 38]);
+                doc.setTextColor(...cDiff); doc.text(`Dif. Neta: ${diff > 0 ? '+' : ''}${diff}`, 165, 48);
+
+                const b = items.map(i => {
+                    const teo = parseInt(i.CAJAS) || 0; const aud = i.audit || 0; const d = aud - teo;
+                    return [ i.CODIGO || "---", this.getDesc(i), teo, aud, d > 0 ? `+${d}` : d ];
+                });
+
+                doc.autoTable({
+                    startY: 55, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'striped',
+                    headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+                    bodyStyles: { fontSize: 8, textColor: 50 },
+                    columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } },
+                    didParseCell: function(data) { if (data.section === 'body' && data.column.index === 4) { const val = parseInt(data.cell.raw); if (val > 0) { data.cell.styles.textColor = [37, 99, 235]; } else if (val < 0) { data.cell.styles.textColor = [220, 38, 38]; } else { data.cell.styles.textColor = [16, 185, 129]; } } }
+                });
+
+                const fY = doc.lastAutoTable.finalY + 35;
+                doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" });
+                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" });
+                doc.save(`Auditoria_Contenedor_${id}.pdf`); 
+            }
         };
 
-        // MÓDULO 2: DEVOLUCIONES
+        // MOTOR 2: DEVOLUCIONES
         const coreDev = {
-            histMaster: [], items: [],
+            histMaster: [], items: [], isLoaded: false,
             init: async function() { await this.fetchHist(); },
-                        fetchHist: async function() {
+            fetchHist: async function() {
                 try {
-                    // AQUÍ ESTÁ LA LLAVE: Le pedimos específicamente al Excel que nos mande el historial
-                    const resp = await fetch(core.url + "?type=get_historial"); 
+                    const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); 
                     const data = await resp.json();
                     
-                    // Guardamos la data (si es un arreglo válido)
-                    if (data && Array.isArray(data)) {
-                        // Filtramos en caso de que vengan mezclados, o tomamos todo si el Excel ya lo manda limpio
-                        const filtrado = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3");
-                        this.histMaster = filtrado.length > 0 ? filtrado : data; 
-                    } else {
-                        this.histMaster = [];
-                    }
+                    this.histMaster = data
+                        .filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3" || i.VENDEDOR !== undefined || i.CLIENTE !== undefined)
+                        .map(i => {
+                            let f = i.FECHA || "";
+                            if (typeof f === 'string' && f.includes('T')) {
+                                const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+                            } else if (f instanceof Date) {
+                                f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
+                            } else {
+                                const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+                            }
+                            return { ...i, FECHA: f };
+                        });
                     
-                    // Dibujamos las tarjetas al instante
-                    this.renderHistory(); 
-                } catch (e) { 
-                    console.error("Error historial:", e); 
-                    const c = document.getElementById('dev-history-cards'); 
-                    if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Error de conexión</div>`; 
-                }
+                    const uM = new Set();
+                    this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
+                    const selM = document.getElementById('dev-filter-mes');
+                    if(selM) {
+                        let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+                        Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; });
+                        selM.innerHTML = opts;
+                    }
+
+                    this.isLoaded = true; this.renderHistory(); 
+                } catch (e) { console.error("Error historial:", e); this.isLoaded = true; const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; }
             },
+            search: function() { const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
+            selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); },
+            
+            addItem: function() { 
+                const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; 
+                if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } 
+                
+                this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: `${cg}|${cr}`, estado: e, obs: o }); 
+                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-obs').value = ''; 
+                this.renderItems(); 
+            },
+            
+            renderItems: function() { 
+                const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); 
+                if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } 
+                l.innerHTML = this.items.map((i, idx) => {
+                    const pts = i.cantidad.toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
+                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-purple-600">GUÍA: ${cg}</span> • <span class="text-blue-600">REAL: ${cr}</span> • ${i.estado}</p></div><button onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
+                }).join(''); 
+                b.classList.remove('hidden'); 
+            },
+            
+            removeItem: function(idx) { this.items.splice(idx, 1); this.renderItems(); },
+            
+            save: async function() { 
+                const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); 
+                if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } 
+                
+                window.showLoading(); 
+                const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
+                
+                const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, observaciones: i.obs || "" })) }; 
+                
+                try { 
+                    const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); 
+                    this.histMaster = [...p, ...this.histMaster]; 
+                    fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
+                    
+                    // SE ELIMINÓ LA GENERACIÓN DEL PDF AUTOMÁTICA
+                    this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; this.renderItems(); 
+                    
+                    window.hideLoading();
+                    uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente en tu historial.', () => {
+                        window.changeTab('dev-history'); 
+                        this.renderHistory(); 
+                    });
+                } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
+            },
+            
+            renderHistory: function() { 
+                const c = document.getElementById('dev-history-cards'); if (!c) return; 
+                const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); 
+                const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS";
+                
+                if (!this.isLoaded) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Hoja 3...</div>`; return; }
+                if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; }
+                
+                const t = {}; 
+                this.histMaster.forEach(i => { 
+                    const k = i.CLIENTE + "_" + i.FECHA; 
+                    if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] }; 
+                    t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); 
+                }); 
+                
+                const fil = Object.values(t).filter(tk => { 
+                    const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); 
+                    const mV = (f === "TODOS") || (tk.vendedor === f); 
+                    let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } 
+                    return mB && mV && mMes; 
+                }).reverse(); 
+                
+                const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); 
+                if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; 
+                
+                if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } 
+                
+                c.innerHTML = fil.map(tk => { 
+                    const j = JSON.stringify(tk).replace(/'/g, "&#39;"); 
+                    return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; 
+                }).join(''); 
+            },
+            
+            viewTicketItems: function(t) { 
+                const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); 
+                if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; 
+                l.innerHTML = t.items.map(i => {
+                    const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
+                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-purple-600">G: ${cg}</span><span class="text-[10px] font-[900] text-blue-600">R: ${cr}</span></div></div>`
+                }).join(''); 
+                mo.style.display = 'flex'; 
+            },
+            
+            generatePDF: function(d) { 
+                const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
 
+                const primaryColor = [30, 58, 138]; // Azul corporativo
+                const darkColor = [15, 23, 42]; 
+                
+                doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
+                
+                // DIBUJO DE LOGO VECTORIAL (Monograma "TWINS")
+                doc.setFillColor(255, 255, 255);
+                doc.roundedRect(14, 6, 13, 13, 2, 2, 'F');
+                doc.setTextColor(...primaryColor);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.text("TWINS", 15.5, 14.5);
 
-        // RUTAS Y NAVEGACIÓN
-        window.changeTab = function(tab) {
-            const audit = document.getElementById('app-shell'); const devForm = document.getElementById('module-returns'); const devHist = document.getElementById('module-dev-history');
-            if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
-            if(devForm) { devForm.style.display = 'none'; devForm.classList.add('hidden'); }
-            if(devHist) { devHist.style.display = 'none'; devHist.classList.add('hidden'); }
-            const tituloEl = document.getElementById('header-title'); const progEl = document.getElementById('header-progress');
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
+                doc.text("TWINS- LOGÍSTICA", 32, 16);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("TICKET DE DEVOLUCIÓN", 150, 16);
 
-            if (tab === 'audit') { if(audit) { audit.style.display = 'block'; audit.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA'; if(progEl) progEl.style.display = 'flex'; } 
-            else if (tab === 'dev') { if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN'; if(progEl) progEl.style.display = 'none'; } 
-            else if (tab === 'dev-history') { if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); } if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS'; if(progEl) progEl.style.display = 'none'; if(typeof coreDev !== 'undefined') coreDev.renderHistory(); }
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38);
+                doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
 
-            const menu = document.getElementById('twins-menu'); const panel = document.getElementById('twins-menu-panel');
-            if (menu && !menu.classList.contains('hidden')) { if (panel) panel.classList.add('-translate-x-full'); setTimeout(() => menu.classList.add('hidden'), 300); }
-            localStorage.setItem('twins_memoria_pantalla', tab);
+                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(d.fecha || "---", 32, 48);
+                doc.setFont("helvetica", "bold"); doc.text("CLIENTE:", 14, 54); doc.setFont("helvetica", "normal"); doc.text(d.cliente || "---", 32, 54);
+                doc.setFont("helvetica", "bold"); doc.text("VENDEDOR:", 110, 48); doc.setFont("helvetica", "normal"); doc.text(d.vendedor || "---", 135, 48);
+                doc.setFont("helvetica", "bold"); doc.text("MOTIVO:", 110, 54); doc.setFont("helvetica", "normal"); doc.text(d.motivo || "DEVOLUCIÓN", 135, 54);
+
+                const tableBody = d.items.map(i => {
+                    const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
+                    return [ i.codigo, i.descripcion, `${cg} U`, `${cr} U`, i.estado || 'OK', i.observaciones || i.obs || '---' ];
+                });
+
+                doc.autoTable({ 
+                    startY: 65, head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBSERV.']], body: tableBody, theme: 'striped',
+                    headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+                    bodyStyles: { fontSize: 7, textColor: 50 },
+                    columnStyles: { 0: { cellWidth: 20, fontStyle: 'bold', textColor: primaryColor }, 1: { cellWidth: 50 }, 2: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [100, 116, 139] }, 3: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [37, 99, 235] }, 4: { cellWidth: 25, halign: 'center' }, 5: { cellWidth: 'auto' } },
+                    alternateRowStyles: { fillColor: [248, 250, 252] }
+                }); 
+
+                const fY = doc.lastAutoTable.finalY + 35;
+                doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" });
+                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" });
+
+                doc.save(`Ticket_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); 
+            }
         };
 
-        window.toggleMenu = function() {
-            const m = document.getElementById('twins-menu'); const p = document.getElementById('twins-menu-panel');
-            if (m && p) { if (m.classList.contains('hidden')) { m.classList.remove('hidden'); setTimeout(() => p.classList.remove('-translate-x-full'), 10); } else { p.classList.add('-translate-x-full'); setTimeout(() => m.classList.add('hidden'), 300); } }
-        };
-
-        // ARRANQUE FINAL
-        window.onload = async () => {
+        // ARRANQUE PRINCIPAL
+        window.addEventListener('DOMContentLoaded', async () => {
             if (typeof coreDev !== 'undefined') coreDev.init();
-            const p = localStorage.getItem('twins_memoria_pantalla') || 'audit'; changeTab(p);
+            const p = localStorage.getItem('twins_memoria_pantalla') || 'audit'; 
+            window.changeTab(p);
             if (typeof core !== 'undefined') {
                 if (core.raw && core.raw.length > 0) { core.render(); const a = localStorage.getItem('twins_active_cont'); if(a) core.openAudit(a); }
                 core.fetchData(true); setInterval(() => { core.fetchData(true); }, 10000);
             }
-        };
+        });
+
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && typeof core !== 'undefined') core.fetchData(true); });
     </script>
 </body>
