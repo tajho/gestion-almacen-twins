@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Twins ALMACEN</title>
+    <title>Twins Elite Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -274,7 +274,7 @@
                 if(typeof coreDev !== 'undefined') coreDev.renderHistory(); 
             }
 
-            window.scrollTo(0, 0); // Mantiene tu scroll limpio al cambiar de módulo principal
+            window.scrollTo(0, 0); 
             const menu = document.getElementById('twins-menu'); 
             const panel = document.getElementById('twins-menu-panel');
             if (menu && !menu.classList.contains('hidden')) { 
@@ -288,7 +288,6 @@
         window.attemptChangeTab = function(targetTab) {
             const currentTab = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             
-            // Protección: Si está en el formulario de devolución con datos
             if (currentTab === 'dev' && targetTab !== 'dev') {
                 const hasItems = coreDev.items.length > 0;
                 const hasText = document.getElementById('dev-cliente').value.trim() !== '';
@@ -303,7 +302,6 @@
                 }
             }
             
-            // Protección: Si cambia de tab mientras un conteo está activo
             if (currentTab === 'audit' && targetTab !== 'audit' && core.activeCont !== null) {
                 uiModal.show('confirm', '¿Pausar Auditoría?', 'Estás en medio de un conteo físico. Se pausará y guardará tu avance en el dispositivo.', () => {
                     core.closeModal('audit-view', true);
@@ -349,7 +347,7 @@
                         });
                         localStorage.setItem('twins_cache', JSON.stringify(this.raw));
                         const view = document.getElementById('audit-view'); 
-                        if (!view || view.style.display !== 'flex') this.render(); // Respeta si estás dentro de una auditoría para no sacarte
+                        if (!view || view.style.display !== 'flex') this.render(); 
                     }
                 } catch (e) { 
                     if (!silent) console.error(e); 
@@ -408,7 +406,6 @@
             refreshItemUI: function(idx) { const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; document.getElementById(`total-audit-${idx}`).innerText = aud; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}`; bdg.innerText = bT; } const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
             updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); }); const p = t > 0 ? Math.round((a/t)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%"; },
             
-            // Pausar Auditoría con Diálogo Moderno
             requestCloseAudit: function() {
                 uiModal.show('confirm', '¿Pausar Conteo?', 'Tu avance se guardará en tu dispositivo. Podrás retomarlo luego.', () => {
                     this.closeModal('audit-view', true);
@@ -419,7 +416,6 @@
                 document.getElementById(id).style.display = 'none'; 
             },
             
-            // Finalizar Auditoría con Diálogo Moderno
             saveAndFinish: async function() { 
                 uiModal.show('confirm', '¿Finalizar Auditoría?', `¿Estás seguro de completar y enviar la Carga #${this.activeCont} al sistema central? No podrás deshacerlo.`, () => {
                     this.stopTimer(); 
@@ -450,27 +446,40 @@
 
                 doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
                 
-                // DIBUJO DE LOGO VECTORIAL (Monograma "TWINS")
+                // DIBUJO DE LOGO VECTORIAL TWINS
                 doc.setFillColor(255, 255, 255);
-                doc.roundedRect(14, 6, 13, 13, 2, 2, 'F');
+                doc.roundedRect(14, 6, 22, 13, 2, 2, 'F');
                 doc.setTextColor(...primaryColor);
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(11);
-                doc.text("TWINS", 15.5, 14.5);
+                doc.text("TWINS", 16.5, 14.5);
 
                 doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
-                doc.text("TWINS- AUDITORÍA", 32, 16);
+                doc.text("AUDITORÍA DE CONTENEDOR", 40, 16);
                 doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`CARGA N° ${id}`, 165, 16);
 
                 let tTeo = 0, tAud = 0; items.forEach(i => { tTeo += (parseInt(i.CAJAS) || 0); tAud += (i.audit || 0); });
                 const diff = tAud - tTeo;
+                
+                // Variables de Tiempo y Fecha
+                const auditTimeStr = this.formatTime(items[0].auditTime || 0);
+                const auditDateStr = items[0].FECHA_LIMPIA || "---";
 
-                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE CONTEO FÍSICO", 14, 38);
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DE LA CARGA", 14, 38);
                 doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
 
-                doc.setFontSize(9); doc.text(`Total SKUs: ${items.length}`, 14, 48); doc.text(`Teórico Total: ${tTeo} U`, 70, 48); doc.text(`Físico Total: ${tAud} U`, 120, 48);
+                // Impresión de Fecha y Tiempo
+                doc.setFontSize(9); 
+                doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(auditDateStr, 32, 48);
+                doc.setFont("helvetica", "bold"); doc.text("TIEMPO DE CONTEO:", 70, 48); doc.setFont("helvetica", "normal"); doc.text(auditTimeStr, 105, 48);
+
+                doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE CONTEO FÍSICO", 14, 58);
+                doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 60, 196, 60);
+
+                doc.setFontSize(9); doc.setFont("helvetica", "normal");
+                doc.text(`Total SKUs: ${items.length}`, 14, 68); doc.text(`Teórico Total: ${tTeo} U`, 70, 68); doc.text(`Físico Total: ${tAud} U`, 120, 68);
                 const cDiff = diff === 0 ? [16, 185, 129] : (diff > 0 ? [37, 99, 235] : [220, 38, 38]);
-                doc.setTextColor(...cDiff); doc.text(`Dif. Neta: ${diff > 0 ? '+' : ''}${diff}`, 165, 48);
+                doc.setTextColor(...cDiff); doc.setFont("helvetica", "bold"); doc.text(`Dif. Neta: ${diff > 0 ? '+' : ''}${diff}`, 165, 68);
 
                 const b = items.map(i => {
                     const teo = parseInt(i.CAJAS) || 0; const aud = i.audit || 0; const d = aud - teo;
@@ -478,7 +487,7 @@
                 });
 
                 doc.autoTable({
-                    startY: 55, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'striped',
+                    startY: 75, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'striped',
                     headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' },
                     bodyStyles: { fontSize: 8, textColor: 50 },
                     columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } },
@@ -494,11 +503,22 @@
             }
         };
 
-        // MOTOR 2: DEVOLUCIONES
+        // MOTOR 2: DEVOLUCIONES OFFLINE-FIRST
         const coreDev = {
-            histMaster: [], items: [], isLoaded: false,
-            init: async function() { await this.fetchHist(); },
-            fetchHist: async function() {
+            histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], 
+            items: [], 
+            isLoaded: false,
+            
+            init: function() { 
+                // Carga Instantánea Offline
+                if (this.histMaster.length > 0) {
+                    this.isLoaded = true;
+                    this.renderHistory();
+                }
+                this.fetchHist(); // Inicia la actualización silenciosa
+            },
+            
+            fetchHist: async function(silent = false) {
                 try {
                     const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); 
                     const data = await resp.json();
@@ -517,6 +537,8 @@
                             return { ...i, FECHA: f };
                         });
                     
+                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+
                     const uM = new Set();
                     this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
                     const selM = document.getElementById('dev-filter-mes');
@@ -527,7 +549,14 @@
                     }
 
                     this.isLoaded = true; this.renderHistory(); 
-                } catch (e) { console.error("Error historial:", e); this.isLoaded = true; const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; }
+                } catch (e) { 
+                    if (!silent) console.error("Error historial:", e); 
+                    this.isLoaded = true; 
+                    if (this.histMaster.length === 0) {
+                        const c = document.getElementById('dev-history-cards'); 
+                        if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; 
+                    }
+                }
             },
             search: function() { const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
             selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); },
@@ -553,6 +582,22 @@
             
             removeItem: function(idx) { this.items.splice(idx, 1); this.renderItems(); },
             
+            editTicket: function(t) {
+                document.getElementById('dev-cliente').value = t.cliente || '';
+                document.getElementById('dev-vendedor').value = t.vendedor || '';
+                document.getElementById('dev-motivo').value = t.motivo || '';
+                this.items = t.items.map(i => ({
+                    codigo: i.codigo,
+                    descripcion: i.descripcion,
+                    cantidad: i.cantidad,
+                    estado: i.estado,
+                    obs: i.observaciones || ''
+                }));
+                this.renderItems();
+                window.changeTab('dev');
+                uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.');
+            },
+            
             save: async function() { 
                 const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); 
                 if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } 
@@ -565,9 +610,10 @@
                 try { 
                     const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); 
                     this.histMaster = [...p, ...this.histMaster]; 
+                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+                    
                     fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
                     
-                    // SE ELIMINÓ LA GENERACIÓN DEL PDF AUTOMÁTICA
                     this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; this.renderItems(); 
                     
                     window.hideLoading();
@@ -583,14 +629,14 @@
                 const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); 
                 const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS";
                 
-                if (!this.isLoaded) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Hoja 3...</div>`; return; }
+                if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; }
                 if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; }
                 
                 const t = {}; 
                 this.histMaster.forEach(i => { 
                     const k = i.CLIENTE + "_" + i.FECHA; 
-                    if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, items: [] }; 
-                    t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO }); 
+                    if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; 
+                    t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); 
                 }); 
                 
                 const fil = Object.values(t).filter(tk => { 
@@ -607,7 +653,7 @@
                 
                 c.innerHTML = fil.map(tk => { 
                     const j = JSON.stringify(tk).replace(/'/g, "&#39;"); 
-                    return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button onclick='alert("Módulo Editar en desarrollo")' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; 
+                    return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; 
                 }).join(''); 
             },
             
@@ -624,22 +670,22 @@
             generatePDF: function(d) { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
 
-                const primaryColor = [30, 58, 138]; // Azul corporativo
+                const primaryColor = [30, 58, 138]; // Azul corporativo Navy
                 const darkColor = [15, 23, 42]; 
                 
                 doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
                 
-                // DIBUJO DE LOGO VECTORIAL (Monograma "TWINS")
+                // DIBUJO DE LOGO VECTORIAL TWINS
                 doc.setFillColor(255, 255, 255);
-                doc.roundedRect(14, 6, 13, 13, 2, 2, 'F');
+                doc.roundedRect(14, 6, 22, 13, 2, 2, 'F');
                 doc.setTextColor(...primaryColor);
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(11);
-                doc.text("TWINS", 15.5, 14.5);
+                doc.text("TWINS", 16.5, 14.5);
 
                 doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
-                doc.text("TWINS- LOGÍSTICA", 32, 16);
-                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("TICKET DE DEVOLUCIÓN", 150, 16);
+                doc.text("REPORTE DE DEVOLUCIÓN", 40, 16);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`REF: ${d.cliente.substring(0, 10).toUpperCase()}`, 165, 16);
 
                 doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38);
                 doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
@@ -668,22 +714,31 @@
                 doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" });
                 doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" });
 
-                doc.save(`Ticket_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); 
+                doc.save(`Reporte_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); 
             }
         };
 
-        // ARRANQUE PRINCIPAL
-        window.addEventListener('DOMContentLoaded', async () => {
+        // ARRANQUE PRINCIPAL VELOZ
+        window.addEventListener('DOMContentLoaded', () => {
             if (typeof coreDev !== 'undefined') coreDev.init();
             const p = localStorage.getItem('twins_memoria_pantalla') || 'audit'; 
             window.changeTab(p);
             if (typeof core !== 'undefined') {
                 if (core.raw && core.raw.length > 0) { core.render(); const a = localStorage.getItem('twins_active_cont'); if(a) core.openAudit(a); }
-                core.fetchData(true); setInterval(() => { core.fetchData(true); }, 10000);
+                core.fetchData(true); 
+                setInterval(() => { core.fetchData(true); }, 10000);
+            }
+            if (typeof coreDev !== 'undefined') {
+                setInterval(() => { coreDev.fetchHist(true); }, 15000); // Sincronización silenciosa en background de devoluciones cada 15 seg
             }
         });
 
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && typeof core !== 'undefined') core.fetchData(true); });
+        document.addEventListener('visibilitychange', () => { 
+            if (document.visibilityState === 'visible') {
+                if(typeof core !== 'undefined') core.fetchData(true);
+                if(typeof coreDev !== 'undefined') coreDev.fetchHist(true);
+            }
+        });
     </script>
 </body>
 </html>
