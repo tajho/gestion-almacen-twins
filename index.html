@@ -169,7 +169,7 @@
     <!-- MÓDULO 2: FORMULARIO NUEVA DEVOLUCIÓN -->
     <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
-            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nueva Devolución</h2>
+            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="dev-form-title">Nueva Devolución</h2>
             <div class="space-y-3">
                 <input type="text" id="dev-cliente" oninput="coreDev.saveDraft(); coreDev.suggestVendor();" placeholder="Nombre del Cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 
@@ -192,7 +192,7 @@
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <div class="relative">
                 <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
+                <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-56 overflow-y-auto hidden border-slate-100"></div>
             </div>
             
             <div class="grid grid-cols-3 gap-2 mt-4">
@@ -272,7 +272,7 @@
     <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG (Carbono/Zinc) -->
     <div id="module-mkg-form" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
-            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nuevo Pedido Marketing</h2>
+            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="mkg-form-title">Nuevo Pedido Marketing</h2>
             <div class="space-y-3">
                 <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-zinc-900">
                     <span id="text-mkg-personal">Seleccionar Personal</span>
@@ -293,7 +293,7 @@
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <div class="relative">
                 <input type="text" id="mkg-search-prod" oninput="coreMkg.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                <div id="mkg-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
+                <div id="mkg-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-56 overflow-y-auto hidden border-slate-100"></div>
             </div>
             
             <div class="grid grid-cols-2 gap-3 mt-4">
@@ -614,7 +614,7 @@
             } 
             else if (tab === 'dev') { 
                 if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'NUEVA DEVOLUCIÓN'; 
+                if(tituloEl) tituloEl.innerText = document.getElementById('dev-form-title') ? document.getElementById('dev-form-title').innerText : 'NUEVA DEVOLUCIÓN'; 
                 if(progEl) progEl.style.display = 'none'; 
             } 
             else if (tab === 'dev-history') { 
@@ -631,7 +631,7 @@
             }
             else if (tab === 'mkg-form') { 
                 if(mkgForm) { mkgForm.style.display = 'block'; mkgForm.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'NUEVO PEDIDO MKTG'; 
+                if(tituloEl) tituloEl.innerText = document.getElementById('mkg-form-title') ? document.getElementById('mkg-form-title').innerText : 'NUEVO PEDIDO MKTG'; 
                 if(progEl) progEl.style.display = 'none'; 
             }
 
@@ -652,15 +652,8 @@
                 const hasItems = coreDev.items.length > 0;
                 const hasText = document.getElementById('dev-cliente').value.trim() !== '';
                 if (hasItems || hasText) {
-                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se borrará todo lo avanzado.', 
-                    () => { 
-                        coreDev.clearDraft(); coreDev.items = [];
-                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-obs').value = '';
-                        const searchInput = document.getElementById('dev-search-prod');
-                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
-                        window.syncAllSelectTexts();
-                        coreDev.renderItems(); window.changeTab(targetTab);
-                    }, () => { uiModal.close(); });
+                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se perderán los datos.', 
+                    () => { coreDev.clearDraft(); window.changeTab(targetTab); }, () => { uiModal.close(); });
                     return;
                 }
             }
@@ -669,15 +662,8 @@
                 const hasItems = coreMkg.items.length > 0;
                 const hasText = document.getElementById('mkg-motivo').value.trim() !== '';
                 if (hasItems || hasText) {
-                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes un pedido de marketing en progreso. Si cambias de página, se borrará todo lo avanzado.', 
-                    () => { 
-                        coreMkg.clearDraft(); coreMkg.items = [];
-                        document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE';
-                        const searchInput = document.getElementById('mkg-search-prod');
-                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
-                        window.syncAllSelectTexts();
-                        coreMkg.renderItems(); window.changeTab(targetTab);
-                    }, () => { uiModal.close(); });
+                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes un pedido de marketing en progreso. Si cambias de página, se perderán los datos.', 
+                    () => { coreMkg.clearDraft(); window.changeTab(targetTab); }, () => { uiModal.close(); });
                     return;
                 }
             }
@@ -713,6 +699,18 @@
             currentMonth: "", activeCont: null, timerInterval: null,
             getDesc: function(item) { const k = Object.keys(item).find(key => key.toUpperCase().includes("DESC") || key.toUpperCase().includes("PRODUCTO")); return k ? item[k] : "Sin descripción"; },
             
+            productos: JSON.parse(localStorage.getItem('twins_productos_cache')) || [],
+            fetchProductos: async function() {
+                try {
+                    const res = await fetch(this.url + "?type=productos", { redirect: 'follow' }); 
+                    const data = await res.json();
+                    if (data && Array.isArray(data)) {
+                        this.productos = data;
+                        localStorage.setItem('twins_productos_cache', JSON.stringify(data));
+                    }
+                } catch(e) { console.error("Error catálogo productos:", e); }
+            },
+
             fetchData: async function(silent = false) {
                 try {
                     const res = await fetch(this.url, { redirect: 'follow' }); 
@@ -801,9 +799,10 @@
             
             generatePDF: function(id, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); if (items.length === 0) return; 
-                const dark = [15, 23, 42]; const border = [203, 213, 225];
+                const accent = [37, 99, 235]; const dark = [15, 23, 42]; const border = [203, 213, 225];
                 
                 doc.setTextColor(245, 245, 245); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
+                
                 doc.setTextColor(...dark); doc.setFontSize(22); doc.text("TWINS", 14, 22); 
                 doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 116, 139); doc.text("LOGÍSTICA", 14, 27);
                 doc.setFontSize(16); doc.setTextColor(...dark); doc.setFont("helvetica", "bold"); doc.text("REPORTE DE AUDITORÍA", 196, 22, { align: "right" }); 
@@ -830,7 +829,7 @@
                     startY: startY, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'grid', 
                     headStyles: { fillColor: [241, 245, 249], textColor: dark, fontSize: hSize, fontStyle: 'bold', halign: 'center', lineColor: border, lineWidth: 0.1, cellPadding: pad }, 
                     bodyStyles: { fontSize: fSize, textColor: [51, 65, 85], lineColor: border, cellPadding: pad }, 
-                    columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } }, 
+                    columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold', textColor: accent }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } }, 
                     alternateRowStyles: { fillColor: [250, 250, 250] }, 
                     didParseCell: function(data) { if (data.section === 'body' && data.column.index === 4) { const val = parseInt(data.cell.raw); if (val > 0) { data.cell.styles.textColor = [37, 99, 235]; } else if (val < 0) { data.cell.styles.textColor = [220, 38, 38]; } else { data.cell.styles.textColor = [16, 185, 129]; } } } 
                 });
@@ -851,7 +850,7 @@
 
         // MOTOR 2: DEVOLUCIONES
         const coreDev = {
-            histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], items: [], isLoaded: false,
+            histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], items: [], isLoaded: false, editingKey: null,
             init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
             suggestVendor: function() {
                 const vendSelect = document.getElementById('dev-vendedor'); if (vendSelect.value !== "") return; 
@@ -861,10 +860,10 @@
             },
             saveDraft: function() {
                 const searchInput = document.getElementById('dev-search-prod');
-                const draft = { cliente: document.getElementById('dev-cliente').value, vendedor: document.getElementById('dev-vendedor').value, motivo: document.getElementById('dev-motivo').value, cg: document.getElementById('dev-cant-guia').value, cr: document.getElementById('dev-cant-real').value, um: document.getElementById('dev-um').value, estado: document.getElementById('dev-estado').value, obs: document.getElementById('dev-obs').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items };
+                const draft = { cliente: document.getElementById('dev-cliente').value, vendedor: document.getElementById('dev-vendedor').value, motivo: document.getElementById('dev-motivo').value, cg: document.getElementById('dev-cant-guia').value, cr: document.getElementById('dev-cant-real').value, um: document.getElementById('dev-um').value, estado: document.getElementById('dev-estado').value, obs: document.getElementById('dev-obs').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items, editingKey: this.editingKey };
                 localStorage.setItem('twins_dev_draft', JSON.stringify(draft));
             },
-            clearDraft: function() { localStorage.removeItem('twins_dev_draft'); },
+            clearDraft: function() { this.editingKey = null; document.getElementById('dev-form-title').innerText = 'Nueva Devolución'; localStorage.removeItem('twins_dev_draft'); },
             fetchHist: async function(silent = false) {
                 try {
                     const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); const data = await resp.json();
@@ -875,7 +874,42 @@
                     this.isLoaded = true; this.renderHistory(); 
                 } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; } }
             },
-            search: function() { this.saveDraft(); const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-indigo-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
+            search: function() { 
+                this.saveDraft();
+                const q = document.getElementById('dev-search-prod').value.toLowerCase().trim(); 
+                const r = document.getElementById('dev-results'); 
+                if (q.length < 2) { r.classList.add('hidden'); return; } 
+                
+                // Algoritmo de Búsqueda Exacta y Multi-Palabra
+                const terms = q.split(' ');
+                let exact = []; let partial = []; 
+                const s = new Set(); 
+                const catalogo = core.productos && core.productos.length > 0 ? core.productos : core.raw;
+                
+                catalogo.forEach(i => { 
+                    if (i.ORIGEN === "HOJA3" || i.VENDEDOR !== undefined) return;
+                    const c = (i.CODIGO || i.SKU || "").toString().trim();
+                    const desc = core.getDesc(i).trim();
+                    const cLow = c.toLowerCase();
+                    const dLow = desc.toLowerCase();
+                    
+                    if (!s.has(c)) { 
+                        if (cLow === q) {
+                            exact.push(i); s.add(c);
+                        } else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) {
+                            partial.push(i); s.add(c);
+                        }
+                    } 
+                }); 
+                
+                const u = [...exact, ...partial].slice(0, 12); 
+                if (u.length > 0) { 
+                    r.innerHTML = u.map(i => `<div onclick="coreDev.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-indigo-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-indigo-400 text-lg"></i></div>`).join(''); 
+                } else { 
+                    r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; 
+                } 
+                r.classList.remove('hidden'); 
+            },
             selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); this.saveDraft(); },
             
             addItem: function() { const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const u = document.getElementById('dev-um').value; const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } 
@@ -884,15 +918,29 @@
             },
             renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => { 
                 return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-indigo-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-indigo-600">GUÍA: ${i.cantGuia} ${i.um}</span> • <span class="text-blue-600">REAL: ${i.cantReal} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; 
-            }).join(''); b.classList.remove('hidden'); },
+            }).join(''); 
+            b.innerText = this.editingKey ? 'ACTUALIZAR TICKET' : 'GUARDAR DEVOLUCIÓN';
+            b.classList.remove('hidden'); 
+            },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
-            editTicket: function(t) { document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, obs: i.observaciones || '' })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.'); },
+            editTicket: function(t) { 
+                this.editingKey = t.cliente + "|" + t.fecha;
+                document.getElementById('dev-form-title').innerText = 'Editando Devolución';
+                document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, obs: i.observaciones || '' })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición Activo', 'Has cargado el ticket en el formulario. Al guardar, el ticket anterior será reemplazado para no generar duplicados.'); 
+            },
             
             save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
-                const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, observaciones: i.obs || "" })) }; 
+                const d = { action: this.editingKey ? "editar_devolucion" : "guardar_devolucion", oldKey: this.editingKey, cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, observaciones: i.obs || "" })) }; 
                 try { 
+                    if (this.editingKey) {
+                        const oldParts = this.editingKey.split('|'); const oldC = oldParts[0]; const oldF = oldParts[1];
+                        this.histMaster = this.histMaster.filter(i => !(i.CLIENTE === oldC && i.FECHA === oldF));
+                    }
                     const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANT_GUIA: i.cantGuia, CANT_REAL: i.cantReal, UM: i.um, ESTADO: i.estado, OBSERVACIONES: i.obs })); 
-                    this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente. Los datos se ordenarán en columnas separadas en tu Excel.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
+                    this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); 
+                    fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
+                    
+                    this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Guardada!', 'El ticket ha sido guardado correctamente sin duplicados.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
             },
             renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; } const t = {}; 
                 
@@ -900,7 +948,6 @@
                     const k = i.CLIENTE + "_" + i.FECHA; 
                     if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; 
                     
-                    // EXTRAE LOS DATOS RECONOCIENDO ESPACIOS EXTRA O PUNTOS EN EXCEL
                     const getV = (keys) => {
                         for(let key of keys) {
                             const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key);
@@ -909,10 +956,7 @@
                         return null;
                     };
 
-                    let cantGuia = getV(['CANTGUIA']);
-                    let cantReal = getV(['CANTREAL']);
-                    let umStr = getV(['UM', 'UNIDADMEDIDA']);
-
+                    let cantGuia = getV(['CANTGUIA']); let cantReal = getV(['CANTREAL']); let umStr = getV(['UM', 'UNIDADMEDIDA']);
                     if (cantGuia === null) cantGuia = i.CANTIDAD ? i.CANTIDAD.toString().split('|')[0] : 0;
                     if (cantReal === null) cantReal = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[1] || i.CANTIDAD.toString().split('|')[0]) : 0;
                     if (umStr === null) umStr = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[2] || 'U') : 'U';
@@ -939,11 +983,13 @@
             },
             viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             
+            // --- DISEÑO PDF DEVOLUCIONES CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
                 
                 doc.setTextColor(245, 245, 245); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
+                
                 doc.setTextColor(...dark); doc.setFontSize(22); doc.text("TWINS", 14, 22); 
                 doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 116, 139); doc.text("LOGÍSTICA", 14, 27);
                 doc.setFontSize(16); doc.setTextColor(...dark); doc.setFont("helvetica", "bold"); doc.text("TICKET DE DEVOLUCIÓN", 196, 22, { align: "right" }); 
@@ -979,14 +1025,14 @@
 
         // MOTOR 3: MARKETING
         const coreMkg = {
-            histMaster: JSON.parse(localStorage.getItem('twins_mkg_cache')) || [], items: [], isLoaded: false,
+            histMaster: JSON.parse(localStorage.getItem('twins_mkg_cache')) || [], items: [], isLoaded: false, editingKey: null,
             init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
             saveDraft: function() {
                 const searchInput = document.getElementById('mkg-search-prod');
-                const draft = { personal: document.getElementById('mkg-personal').value, motivo: document.getElementById('mkg-motivo').value, cant: document.getElementById('mkg-cant').value, um: document.getElementById('mkg-um').value, estado: document.getElementById('mkg-estado').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items };
+                const draft = { personal: document.getElementById('mkg-personal').value, motivo: document.getElementById('mkg-motivo').value, cant: document.getElementById('mkg-cant').value, um: document.getElementById('mkg-um').value, estado: document.getElementById('mkg-estado').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items, editingKey: this.editingKey };
                 localStorage.setItem('twins_mkg_draft', JSON.stringify(draft));
             },
-            clearDraft: function() { localStorage.removeItem('twins_mkg_draft'); },
+            clearDraft: function() { this.editingKey = null; document.getElementById('mkg-form-title').innerText = 'Nuevo Pedido Marketing'; localStorage.removeItem('twins_mkg_draft'); },
             fetchHist: async function(silent = false) {
                 try {
                     const resp = await fetch(core.url + "?type=historial_mkg", { redirect: 'follow' }); 
@@ -1027,7 +1073,38 @@
             },
             search: function() { 
                 this.saveDraft();
-                const q = document.getElementById('mkg-search-prod').value.toLowerCase(); const r = document.getElementById('mkg-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-zinc-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); 
+                const q = document.getElementById('mkg-search-prod').value.toLowerCase().trim(); 
+                const r = document.getElementById('mkg-results'); 
+                if (q.length < 2) { r.classList.add('hidden'); return; } 
+                
+                const terms = q.split(' ');
+                let exact = []; let partial = []; 
+                const s = new Set(); 
+                const catalogo = core.productos && core.productos.length > 0 ? core.productos : core.raw;
+                
+                catalogo.forEach(i => { 
+                    if (i.ORIGEN === "HOJA3") return;
+                    const c = (i.CODIGO || i.SKU || "").toString().trim();
+                    const desc = core.getDesc(i).trim();
+                    const cLow = c.toLowerCase();
+                    const dLow = desc.toLowerCase();
+                    
+                    if (!s.has(c)) { 
+                        if (cLow === q) {
+                            exact.push(i); s.add(c);
+                        } else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) {
+                            partial.push(i); s.add(c);
+                        }
+                    } 
+                }); 
+                
+                const u = [...exact, ...partial].slice(0, 12); 
+                if (u.length > 0) { 
+                    r.innerHTML = u.map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-zinc-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-zinc-400 text-lg"></i></div>`).join(''); 
+                } else { 
+                    r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; 
+                } 
+                r.classList.remove('hidden'); 
             },
             selectItem: function(c, d) { 
                 const i = document.getElementById('mkg-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('mkg-results').classList.add('hidden'); 
@@ -1048,18 +1125,16 @@
                 l.innerHTML = this.items.map((i, idx) => {
                     return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-zinc-600">${i.sku}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-zinc-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
                 }).join(''); 
+                b.innerText = this.editingKey ? 'ACTUALIZAR PEDIDO' : 'GUARDAR PEDIDO';
                 b.classList.remove('hidden'); 
             },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
             editTicket: function(t) {
-                document.getElementById('mkg-personal').value = t.personal || '';
-                document.getElementById('mkg-motivo').value = t.motivo || '';
-                this.items = t.items.map(i => ({
-                    sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado
-                }));
-                window.syncAllSelectTexts();
-                this.saveDraft(); this.renderItems(); window.changeTab('mkg-form');
-                uiModal.show('alert', 'Modo Edición', 'Has cargado el pedido en el formulario. Al realizar tus cambios y guardar, se actualizará el historial de la Hoja 4.');
+                this.editingKey = t.personal + "|" + t.fecha + "|" + t.motivo;
+                document.getElementById('mkg-form-title').innerText = 'Editando Pedido';
+                document.getElementById('mkg-personal').value = t.personal || ''; document.getElementById('mkg-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado }));
+                window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('mkg-form');
+                uiModal.show('alert', 'Modo Edición Activo', 'Has cargado el pedido en el formulario. Al guardar, el registro anterior será reemplazado para no generar duplicados.');
             },
             save: async function() { 
                 const p = document.getElementById('mkg-personal').value; const m = document.getElementById('mkg-motivo').value.trim(); 
@@ -1068,25 +1143,22 @@
                 window.showLoading(); 
                 const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
                 
-                const d = { action: "guardar_mkg", personal: p, motivo: m, fecha: f, items: this.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado })) }; 
+                const d = { action: this.editingKey ? "editar_mkg" : "guardar_mkg", oldKey: this.editingKey, personal: p, motivo: m, fecha: f, items: this.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado })) }; 
                 
                 try { 
+                    if (this.editingKey) {
+                        const oldParts = this.editingKey.split('|'); const oldP = oldParts[0]; const oldF = oldParts[1]; const oldM = oldParts[2];
+                        this.histMaster = this.histMaster.filter(i => !(i.PERSONAL === oldP && i.FECHA === oldF && i.MOTIVO === oldM));
+                    }
                     const arr = this.items.map(i => ({ FECHA: f, PERSONAL: p, MOTIVO: m, SKU: i.sku, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, UM: i.um, ESTADO: i.estado })); 
                     this.histMaster = [...this.histMaster, ...arr]; 
                     localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
                     
                     fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
                     
-                    this.clearDraft(); 
-                    this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); 
-                    window.syncAllSelectTexts();
-                    this.renderItems(); 
-                    
-                    window.hideLoading();
-                    uiModal.show('success', '¡Pedido Registrado!', 'El pedido de marketing fue guardado con éxito.', () => {
-                        window.changeTab('marketing'); 
-                        this.renderHistory(); 
-                    });
+                    this.clearDraft(); this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); 
+                    window.syncAllSelectTexts(); this.renderItems(); window.hideLoading();
+                    uiModal.show('success', '¡Pedido Guardado!', 'El pedido de marketing fue guardado con éxito sin generar duplicados.', () => { window.changeTab('marketing'); this.renderHistory(); });
                 } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
             },
             renderHistory: function() { 
@@ -1106,7 +1178,6 @@
                     const motivo = i.MOTIVO || "PEDIDO DE MARKETING";
                     const k = personal + "_" + fecha + "_" + motivo; 
                     
-                    // LECTURA ANTI FANTASMAS (Evita espacios en blanco del Excel)
                     const getV = (keys) => {
                         for(let key of keys) {
                             const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key);
@@ -1143,10 +1214,10 @@
                 c.innerHTML = fil.map(tk => { 
                     const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP');
                     const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
-                    return `<div class="native-card p-5 mb-4 border-l-4 border-zinc-600 shadow-sm bg-white rounded-2xl relative overflow-hidden">
+                    return `<div class="native-card p-5 mb-4 border-l-4 border-zinc-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
                         <div class="flex flex-wrap justify-between items-start mb-4 gap-2">
                             <div class="flex items-center gap-2">
-                                <div class="bg-zinc-100 text-zinc-700 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">MKTG: ${tk.motivo}</div>
+                                <div class="bg-zinc-100 text-zinc-700 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic dark:bg-zinc-900/30 dark:text-zinc-400">MKTG: ${tk.motivo}</div>
                                 ${isSAP ? `<div class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest flex items-center gap-1 shadow-sm"><i class="ph-bold ph-check-circle"></i> SAP</div>` : ''}
                             </div>
                             <span class="text-[10px] font-bold text-slate-400 mt-1">${tk.fecha}</span>
@@ -1169,6 +1240,7 @@
                 mo.style.display = 'flex'; 
             },
             
+            // --- DISEÑO PDF MARKETING CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
@@ -1250,6 +1322,7 @@
 
             if (hasDevDraft) {
                 const restoreDraft = () => {
+                    if (activeDevDraft.editingKey) coreDev.editingKey = activeDevDraft.editingKey;
                     if (activeDevDraft.cliente !== undefined) document.getElementById('dev-cliente').value = activeDevDraft.cliente;
                     if (activeDevDraft.vendedor !== undefined) document.getElementById('dev-vendedor').value = activeDevDraft.vendedor;
                     if (activeDevDraft.motivo !== undefined) document.getElementById('dev-motivo').value = activeDevDraft.motivo;
@@ -1272,6 +1345,7 @@
             
             if (hasMkgDraft) {
                 const restoreMkgDraft = () => {
+                    if (activeMkgDraft.editingKey) coreMkg.editingKey = activeMkgDraft.editingKey;
                     if (activeMkgDraft.personal !== undefined) document.getElementById('mkg-personal').value = activeMkgDraft.personal;
                     if (activeMkgDraft.motivo !== undefined) document.getElementById('mkg-motivo').value = activeMkgDraft.motivo;
                     if (activeMkgDraft.cant !== undefined) document.getElementById('mkg-cant').value = activeMkgDraft.cant;
@@ -1291,11 +1365,15 @@
 
             if (activeAudit) { core.openAudit(activeAudit); }
 
+            // Sincronizar todos los textos iniciales de los selects ocultos
             window.syncAllSelectTexts();
 
             if (typeof core !== 'undefined') {
                 if (core.raw && core.raw.length > 0) { core.render(); }
-                core.fetchData(true); setInterval(() => { core.fetchData(true); }, 10000);
+                core.fetchData(true); 
+                core.fetchProductos();
+                setInterval(() => { core.fetchData(true); }, 10000);
+                setInterval(() => { core.fetchProductos(); }, 30000);
             }
             if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 15000); }
             if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 15000); }
@@ -1303,7 +1381,7 @@
 
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') {
-                if(typeof core !== 'undefined') core.fetchData(true);
+                if(typeof core !== 'undefined') { core.fetchData(true); core.fetchProductos(); }
                 if(typeof coreDev !== 'undefined') coreDev.fetchHist(true);
                 if(typeof coreMkg !== 'undefined') coreMkg.fetchHist(true);
             }
