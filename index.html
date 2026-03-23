@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tajho DEVELOPER</title>
+    <title>Twins Elite Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -393,7 +393,7 @@
             if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
         }
 
-        // CONTROLADOR DEL MODAL ULTRA PREMIUM
+        // CONTROLADOR DEL MODAL ULTRA PREMIUM (MÓVIL)
         window.uiModal = {
             show: function(type, title, msg, onConfirm, onCancel) {
                 const modal = document.getElementById('modern-modal');
@@ -405,7 +405,7 @@
                 const actionsEl = document.getElementById('modern-modal-actions');
 
                 if (type === 'confirm') {
-                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-orange-500";
+                    glow.style.color = "#f97316"; // Naranja
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-orange-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-warning-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
@@ -415,14 +415,14 @@
                     document.getElementById('modal-btn-confirm').onclick = () => { this.close(); if(onConfirm) onConfirm(); };
                     document.getElementById('modal-btn-cancel').onclick = () => { this.close(); if(onCancel) onCancel(); };
                 } else if (type === 'success') {
-                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-emerald-500";
+                    glow.style.color = "#10b981"; // Esmeralda
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-emerald-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-check-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
                         <button type="button" onclick="uiModal.close();" class="w-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Entendido</button>
                     `;
                 } else if (type === 'alert') {
-                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-blue-500";
+                    glow.style.color = "#3b82f6"; // Azul
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-blue-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-info text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
@@ -551,11 +551,14 @@
         window.toggleMenu = function() {
             const m = document.getElementById('twins-menu'); 
             const p = document.getElementById('twins-menu-panel');
+            const b = document.getElementById('twins-menu-backdrop');
             if (m && p) { 
                 if (m.classList.contains('hidden')) { 
-                    m.classList.remove('hidden'); setTimeout(() => p.classList.remove('-translate-x-full'), 10); 
+                    m.classList.remove('hidden'); 
+                    setTimeout(() => { p.classList.remove('-translate-x-full'); if(b) b.classList.remove('opacity-0'); }, 10); 
                 } else { 
-                    p.classList.add('-translate-x-full'); setTimeout(() => m.classList.add('hidden'), 300); 
+                    p.classList.add('-translate-x-full'); if(b) b.classList.add('opacity-0'); 
+                    setTimeout(() => m.classList.add('hidden'), 300); 
                 } 
             }
         };
