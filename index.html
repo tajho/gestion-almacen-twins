@@ -12,7 +12,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
-        /* overscroll-behavior-y: none bloquea el pull-to-refresh en celulares */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; }
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
         .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -79,6 +78,7 @@
             <button type="button" onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
         </div>
     </div>
+    
     <div id="list-view" class="modal-full">
         <div class="px-6 py-8 flex items-center justify-between bg-white border-b"><button type="button" onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
         <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
@@ -125,7 +125,6 @@
             </select>
             <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-purple-500"></textarea>
             
-            <!-- BUTTON TYPE = BUTTON EVITA RECARGAS ACCIDENTALES DEL NAVEGADOR -->
             <button type="button" onclick="coreDev.addItem()" class="w-full mt-4 bg-purple-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
         </div>
         <div id="dev-items-list" class="space-y-2 mb-6"></div>
@@ -166,6 +165,90 @@
         <button type="button" onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
     </div>
 
+    <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG -->
+    <div id="module-mkg-form" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nuevo Pedido Marketing</h2>
+            <div class="space-y-3">
+                <select id="mkg-personal" onchange="coreMkg.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-rose-900">
+                    <option value="">Seleccionar Personal</option>
+                    <option value="ABDY">ABDY</option>
+                    <option value="FRANK">FRANK</option>
+                    <option value="YENIFER">YENIFER</option>
+                    <option value="JOHAN">JOHAN</option>
+                    <option value="OFICINA">OFICINA</option>
+                </select>
+                <input type="text" id="mkg-motivo" oninput="coreMkg.saveDraft()" placeholder="Motivo (Ej. Sorteo, Regalo...)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
+            </div>
+        </div>
+        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+            <div class="relative">
+                <input type="text" id="mkg-search-prod" oninput="coreMkg.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <div id="mkg-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="relative">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-rose-500 tracking-widest">CANTIDAD</span>
+                    <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-rose-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                </div>
+                <div class="relative">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-slate-500 tracking-widest">U. MEDIDA</span>
+                    <select id="mkg-um" onchange="coreMkg.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-rose-500 transition-colors">
+                        <option value="U">UNIDAD</option>
+                        <option value="PAQ">PAQUETE</option>
+                        <option value="CAJA">CAJA</option>
+                        <option value="MILLAR">MILLAR</option>
+                    </select>
+                </div>
+            </div>
+            
+            <select id="mkg-estado" onchange="coreMkg.saveDraft()" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-rose-500 transition-colors">
+                <option value="PENDIENTE">PENDIENTE</option>
+                <option value="ENTREGADO">ENTREGADO</option>
+                <option value="SAP">REGISTRADO EN SAP</option>
+            </select>
+            
+            <button type="button" onclick="coreMkg.addItem()" class="w-full mt-4 bg-rose-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+        </div>
+        <div id="mkg-items-list" class="space-y-2 mb-6"></div>
+        <button type="button" id="btn-save-mkg" onclick="coreMkg.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Pedido</button>
+    </div>
+
+    <!-- MÓDULO 5: HISTORIAL MARKETING -->
+    <div id="module-marketing" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-rose-500 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
+        </div>
+        
+        <div class="flex gap-2 mb-8">
+            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="mkg-hist-search" oninput="coreMkg.renderHistory()" placeholder="Motivo o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
+            
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+                <i class="ph-bold ph-calendar-blank text-rose-500 text-lg"></i>
+                <select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <option value="TODOS">Mes</option>
+                </select>
+            </div>
+            
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+                <i class="ph-bold ph-users text-blue-500 text-lg"></i>
+                <select id="mkg-filter-personal" onchange="coreMkg.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <option value="TODOS">TODOS</option>
+                    <option value="ABDY">ABDY</option>
+                    <option value="FRANK">FRANK</option>
+                    <option value="YENIFER">YENIFER</option>
+                    <option value="JOHAN">JOHAN</option>
+                    <option value="OFICINA">OFICINA</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="mkg-history-cards" class="space-y-4"></div>
+        <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-24 w-16 h-16 bg-rose-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+    </div>
+
     <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
     <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
@@ -176,6 +259,7 @@
             <div class="flex flex-col p-4 gap-3 mt-2">
                 <button type="button" onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
                 <button type="button" onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
+                <button type="button" onclick="window.attemptChangeTab('marketing')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-megaphone text-xl"></i> MARKETING</button>
             </div>
             <div class="mt-auto p-6 text-center border-t border-slate-50"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
         </div>
@@ -253,10 +337,14 @@
             const audit = document.getElementById('app-shell'); 
             const devForm = document.getElementById('module-returns'); 
             const devHist = document.getElementById('module-dev-history');
+            const mkgHist = document.getElementById('module-marketing');
+            const mkgForm = document.getElementById('module-mkg-form');
             
             if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
             if(devForm) { devForm.style.display = 'none'; devForm.classList.add('hidden'); }
             if(devHist) { devHist.style.display = 'none'; devHist.classList.add('hidden'); }
+            if(mkgHist) { mkgHist.style.display = 'none'; mkgHist.classList.add('hidden'); }
+            if(mkgForm) { mkgForm.style.display = 'none'; mkgForm.classList.add('hidden'); }
             
             const tituloEl = document.getElementById('header-title'); 
             const progEl = document.getElementById('header-progress');
@@ -277,6 +365,17 @@
                 if(progEl) progEl.style.display = 'none'; 
                 if(typeof coreDev !== 'undefined') coreDev.renderHistory(); 
             }
+            else if (tab === 'marketing') { 
+                if(mkgHist) { mkgHist.style.display = 'block'; mkgHist.classList.remove('hidden'); } 
+                if(tituloEl) tituloEl.innerText = 'REGISTRO MARKETING'; 
+                if(progEl) progEl.style.display = 'none'; 
+                if(typeof coreMkg !== 'undefined') coreMkg.renderHistory(); 
+            }
+            else if (tab === 'mkg-form') { 
+                if(mkgForm) { mkgForm.style.display = 'block'; mkgForm.classList.remove('hidden'); } 
+                if(tituloEl) tituloEl.innerText = 'NUEVO PEDIDO MKTG'; 
+                if(progEl) progEl.style.display = 'none'; 
+            }
 
             window.scrollTo(0, 0); 
             const menu = document.getElementById('twins-menu'); 
@@ -288,7 +387,6 @@
             localStorage.setItem('twins_memoria_pantalla', tab);
         };
 
-        // PROTECCIÓN ANTI-PÉRDIDA AL CAMBIAR PANTALLA Y LIMPIEZA
         window.attemptChangeTab = function(targetTab) {
             const currentTab = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             
@@ -297,36 +395,36 @@
                 const hasText = document.getElementById('dev-cliente').value.trim() !== '';
                 if (hasItems || hasText) {
                     uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se borrará todo lo avanzado.', 
-                    () => { // Confirmar -> Salir y borrar
-                        coreDev.clearDraft();
-                        coreDev.items = [];
-                        document.getElementById('dev-cliente').value = ''; 
-                        document.getElementById('dev-vendedor').value = ''; 
-                        document.getElementById('dev-motivo').value = ''; 
-                        document.getElementById('dev-cant-guia').value = ''; 
-                        document.getElementById('dev-cant-real').value = ''; 
-                        document.getElementById('dev-obs').value = '';
+                    () => { 
+                        coreDev.clearDraft(); coreDev.items = [];
+                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-obs').value = '';
                         const searchInput = document.getElementById('dev-search-prod');
                         searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
-                        coreDev.renderItems();
-                        window.changeTab(targetTab);
-                    },
-                    () => { // Cancelar -> Quedarse editando
-                        uiModal.close(); 
-                    });
+                        coreDev.renderItems(); window.changeTab(targetTab);
+                    }, () => { uiModal.close(); });
                     return;
                 }
             }
             
+            if (currentTab === 'mkg-form' && targetTab !== 'mkg-form') {
+                const hasItems = coreMkg.items.length > 0;
+                const hasText = document.getElementById('mkg-motivo').value.trim() !== '';
+                if (hasItems || hasText) {
+                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes un pedido de marketing en progreso. Si cambias de página, se borrará todo lo avanzado.', 
+                    () => { 
+                        coreMkg.clearDraft(); coreMkg.items = [];
+                        document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE';
+                        const searchInput = document.getElementById('mkg-search-prod');
+                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
+                        coreMkg.renderItems(); window.changeTab(targetTab);
+                    }, () => { uiModal.close(); });
+                    return;
+                }
+            }
+
             if (currentTab === 'audit' && targetTab !== 'audit' && core.activeCont !== null) {
                 uiModal.show('confirm', '¿Pausar Auditoría?', 'Estás en medio de un conteo físico. Se pausará y guardará tu avance en el dispositivo.', 
-                () => { // Confirmar -> Pausar y Salir
-                    core.closeModal('audit-view', true);
-                    window.changeTab(targetTab);
-                },
-                () => { // Cancelar -> Continuar Conteo
-                    uiModal.close();
-                });
+                () => { core.closeModal('audit-view', true); window.changeTab(targetTab); }, () => { uiModal.close(); });
                 return;
             }
             window.changeTab(targetTab);
@@ -337,18 +435,16 @@
             const p = document.getElementById('twins-menu-panel');
             if (m && p) { 
                 if (m.classList.contains('hidden')) { 
-                    m.classList.remove('hidden'); 
-                    setTimeout(() => p.classList.remove('-translate-x-full'), 10); 
+                    m.classList.remove('hidden'); setTimeout(() => p.classList.remove('-translate-x-full'), 10); 
                 } else { 
-                    p.classList.add('-translate-x-full'); 
-                    setTimeout(() => m.classList.add('hidden'), 300); 
+                    p.classList.add('-translate-x-full'); setTimeout(() => m.classList.add('hidden'), 300); 
                 } 
             }
         };
 
         // MOTOR 1: AUDITORÍA
         const core = {
-            url: "https://script.google.com/macros/s/AKfycbz3-kLZvKdvU9NXw1ytJwUIYU0PYsc5dwheeda-5xj0an-vQRSez-BY9CiTOZxyu5f2/exec",
+            url: "https://script.google.com/macros/s/AKfycbxmx5KUBm4FLAkKsp4RPlcn2TL65AWc71TMQjiNjFfhM4dtE7EKYfdO34CkRcERmdu6/exec",
             raw: JSON.parse(localStorage.getItem('twins_cache')) || [],
             mesesNombre: ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"],
             currentMonth: "", activeCont: null, timerInterval: null,
@@ -369,9 +465,7 @@
                         const view = document.getElementById('audit-view'); 
                         if (!view || view.style.display !== 'flex') this.render(); 
                     }
-                } catch (e) { 
-                    if (!silent) console.error(e); 
-                }
+                } catch (e) { if (!silent) console.error(e); }
             },
             getItemMonth: function(item) {
                 const f = item["FECHA_LIMPIA"] || item["FECHA"] || ""; if (!f) return "EN PROGRAMACIÓN";
@@ -380,9 +474,7 @@
             filterMonth: function(m) { this.currentMonth = m; this.render(); },
             render: function() {
                 const list = document.getElementById('container-list'); 
-                const searchEl = document.getElementById('main-search');
-                const search = searchEl ? searchEl.value.toLowerCase() : "";
-                
+                const searchEl = document.getElementById('main-search'); const search = searchEl ? searchEl.value.toLowerCase() : "";
                 if (!this.currentMonth) this.currentMonth = this.mesesNombre[new Date().getMonth()];
                 const sel = document.getElementById('month-select');
                 if(sel) {
@@ -426,184 +518,112 @@
             refreshItemUI: function(idx) { const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; document.getElementById(`total-audit-${idx}`).innerText = aud; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}`; bdg.innerText = bT; } const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
             updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); }); const p = t > 0 ? Math.round((a/t)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%"; },
             
-            requestCloseAudit: function() {
-                uiModal.show('confirm', '¿Pausar Conteo?', 'Tu avance se guardará en tu dispositivo. Podrás retomarlo luego.', 
-                () => { // Continuar
-                    uiModal.close();
-                },
-                () => { // Pausar y Salir
-                    this.closeModal('audit-view', true);
-                });
-            },
-            closeModal: function(id, skipWarning = false) { 
-                if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } 
-                document.getElementById(id).style.display = 'none'; 
-            },
+            requestCloseAudit: function() { uiModal.show('confirm', '¿Pausar Conteo?', 'Tu avance se guardará en tu dispositivo. Podrás retomarlo luego.', () => { this.closeModal('audit-view', true); }, () => { uiModal.close(); }); },
+            closeModal: function(id, skipWarning = false) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
             
             saveAndFinish: async function() { 
                 uiModal.show('confirm', '¿Finalizar Auditoría?', `¿Estás seguro de completar y enviar la Carga #${this.activeCont} al sistema central? No podrás deshacerlo.`, 
-                () => { // Confirmar Finalizacion
-                    this.stopTimer(); 
-                    const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); 
+                () => { 
+                    this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); 
                     let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; }); 
                     const f = new Date(); const fD = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}/${f.getFullYear()}`; 
                     const tForm = this.formatTime(tSeg); items.forEach(i => { i.ESTADO = "COMPLETADO"; i.auditTime = tSeg; i.FECHA_LIMPIA = fD; }); 
                     localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); 
-                    
                     fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) }); 
-                    
-                    this.closeModal('audit-view', true); 
-                    this.render();
+                    this.closeModal('audit-view', true); this.render();
                     uiModal.show('success', '¡Auditoría Completada!', 'El conteo fue enviado y registrado correctamente.');
-                }, 
-                () => { // Cancelar
-                    uiModal.close();
-                });
+                }, () => { uiModal.close(); });
             },
             viewList: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(i => `<div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1">${i.CODIGO}</p><p class="text-xs font-bold text-slate-800 line-clamp-2">${this.getDesc(i)}</p></div><div class="text-right flex items-center gap-4"><div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : 'text-slate-900'}">${i.audit || 0} / ${i.CAJAS || 0}</span><span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span></div></div></div>`).join(''); document.getElementById('list-view').style.display = 'flex'; },
             
             generatePDF: function(id) { 
-                const { jsPDF } = window.jspdf; 
-                const doc = new jsPDF(); 
-                const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); 
-                if (items.length === 0) return; 
-
-                const primaryColor = [30, 58, 138]; // Azul Corporativo Navy
-                const darkColor = [15, 23, 42]; 
-                const accentColor = [16, 185, 129]; 
-
-                doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
-                
-                doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F');
-                doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
-                doc.text("TWINS", 16.5, 14.5);
-
-                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
-                doc.text("AUDITORÍA DE CONTENEDOR", 40, 16);
-                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`CARGA N° ${id}`, 165, 16);
-
-                let tTeo = 0, tAud = 0; items.forEach(i => { tTeo += (parseInt(i.CAJAS) || 0); tAud += (i.audit || 0); });
-                const diff = tAud - tTeo;
-                
-                const tKey = Object.keys(items[0]).find(k => k.toUpperCase() === 'TIEMPO');
-                const auditTimeStr = (tKey && items[0][tKey]) ? items[0][tKey] : this.formatTime(items[0].auditTime || 0);
-                const auditDateStr = items[0].FECHA_LIMPIA || "---";
-
-                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DE LA CARGA", 14, 38);
-                doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
-
-                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(auditDateStr, 32, 48);
-                doc.setFont("helvetica", "bold"); doc.text("TIEMPO DE CONTEO:", 70, 48); doc.setFont("helvetica", "normal"); doc.text(auditTimeStr, 105, 48);
-
-                doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE CONTEO FÍSICO", 14, 58);
-                doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 60, 196, 60);
-
-                doc.setFontSize(9); doc.setFont("helvetica", "normal");
-                doc.text(`Total SKUs: ${items.length}`, 14, 68); doc.text(`Teórico Total: ${tTeo} U`, 70, 68); doc.text(`Físico Total: ${tAud} U`, 120, 68);
-                const cDiff = diff === 0 ? [16, 185, 129] : (diff > 0 ? [37, 99, 235] : [220, 38, 38]);
-                doc.setTextColor(...cDiff); doc.setFont("helvetica", "bold"); doc.text(`Dif. Neta: ${diff > 0 ? '+' : ''}${diff}`, 165, 68);
-
-                const b = items.map(i => {
-                    const teo = parseInt(i.CAJAS) || 0; const aud = i.audit || 0; const d = aud - teo;
-                    return [ i.CODIGO || "---", this.getDesc(i), teo, aud, d > 0 ? `+${d}` : d ];
-                });
-
-                doc.autoTable({
-                    startY: 75, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'striped',
-                    headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' },
-                    bodyStyles: { fontSize: 8, textColor: 50 },
-                    columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } },
-                    didParseCell: function(data) { if (data.section === 'body' && data.column.index === 4) { const val = parseInt(data.cell.raw); if (val > 0) { data.cell.styles.textColor = [37, 99, 235]; } else if (val < 0) { data.cell.styles.textColor = [220, 38, 38]; } else { data.cell.styles.textColor = [16, 185, 129]; } } }
-                });
-
-                const fY = doc.lastAutoTable.finalY + 35;
-                doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); 
-                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" });
-                doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" });
-                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" });
-                doc.save(`Auditoria_Contenedor_${id}.pdf`); 
+                const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); if (items.length === 0) return; 
+                const primaryColor = [30, 58, 138]; const darkColor = [15, 23, 42]; const accentColor = [16, 185, 129]; 
+                doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F'); doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F'); doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text("TWINS", 16.5, 14.5);
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text("AUDITORÍA DE CONTENEDOR", 40, 16); doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`CARGA N° ${id}`, 165, 16);
+                let tTeo = 0, tAud = 0; items.forEach(i => { tTeo += (parseInt(i.CAJAS) || 0); tAud += (i.audit || 0); }); const diff = tAud - tTeo;
+                const tKey = Object.keys(items[0]).find(k => k.toUpperCase() === 'TIEMPO'); const auditTimeStr = (tKey && items[0][tKey]) ? items[0][tKey] : this.formatTime(items[0].auditTime || 0); const auditDateStr = items[0].FECHA_LIMPIA || "---";
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DE LA CARGA", 14, 38); doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
+                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(auditDateStr, 32, 48); doc.setFont("helvetica", "bold"); doc.text("TIEMPO DE CONTEO:", 70, 48); doc.setFont("helvetica", "normal"); doc.text(auditTimeStr, 105, 48);
+                doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE CONTEO FÍSICO", 14, 58); doc.setDrawColor(...accentColor); doc.setLineWidth(0.5); doc.line(14, 60, 196, 60);
+                doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(`Total SKUs: ${items.length}`, 14, 68); doc.text(`Teórico Total: ${tTeo} U`, 70, 68); doc.text(`Físico Total: ${tAud} U`, 120, 68);
+                const cDiff = diff === 0 ? [16, 185, 129] : (diff > 0 ? [37, 99, 235] : [220, 38, 38]); doc.setTextColor(...cDiff); doc.setFont("helvetica", "bold"); doc.text(`Dif. Neta: ${diff > 0 ? '+' : ''}${diff}`, 165, 68);
+                const b = items.map(i => { const teo = parseInt(i.CAJAS) || 0; const aud = i.audit || 0; const d = aud - teo; return [ i.CODIGO || "---", this.getDesc(i), teo, aud, d > 0 ? `+${d}` : d ]; });
+                doc.autoTable({ startY: 75, head: [['SKU', 'DESCRIPCIÓN', 'TEÓRICO', 'FÍSICO', 'DIFERENCIA']], body: b, theme: 'striped', headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' }, bodyStyles: { fontSize: 8, textColor: 50 }, columnStyles: { 0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 20, halign: 'center' }, 3: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, 4: { cellWidth: 25, halign: 'center', fontStyle: 'bold' } }, didParseCell: function(data) { if (data.section === 'body' && data.column.index === 4) { const val = parseInt(data.cell.raw); if (val > 0) { data.cell.styles.textColor = [37, 99, 235]; } else if (val < 0) { data.cell.styles.textColor = [220, 38, 38]; } else { data.cell.styles.textColor = [16, 185, 129]; } } } });
+                const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); doc.save(`Auditoria_Contenedor_${id}.pdf`); 
             }
         };
 
-        // MOTOR 2: DEVOLUCIONES OFFLINE-FIRST + PROTECCIÓN AUTO-GUARDADO SILENCIOSO
+        // MOTOR 2: DEVOLUCIONES
         const coreDev = {
-            histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], 
-            items: [], 
-            isLoaded: false,
-            
-            init: function() { 
-                if (this.histMaster.length > 0) {
-                    this.isLoaded = true;
-                    this.renderHistory();
-                }
-                this.fetchHist(); 
-            },
-
+            histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], items: [], isLoaded: false,
+            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
             suggestVendor: function() {
-                const vendSelect = document.getElementById('dev-vendedor');
-                if (vendSelect.value !== "") return; 
-
-                const clientName = document.getElementById('dev-cliente').value.trim().toLowerCase();
-                if (!clientName || this.histMaster.length === 0) return;
-
+                const vendSelect = document.getElementById('dev-vendedor'); if (vendSelect.value !== "") return; 
+                const clientName = document.getElementById('dev-cliente').value.trim().toLowerCase(); if (!clientName || this.histMaster.length === 0) return;
                 const match = this.histMaster.find(i => i.CLIENTE && i.CLIENTE.toLowerCase() === clientName && i.VENDEDOR);
-                if (match) {
-                    for (let i = 0; i < vendSelect.options.length; i++) {
-                        if (vendSelect.options[i].value === match.VENDEDOR) {
-                            vendSelect.selectedIndex = i;
-                            this.saveDraft();
-                            break;
-                        }
-                    }
-                }
+                if (match) { for (let i = 0; i < vendSelect.options.length; i++) { if (vendSelect.options[i].value === match.VENDEDOR) { vendSelect.selectedIndex = i; this.saveDraft(); break; } } }
             },
-
             saveDraft: function() {
                 const searchInput = document.getElementById('dev-search-prod');
-                const draft = {
-                    cliente: document.getElementById('dev-cliente').value,
-                    vendedor: document.getElementById('dev-vendedor').value,
-                    motivo: document.getElementById('dev-motivo').value,
-                    cg: document.getElementById('dev-cant-guia').value,
-                    cr: document.getElementById('dev-cant-real').value,
-                    estado: document.getElementById('dev-estado').value,
-                    obs: document.getElementById('dev-obs').value,
-                    searchVal: searchInput.value,
-                    searchCod: searchInput.dataset.cod || "",
-                    searchDesc: searchInput.dataset.desc || "",
-                    items: this.items
-                };
+                const draft = { cliente: document.getElementById('dev-cliente').value, vendedor: document.getElementById('dev-vendedor').value, motivo: document.getElementById('dev-motivo').value, cg: document.getElementById('dev-cant-guia').value, cr: document.getElementById('dev-cant-real').value, estado: document.getElementById('dev-estado').value, obs: document.getElementById('dev-obs').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items };
                 localStorage.setItem('twins_dev_draft', JSON.stringify(draft));
             },
-
-            clearDraft: function() {
-                localStorage.removeItem('twins_dev_draft');
-            },
-            
+            clearDraft: function() { localStorage.removeItem('twins_dev_draft'); },
             fetchHist: async function(silent = false) {
                 try {
-                    const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); 
+                    const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); const data = await resp.json();
+                    this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3" || i.VENDEDOR !== undefined || i.CLIENTE !== undefined).map(i => { let f = i.FECHA || ""; if (typeof f === 'string' && f.includes('T')) { const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`; } else if (f instanceof Date) { f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`; } else { const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`; } return { ...i, FECHA: f }; });
+                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+                    const uM = new Set(); this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
+                    const selM = document.getElementById('dev-filter-mes'); if(selM) { let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; }); selM.innerHTML = opts; }
+                    this.isLoaded = true; this.renderHistory(); 
+                } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; } }
+            },
+            search: function() { this.saveDraft(); const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
+            selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); this.saveDraft(); },
+            addItem: function() { const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: `${cg}|${cr}`, estado: e, obs: o }); i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-obs').value = ''; this.saveDraft(); this.renderItems(); },
+            renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => { const pts = i.cantidad.toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-purple-600">GUÍA: ${cg}</span> • <span class="text-blue-600">REAL: ${cr}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; }).join(''); b.classList.remove('hidden'); },
+            removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
+            editTicket: function(t) { document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, obs: i.observaciones || '' })); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.'); },
+            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, observaciones: i.obs || "" })) }; try { const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente en tu historial.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } },
+            renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; } const t = {}; this.histMaster.forEach(i => { const k = i.CLIENTE + "_" + i.FECHA; if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; const existingIdx = t[k].items.findIndex(item => item.codigo === i.CODIGO); if (existingIdx > -1) { t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; } else { t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); } }); const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mV && mMes; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } c.innerHTML = fil.map(tk => { const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; }).join(''); },
+            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-purple-600">G: ${cg}</span><span class="text-[10px] font-[900] text-blue-600">R: ${cr}</span></div></div>` }).join(''); mo.style.display = 'flex'; },
+            generatePDF: function(d) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const primaryColor = [30, 58, 138]; const darkColor = [15, 23, 42]; doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F'); doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F'); doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text("TWINS", 16.5, 14.5); doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text("REPORTE DE DEVOLUCIÓN", 40, 16); doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38); doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40); doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(d.fecha || "---", 32, 48); doc.setFont("helvetica", "bold"); doc.text("CLIENTE:", 14, 54); doc.setFont("helvetica", "normal"); doc.text(d.cliente || "---", 32, 54); doc.setFont("helvetica", "bold"); doc.text("VENDEDOR:", 110, 48); doc.setFont("helvetica", "normal"); doc.text(d.vendedor || "---", 135, 48); doc.setFont("helvetica", "bold"); doc.text("MOTIVO:", 110, 54); doc.setFont("helvetica", "normal"); doc.text(d.motivo || "DEVOLUCIÓN", 135, 54); const tableBody = d.items.map(i => { const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; return [ i.codigo, i.descripcion, `${cg} U`, `${cr} U`, i.estado || 'OK', i.observaciones || i.obs || '---' ]; }); doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBSERV.']], body: tableBody, theme: 'striped', headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' }, bodyStyles: { fontSize: 7, textColor: 50 }, columnStyles: { 0: { cellWidth: 20, fontStyle: 'bold', textColor: primaryColor }, 1: { cellWidth: 50 }, 2: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [100, 116, 139] }, 3: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [37, 99, 235] }, 4: { cellWidth: 25, halign: 'center' }, 5: { cellWidth: 'auto' } }, alternateRowStyles: { fillColor: [248, 250, 252] } }); const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); doc.save(`Reporte_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); }
+        };
+
+        // MOTOR 3: MARKETING
+        const coreMkg = {
+            histMaster: JSON.parse(localStorage.getItem('twins_mkg_cache')) || [], items: [], isLoaded: false,
+            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
+            saveDraft: function() {
+                const searchInput = document.getElementById('mkg-search-prod');
+                const draft = { personal: document.getElementById('mkg-personal').value, motivo: document.getElementById('mkg-motivo').value, cant: document.getElementById('mkg-cant').value, um: document.getElementById('mkg-um').value, estado: document.getElementById('mkg-estado').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items };
+                localStorage.setItem('twins_mkg_draft', JSON.stringify(draft));
+            },
+            clearDraft: function() { localStorage.removeItem('twins_mkg_draft'); },
+            fetchHist: async function(silent = false) {
+                try {
+                    const resp = await fetch(core.url + "?type=historial_mkg", { redirect: 'follow' }); 
                     const data = await resp.json();
                     
-                    this.histMaster = data
-                        .filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3" || i.VENDEDOR !== undefined || i.CLIENTE !== undefined)
-                        .map(i => {
-                            let f = i.FECHA || "";
-                            if (typeof f === 'string' && f.includes('T')) {
-                                const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
-                            } else if (f instanceof Date) {
-                                f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
-                            } else {
-                                const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
-                            }
-                            return { ...i, FECHA: f };
-                        });
+                    this.histMaster = data.map(i => {
+                        let f = i.FECHA || "";
+                        if (typeof f === 'string' && f.includes('T')) {
+                            const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+                        } else if (f instanceof Date) {
+                            f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
+                        } else {
+                            const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+                        }
+                        return { ...i, FECHA: f };
+                    });
                     
-                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+                    localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
 
                     const uM = new Set();
                     this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
-                    const selM = document.getElementById('dev-filter-mes');
+                    const selM = document.getElementById('mkg-filter-mes');
                     if(selM) {
                         let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
                         Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; });
@@ -612,165 +632,154 @@
 
                     this.isLoaded = true; this.renderHistory(); 
                 } catch (e) { 
-                    if (!silent) console.error("Error historial:", e); 
+                    if (!silent) console.error("Error historial marketing:", e); 
                     this.isLoaded = true; 
                     if (this.histMaster.length === 0) {
-                        const c = document.getElementById('dev-history-cards'); 
-                        if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; 
+                        const c = document.getElementById('mkg-history-cards'); 
+                        if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay registros de marketing aún</div>`; 
                     }
                 }
             },
             search: function() { 
-                this.saveDraft(); 
-                const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); 
+                this.saveDraft();
+                const q = document.getElementById('mkg-search-prod').value.toLowerCase(); const r = document.getElementById('mkg-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-rose-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); 
             },
             selectItem: function(c, d) { 
-                const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); 
-                this.saveDraft(); 
+                const i = document.getElementById('mkg-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('mkg-results').classList.add('hidden'); 
+                this.saveDraft();
             },
-            
             addItem: function() { 
-                const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; 
-                if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } 
+                const i = document.getElementById('mkg-search-prod'); const c = parseInt(document.getElementById('mkg-cant').value); const u = document.getElementById('mkg-um').value; const e = document.getElementById('mkg-estado').value; 
+                if (!i.dataset.cod || isNaN(c) || c <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y especifica la cantidad.'); return; } 
                 
-                this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: `${cg}|${cr}`, estado: e, obs: o }); 
-                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-obs').value = ''; 
+                this.items.push({ sku: i.dataset.cod, descripcion: i.dataset.desc, cantidad: c, um: u, estado: e }); 
+                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('mkg-cant').value = '';
                 this.saveDraft();
                 this.renderItems(); 
             },
-            
             renderItems: function() { 
-                const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); 
+                const l = document.getElementById('mkg-items-list'); const b = document.getElementById('btn-save-mkg'); 
                 if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } 
                 l.innerHTML = this.items.map((i, idx) => {
-                    const pts = i.cantidad.toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
-                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-purple-600">GUÍA: ${cg}</span> • <span class="text-blue-600">REAL: ${cr}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
+                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-rose-600">${i.sku}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-rose-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
                 }).join(''); 
                 b.classList.remove('hidden'); 
             },
-            
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
-            
             editTicket: function(t) {
-                document.getElementById('dev-cliente').value = t.cliente || '';
-                document.getElementById('dev-vendedor').value = t.vendedor || '';
-                document.getElementById('dev-motivo').value = t.motivo || '';
+                document.getElementById('mkg-personal').value = t.personal || '';
+                document.getElementById('mkg-motivo').value = t.motivo || '';
                 this.items = t.items.map(i => ({
-                    codigo: i.codigo,
-                    descripcion: i.descripcion,
-                    cantidad: i.cantidad,
-                    estado: i.estado,
-                    obs: i.observaciones || ''
+                    sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado
                 }));
-                this.saveDraft();
-                this.renderItems();
-                window.changeTab('dev');
-                uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.');
+                this.saveDraft(); this.renderItems(); window.changeTab('mkg-form');
+                uiModal.show('alert', 'Modo Edición', 'Has cargado el pedido en el formulario. Al realizar tus cambios y guardar, se actualizará el historial de la Hoja 4.');
             },
-            
             save: async function() { 
-                const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); 
-                if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } 
+                const p = document.getElementById('mkg-personal').value; const m = document.getElementById('mkg-motivo').value.trim(); 
+                if (!p || !m || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de seleccionar el Personal, ingresar el Motivo y agregar productos a la lista.'); return; } 
                 
                 window.showLoading(); 
                 const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
                 
-                const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, observaciones: i.obs || "" })) }; 
+                const d = { action: "guardar_mkg", personal: p, motivo: m, fecha: f, items: this.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado })) }; 
                 
                 try { 
-                    const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); 
-                    this.histMaster = [...p, ...this.histMaster]; 
-                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+                    const arr = this.items.map(i => ({ FECHA: f, PERSONAL: p, MOTIVO: m, SKU: i.sku, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, UM: i.um, ESTADO: i.estado })); 
+                    this.histMaster = [...this.histMaster, ...arr]; 
+                    localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
                     
                     fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
                     
                     this.clearDraft(); 
-                    this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); this.renderItems(); 
+                    this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); this.renderItems(); 
                     
                     window.hideLoading();
-                    uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente en tu historial.', () => {
-                        window.changeTab('dev-history'); 
+                    uiModal.show('success', '¡Pedido Registrado!', 'El pedido de marketing fue guardado con éxito.', () => {
+                        window.changeTab('marketing'); 
                         this.renderHistory(); 
                     });
                 } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
             },
-            
             renderHistory: function() { 
-                const c = document.getElementById('dev-history-cards'); if (!c) return; 
-                const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); 
-                const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS";
+                const c = document.getElementById('mkg-history-cards'); if (!c) return; 
+                const bI = document.getElementById('mkg-hist-search'); const fP = document.getElementById('mkg-filter-personal'); const fM = document.getElementById('mkg-filter-mes'); 
+                const b = bI ? bI.value.toLowerCase().trim() : ""; const pers = fP ? fP.value : "TODOS"; const mes = fM ? fM.value : "TODOS";
                 
-                if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; }
-                if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; }
+                if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Hoja 4...</div>`; return; }
+                if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay registros de marketing aún</div>`; return; }
                 
                 const t = {}; 
                 this.histMaster.forEach(i => { 
-                    const k = i.CLIENTE + "_" + i.FECHA; 
-                    if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; 
-                    t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); 
+                    const personal = i.PERSONAL || "SIN ASIGNAR";
+                    const fecha = i.FECHA || "---";
+                    const motivo = i.MOTIVO || "PEDIDO DE MARKETING";
+                    const k = personal + "_" + fecha + "_" + motivo; 
+                    
+                    if (!t[k]) t[k] = { fecha: fecha, personal: personal, motivo: motivo, items: [] }; 
+                    
+                    const existingIdx = t[k].items.findIndex(item => item.sku === (i.SKU || i.CODIGO));
+                    if (existingIdx > -1) {
+                        t[k].items[existingIdx] = { sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: i.CANTIDAD || 0, um: i.UM || "U", estado: i.ESTADO || "PENDIENTE" };
+                    } else {
+                        t[k].items.push({ sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: i.CANTIDAD || 0, um: i.UM || "U", estado: i.ESTADO || "PENDIENTE" }); 
+                    }
                 }); 
                 
                 const fil = Object.values(t).filter(tk => { 
-                    const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); 
-                    const mV = (f === "TODOS") || (tk.vendedor === f); 
+                    const mB = tk.motivo.toLowerCase().includes(b) || tk.items.some(i => (i.sku||"").toString().toLowerCase().includes(b) || (i.descripcion||"").toLowerCase().includes(b)); 
+                    const mP = (pers === "TODOS") || (tk.personal.toUpperCase() === pers.toUpperCase()); 
                     let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } 
-                    return mB && mV && mMes; 
+                    return mB && mP && mMes; 
                 }).reverse(); 
                 
-                const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); 
-                if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; 
+                const iT = document.getElementById('stat-mkg-total'); const iF = document.getElementById('stat-mkg-filtrado'); 
+                if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (pers === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; 
                 
                 if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } 
                 
                 c.innerHTML = fil.map(tk => { 
-                    const j = JSON.stringify(tk).replace(/'/g, "&#39;"); 
-                    return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; 
+                    const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP');
+                    const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
+                    return `<div class="native-card p-6 mb-4 border-l-4 border-rose-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
+                        ${isSAP ? `<div class="absolute top-4 right-4 border-[2px] border-emerald-500 text-emerald-500 bg-white/90 px-3 py-1 rounded-lg text-[10px] font-black tracking-widest transform rotate-12 shadow-sm z-10 backdrop-blur-sm">REGISTRADO SAP</div>` : ''}
+                        <div class="flex justify-between items-start mb-4"><div class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">MKTG: ${tk.motivo}</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div>
+                        <div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">${tk.items.length} PRODUCTOS</p></div></div>
+                        <div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreMkg.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Lápiz</button><button type="button" onclick='coreMkg.viewTicketItems(${j})' class="bg-rose-50 text-rose-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-rose-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreMkg.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div>
+                    </div>`; 
                 }).join(''); 
             },
-            
             viewTicketItems: function(t) { 
                 const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); 
-                if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; 
+                if(!l || !m || !mo) return; m.innerText = "PERSONAL: " + t.personal; 
                 l.innerHTML = t.items.map(i => {
-                    const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
-                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-purple-600">G: ${cg}</span><span class="text-[10px] font-[900] text-blue-600">R: ${cr}</span></div></div>`
+                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-rose-600 tracking-widest mb-1 uppercase">${i.sku}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-sm font-[900] text-rose-600">${i.cantidad} <span class="text-[10px]">${i.um}</span></span></div></div>`
                 }).join(''); 
                 mo.style.display = 'flex'; 
             },
-            
             generatePDF: function(d) { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-
-                const primaryColor = [30, 58, 138]; // Azul corporativo Navy
+                const primaryColor = [30, 58, 138]; // Azul corporativo Navy para mantener profesionalismo
                 const darkColor = [15, 23, 42]; 
                 
                 doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
-                
-                doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F');
-                doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
-                doc.text("TWINS", 16.5, 14.5);
+                doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F'); doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text("TWINS", 16.5, 14.5);
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text("REPORTE DE MARKETING", 40, 16);
 
-                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16);
-                doc.text("REPORTE DE DEVOLUCIÓN", 40, 16);
-
-                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38);
+                doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL PEDIDO", 14, 38);
                 doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40);
 
                 doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(d.fecha || "---", 32, 48);
-                doc.setFont("helvetica", "bold"); doc.text("CLIENTE:", 14, 54); doc.setFont("helvetica", "normal"); doc.text(d.cliente || "---", 32, 54);
-                doc.setFont("helvetica", "bold"); doc.text("VENDEDOR:", 110, 48); doc.setFont("helvetica", "normal"); doc.text(d.vendedor || "---", 135, 48);
-                doc.setFont("helvetica", "bold"); doc.text("MOTIVO:", 110, 54); doc.setFont("helvetica", "normal"); doc.text(d.motivo || "DEVOLUCIÓN", 135, 54);
+                doc.setFont("helvetica", "bold"); doc.text("PERSONAL:", 14, 54); doc.setFont("helvetica", "normal"); doc.text(d.personal || "---", 36, 54);
+                doc.setFont("helvetica", "bold"); doc.text("MOTIVO:", 110, 48); doc.setFont("helvetica", "normal"); doc.text(d.motivo || "---", 130, 48);
 
-                const tableBody = d.items.map(i => {
-                    const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0];
-                    return [ i.codigo, i.descripcion, `${cg} U`, `${cr} U`, i.estado || 'OK', i.observaciones || i.obs || '---' ];
-                });
+                const tableBody = d.items.map(i => [ i.sku, i.descripcion, `${i.cantidad} ${i.um}`, i.estado || '---' ]);
 
                 doc.autoTable({ 
-                    startY: 65, head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBSERV.']], body: tableBody, theme: 'striped',
+                    startY: 65, head: [['SKU', 'PRODUCTO', 'CANTIDAD', 'ESTADO']], body: tableBody, theme: 'striped',
                     headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' },
                     bodyStyles: { fontSize: 7, textColor: 50 },
-                    columnStyles: { 0: { cellWidth: 20, fontStyle: 'bold', textColor: primaryColor }, 1: { cellWidth: 50 }, 2: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [100, 116, 139] }, 3: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [37, 99, 235] }, 4: { cellWidth: 25, halign: 'center' }, 5: { cellWidth: 'auto' } },
+                    columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold', textColor: primaryColor }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 3: { cellWidth: 35, halign: 'center' } },
                     alternateRowStyles: { fillColor: [248, 250, 252] }
                 }); 
 
@@ -780,30 +789,50 @@
                 doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" });
                 doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" });
 
-                doc.save(`Reporte_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); 
+                doc.save(`Marketing_${d.personal.replace(/\s+/g,'_')}.pdf`); 
             }
         };
 
-        // ARRANQUE PRINCIPAL (EVALUADOR DE BORRADORES Y RECUPERACIÓN SILENCIOSA)
+        // BLOQUEO DE NAVEGADOR CONTRA CIERRES O ACTUALIZACIONES ACCIDENTALES
+        window.addEventListener('beforeunload', (e) => {
+            const isAuditing = !!localStorage.getItem('twins_active_cont');
+            let isDevolving = false; let isMkg = false;
+            try {
+                const draftStr = localStorage.getItem('twins_dev_draft');
+                const draft = JSON.parse(draftStr);
+                isDevolving = draft && (draft.items.length > 0 || draft.cliente || draft.motivo || draft.searchVal || draft.cg || draft.cr || draft.obs);
+                
+                const draftMkgStr = localStorage.getItem('twins_mkg_draft');
+                const draftMkg = JSON.parse(draftMkgStr);
+                isMkg = draftMkg && (draftMkg.items.length > 0 || draftMkg.personal || draftMkg.motivo || draftMkg.searchVal || draftMkg.cant);
+            } catch(err){}
+
+            if (isAuditing || isDevolving || isMkg) {
+                e.preventDefault(); e.returnValue = ''; 
+            }
+        });
+
+        // ARRANQUE PRINCIPAL
         window.addEventListener('DOMContentLoaded', () => {
-            // Asegurarnos de que estamos en la pestaña correcta desde el milisegundo 0
             const activeAudit = localStorage.getItem('twins_active_cont');
-            let activeDevDraft = null;
+            
+            let activeDevDraft = null; let activeMkgDraft = null;
             try { activeDevDraft = JSON.parse(localStorage.getItem('twins_dev_draft')); } catch(e){}
+            try { activeMkgDraft = JSON.parse(localStorage.getItem('twins_mkg_draft')); } catch(e){}
+            
             const hasDevDraft = activeDevDraft && (activeDevDraft.items?.length > 0 || activeDevDraft.cliente || activeDevDraft.vendedor || activeDevDraft.motivo || activeDevDraft.cg || activeDevDraft.cr || activeDevDraft.obs || activeDevDraft.searchVal);
+            const hasMkgDraft = activeMkgDraft && (activeMkgDraft.items?.length > 0 || activeMkgDraft.personal || activeMkgDraft.motivo || activeMkgDraft.cant || activeMkgDraft.searchVal);
+            
             const p = localStorage.getItem('twins_memoria_pantalla') || 'audit';
 
-            if (activeAudit) {
-                window.changeTab('audit'); 
-            } else if (hasDevDraft && p === 'dev') {
-                window.changeTab('dev'); 
-            } else {
-                window.changeTab(p);
-            }
+            if (activeAudit) { window.changeTab('audit'); } 
+            else if (hasDevDraft && p === 'dev') { window.changeTab('dev'); } 
+            else if (hasMkgDraft && p === 'mkg-form') { window.changeTab('mkg-form'); } 
+            else { window.changeTab(p); }
 
             if (typeof coreDev !== 'undefined') coreDev.init();
+            if (typeof coreMkg !== 'undefined') coreMkg.init();
 
-            // Restauración automática hiper-silenciosa
             if (hasDevDraft) {
                 const restoreDraft = () => {
                     if (activeDevDraft.cliente !== undefined) document.getElementById('dev-cliente').value = activeDevDraft.cliente;
@@ -819,33 +848,44 @@
                     if (activeDevDraft.searchCod) searchInput.dataset.cod = activeDevDraft.searchCod;
                     if (activeDevDraft.searchDesc) searchInput.dataset.desc = activeDevDraft.searchDesc;
                     
-                    coreDev.items = activeDevDraft.items || [];
-                    coreDev.renderItems();
+                    coreDev.items = activeDevDraft.items || []; coreDev.renderItems();
                 };
-                
-                // Forzamos la restauración inmediata y repetimos 300ms después para evitar que el navegador lo borre
-                restoreDraft();
-                setTimeout(restoreDraft, 300); 
+                restoreDraft(); setTimeout(restoreDraft, 300); 
+            }
+            
+            if (hasMkgDraft) {
+                const restoreMkgDraft = () => {
+                    if (activeMkgDraft.personal !== undefined) document.getElementById('mkg-personal').value = activeMkgDraft.personal;
+                    if (activeMkgDraft.motivo !== undefined) document.getElementById('mkg-motivo').value = activeMkgDraft.motivo;
+                    if (activeMkgDraft.cant !== undefined) document.getElementById('mkg-cant').value = activeMkgDraft.cant;
+                    if (activeMkgDraft.um !== undefined) document.getElementById('mkg-um').value = activeMkgDraft.um;
+                    if (activeMkgDraft.estado !== undefined) document.getElementById('mkg-estado').value = activeMkgDraft.estado;
+                    
+                    const searchInput = document.getElementById('mkg-search-prod');
+                    if (activeMkgDraft.searchVal !== undefined) searchInput.value = activeMkgDraft.searchVal;
+                    if (activeMkgDraft.searchCod) searchInput.dataset.cod = activeMkgDraft.searchCod;
+                    if (activeMkgDraft.searchDesc) searchInput.dataset.desc = activeMkgDraft.searchDesc;
+                    
+                    coreMkg.items = activeMkgDraft.items || []; coreMkg.renderItems();
+                };
+                restoreMkgDraft(); setTimeout(restoreMkgDraft, 300); 
             }
 
-            if (activeAudit) {
-                core.openAudit(activeAudit); 
-            }
+            if (activeAudit) { core.openAudit(activeAudit); }
 
             if (typeof core !== 'undefined') {
                 if (core.raw && core.raw.length > 0) { core.render(); }
-                core.fetchData(true); 
-                setInterval(() => { core.fetchData(true); }, 10000);
+                core.fetchData(true); setInterval(() => { core.fetchData(true); }, 10000);
             }
-            if (typeof coreDev !== 'undefined') {
-                setInterval(() => { coreDev.fetchHist(true); }, 15000); 
-            }
+            if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 15000); }
+            if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 15000); }
         });
 
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') {
                 if(typeof core !== 'undefined') core.fetchData(true);
                 if(typeof coreDev !== 'undefined') coreDev.fetchHist(true);
+                if(typeof coreMkg !== 'undefined') coreMkg.fetchHist(true);
             }
         });
     </script>
