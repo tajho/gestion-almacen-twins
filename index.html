@@ -393,36 +393,40 @@
             if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
         }
 
-        // CONTROLADOR DEL MODAL MODERNO
+        // CONTROLADOR DEL MODAL ULTRA PREMIUM
         window.uiModal = {
             show: function(type, title, msg, onConfirm, onCancel) {
                 const modal = document.getElementById('modern-modal');
                 const content = document.getElementById('modern-modal-content');
+                const glow = document.getElementById('modern-modal-glow');
                 document.getElementById('modern-modal-title').innerText = title;
                 document.getElementById('modern-modal-text').innerText = msg;
                 const iconBox = document.getElementById('modern-modal-icon');
                 const actionsEl = document.getElementById('modern-modal-actions');
 
                 if (type === 'confirm') {
-                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100";
-                    iconBox.innerHTML = '<i class="ph-fill ph-warning-circle text-3xl"></i>';
+                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-orange-500";
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100 relative";
+                    iconBox.innerHTML = '<div class="absolute inset-0 bg-orange-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-warning-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" id="modal-btn-cancel" class="flex-1 bg-slate-50 text-slate-600 font-bold py-3.5 rounded-xl border border-slate-200 active:scale-95 transition-transform text-xs uppercase tracking-widest">Descartar</button>
-                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-orange-500 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Confirmar</button>
+                        <button type="button" id="modal-btn-cancel" class="flex-1 bg-slate-50 text-slate-600 font-[900] py-4 rounded-2xl border border-slate-200 active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Descartar</button>
+                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-gradient-to-br from-orange-400 to-red-500 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Confirmar</button>
                     `;
                     document.getElementById('modal-btn-confirm').onclick = () => { this.close(); if(onConfirm) onConfirm(); };
                     document.getElementById('modal-btn-cancel').onclick = () => { this.close(); if(onCancel) onCancel(); };
                 } else if (type === 'success') {
-                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100";
-                    iconBox.innerHTML = '<i class="ph-fill ph-check-circle text-3xl"></i>';
+                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-emerald-500";
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100 relative";
+                    iconBox.innerHTML = '<div class="absolute inset-0 bg-emerald-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-check-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close();" class="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Entendido</button>
+                        <button type="button" onclick="uiModal.close();" class="w-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Entendido</button>
                     `;
                 } else if (type === 'alert') {
-                    iconBox.className = "w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100";
-                    iconBox.innerHTML = '<i class="ph-fill ph-info text-3xl"></i>';
+                    glow.className = "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 bg-blue-500";
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100 relative";
+                    iconBox.innerHTML = '<div class="absolute inset-0 bg-blue-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-info text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close()" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-xs uppercase tracking-widest">Aceptar</button>
+                        <button type="button" onclick="uiModal.close()" class="w-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Aceptar</button>
                     `;
                 }
 
@@ -721,7 +725,8 @@
                     const resp = await fetch(core.url + "?type=historial_mkg", { redirect: 'follow' }); 
                     const data = await resp.json();
                     
-                    this.histMaster = data.map(i => {
+                    // FILTRO ANTI-FANTASMAS: Ignora las filas vacías del Excel
+                    this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => {
                         let f = i.FECHA || "";
                         if (typeof f === 'string' && f.includes('T')) {
                             const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
@@ -825,6 +830,9 @@
                 
                 const t = {}; 
                 this.histMaster.forEach(i => { 
+                    // DOBLE BLINDAJE ANTI-FANTASMAS
+                    if (!i.PERSONAL && !i.SKU && !i.CODIGO) return;
+
                     const personal = i.PERSONAL || "SIN ASIGNAR";
                     const fecha = i.FECHA || "---";
                     const motivo = i.MOTIVO || "PEDIDO DE MARKETING";
