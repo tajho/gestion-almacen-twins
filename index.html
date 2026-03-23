@@ -20,7 +20,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; width: 100%; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        input, textarea, select { user-select: auto !important; }
+        button, a { touch-action: manipulation !important; cursor: pointer !important; } 
         
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
         .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -40,7 +42,7 @@
         html.dark, .dark body { background-color: #020617 !important; color: #F8FAFC !important; }
         
         /* Superficies principales (Tarjetas, Paneles) */
-        .dark .bg-white, .dark .native-card, .dark .audit-item-card, .dark #twins-menu-panel, .dark #modern-modal-content { 
+        .dark .bg-white, .dark .native-card, .dark .audit-item-card, .dark #twins-menu-panel, .dark #modern-modal-content, .dark #ui-select-content { 
             background-color: #0F172A !important; 
             border-color: #1E293B !important; 
         }
@@ -60,7 +62,7 @@
         
         /* Overlays (Fondos oscurecidos) */
         .dark [class*="bg-slate-900/"], .dark .modal-full, .dark #audit-view { 
-            background-color: rgba(2, 6, 23, 0.95) !important; 
+            background-color: rgba(2, 6, 23, 0.85) !important; 
         }
         
         /* Textos Base */
@@ -68,13 +70,13 @@
         .dark .text-slate-700, .dark .text-slate-600 { color: #94A3B8 !important; }
         .dark .text-slate-500, .dark .text-slate-400 { color: #64748B !important; }
         .dark .text-slate-300 { color: #475569 !important; }
-        .dark .text-slate-100 { color: #1E293B !important; stroke: #1E293B !important; } /* Fix para anillo de progreso */
+        .dark .text-slate-100 { color: #1E293B !important; stroke: #1E293B !important; } 
         
         /* Bordes y Líneas */
         .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-50 { border-color: #1E293B !important; }
         .dark .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #1E293B !important; }
         
-        /* Botones de Acción Primaria (Oscuros en claro -> Azul Neon en oscuro) */
+        /* Botones de Acción Primaria */
         .dark .bg-slate-900 { 
             background-color: #3B82F6 !important; 
             color: #FFFFFF !important; 
@@ -82,7 +84,7 @@
             box-shadow: 0 4px 14px -4px rgba(59, 130, 246, 0.5) !important; 
         }
         
-        /* --- FONDOS PASTEL A NEÓN (BADGES Y BOTONES SECUNDARIOS) --- */
+        /* --- FONDOS PASTEL A NEÓN --- */
         .dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15) !important; color: #60A5FA !important; border-color: rgba(59, 130, 246, 0.2) !important; }
         .dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.15) !important; color: #C084FC !important; border-color: rgba(168, 85, 247, 0.2) !important; }
         .dark .bg-rose-50 { background-color: rgba(244, 63, 94, 0.15) !important; color: #FB7185 !important; border-color: rgba(244, 63, 94, 0.2) !important; }
@@ -90,17 +92,16 @@
         .dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.15) !important; color: #34D399 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
         .dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.15) !important; color: #FB923C !important; border-color: rgba(249, 115, 22, 0.2) !important; }
         
-        /* Textos Especiales / Acentos (Sin fondo) */
-        .dark .text-blue-600, .dark .text-blue-500 { color: #60A5FA !important; }
+        /* Textos Especiales / Acentos */
+        .dark .text-blue-600, .dark .text-blue-500, .dark .text-blue-700 { color: #60A5FA !important; }
         .dark .text-purple-600, .dark .text-purple-500 { color: #C084FC !important; }
         .dark .text-rose-600, .dark .text-rose-500, .dark .text-rose-900 { color: #FB7185 !important; }
         .dark .text-red-600, .dark .text-red-500 { color: #F87171 !important; }
         .dark .text-emerald-600, .dark .text-emerald-500, .dark .text-green-500 { color: #34D399 !important; }
         .dark .text-orange-600, .dark .text-orange-500 { color: #FB923C !important; }
         
-        /* Placeholders y Selects */
+        /* Placeholders */
         .dark input::placeholder, .dark textarea::placeholder { color: #475569 !important; }
-        .dark option { background-color: #0F172A; color: #F8FAFC; }
         
         /* Fix progress ring */
         .dark .progress-ring { stroke: #3B82F6 !important; }
@@ -139,7 +140,12 @@
         </div>
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
-            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative"><i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i><select id="month-select" onchange="core.filterMonth(this.value)" class="absolute inset-0 opacity-0 cursor-pointer"></select></div>
+            
+            <!-- BOTÓN PERSONALIZADO DE MES -->
+            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform shadow-sm" onclick="openCustomSelect('month-select', 'Filtrar por Mes')">
+                <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
+                <select id="month-select" onchange="core.filterMonth(this.value)" class="hidden"></select>
+            </div>
         </div>
         <div id="container-list" class="space-y-4">
             <div class="py-20 text-center text-slate-400 font-medium animate-pulse">Cargando inventario...</div>
@@ -175,7 +181,13 @@
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nueva Devolución</h2>
             <div class="space-y-3">
                 <input type="text" id="dev-cliente" oninput="coreDev.saveDraft(); coreDev.suggestVendor();" placeholder="Nombre del Cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                <select id="dev-vendedor" onchange="coreDev.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none">
+                
+                <!-- SELECT PERSONALIZADO VENDEDOR -->
+                <button type="button" onclick="openCustomSelect('dev-vendedor', 'Seleccionar Vendedor')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
+                    <span id="text-dev-vendedor">Seleccionar Vendedor</span>
+                    <i class="ph-bold ph-caret-down text-slate-400"></i>
+                </button>
+                <select id="dev-vendedor" onchange="coreDev.saveDraft();" class="hidden">
                     <option value="">Seleccionar Vendedor</option>
                     <option value="ELIAS AVILA">ELIAS AVILA</option>
                     <option value="EVELYN MURO">EVELYN MURO</option>
@@ -183,6 +195,7 @@
                     <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
                     <option value="PAULA GARCIA">PAULA GARCIA</option>
                 </select>
+
                 <input type="text" id="dev-motivo" oninput="coreDev.saveDraft()" placeholder="Motivo de Devolución" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
             </div>
         </div>
@@ -194,16 +207,20 @@
             
             <div class="grid grid-cols-3 gap-3 mt-4">
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-purple-500 tracking-widest">C. GUÍA</span>
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-purple-500 tracking-widest z-10">C. GUÍA</span>
                     <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-blue-500 tracking-widest">C. REAL</span>
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-blue-500 tracking-widest z-10">C. REAL</span>
                     <input type="number" id="dev-cant-real" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-slate-500 tracking-widest">U.M.</span>
-                    <select id="dev-um" onchange="coreDev.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-slate-500 tracking-widest z-10">U.M.</span>
+                    <button type="button" onclick="openCustomSelect('dev-um', 'Unidad de Medida')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black outline-none flex justify-center items-center gap-1 transition-colors text-slate-900">
+                        <span id="text-dev-um">UNID</span>
+                        <i class="ph-bold ph-caret-down text-slate-400 text-xs"></i>
+                    </button>
+                    <select id="dev-um" onchange="coreDev.saveDraft();" class="hidden">
                         <option value="U">UNID</option>
                         <option value="PAQ">PAQ</option>
                         <option value="CAJA">CAJA</option>
@@ -212,11 +229,16 @@
                 </div>
             </div>
             
-            <select id="dev-estado" onchange="coreDev.saveDraft()" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-purple-500 transition-colors">
+            <button type="button" onclick="openCustomSelect('dev-estado', 'Estado del Producto')" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
+                <span id="text-dev-estado">BUEN ESTADO</span>
+                <i class="ph-bold ph-caret-down text-slate-400"></i>
+            </button>
+            <select id="dev-estado" onchange="coreDev.saveDraft();" class="hidden">
                 <option value="BUEN ESTADO">BUEN ESTADO</option>
                 <option value="DAÑADO A MERMA">DAÑADO A MERMA</option>
                 <option value="INCOMPLETO">INCOMPLETO</option>
             </select>
+
             <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-purple-500"></textarea>
             
             <button type="button" onclick="coreDev.addItem()" class="w-full mt-4 bg-purple-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
@@ -235,16 +257,14 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
             
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('dev-filter-mes', 'Filtrar por Mes')">
                 <i class="ph-bold ph-calendar-blank text-purple-500 text-lg"></i>
-                <select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <option value="TODOS">Mes</option>
-                </select>
+                <select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
             </div>
             
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('dev-filter-vendedor', 'Filtrar por Vendedor')">
                 <i class="ph-bold ph-user-focus text-blue-500 text-lg"></i>
-                <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="hidden">
                     <option value="TODOS">TODOS</option>
                     <option value="ELIAS AVILA">ELIAS</option>
                     <option value="EVELYN MURO">EVELYN</option>
@@ -264,7 +284,11 @@
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nuevo Pedido Marketing</h2>
             <div class="space-y-3">
-                <select id="mkg-personal" onchange="coreMkg.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-rose-900">
+                <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-rose-900">
+                    <span id="text-mkg-personal">Seleccionar Personal</span>
+                    <i class="ph-bold ph-caret-down text-slate-400"></i>
+                </button>
+                <select id="mkg-personal" onchange="coreMkg.saveDraft();" class="hidden">
                     <option value="">Seleccionar Personal</option>
                     <option value="ABDY">ABDY</option>
                     <option value="FRANK">FRANK</option>
@@ -272,6 +296,7 @@
                     <option value="JOHAN">JOHAN</option>
                     <option value="OFICINA">OFICINA</option>
                 </select>
+
                 <input type="text" id="mkg-motivo" oninput="coreMkg.saveDraft()" placeholder="Motivo (Ej. Sorteo, Regalo...)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
             </div>
         </div>
@@ -283,12 +308,16 @@
             
             <div class="grid grid-cols-2 gap-3 mt-4">
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-rose-500 tracking-widest">CANTIDAD</span>
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-rose-500 tracking-widest z-10">CANTIDAD</span>
                     <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-rose-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-slate-500 tracking-widest">U. MEDIDA</span>
-                    <select id="mkg-um" onchange="coreMkg.saveDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-rose-500 transition-colors">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-slate-500 tracking-widest z-10">U. MEDIDA</span>
+                    <button type="button" onclick="openCustomSelect('mkg-um', 'Unidad de Medida')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black outline-none flex justify-center items-center gap-1 transition-colors text-slate-900">
+                        <span id="text-mkg-um">UNIDAD</span>
+                        <i class="ph-bold ph-caret-down text-slate-400 text-xs"></i>
+                    </button>
+                    <select id="mkg-um" onchange="coreMkg.saveDraft();" class="hidden">
                         <option value="U">UNIDAD</option>
                         <option value="PAQ">PAQUETE</option>
                         <option value="CAJA">CAJA</option>
@@ -297,7 +326,11 @@
                 </div>
             </div>
             
-            <select id="mkg-estado" onchange="coreMkg.saveDraft()" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-rose-500 transition-colors">
+            <button type="button" onclick="openCustomSelect('mkg-estado', 'Estado del Pedido')" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
+                <span id="text-mkg-estado">PENDIENTE</span>
+                <i class="ph-bold ph-caret-down text-slate-400"></i>
+            </button>
+            <select id="mkg-estado" onchange="coreMkg.saveDraft();" class="hidden">
                 <option value="PENDIENTE">PENDIENTE</option>
                 <option value="ENTREGADO">ENTREGADO</option>
                 <option value="SAP">REGISTRADO EN SAP</option>
@@ -310,7 +343,7 @@
     </div>
 
     <!-- MÓDULO 5: HISTORIAL MARKETING -->
-    <div id="module-marketing" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div id="module-marketing-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-rose-500 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
@@ -319,16 +352,14 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="mkg-hist-search" oninput="coreMkg.renderHistory()" placeholder="Motivo o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
             
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('mkg-filter-mes', 'Filtrar por Mes')">
                 <i class="ph-bold ph-calendar-blank text-rose-500 text-lg"></i>
-                <select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <option value="TODOS">Mes</option>
-                </select>
+                <select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
             </div>
             
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0">
+            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('mkg-filter-personal', 'Filtrar por Personal')">
                 <i class="ph-bold ph-users text-blue-500 text-lg"></i>
-                <select id="mkg-filter-personal" onchange="coreMkg.renderHistory()" class="absolute inset-0 opacity-0 cursor-pointer">
+                <select id="mkg-filter-personal" onchange="coreMkg.renderHistory()" class="hidden">
                     <option value="TODOS">TODOS</option>
                     <option value="ABDY">ABDY</option>
                     <option value="FRANK">FRANK</option>
@@ -344,35 +375,48 @@
     </div>
 
     <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
-    <div id="twins-menu" class="fixed inset-0 bg-slate-900/50 z-[100] hidden transition-opacity">
-        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300" id="twins-menu-panel">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50">
+    <div id="twins-menu" class="fixed inset-0 z-[100] hidden">
+        <div id="twins-menu-backdrop" class="absolute inset-0 bg-slate-900/50 transition-opacity duration-300 opacity-0" onclick="toggleMenu()"></div>
+        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300 z-10" id="twins-menu-panel">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50 relative z-20">
                 <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
                 <button type="button" onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95"><i class="ph-bold ph-x"></i></button>
             </div>
-            <div class="flex flex-col p-4 gap-3 mt-2">
-                <button type="button" onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
-                <button type="button" onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
-                <button type="button" onclick="window.attemptChangeTab('marketing')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-megaphone text-xl"></i> MARKETING</button>
+            <div class="flex flex-col p-4 gap-3 mt-2 relative z-20">
+                <button type="button" onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
+                <button type="button" onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
+                <button type="button" onclick="window.attemptChangeTab('marketing')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-megaphone text-xl"></i> MARKETING</button>
                 
                 <div class="border-t border-slate-100 my-2"></div>
                 
-                <button type="button" onclick="window.toggleTheme()" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i id="theme-icon" class="ph-bold ph-moon text-xl"></i> <span id="theme-text">MODO OSCURO</span></button>
+                <button type="button" onclick="window.toggleTheme()" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i id="theme-icon" class="ph-bold ph-moon text-xl"></i> <span id="theme-text">MODO OSCURO</span></button>
             </div>
-            <div class="mt-auto p-6 text-center border-t border-slate-50"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
+            <div class="mt-auto p-6 text-center border-t border-slate-50 relative z-20"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
         </div>
     </div>
     
     <!-- MODAL DE CARGA -->
-    <div id="loading-modal" class="fixed inset-0 bg-slate-900/70 z-[200] hidden flex items-center justify-center backdrop-blur-sm"><div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center"><i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i><h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3></div></div>
+    <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 z-[200] hidden flex items-center justify-center"><div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center"><i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i><h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3></div></div>
 
-    <!-- CUADRO DE DIÁLOGO MODERNO -->
-    <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm px-6 transition-opacity duration-300 opacity-0">
-        <div id="modern-modal-content" class="bg-white rounded-[28px] p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-all duration-300">
-            <div id="modern-modal-icon" class="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center mx-auto shadow-inner"></div>
-            <h3 id="modern-modal-title" class="text-xl font-[800] text-slate-900 text-center tracking-tight mb-2"></h3>
-            <p id="modern-modal-text" class="text-sm font-bold text-slate-500 text-center mb-8"></p>
+    <!-- CUADRO DE DIÁLOGO ULTRA PREMIUM -->
+    <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/80 px-6 transition-opacity duration-300 opacity-0">
+        <div id="modern-modal-content" class="bg-white rounded-[32px] p-8 w-full max-w-sm shadow-2xl transform scale-95 transition-all duration-300 border border-slate-100 relative overflow-hidden">
+            <div id="modern-modal-glow" class="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, currentColor 0%, transparent 70%);"></div>
+            
+            <div id="modern-modal-icon" class="w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto shadow-inner relative"></div>
+            <h3 id="modern-modal-title" class="text-xl font-[900] text-slate-900 text-center tracking-tight mb-3"></h3>
+            <p id="modern-modal-text" class="text-xs font-bold text-slate-500 text-center mb-8 leading-relaxed px-2"></p>
             <div id="modern-modal-actions" class="flex gap-3"></div>
+        </div>
+    </div>
+
+    <!-- NUEVO: CUADRO DE DIÁLOGO PARA SELECTS (BOTTOM SHEET NATIVO) -->
+    <div id="ui-select-modal" class="fixed inset-0 z-[600] hidden flex-col justify-end bg-slate-900/80 transition-opacity duration-300 opacity-0">
+        <div id="ui-select-backdrop" class="absolute inset-0" onclick="closeCustomSelect()"></div>
+        <div id="ui-select-content" class="bg-white w-full rounded-t-[32px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 border-t border-slate-100">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            <h3 id="ui-select-title" class="text-xl font-[900] text-slate-900 text-center mb-4 tracking-tight"></h3>
+            <div id="ui-select-options" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pb-6"></div>
         </div>
     </div>
 
@@ -393,7 +437,74 @@
             if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
         }
 
-        // CONTROLADOR DEL MODAL ULTRA PREMIUM (MÓVIL)
+        // ==========================================
+        // MOTOR DE SELECTS PERSONALIZADOS (BOTTOM SHEET)
+        // ==========================================
+        window.openCustomSelect = function(selectId, title) {
+            const selectEl = document.getElementById(selectId);
+            if (!selectEl) return;
+            
+            const options = Array.from(selectEl.options).map(opt => ({
+                value: opt.value,
+                text: opt.text,
+                selected: opt.selected
+            }));
+
+            const modal = document.getElementById('ui-select-modal');
+            const content = document.getElementById('ui-select-content');
+            const optionsContainer = document.getElementById('ui-select-options');
+            
+            document.getElementById('ui-select-title').innerText = title;
+            
+            optionsContainer.innerHTML = options.map(opt => `
+                <button type="button" onclick="closeCustomSelect('${selectId}', '${opt.value}')" 
+                    class="w-full text-left px-5 py-4 rounded-2xl font-bold text-sm transition-transform active:scale-95 flex justify-between items-center border
+                    ${opt.selected 
+                        ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                        : 'bg-white border-slate-100 text-slate-700'}">
+                    ${opt.text}
+                    ${opt.selected ? '<i class="ph-bold ph-check-circle text-xl"></i>' : ''}
+                </button>
+            `).join('');
+
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('translate-y-full');
+            }, 10);
+        };
+
+        window.closeCustomSelect = function(selectId, newValue) {
+            const modal = document.getElementById('ui-select-modal');
+            const content = document.getElementById('ui-select-content');
+            
+            if (selectId && newValue !== undefined) {
+                const selectEl = document.getElementById(selectId);
+                selectEl.value = newValue;
+                window.updateSelectText(selectId);
+                selectEl.dispatchEvent(new Event('change'));
+            }
+
+            content.classList.add('translate-y-full');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        };
+
+        window.updateSelectText = function(id) {
+            const s = document.getElementById(id);
+            const t = document.getElementById('text-' + id);
+            if(s && t && s.selectedIndex >= 0) {
+                t.innerText = s.options[s.selectedIndex].text;
+            }
+        };
+
+        window.syncAllSelectTexts = function() {
+            ['dev-vendedor', 'dev-um', 'dev-estado', 'mkg-personal', 'mkg-um', 'mkg-estado'].forEach(id => updateSelectText(id));
+        };
+
+        // CONTROLADOR DEL MODAL ALERTS
         window.uiModal = {
             show: function(type, title, msg, onConfirm, onCancel) {
                 const modal = document.getElementById('modern-modal');
@@ -405,28 +516,28 @@
                 const actionsEl = document.getElementById('modern-modal-actions');
 
                 if (type === 'confirm') {
-                    glow.style.color = "#f97316"; // Naranja
+                    glow.style.color = "#f97316"; 
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-orange-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-warning-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
                         <button type="button" id="modal-btn-cancel" class="flex-1 bg-slate-50 text-slate-600 font-[900] py-4 rounded-2xl border border-slate-200 active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Descartar</button>
-                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-gradient-to-br from-orange-400 to-red-500 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Confirmar</button>
+                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Confirmar</button>
                     `;
                     document.getElementById('modal-btn-confirm').onclick = () => { this.close(); if(onConfirm) onConfirm(); };
                     document.getElementById('modal-btn-cancel').onclick = () => { this.close(); if(onCancel) onCancel(); };
                 } else if (type === 'success') {
-                    glow.style.color = "#10b981"; // Esmeralda
+                    glow.style.color = "#10b981"; 
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-emerald-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-check-circle text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close();" class="w-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Entendido</button>
+                        <button type="button" onclick="uiModal.close();" class="w-full bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Entendido</button>
                     `;
                 } else if (type === 'alert') {
-                    glow.style.color = "#3b82f6"; // Azul
+                    glow.style.color = "#3b82f6"; 
                     iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100 relative";
                     iconBox.innerHTML = '<div class="absolute inset-0 bg-blue-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-info text-4xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close()" class="w-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Aceptar</button>
+                        <button type="button" onclick="uiModal.close()" class="w-full bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Aceptar</button>
                     `;
                 }
 
@@ -455,7 +566,7 @@
             const audit = document.getElementById('app-shell'); 
             const devForm = document.getElementById('module-returns'); 
             const devHist = document.getElementById('module-dev-history');
-            const mkgHist = document.getElementById('module-marketing');
+            const mkgHist = document.getElementById('module-marketing-history');
             const mkgForm = document.getElementById('module-mkg-form');
             
             if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
@@ -479,7 +590,7 @@
             } 
             else if (tab === 'dev-history') { 
                 if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'ARCHIVO REGISTROS'; 
+                if(tituloEl) tituloEl.innerText = 'ARCHIVO DEVOLUCIONES'; 
                 if(progEl) progEl.style.display = 'none'; 
                 if(typeof coreDev !== 'undefined') coreDev.renderHistory(); 
             }
@@ -515,9 +626,10 @@
                     uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se borrará todo lo avanzado.', 
                     () => { 
                         coreDev.clearDraft(); coreDev.items = [];
-                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-obs').value = '';
+                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-obs').value = '';
                         const searchInput = document.getElementById('dev-search-prod');
                         searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
+                        window.syncAllSelectTexts();
                         coreDev.renderItems(); window.changeTab(targetTab);
                     }, () => { uiModal.close(); });
                     return;
@@ -534,6 +646,7 @@
                         document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE';
                         const searchInput = document.getElementById('mkg-search-prod');
                         searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
+                        window.syncAllSelectTexts();
                         coreMkg.renderItems(); window.changeTab(targetTab);
                     }, () => { uiModal.close(); });
                     return;
@@ -683,7 +796,7 @@
                 const vendSelect = document.getElementById('dev-vendedor'); if (vendSelect.value !== "") return; 
                 const clientName = document.getElementById('dev-cliente').value.trim().toLowerCase(); if (!clientName || this.histMaster.length === 0) return;
                 const match = this.histMaster.find(i => i.CLIENTE && i.CLIENTE.toLowerCase() === clientName && i.VENDEDOR);
-                if (match) { for (let i = 0; i < vendSelect.options.length; i++) { if (vendSelect.options[i].value === match.VENDEDOR) { vendSelect.selectedIndex = i; this.saveDraft(); break; } } }
+                if (match) { for (let i = 0; i < vendSelect.options.length; i++) { if (vendSelect.options[i].value === match.VENDEDOR) { vendSelect.selectedIndex = i; this.saveDraft(); window.updateSelectText('dev-vendedor'); break; } } }
             },
             saveDraft: function() {
                 const searchInput = document.getElementById('dev-search-prod');
@@ -703,11 +816,11 @@
             },
             search: function() { this.saveDraft(); const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
             selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); this.saveDraft(); },
-            addItem: function() { const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const u = document.getElementById('dev-um').value; const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: `${cg}|${cr}|${u}`, estado: e, obs: o }); i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-obs').value = ''; this.saveDraft(); this.renderItems(); },
+            addItem: function() { const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const u = document.getElementById('dev-um').value; const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } this.items.push({ codigo: i.dataset.cod, descripcion: i.dataset.desc, cantidad: `${cg}|${cr}|${u}`, estado: e, obs: o }); i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; window.updateSelectText('dev-um'); document.getElementById('dev-obs').value = ''; this.saveDraft(); this.renderItems(); },
             renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => { const pts = i.cantidad.toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; const um = pts[2] || 'U'; return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-purple-600">GUÍA: ${cg} ${um}</span> • <span class="text-blue-600">REAL: ${cr} ${um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; }).join(''); b.classList.remove('hidden'); },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
-            editTicket: function(t) { document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, obs: i.observaciones || '' })); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.'); },
-            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, observaciones: i.obs || "" })) }; try { const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente en tu historial.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } },
+            editTicket: function(t) { document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, obs: i.observaciones || '' })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.'); },
+            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; const d = { action: "guardar_devolucion", cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantidad: i.cantidad, estado: i.estado, observaciones: i.obs || "" })) }; try { const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, ESTADO: i.estado, OBSERVACIONES: i.obs })); this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Registrada!', 'El ticket ha sido guardado correctamente en tu historial.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } },
             renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; } const t = {}; this.histMaster.forEach(i => { const k = i.CLIENTE + "_" + i.FECHA; if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; const existingIdx = t[k].items.findIndex(item => item.codigo === i.CODIGO); if (existingIdx > -1) { t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; } else { t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantidad: i.CANTIDAD, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); } }); const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mV && mMes; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } c.innerHTML = fil.map(tk => { const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; }).join(''); },
             viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; const um = pts[2] || 'U'; return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-purple-600">G: ${cg} <span class="text-[8px]">${um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${cr} <span class="text-[8px]">${um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             generatePDF: function(d) { const { jsPDF } = window.jspdf; const doc = new jsPDF(); const primaryColor = [30, 58, 138]; const darkColor = [15, 23, 42]; doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F'); doc.setFillColor(255, 255, 255); doc.roundedRect(14, 6, 22, 13, 2, 2, 'F'); doc.setTextColor(...primaryColor); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text("TWINS", 16.5, 14.5); doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text("REPORTE DE DEVOLUCIÓN", 40, 16); doc.setTextColor(...darkColor); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("DATOS DEL SERVICIO", 14, 38); doc.setDrawColor(...primaryColor); doc.setLineWidth(0.5); doc.line(14, 40, 196, 40); doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("FECHA:", 14, 48); doc.setFont("helvetica", "normal"); doc.text(d.fecha || "---", 32, 48); doc.setFont("helvetica", "bold"); doc.text("CLIENTE:", 14, 54); doc.setFont("helvetica", "normal"); doc.text(d.cliente || "---", 32, 54); doc.setFont("helvetica", "bold"); doc.text("VENDEDOR:", 110, 48); doc.setFont("helvetica", "normal"); doc.text(d.vendedor || "---", 135, 48); doc.setFont("helvetica", "bold"); doc.text("MOTIVO:", 110, 54); doc.setFont("helvetica", "normal"); doc.text(d.motivo || "DEVOLUCIÓN", 135, 54); const tableBody = d.items.map(i => { const pts = (i.cantidad || "").toString().split('|'); const cg = pts[0]; const cr = pts[1] || pts[0]; const um = pts[2] || 'U'; return [ i.codigo, i.descripcion, `${cg} ${um}`, `${cr} ${um}`, i.estado || 'OK', i.observaciones || i.obs || '---' ]; }); doc.autoTable({ startY: 65, head: [['SKU', 'PRODUCTO', 'GUÍA', 'REAL', 'ESTADO', 'OBSERV.']], body: tableBody, theme: 'striped', headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center' }, bodyStyles: { fontSize: 7, textColor: 50 }, columnStyles: { 0: { cellWidth: 20, fontStyle: 'bold', textColor: primaryColor }, 1: { cellWidth: 50 }, 2: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [100, 116, 139] }, 3: { cellWidth: 15, halign: 'center', fontStyle: 'bold', textColor: [37, 99, 235] }, 4: { cellWidth: 25, halign: 'center' }, 5: { cellWidth: 'auto' } }, alternateRowStyles: { fillColor: [248, 250, 252] } }); const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(180, 180, 180); doc.line(65, fY, 145, fY); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...darkColor); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); doc.save(`Reporte_Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`); }
@@ -728,7 +841,6 @@
                     const resp = await fetch(core.url + "?type=historial_mkg", { redirect: 'follow' }); 
                     const data = await resp.json();
                     
-                    // FILTRO ANTI-FANTASMAS: Ignora las filas vacías del Excel
                     this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => {
                         let f = i.FECHA || "";
                         if (typeof f === 'string' && f.includes('T')) {
@@ -775,7 +887,7 @@
                 if (!i.dataset.cod || isNaN(c) || c <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y especifica la cantidad.'); return; } 
                 
                 this.items.push({ sku: i.dataset.cod, descripcion: i.dataset.desc, cantidad: c, um: u, estado: e }); 
-                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('mkg-cant').value = '';
+                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; window.updateSelectText('mkg-um');
                 this.saveDraft();
                 this.renderItems(); 
             },
@@ -794,6 +906,7 @@
                 this.items = t.items.map(i => ({
                     sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado
                 }));
+                window.syncAllSelectTexts();
                 this.saveDraft(); this.renderItems(); window.changeTab('mkg-form');
                 uiModal.show('alert', 'Modo Edición', 'Has cargado el pedido en el formulario. Al realizar tus cambios y guardar, se actualizará el historial de la Hoja 4.');
             },
@@ -814,7 +927,9 @@
                     fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
                     
                     this.clearDraft(); 
-                    this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); this.renderItems(); 
+                    this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); 
+                    window.syncAllSelectTexts();
+                    this.renderItems(); 
                     
                     window.hideLoading();
                     uiModal.show('success', '¡Pedido Registrado!', 'El pedido de marketing fue guardado con éxito.', () => {
@@ -833,7 +948,6 @@
                 
                 const t = {}; 
                 this.histMaster.forEach(i => { 
-                    // DOBLE BLINDAJE ANTI-FANTASMAS
                     if (!i.PERSONAL && !i.SKU && !i.CODIGO) return;
 
                     const personal = i.PERSONAL || "SIN ASIGNAR";
@@ -867,8 +981,13 @@
                     const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP');
                     const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
                     return `<div class="native-card p-6 mb-4 border-l-4 border-rose-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
-                        ${isSAP ? `<div class="absolute top-4 right-4 border-[2px] border-emerald-500 text-emerald-500 bg-white/90 px-3 py-1 rounded-lg text-[10px] font-black tracking-widest transform rotate-12 shadow-sm z-10 backdrop-blur-sm">REGISTRADO SAP</div>` : ''}
-                        <div class="flex justify-between items-start mb-4"><div class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">MKTG: ${tk.motivo}</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div>
+                        <div class="flex flex-wrap justify-between items-start mb-4 gap-2">
+                            <div class="flex items-center gap-2">
+                                <div class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic dark:bg-rose-900/30 dark:text-rose-400">MKTG: ${tk.motivo}</div>
+                                ${isSAP ? `<div class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest flex items-center gap-1 shadow-sm"><i class="ph-bold ph-check-circle"></i> SAP</div>` : ''}
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400 mt-1">${tk.fecha}</span>
+                        </div>
                         <div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">${tk.items.length} PRODUCTOS</p></div></div>
                         <div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreMkg.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Lápiz</button><button type="button" onclick='coreMkg.viewTicketItems(${j})' class="bg-rose-50 text-rose-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-rose-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreMkg.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div>
                     </div>`; 
@@ -884,7 +1003,7 @@
             },
             generatePDF: function(d) { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-                const primaryColor = [30, 58, 138]; // Azul corporativo Navy para mantener profesionalismo
+                const primaryColor = [30, 58, 138];
                 const darkColor = [15, 23, 42]; 
                 
                 doc.setFillColor(...primaryColor); doc.rect(0, 0, 210, 25, 'F');
@@ -974,6 +1093,7 @@
                     if (activeDevDraft.searchCod) searchInput.dataset.cod = activeDevDraft.searchCod;
                     if (activeDevDraft.searchDesc) searchInput.dataset.desc = activeDevDraft.searchDesc;
                     
+                    window.syncAllSelectTexts();
                     coreDev.items = activeDevDraft.items || []; coreDev.renderItems();
                 };
                 restoreDraft(); setTimeout(restoreDraft, 300); 
@@ -992,12 +1112,16 @@
                     if (activeMkgDraft.searchCod) searchInput.dataset.cod = activeMkgDraft.searchCod;
                     if (activeMkgDraft.searchDesc) searchInput.dataset.desc = activeMkgDraft.searchDesc;
                     
+                    window.syncAllSelectTexts();
                     coreMkg.items = activeMkgDraft.items || []; coreMkg.renderItems();
                 };
                 restoreMkgDraft(); setTimeout(restoreMkgDraft, 300); 
             }
 
             if (activeAudit) { core.openAudit(activeAudit); }
+
+            // Sincronizar todos los textos iniciales de los selects ocultos
+            window.syncAllSelectTexts();
 
             if (typeof core !== 'undefined') {
                 if (core.raw && core.raw.length > 0) { core.render(); }
