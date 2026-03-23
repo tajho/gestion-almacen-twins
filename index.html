@@ -37,6 +37,17 @@
         .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
 
         /* =========================================
+           AJUSTES NATIVOS 100% MÓVIL (SAFE AREAS Y SCROLL)
+           ========================================= */
+        .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)) !important; }
+        .safe-pb { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important; }
+        .app-container { padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important; }
+        
+        /* Ocultar scrollbars universales para toque de app instalada */
+        ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+
+        /* =========================================
            MODO OSCURO CORPORATIVO (ULTRA PREMIUM)
            ========================================= */
         html.dark, .dark body { background-color: #020617 !important; color: #F8FAFC !important; }
@@ -115,7 +126,7 @@
 <body class="antialiased">
 
     <!-- CABECERA GLOBAL -->
-    <div class="glass-header safe-area-top px-6 py-4 mb-2">
+    <div class="glass-header safe-pt px-6 pb-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <button type="button" onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 p-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex-shrink-0"><i class="ph-bold ph-list text-2xl"></i></button>
             <div class="flex-1">
@@ -133,7 +144,7 @@
     </div>
 
     <!-- MÓDULO 1: AUDITORÍA -->
-    <div id="app-shell" class="max-w-md mx-auto px-6 pb-24 block">
+    <div id="app-shell" class="max-w-md mx-auto px-6 app-container block">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
@@ -163,7 +174,7 @@
             <div class="px-6 pb-4"><div class="flex justify-between items-end mb-1.5"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso</span><span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div></div></div>
         </div>
         <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
-        <div class="p-6 bg-white border-t border-slate-100 safe-area-bottom flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+        <div class="p-6 bg-white border-t border-slate-100 safe-pb flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
             <button type="button" onclick="core.generatePDF(core.activeCont)" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
             <button type="button" onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
         </div>
@@ -175,7 +186,7 @@
     </div>
 
     <!-- MÓDULO 2: FORMULARIO NUEVA DEVOLUCIÓN -->
-    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nueva Devolución</h2>
             <div class="space-y-3">
@@ -203,7 +214,7 @@
                 <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden"></div>
             </div>
             
-            <div class="grid grid-cols-3 gap-3 mt-4">
+            <div class="grid grid-cols-3 gap-2 mt-4">
                 <div class="relative">
                     <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-purple-500 tracking-widest z-10">C. GUÍA</span>
                     <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
@@ -246,7 +257,7 @@
     </div>
 
     <!-- MÓDULO 3: HISTORIAL DEVOLUCIONES -->
-    <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
@@ -278,7 +289,7 @@
     </div>
 
     <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG -->
-    <div id="module-mkg-form" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div id="module-mkg-form" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nuevo Pedido Marketing</h2>
             <div class="space-y-3">
@@ -341,7 +352,7 @@
     </div>
 
     <!-- MÓDULO 5: HISTORIAL MARKETING -->
-    <div id="module-marketing-history" class="hidden max-w-md mx-auto px-6 pt-4 pb-32">
+    <div id="module-marketing-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-rose-500 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
@@ -478,7 +489,7 @@
     <!-- NUEVO: CUADRO DE DIÁLOGO PARA SELECTS (BOTTOM SHEET NATIVO) -->
     <div id="ui-select-modal" class="fixed inset-0 z-[600] hidden flex-col justify-end bg-slate-900/80 transition-opacity duration-300 opacity-0">
         <div id="ui-select-backdrop" class="absolute inset-0" onclick="closeCustomSelect()"></div>
-        <div id="ui-select-content" class="bg-white w-full rounded-t-[32px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 border-t border-slate-100">
+        <div id="ui-select-content" class="bg-white w-full rounded-t-[32px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 border-t border-slate-100 safe-pb">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
             <h3 id="ui-select-title" class="text-xl font-[900] text-slate-900 text-center mb-4 tracking-tight"></h3>
             <div id="ui-select-options" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pb-6"></div>
