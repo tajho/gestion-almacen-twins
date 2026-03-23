@@ -74,15 +74,15 @@
         .dark .bg-slate-900 { background-color: #3B82F6 !important; color: #FFFFFF !important; border: none !important; box-shadow: 0 4px 14px -4px rgba(59, 130, 246, 0.5) !important; }
         
         .dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15) !important; color: #60A5FA !important; border-color: rgba(59, 130, 246, 0.2) !important; }
-        .dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.15) !important; color: #C084FC !important; border-color: rgba(168, 85, 247, 0.2) !important; }
-        .dark .bg-rose-50 { background-color: rgba(244, 63, 94, 0.15) !important; color: #FB7185 !important; border-color: rgba(244, 63, 94, 0.2) !important; }
+        .dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.15) !important; color: #818CF8 !important; border-color: rgba(99, 102, 241, 0.2) !important; }
+        .dark .bg-teal-50 { background-color: rgba(20, 184, 166, 0.15) !important; color: #2DD4BF !important; border-color: rgba(20, 184, 166, 0.2) !important; }
         .dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15) !important; color: #F87171 !important; border-color: rgba(239, 68, 68, 0.2) !important; }
         .dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.15) !important; color: #34D399 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
         .dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.15) !important; color: #FB923C !important; border-color: rgba(249, 115, 22, 0.2) !important; }
         
         .dark .text-blue-600, .dark .text-blue-500, .dark .text-blue-700 { color: #60A5FA !important; }
-        .dark .text-purple-600, .dark .text-purple-500 { color: #C084FC !important; }
-        .dark .text-rose-600, .dark .text-rose-500, .dark .text-rose-900 { color: #FB7185 !important; }
+        .dark .text-indigo-600, .dark .text-indigo-500, .dark .text-indigo-700, .dark .text-indigo-900 { color: #818CF8 !important; }
+        .dark .text-teal-600, .dark .text-teal-500, .dark .text-teal-900 { color: #2DD4BF !important; }
         .dark .text-red-600, .dark .text-red-500 { color: #F87171 !important; }
         .dark .text-emerald-600, .dark .text-emerald-500, .dark .text-green-500 { color: #34D399 !important; }
         .dark .text-orange-600, .dark .text-orange-500 { color: #FB923C !important; }
@@ -119,7 +119,7 @@
     <div id="app-shell" class="max-w-md mx-auto px-6 app-container block">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-purple-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-indigo-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
         </div>
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
@@ -187,12 +187,12 @@
             
             <div class="grid grid-cols-3 gap-2 mt-4">
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-purple-500 tracking-widest z-10">C. GUÍA</span>
-                    <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-indigo-500 tracking-widest z-10">C. GUÍA</span>
+                    <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-indigo-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
                     <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-blue-500 tracking-widest z-10">C. REAL</span>
-                    <input type="number" id="dev-cant-real" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-purple-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                    <input type="number" id="dev-cant-real" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-indigo-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
                     <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-slate-500 tracking-widest z-10">U.M.</span>
@@ -219,9 +219,9 @@
                 <option value="INCOMPLETO">INCOMPLETO</option>
             </select>
 
-            <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-purple-500"></textarea>
+            <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-indigo-500"></textarea>
             
-            <button type="button" onclick="coreDev.addItem()" class="w-full mt-4 bg-purple-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+            <button type="button" onclick="coreDev.addItem()" class="w-full mt-4 bg-indigo-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
         </div>
         <div id="dev-items-list" class="space-y-2 mb-6"></div>
         <button type="button" id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Devolución</button>
@@ -230,7 +230,7 @@
     <!-- MÓDULO 3: HISTORIAL DEVOLUCIONES -->
     <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-purple-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-indigo-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
         </div>
         
@@ -238,7 +238,7 @@
             <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
             
             <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('dev-filter-mes', 'Filtrar por Mes')">
-                <i class="ph-bold ph-calendar-blank text-purple-500 text-lg"></i>
+                <i class="ph-bold ph-calendar-blank text-indigo-500 text-lg"></i>
                 <select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
             </div>
             
@@ -256,7 +256,7 @@
         </div>
         
         <div id="dev-history-cards" class="space-y-4"></div>
-        <button type="button" onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-purple-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+        <button type="button" onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-indigo-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
     </div>
 
     <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG -->
@@ -264,7 +264,7 @@
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter">Nuevo Pedido Marketing</h2>
             <div class="space-y-3">
-                <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-rose-900">
+                <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-teal-900">
                     <span id="text-mkg-personal">Seleccionar Personal</span>
                     <i class="ph-bold ph-caret-down text-slate-400"></i>
                 </button>
@@ -288,8 +288,8 @@
             
             <div class="grid grid-cols-2 gap-3 mt-4">
                 <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-rose-500 tracking-widest z-10">CANTIDAD</span>
-                    <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-rose-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-teal-500 tracking-widest z-10">CANTIDAD</span>
+                    <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-teal-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
                 <div class="relative">
                     <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-slate-500 tracking-widest z-10">U. MEDIDA</span>
@@ -316,7 +316,7 @@
                 <option value="SAP">REGISTRADO EN SAP</option>
             </select>
             
-            <button type="button" onclick="coreMkg.addItem()" class="w-full mt-4 bg-rose-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+            <button type="button" onclick="coreMkg.addItem()" class="w-full mt-4 bg-teal-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
         </div>
         <div id="mkg-items-list" class="space-y-2 mb-6"></div>
         <button type="button" id="btn-save-mkg" onclick="coreMkg.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Pedido</button>
@@ -325,7 +325,7 @@
     <!-- MÓDULO 5: HISTORIAL MARKETING -->
     <div id="module-marketing-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-rose-500 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
+            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-teal-500 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
         </div>
         
@@ -333,7 +333,7 @@
             <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="mkg-hist-search" oninput="coreMkg.renderHistory()" placeholder="Motivo o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
             
             <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('mkg-filter-mes', 'Filtrar por Mes')">
-                <i class="ph-bold ph-calendar-blank text-rose-500 text-lg"></i>
+                <i class="ph-bold ph-calendar-blank text-teal-500 text-lg"></i>
                 <select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
             </div>
             
@@ -351,7 +351,7 @@
         </div>
         
         <div id="mkg-history-cards" class="space-y-4"></div>
-        <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-24 w-16 h-16 bg-rose-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+        <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-24 w-16 h-16 bg-teal-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
     </div>
 
     <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
@@ -382,13 +382,13 @@
                 </button>
 
                 <button type="button" onclick="window.attemptChangeTab('dev-history')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100"><i class="ph-fill ph-arrow-u-down-left text-2xl"></i></div>
+                    <div class="w-12 h-12 rounded-[14px] bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100"><i class="ph-fill ph-arrow-u-down-left text-2xl"></i></div>
                     <div class="flex-1"><h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Devoluciones</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Retornos y Mermas</p></div>
                     <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
                 </button>
 
                 <button type="button" onclick="window.attemptChangeTab('marketing')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100"><i class="ph-fill ph-megaphone text-2xl"></i></div>
+                    <div class="w-12 h-12 rounded-[14px] bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100"><i class="ph-fill ph-megaphone text-2xl"></i></div>
                     <div class="flex-1"><h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Marketing</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Pedidos Publicitarios</p></div>
                     <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
                 </button>
@@ -870,7 +870,7 @@
                     this.isLoaded = true; this.renderHistory(); 
                 } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; } }
             },
-            search: function() { this.saveDraft(); const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-purple-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
+            search: function() { this.saveDraft(); const q = document.getElementById('dev-search-prod').value.toLowerCase(); const r = document.getElementById('dev-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreDev.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-indigo-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); },
             selectItem: function(c, d) { const i = document.getElementById('dev-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('dev-results').classList.add('hidden'); this.saveDraft(); },
             
             addItem: function() { const i = document.getElementById('dev-search-prod'); const cg = parseInt(document.getElementById('dev-cant-guia').value); const cr = parseInt(document.getElementById('dev-cant-real').value); const u = document.getElementById('dev-um').value; const e = document.getElementById('dev-estado').value; const o = document.getElementById('dev-obs').value; if (!i.dataset.cod || isNaN(cg) || isNaN(cr) || cg <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y llena ambas cantidades (Guía y Real).'); return; } 
@@ -878,7 +878,7 @@
                 i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; window.updateSelectText('dev-um'); document.getElementById('dev-obs').value = ''; this.saveDraft(); this.renderItems(); 
             },
             renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => { 
-                return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-purple-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-purple-600">GUÍA: ${i.cantGuia} ${i.um}</span> • <span class="text-blue-600">REAL: ${i.cantReal} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; 
+                return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-indigo-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-indigo-600">GUÍA: ${i.cantGuia} ${i.um}</span> • <span class="text-blue-600">REAL: ${i.cantReal} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; 
             }).join(''); b.classList.remove('hidden'); },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
             editTicket: function(t) { document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, obs: i.observaciones || '' })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición', 'Has cargado el ticket en el formulario. Al realizar tus cambios y guardar, se generará como un nuevo registro actualizado.'); },
@@ -893,13 +893,13 @@
                 const cantGuia = i.CANT_GUIA !== undefined ? i.CANT_GUIA : (i.CANTIDAD ? i.CANTIDAD.toString().split('|')[0] : 0);
                 const cantReal = i.CANT_REAL !== undefined ? i.CANT_REAL : (i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[1] || i.CANTIDAD.toString().split('|')[0]) : 0);
                 const um = i.UM !== undefined ? i.UM : (i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[2] || 'U') : 'U');
-                const existingIdx = t[k].items.findIndex(item => item.codigo === i.CODIGO); if (existingIdx > -1) { t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: um, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; } else { t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: um, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); } }); const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mV && mMes; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } c.innerHTML = fil.map(tk => { const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); return `<div class="native-card p-6 mb-4 border-l-4 border-purple-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 border border-purple-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; }).join(''); },
-            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-purple-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-purple-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
+                const existingIdx = t[k].items.findIndex(item => item.codigo === i.CODIGO); if (existingIdx > -1) { t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: um, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; } else { t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: um, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); } }); const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mV && mMes; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } c.innerHTML = fil.map(tk => { const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); return `<div class="native-card p-6 mb-4 border-l-4 border-indigo-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div><div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Editar</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-blue-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreDev.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div></div>`; }).join(''); },
+            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             
             // --- NUEVO DISEÑO PDF DEVOLUCIONES CORPORATIVO ---
             generatePDF: function(d) { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-                const accent = [147, 51, 234]; const dark = [15, 23, 42];
+                const accent = [79, 70, 229]; const dark = [15, 23, 42];
                 doc.setTextColor(248, 250, 252); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
                 doc.setFillColor(...dark); doc.rect(0, 0, 210, 40, 'F'); doc.setFillColor(...accent); doc.rect(0, 0, 8, 40, 'F');
                 doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text("TWINS", 16, 20); doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(148, 163, 184); doc.text("LOGÍSTICA", 16, 25);
@@ -963,7 +963,7 @@
             },
             search: function() { 
                 this.saveDraft();
-                const q = document.getElementById('mkg-search-prod').value.toLowerCase(); const r = document.getElementById('mkg-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-rose-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); 
+                const q = document.getElementById('mkg-search-prod').value.toLowerCase(); const r = document.getElementById('mkg-results'); if (q.length < 2) { r.classList.add('hidden'); return; } const u = []; const s = new Set(); core.raw.forEach(i => { const c = (i.CODIGO||"").toString().toUpperCase(); if (!s.has(c) && i.ORIGEN !== "HOJA3" && (c.toLowerCase().includes(q) || core.getDesc(i).toLowerCase().includes(q))) { s.add(c); u.push(i); } }); if (u.length > 0) { r.innerHTML = u.slice(0, 5).map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer"><p class="text-[10px] font-black text-teal-600">${i.CODIGO}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div>`).join(''); } else { r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold">Sin resultados</div>`; } r.classList.remove('hidden'); 
             },
             selectItem: function(c, d) { 
                 const i = document.getElementById('mkg-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('mkg-results').classList.add('hidden'); 
@@ -982,7 +982,7 @@
                 const l = document.getElementById('mkg-items-list'); const b = document.getElementById('btn-save-mkg'); 
                 if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } 
                 l.innerHTML = this.items.map((i, idx) => {
-                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-rose-600">${i.sku}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-rose-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
+                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-teal-600">${i.sku}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-teal-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
                 }).join(''); 
                 b.classList.remove('hidden'); 
             },
@@ -1067,16 +1067,16 @@
                 c.innerHTML = fil.map(tk => { 
                     const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP');
                     const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
-                    return `<div class="native-card p-6 mb-4 border-l-4 border-rose-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
+                    return `<div class="native-card p-5 mb-4 border-l-4 border-teal-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
                         <div class="flex flex-wrap justify-between items-start mb-4 gap-2">
                             <div class="flex items-center gap-2">
-                                <div class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic dark:bg-rose-900/30 dark:text-rose-400">MKTG: ${tk.motivo}</div>
+                                <div class="bg-teal-50 text-teal-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic dark:bg-teal-900/30 dark:text-teal-400">MKTG: ${tk.motivo}</div>
                                 ${isSAP ? `<div class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest flex items-center gap-1 shadow-sm"><i class="ph-bold ph-check-circle"></i> SAP</div>` : ''}
                             </div>
                             <span class="text-[10px] font-bold text-slate-400 mt-1">${tk.fecha}</span>
                         </div>
-                        <div class="flex items-center gap-4 mb-6"><div class="h-12 w-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">${tk.items.length} PRODUCTOS</p></div></div>
-                        <div class="grid grid-cols-3 gap-2"><button type="button" onclick='coreMkg.editTicket(${j})' class="bg-slate-50 text-slate-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-slate-100 active:scale-95"><i class="ph-bold ph-pencil-simple mr-1 text-sm"></i> Lápiz</button><button type="button" onclick='coreMkg.viewTicketItems(${j})' class="bg-rose-50 text-rose-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-rose-100 active:scale-95"><i class="ph-bold ph-eye mr-1 text-sm"></i> Lista</button><button type="button" onclick='coreMkg.generatePDF(${j})' class="bg-red-50 text-red-600 h-10 rounded-xl flex items-center justify-center font-bold text-[9px] uppercase border border-red-100 active:scale-95"><i class="ph-bold ph-file-pdf mr-1 text-sm"></i> PDF</button></div>
+                        <div class="flex items-center gap-4 mb-4"><div class="h-12 w-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-500 border border-teal-100"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">${tk.items.length} PRODUCTOS</p></div></div>
+                        <div class="grid grid-cols-4 gap-1.5"><button type="button" onclick='coreMkg.editTicket(${j})' class="bg-slate-50 text-slate-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[9px] uppercase border border-slate-200 active:scale-95 transition-transform"><i class="ph-bold ph-pencil-simple mr-0.5 text-[15px]"></i> Edit</button><button type="button" onclick='coreMkg.viewTicketItems(${j})' class="bg-blue-50 text-blue-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[9px] uppercase border border-blue-200 active:scale-95 transition-transform"><i class="ph-bold ph-eye mr-0.5 text-[15px]"></i> Ver</button><button type="button" onclick='coreMkg.generatePDF(${j}, "save")' class="bg-red-50 text-red-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[9px] uppercase border border-red-200 active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf mr-0.5 text-[15px]"></i> PDF</button><button type="button" onclick='coreMkg.generatePDF(${j}, "share")' class="bg-emerald-50 text-emerald-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[9px] uppercase border border-emerald-200 active:scale-95 transition-transform shadow-sm"><i class="ph-bold ph-whatsapp-logo mr-0.5 text-[15px]"></i> WPP</button></div>
                     </div>`; 
                 }).join(''); 
             },
@@ -1084,25 +1084,48 @@
                 const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); 
                 if(!l || !m || !mo) return; m.innerText = "PERSONAL: " + t.personal; 
                 l.innerHTML = t.items.map(i => {
-                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-rose-600 tracking-widest mb-1 uppercase">${i.sku}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-sm font-[900] text-rose-600">${i.cantidad} <span class="text-[10px]">${i.um}</span></span></div></div>`
+                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-teal-600 tracking-widest mb-1 uppercase">${i.sku}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-sm font-[900] text-teal-600">${i.cantidad} <span class="text-[10px]">${i.um}</span></span></div></div>`
                 }).join(''); 
                 mo.style.display = 'flex'; 
             },
             
-            // --- NUEVO DISEÑO PDF MARKETING CORPORATIVO ---
-            generatePDF: function(d) { 
+            // --- DISEÑO PDF MARKETING CORPORATIVO (ECO-PRINT + SHARE) ---
+            generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-                const accent = [225, 29, 72]; const dark = [15, 23, 42];
-                doc.setTextColor(248, 250, 252); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
-                doc.setFillColor(...dark); doc.rect(0, 0, 210, 40, 'F'); doc.setFillColor(...accent); doc.rect(0, 0, 8, 40, 'F');
-                doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text("TWINS", 16, 20); doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(148, 163, 184); doc.text("LOGÍSTICA", 16, 25);
-                doc.setFontSize(16); doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.text("ORDEN DE MARKETING", 200, 20, { align: "right" }); doc.setFontSize(10); doc.setTextColor(...accent); doc.text(`REF: ${d.motivo.substring(0, 20).toUpperCase()}`, 200, 26, { align: "right" });
-                doc.setFillColor(248, 250, 252); doc.setDrawColor(226, 232, 240); doc.roundedRect(14, 48, 182, 22, 3, 3, 'FD');
-                doc.setTextColor(...dark); doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.text("FECHA", 20, 54); doc.text("PERSONAL AUTORIZADO", 70, 54); doc.text("MOTIVO DE SALIDA", 130, 54);
-                doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.fecha || "---", 20, 59); doc.setFont("helvetica", "bold"); doc.setTextColor(...accent); doc.text(d.personal || "---", 70, 59); doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.motivo || "---", 130, 59);
+                const dark = [15, 23, 42]; const border = [203, 213, 225];
+                
+                doc.setTextColor(245, 245, 245); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
+                
+                doc.setTextColor(...dark); doc.setFontSize(22); doc.text("TWINS", 14, 22); 
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 116, 139); doc.text("LOGÍSTICA", 14, 27);
+                doc.setFontSize(16); doc.setTextColor(...dark); doc.setFont("helvetica", "bold"); doc.text("ORDEN DE MARKETING", 196, 22, { align: "right" }); 
+                doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(`REF: ${d.motivo.substring(0, 20).toUpperCase()}`, 196, 27, { align: "right" });
+                doc.setDrawColor(...border); doc.setLineWidth(0.5); doc.line(14, 32, 196, 32);
+                
+                doc.setDrawColor(...border); doc.setFillColor(255, 255, 255); doc.roundedRect(14, 38, 182, 22, 3, 3, 'D');
+                doc.setTextColor(...dark); doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.text("FECHA", 20, 46); doc.text("PERSONAL AUTORIZADO", 70, 46); doc.text("MOTIVO DE SALIDA", 130, 46);
+                doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.fecha || "---", 20, 52); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(d.personal || "---", 70, 52); doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.motivo || "---", 130, 52);
+                
                 const tableBody = d.items.map(i => [ i.sku, i.descripcion, `${i.cantidad} ${i.um}`, i.estado || '---' ]);
-                doc.autoTable({ startY: 76, head: [['SKU', 'PRODUCTO', 'CANTIDAD', 'ESTADO']], body: tableBody, theme: 'grid', headStyles: { fillColor: dark, textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', lineColor: dark }, bodyStyles: { fontSize: 7, textColor: [51, 65, 85], lineColor: [226, 232, 240] }, columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold', textColor: accent }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 3: { cellWidth: 35, halign: 'center', fontStyle: 'bold' } }, alternateRowStyles: { fillColor: [250, 250, 250] }, didParseCell: function(data) { if(data.section === 'body' && data.column.index === 3) { const v = data.cell.raw.toString().toUpperCase(); if(v === 'SAP') data.cell.styles.textColor = [16, 185, 129]; else if(v === 'ENTREGADO') data.cell.styles.textColor = [37, 99, 235]; else data.cell.styles.textColor = [245, 158, 11]; } } });
-                const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(203, 213, 225); doc.line(65, fY, 145, fY); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); doc.save(`Marketing_${d.personal.replace(/\s+/g,'_')}.pdf`); 
+                doc.autoTable({ 
+                    startY: 66, head: [['SKU', 'PRODUCTO', 'CANTIDAD', 'ESTADO']], body: tableBody, theme: 'grid', 
+                    headStyles: { fillColor: [241, 245, 249], textColor: dark, fontSize: 8, fontStyle: 'bold', halign: 'center', lineColor: border, lineWidth: 0.1 }, 
+                    bodyStyles: { fontSize: 7, textColor: [51, 65, 85], lineColor: border }, 
+                    columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 3: { cellWidth: 35, halign: 'center', fontStyle: 'bold' } }, 
+                    alternateRowStyles: { fillColor: [250, 250, 250] }, 
+                    didParseCell: function(data) { if(data.section === 'body' && data.column.index === 3) { const v = data.cell.raw.toString().toUpperCase(); if(v === 'SAP') data.cell.styles.textColor = [16, 185, 129]; else if(v === 'ENTREGADO') data.cell.styles.textColor = [37, 99, 235]; else data.cell.styles.textColor = [245, 158, 11]; } } 
+                });
+                
+                const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(...border); doc.line(65, fY, 145, fY); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
+                doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); 
+                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); 
+                
+                const fileName = `Mktg_${d.personal.replace(/\s+/g,'_')}.pdf`;
+                if (action === 'share' && navigator.canShare) {
+                    const blob = doc.output('blob'); const file = new File([blob], fileName, { type: 'application/pdf' });
+                    if (navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: fileName, text: `Adjunto reporte de Marketing de ${d.personal}` }).catch(err => console.log(err)); } else { doc.save(fileName); }
+                } else { doc.save(fileName); }
             }
         };
 
