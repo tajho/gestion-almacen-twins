@@ -141,7 +141,6 @@
         <div class="flex gap-2 mb-8">
             <div class="flex-1 search-bar flex items-center px-4 py-1"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
             
-            <!-- BOTÓN PERSONALIZADO DE MES -->
             <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform shadow-sm" onclick="openCustomSelect('month-select', 'Filtrar por Mes')">
                 <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
                 <select id="month-select" onchange="core.filterMonth(this.value)" class="hidden"></select>
@@ -182,7 +181,6 @@
             <div class="space-y-3">
                 <input type="text" id="dev-cliente" oninput="coreDev.saveDraft(); coreDev.suggestVendor();" placeholder="Nombre del Cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 
-                <!-- SELECT PERSONALIZADO VENDEDOR -->
                 <button type="button" onclick="openCustomSelect('dev-vendedor', 'Seleccionar Vendedor')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
                     <span id="text-dev-vendedor">Seleccionar Vendedor</span>
                     <i class="ph-bold ph-caret-down text-slate-400"></i>
@@ -376,22 +374,89 @@
 
     <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
     <div id="twins-menu" class="fixed inset-0 z-[100] hidden">
-        <div id="twins-menu-backdrop" class="absolute inset-0 bg-slate-900/50 transition-opacity duration-300 opacity-0" onclick="toggleMenu()"></div>
-        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300 z-10" id="twins-menu-panel">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50 relative z-20">
-                <h2 class="font-black text-blue-600 tracking-widest text-sm uppercase">Menú Principal</h2>
-                <button type="button" onclick="toggleMenu()" class="p-2 bg-blue-500 text-white rounded active:scale-95"><i class="ph-bold ph-x"></i></button>
+        <!-- El onclick aquí garantiza que si tocas el fondo oscuro, se cierre -->
+        <div id="twins-menu-backdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0 cursor-pointer" onclick="toggleMenu()"></div>
+        
+        <!-- Contenedor del Menú Deslizable (Dashboard Drawer Premium) -->
+        <div class="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[320px] bg-slate-50 flex flex-col transform -translate-x-full transition-transform duration-300 z-10 rounded-r-[32px] overflow-hidden border-r border-slate-200 shadow-[20px_0_40px_rgba(0,0,0,0.1)]" id="twins-menu-panel">
+            
+            <!-- Cabecera del Menú -->
+            <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/30">
+                        <i class="ph-bold ph-lightning text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black text-blue-500 uppercase tracking-[0.2em] mb-0.5">Twins Elite</p>
+                        <h2 class="font-black text-slate-900 text-lg leading-none tracking-tight">TAJHO</h2>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleMenu()" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center active:scale-95 transition-transform border border-slate-100"><i class="ph-bold ph-x text-lg"></i></button>
             </div>
-            <div class="flex flex-col p-4 gap-3 mt-2 relative z-20">
-                <button type="button" onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
-                <button type="button" onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
-                <button type="button" onclick="window.attemptChangeTab('marketing')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i class="ph-bold ph-megaphone text-xl"></i> MARKETING</button>
+            
+            <!-- Opciones / Botones tipo Tarjeta -->
+            <div class="flex-1 p-5 overflow-y-auto relative z-20 space-y-3">
+                <p class="px-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Módulos Logísticos</p>
                 
-                <div class="border-t border-slate-100 my-2"></div>
+                <button type="button" onclick="window.attemptChangeTab('audit')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
+                    <div class="w-12 h-12 rounded-[14px] bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                        <i class="ph-fill ph-package text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Auditoría</h3>
+                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">Control de Contenedores</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
+                </button>
+
+                <button type="button" onclick="window.attemptChangeTab('dev-history')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
+                    <div class="w-12 h-12 rounded-[14px] bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
+                        <i class="ph-fill ph-arrow-u-down-left text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Devoluciones</h3>
+                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">Retornos y Mermas</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
+                </button>
+
+                <button type="button" onclick="window.attemptChangeTab('marketing')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
+                    <div class="w-12 h-12 rounded-[14px] bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                        <i class="ph-fill ph-megaphone text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Marketing</h3>
+                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">Pedidos Publicitarios</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
+                </button>
                 
-                <button type="button" onclick="window.toggleTheme()" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3 active:scale-95 transition-transform"><i id="theme-icon" class="ph-bold ph-moon text-xl"></i> <span id="theme-text">MODO OSCURO</span></button>
+                <div class="border-t border-slate-200 my-4 mx-2"></div>
+                <p class="px-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Sistema</p>
+                
+                <button type="button" onclick="window.toggleTheme()" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
+                    <div class="w-12 h-12 rounded-[14px] bg-slate-100 text-slate-600 flex items-center justify-center border border-slate-200">
+                        <i id="theme-icon" class="ph-fill ph-moon text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 id="theme-text" class="text-sm font-black text-slate-800 uppercase tracking-tight">Modo Oscuro</h3>
+                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">Cambiar apariencia</p>
+                    </div>
+                </button>
             </div>
-            <div class="mt-auto p-6 text-center border-t border-slate-50 relative z-20"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
+            
+            <!-- Pie de Perfil -->
+            <div class="mt-auto p-5 bg-white border-t border-slate-100 relative z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                    <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500 overflow-hidden shadow-inner">
+                        <i class="ph-fill ph-user-circle text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs font-black text-slate-900 leading-tight tracking-tight">J. Angelo Nuñez D.</p>
+                        <p class="text-[8px] font-black text-blue-500 uppercase tracking-widest mt-0.5">Asist. Logístico</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -433,7 +498,7 @@
             const isDark = document.documentElement.classList.contains('dark');
             const icon = document.getElementById('theme-icon');
             const text = document.getElementById('theme-text');
-            if(icon) icon.className = isDark ? 'ph-bold ph-sun text-xl' : 'ph-bold ph-moon text-xl';
+            if(icon) icon.className = isDark ? 'ph-fill ph-sun text-2xl' : 'ph-fill ph-moon text-2xl';
             if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
         }
 
