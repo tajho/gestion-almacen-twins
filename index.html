@@ -8,11 +8,20 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Script para inicializar Tema Oscuro sin parpadeos -->
+    <script>
+        if (localStorage.getItem('twins_theme') === 'dark' || (!('twins_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; }
+        
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
         .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .native-card:active { transform: scale(0.97); }
@@ -24,6 +33,82 @@
         #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
+
+        /* =========================================
+           MODO OSCURO CORPORATIVO (ULTRA PREMIUM)
+           ========================================= */
+        html.dark, .dark body { background-color: #020617 !important; color: #F8FAFC !important; }
+        
+        /* Superficies principales (Tarjetas, Paneles) */
+        .dark .bg-white, .dark .native-card, .dark .audit-item-card, .dark #twins-menu-panel, .dark #modern-modal-content { 
+            background-color: #0F172A !important; 
+            border-color: #1E293B !important; 
+        }
+        
+        /* Superficies hundidas (Inputs, Search, Fondos secundarios) */
+        .dark .bg-slate-50, .dark .bg-slate-100, .dark .search-bar, .dark input, .dark select, .dark textarea { 
+            background-color: #020617 !important; 
+            border-color: #1E293B !important; 
+            color: #F8FAFC !important; 
+        }
+        
+        /* Transparencia (Glassmorphism) */
+        .dark .glass-header { 
+            background: rgba(2, 6, 23, 0.8) !important; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; 
+        }
+        
+        /* Overlays (Fondos oscurecidos) */
+        .dark [class*="bg-slate-900/"], .dark .modal-full, .dark #audit-view { 
+            background-color: rgba(2, 6, 23, 0.95) !important; 
+        }
+        
+        /* Textos Base */
+        .dark .text-slate-900, .dark .text-slate-800 { color: #F8FAFC !important; }
+        .dark .text-slate-700, .dark .text-slate-600 { color: #94A3B8 !important; }
+        .dark .text-slate-500, .dark .text-slate-400 { color: #64748B !important; }
+        .dark .text-slate-300 { color: #475569 !important; }
+        .dark .text-slate-100 { color: #1E293B !important; stroke: #1E293B !important; } /* Fix para anillo de progreso */
+        
+        /* Bordes y Líneas */
+        .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-50 { border-color: #1E293B !important; }
+        .dark .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #1E293B !important; }
+        
+        /* Botones de Acción Primaria (Oscuros en claro -> Azul Neon en oscuro) */
+        .dark .bg-slate-900 { 
+            background-color: #3B82F6 !important; 
+            color: #FFFFFF !important; 
+            border: none !important;
+            box-shadow: 0 4px 14px -4px rgba(59, 130, 246, 0.5) !important; 
+        }
+        
+        /* --- FONDOS PASTEL A NEÓN (BADGES Y BOTONES SECUNDARIOS) --- */
+        .dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15) !important; color: #60A5FA !important; border-color: rgba(59, 130, 246, 0.2) !important; }
+        .dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.15) !important; color: #C084FC !important; border-color: rgba(168, 85, 247, 0.2) !important; }
+        .dark .bg-rose-50 { background-color: rgba(244, 63, 94, 0.15) !important; color: #FB7185 !important; border-color: rgba(244, 63, 94, 0.2) !important; }
+        .dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15) !important; color: #F87171 !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+        .dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.15) !important; color: #34D399 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
+        .dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.15) !important; color: #FB923C !important; border-color: rgba(249, 115, 22, 0.2) !important; }
+        
+        /* Textos Especiales / Acentos (Sin fondo) */
+        .dark .text-blue-600, .dark .text-blue-500 { color: #60A5FA !important; }
+        .dark .text-purple-600, .dark .text-purple-500 { color: #C084FC !important; }
+        .dark .text-rose-600, .dark .text-rose-500, .dark .text-rose-900 { color: #FB7185 !important; }
+        .dark .text-red-600, .dark .text-red-500 { color: #F87171 !important; }
+        .dark .text-emerald-600, .dark .text-emerald-500, .dark .text-green-500 { color: #34D399 !important; }
+        .dark .text-orange-600, .dark .text-orange-500 { color: #FB923C !important; }
+        
+        /* Placeholders y Selects */
+        .dark input::placeholder, .dark textarea::placeholder { color: #475569 !important; }
+        .dark option { background-color: #0F172A; color: #F8FAFC; }
+        
+        /* Fix progress ring */
+        .dark .progress-ring { stroke: #3B82F6 !important; }
+        
+        /* Sombras Premium Oscuras */
+        .dark .shadow-sm, .dark .shadow, .dark .shadow-md, .dark .shadow-lg, .dark .shadow-xl, .dark .shadow-2xl {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -165,7 +250,7 @@
                     <option value="EVELYN MURO">EVELYN</option>
                     <option value="REGULO ANTEZANA">REGULO</option>
                     <option value="JHAYRO MAURICIO">JHAYRO</option>
-                    <option value="PAULA GARCIA">PAULA</option>
+                    <option value="PAULA GARCIA">PAULA GARCIA</option>
                 </select>
             </div>
         </div>
@@ -269,6 +354,10 @@
                 <button type="button" onclick="window.attemptChangeTab('audit')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-clipboard-text text-xl"></i> MÓDULO AUDITORÍA</button>
                 <button type="button" onclick="window.attemptChangeTab('dev-history')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-arrow-u-down-left text-xl"></i> DEVOLUCIONES</button>
                 <button type="button" onclick="window.attemptChangeTab('marketing')" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i class="ph-bold ph-megaphone text-xl"></i> MARKETING</button>
+                
+                <div class="border-t border-slate-100 my-2"></div>
+                
+                <button type="button" onclick="window.toggleTheme()" class="text-left p-4 rounded-2xl font-black text-xs text-slate-600 hover:bg-slate-50 border border-slate-50 flex items-center gap-3"><i id="theme-icon" class="ph-bold ph-moon text-xl"></i> <span id="theme-text">MODO OSCURO</span></button>
             </div>
             <div class="mt-auto p-6 text-center border-t border-slate-50"><p class="text-[9px] font-bold text-slate-400 italic">J. Angelo Nuñez Durand <br> Asist. Inventario Logístico</p></div>
         </div>
@@ -288,6 +377,22 @@
     </div>
 
     <script>
+        // LOGICA DE TEMA (DARK MODE)
+        window.toggleTheme = function() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('twins_theme', isDark ? 'dark' : 'light');
+            updateThemeUI();
+        };
+
+        function updateThemeUI() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if(icon) icon.className = isDark ? 'ph-bold ph-sun text-xl' : 'ph-bold ph-moon text-xl';
+            if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
+        }
+
         // CONTROLADOR DEL MODAL MODERNO
         window.uiModal = {
             show: function(type, title, msg, onConfirm, onCancel) {
