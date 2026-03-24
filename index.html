@@ -1339,36 +1339,34 @@
             }
         });
 
-        // --- PWA NATIVE INSTALLER (FORZADO CORPORATIVO) ---
+        // --- PWA NATIVE INSTALLER (FORZADO CORPORATIVO Y SERVICE WORKER) ---
         const setupPWA = () => {
             try {
-                // Generamos una ruta base absoluta de forma indestructible
+                // 1. Calculamos la ruta absoluta de GitHub para que no se pierda el Ícono
                 let baseUrl = window.location.href.split('?')[0];
-                if (baseUrl.startsWith('blob:')) {
-                    baseUrl = window.location.origin + window.location.pathname;
-                }
+                if (baseUrl.startsWith('blob:')) { baseUrl = window.location.origin + window.location.pathname; }
+                const cleanUrl = baseUrl.endsWith('index.html') ? baseUrl.replace('index.html', '') : baseUrl;
+                const finalBaseUrl = cleanUrl.endsWith('/') ? cleanUrl : cleanUrl + '/';
                 
-                // Enlazamos tu imagen de Twins Despachos subida a GitHub
-                const iconUrl = 'icon.jpg';
+                // Ruta indestructible hacia tu furgoneta
+                const iconAbsUrl = finalBaseUrl + 'icon.jpg';
 
                 const manifest = {
                     "name": "Twins Elite Pro",
                     "short_name": "Twins",
-                    "start_url": ".",
+                    "start_url": finalBaseUrl,
                     "display": "standalone",
                     "background_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
                     "theme_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
                     "orientation": "portrait-primary",
                     "icons": [ 
-                        { "src": iconUrl, "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": iconUrl, "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": iconUrl, "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
+                        { "src": iconAbsUrl, "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": iconAbsUrl, "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": iconAbsUrl, "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
                     ]
                 };
 
-                // Usamos Data URI. Chrome acepta esto nativamente y desbloquea el botón de instalación.
                 const manifestDataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
-                
                 const link = document.createElement('link');
                 link.rel = 'manifest';
                 link.href = manifestDataUri;
@@ -1376,8 +1374,17 @@
 
                 const appleIcon = document.createElement('link');
                 appleIcon.rel = 'apple-touch-icon';
-                appleIcon.href = iconUrl;
+                appleIcon.href = iconAbsUrl;
                 document.head.appendChild(appleIcon);
+
+                // 2. LA MAGIA: Requisito OBLIGATORIO de Chrome (Service Worker Virtual)
+                // Esto es lo que convence a Chrome de que somos una App real y nos da la pantalla completa.
+                if ('serviceWorker' in navigator && !baseUrl.startsWith('blob:')) {
+                    const swCode = `self.addEventListener('fetch', function(event) {});`; 
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl).catch(e => console.error('SW Error:', e));
+                }
             } catch (err) {
                 console.error('PWA Setup Error:', err);
             }
