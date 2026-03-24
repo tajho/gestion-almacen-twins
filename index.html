@@ -1339,33 +1339,48 @@
             }
         });
 
-        // --- PWA NATIVE INSTALLER ---
+        // --- PWA NATIVE INSTALLER (FORZADO CORPORATIVO) ---
         const setupPWA = () => {
-            // El usuario debe subir la imagen a GitHub con el nombre exacto "icon.jpg" en la misma carpeta
-            const iconUrl = 'icon.jpg';
+            try {
+                // Generamos una ruta base absoluta de forma indestructible
+                let baseUrl = window.location.href.split('?')[0];
+                if (baseUrl.startsWith('blob:')) {
+                    baseUrl = window.location.origin + window.location.pathname;
+                }
+                
+                // Enlazamos tu imagen de Twins Despachos subida a GitHub
+                const iconUrl = 'icon.jpg';
 
-            const manifest = {
-                "name": "Twins Elite Pro",
-                "short_name": "TwinsElite",
-                "start_url": window.location.href.split('?')[0],
-                "display": "standalone",
-                "background_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
-                "theme_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
-                "orientation": "portrait-primary",
-                "icons": [ { "src": iconUrl, "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" } ]
-            };
+                const manifest = {
+                    "name": "Twins Elite Pro",
+                    "short_name": "Twins",
+                    "start_url": ".",
+                    "display": "standalone",
+                    "background_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
+                    "theme_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
+                    "orientation": "portrait-primary",
+                    "icons": [ 
+                        { "src": iconUrl, "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": iconUrl, "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": iconUrl, "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
+                    ]
+                };
 
-            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-            const manifestUrl = URL.createObjectURL(blob);
-            const link = document.createElement('link');
-            link.rel = 'manifest';
-            link.href = manifestUrl;
-            document.head.appendChild(link);
+                // Usamos Data URI. Chrome acepta esto nativamente y desbloquea el botón de instalación.
+                const manifestDataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+                
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = manifestDataUri;
+                document.head.appendChild(link);
 
-            const appleIcon = document.createElement('link');
-            appleIcon.rel = 'apple-touch-icon';
-            appleIcon.href = iconUrl;
-            document.head.appendChild(appleIcon);
+                const appleIcon = document.createElement('link');
+                appleIcon.rel = 'apple-touch-icon';
+                appleIcon.href = iconUrl;
+                document.head.appendChild(appleIcon);
+            } catch (err) {
+                console.error('PWA Setup Error:', err);
+            }
         };
         setupPWA();
 
