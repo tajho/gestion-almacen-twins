@@ -2,8 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- PWA: Configuración de Pantalla Completa, Zoom Dinámico y Modo Inmersivo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Twins Elite">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+    
     <title>Twins Elite Pro</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -21,12 +30,14 @@
         
         :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
         
-        /* ZOOM OUT CORPORATIVO: Reduce toda la App para aprovechar mejor la pantalla del celular */
-        html { font-size: 13.5px; } 
+        /* ZOOM OUT CORPORATIVO: Reduce la interfaz para aprovechar al máximo la pantalla */
+        html { font-size: 13.5px; height: 100%; min-height: 100dvh; background-color: var(--bg); } 
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; width: 100%; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        /* PANTALLA INMERSIVA: Obligamos al body a estirarse infinitamente hacia abajo */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; width: 100%; min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        
         input, textarea, select { user-select: auto !important; }
-        button, a { touch-action: manipulation !important; cursor: pointer !important; } 
+        button, a { touch-action: manipulation !important; cursor: pointer !important; user-select: none; } 
         
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
         .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -34,7 +45,7 @@
         .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; transition: all 0.2s ease; }
         .modal-full { display: none; position: fixed; inset: 0; background: #F1F5F9; z-index: 100; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
         @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 24px 24px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -45,7 +56,7 @@
            ========================================= */
         .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)) !important; }
         .safe-pb { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important; }
-        .app-container { padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important; }
+        .app-container { flex: 1; padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important; }
         
         ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
@@ -115,18 +126,18 @@
                 <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">TAJHO</p>
                 <h1 id="header-title" class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
             </div>
-            <div class="relative flex items-center justify-center flex-shrink-0" id="header-progress">
-                <svg class="w-12 h-12">
+            <div class="relative flex items-center justify-center flex-shrink-0 w-12 h-12" id="header-progress">
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 48 48">
                     <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                 </svg>
-                <span id="global-perc" class="absolute text-[10px] font-[800]">0%</span>
+                <span id="global-perc" class="absolute text-[11px] font-[900]">0%</span>
             </div>
         </div>
     </div>
 
     <!-- MÓDULO 1: AUDITORÍA -->
-    <div id="app-shell" class="max-w-md mx-auto px-6 app-container block">
+    <div id="app-shell" class="w-full max-w-md mx-auto px-6 app-container block relative">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-indigo-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
@@ -145,8 +156,8 @@
 
     <!-- VISTAS INTERNAS DE AUDITORÍA -->
     <div id="audit-view">
-        <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
-            <div class="px-6 pt-10 pb-4 flex items-center justify-between">
+        <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm safe-pt">
+            <div class="px-6 pt-4 pb-4 flex items-center justify-between">
                 <button type="button" onclick="core.requestCloseAudit()" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
                 <div class="text-center"><h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2><div class="flex items-center justify-center gap-1.5 mt-0.5"><i class="ph-fill ph-clock text-[12px] text-blue-500"></i><span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span></div></div>
                 <button type="button" onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2"><i class="ph-bold ph-magnifying-glass text-2xl"></i></button>
@@ -162,12 +173,12 @@
     </div>
     
     <div id="list-view" class="modal-full">
-        <div class="px-6 py-8 flex items-center justify-between bg-white border-b"><button type="button" onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
-        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar pb-10"></div>
+        <div class="px-6 py-8 safe-pt flex items-center justify-between bg-white border-b"><button type="button" onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
+        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar safe-pb"></div>
     </div>
 
     <!-- MÓDULO 2: FORMULARIO NUEVA DEVOLUCIÓN -->
-    <div id="module-returns" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
+    <div id="module-returns" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="dev-form-title">Nueva Devolución</h2>
             <div class="space-y-3">
@@ -238,7 +249,7 @@
     </div>
 
     <!-- MÓDULO 3: HISTORIAL DEVOLUCIONES -->
-    <div id="module-dev-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
+    <div id="module-dev-history" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-indigo-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
@@ -259,7 +270,7 @@
                     <option value="ELIAS AVILA">ELIAS</option>
                     <option value="EVELYN MURO">EVELYN</option>
                     <option value="REGULO ANTEZANA">REGULO</option>
-                    <option value="JHAYRO MAURICIO">JHAYRO</option>
+                    <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
                     <option value="PAULA GARCIA">PAULA GARCIA</option>
                 </select>
             </div>
@@ -270,7 +281,7 @@
     </div>
 
     <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG (Carbono/Zinc) -->
-    <div id="module-mkg-form" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
+    <div id="module-mkg-form" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
         <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
             <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="mkg-form-title">Nuevo Pedido Marketing</h2>
             <div class="space-y-3">
@@ -333,7 +344,7 @@
     </div>
 
     <!-- MÓDULO 5: HISTORIAL MARKETING -->
-    <div id="module-marketing-history" class="hidden max-w-md mx-auto px-6 pt-4 app-container">
+    <div id="module-marketing-history" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-zinc-600 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
             <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
@@ -369,7 +380,7 @@
         <div id="twins-menu-backdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0 cursor-pointer" onclick="toggleMenu()"></div>
         
         <div class="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[320px] bg-slate-50 flex flex-col transform -translate-x-full transition-transform duration-300 z-10 rounded-r-[32px] overflow-hidden border-r border-slate-200 shadow-[20px_0_40px_rgba(0,0,0,0.1)]" id="twins-menu-panel">
-            <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm">
+            <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm safe-pt">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/30">
                         <i class="ph-bold ph-lightning text-xl"></i>
@@ -464,6 +475,10 @@
             const text = document.getElementById('theme-text');
             if(icon) icon.className = isDark ? 'ph-fill ph-sun text-2xl' : 'ph-fill ph-moon text-2xl';
             if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
+            
+            // Actualizar color PWA
+            const themeColorMeta = document.querySelector('meta[name="theme-color"]:not([media])');
+            if(themeColorMeta) themeColorMeta.setAttribute('content', isDark ? '#020617' : '#F8FAFC');
         }
 
         // ==========================================
@@ -653,7 +668,14 @@
                 const hasText = document.getElementById('dev-cliente').value.trim() !== '';
                 if (hasItems || hasText) {
                     uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se perderán los datos.', 
-                    () => { coreDev.clearDraft(); window.changeTab(targetTab); }, () => { uiModal.close(); });
+                    () => { 
+                        coreDev.clearDraft(); coreDev.items = [];
+                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-obs').value = '';
+                        const searchInput = document.getElementById('dev-search-prod');
+                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
+                        window.syncAllSelectTexts();
+                        coreDev.renderItems(); window.changeTab(targetTab);
+                    }, () => { uiModal.close(); });
                     return;
                 }
             }
@@ -663,7 +685,14 @@
                 const hasText = document.getElementById('mkg-motivo').value.trim() !== '';
                 if (hasItems || hasText) {
                     uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes un pedido de marketing en progreso. Si cambias de página, se perderán los datos.', 
-                    () => { coreMkg.clearDraft(); window.changeTab(targetTab); }, () => { uiModal.close(); });
+                    () => { 
+                        coreMkg.clearDraft(); coreMkg.items = [];
+                        document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE';
+                        const searchInput = document.getElementById('mkg-search-prod');
+                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
+                        window.syncAllSelectTexts();
+                        coreMkg.renderItems(); window.changeTab(targetTab);
+                    }, () => { uiModal.close(); });
                     return;
                 }
             }
@@ -851,7 +880,7 @@
         // MOTOR 2: DEVOLUCIONES
         const coreDev = {
             histMaster: JSON.parse(localStorage.getItem('twins_dev_cache')) || [], items: [], isLoaded: false, editingKey: null,
-            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
+            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } },
             suggestVendor: function() {
                 const vendSelect = document.getElementById('dev-vendedor'); if (vendSelect.value !== "") return; 
                 const clientName = document.getElementById('dev-cliente').value.trim().toLowerCase(); if (!clientName || this.histMaster.length === 0) return;
@@ -880,7 +909,6 @@
                 const r = document.getElementById('dev-results'); 
                 if (q.length < 2) { r.classList.add('hidden'); return; } 
                 
-                // Algoritmo de Búsqueda Exacta y Multi-Palabra
                 const terms = q.split(' ');
                 let exact = []; let partial = []; 
                 const s = new Set(); 
@@ -983,7 +1011,6 @@
             },
             viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             
-            // --- DISEÑO PDF DEVOLUCIONES CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
@@ -1026,7 +1053,7 @@
         // MOTOR 3: MARKETING
         const coreMkg = {
             histMaster: JSON.parse(localStorage.getItem('twins_mkg_cache')) || [], items: [], isLoaded: false, editingKey: null,
-            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } this.fetchHist(); },
+            init: function() { if (this.histMaster.length > 0) { this.isLoaded = true; this.renderHistory(); } },
             saveDraft: function() {
                 const searchInput = document.getElementById('mkg-search-prod');
                 const draft = { personal: document.getElementById('mkg-personal').value, motivo: document.getElementById('mkg-motivo').value, cant: document.getElementById('mkg-cant').value, um: document.getElementById('mkg-um').value, estado: document.getElementById('mkg-estado').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items, editingKey: this.editingKey };
@@ -1240,7 +1267,6 @@
                 mo.style.display = 'flex'; 
             },
             
-            // --- DISEÑO PDF MARKETING CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
@@ -1298,6 +1324,36 @@
                 e.preventDefault(); e.returnValue = ''; 
             }
         });
+
+        // --- PWA NATIVE INSTALLER ---
+        const setupPWA = () => {
+            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2563eb"/><text x="256" y="340" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="#ffffff" text-anchor="middle">TE</text></svg>`;
+            const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgIcon);
+
+            const manifest = {
+                "name": "Twins Elite Pro",
+                "short_name": "TwinsElite",
+                "start_url": window.location.href.split('?')[0],
+                "display": "standalone",
+                "background_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
+                "theme_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
+                "orientation": "portrait-primary",
+                "icons": [ { "src": iconUrl, "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" } ]
+            };
+
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(blob);
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestUrl;
+            document.head.appendChild(link);
+
+            const appleIcon = document.createElement('link');
+            appleIcon.rel = 'apple-touch-icon';
+            appleIcon.href = iconUrl;
+            document.head.appendChild(appleIcon);
+        };
+        setupPWA();
 
         // ARRANQUE PRINCIPAL
         window.addEventListener('DOMContentLoaded', () => {
@@ -1368,22 +1424,35 @@
             // Sincronizar todos los textos iniciales de los selects ocultos
             window.syncAllSelectTexts();
 
-            if (typeof core !== 'undefined') {
-                if (core.raw && core.raw.length > 0) { core.render(); }
-                core.fetchData(true); 
-                core.fetchProductos();
-                setInterval(() => { core.fetchData(true); }, 10000);
-                setInterval(() => { core.fetchProductos(); }, 30000);
-            }
-            if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 15000); }
-            if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 15000); }
+            // Carga secuencial para evitar bloqueos por concurrencia en Google Apps Script
+            const startDataSync = async () => {
+                if (typeof core !== 'undefined') {
+                    if (core.raw && core.raw.length > 0) { core.render(); }
+                    await core.fetchData(true); 
+                    await core.fetchProductos();
+                }
+                if (typeof coreDev !== 'undefined') await coreDev.fetchHist(true);
+                if (typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
+
+                // Configurar intervalos desfasados
+                if (typeof core !== 'undefined') {
+                    setInterval(() => { core.fetchData(true); }, 12000);
+                    setInterval(() => { core.fetchProductos(); }, 45000);
+                }
+                if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 18000); }
+                if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 24000); }
+            };
+            startDataSync();
         });
 
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') {
-                if(typeof core !== 'undefined') { core.fetchData(true); core.fetchProductos(); }
-                if(typeof coreDev !== 'undefined') coreDev.fetchHist(true);
-                if(typeof coreMkg !== 'undefined') coreMkg.fetchHist(true);
+                const reloadData = async () => {
+                    if(typeof core !== 'undefined') { await core.fetchData(true); await core.fetchProductos(); }
+                    if(typeof coreDev !== 'undefined') await coreDev.fetchHist(true);
+                    if(typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
+                };
+                reloadData();
             }
         });
     </script>
