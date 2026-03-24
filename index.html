@@ -4,32 +4,42 @@
     <meta charset="UTF-8">
     <!-- PWA: Configuración de Pantalla Completa, Zoom Dinámico y Modo Inmersivo -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- Etiquetas Nativas de Apple (Obligatorias para iPhone) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Twins Elite">
+    <link rel="apple-touch-icon" href="icon.jpg">
+    
+    <!-- Etiquetas Nativas Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
     
-    <!-- INYECCIÓN PWA INMEDIATA (Fuerza la pantalla completa desde el milisegundo 1) -->
+    <!-- INYECCIÓN PWA INMEDIATA (Rutas Absolutas Indestructibles) -->
     <script>
         (function() {
             try {
+                // Generar URL base limpia
+                let base = window.location.href.split('?')[0].replace(/#.*$/, '');
+                if (base.endsWith('index.html')) base = base.replace('index.html', '');
+                if (!base.endsWith('/')) base += '/';
+
                 const isDark = localStorage.getItem('twins_theme') === 'dark' || (!('twins_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
                 const bgColor = isDark ? "#020617" : "#F8FAFC";
                 
                 const manifest = {
                     "name": "Twins Elite Pro",
                     "short_name": "Twins",
-                    "start_url": window.location.pathname,
+                    "start_url": base,
                     "display": "standalone",
                     "background_color": bgColor,
                     "theme_color": bgColor,
                     "orientation": "portrait-primary",
                     "icons": [ 
-                        { "src": "icon.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": "icon.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": "icon.jpg", "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
+                        { "src": base + "icon.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": base + "icon.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
+                        { "src": base + "icon.jpg", "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
                     ]
                 };
 
@@ -38,21 +48,7 @@
                 link.rel = 'manifest';
                 link.href = manifestDataUri;
                 document.head.appendChild(link);
-
-                const appleIcon = document.createElement('link');
-                appleIcon.rel = 'apple-touch-icon';
-                appleIcon.href = "icon.jpg";
-                document.head.appendChild(appleIcon);
-
-                // Engañamos a Chrome/Safari con un Worker virtual para que aprueben la instalación nativa
-                window.addEventListener('load', () => {
-                    if ('serviceWorker' in navigator) {
-                        const swCode = "self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});";
-                        const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-                    }
-                });
-            } catch(e) {}
+            } catch(e) { console.error('PWA Error:', e); }
         })();
     </script>
 
