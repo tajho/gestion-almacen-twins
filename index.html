@@ -461,6 +461,20 @@
     </div>
 
     <script>
+        // FUNCION DE RED SEGURA: Evita el error "Failed to fetch" por exceso de peticiones a Google
+        window.safeFetch = async function(url) {
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const res = await fetch(url, { redirect: 'follow' });
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return await res.json();
+                } catch (e) {
+                    if (i === 2) throw e;
+                    await new Promise(r => setTimeout(r, 1000 * (i + 1))); 
+                }
+            }
+        };
+
         // LOGICA DE TEMA (DARK MODE)
         window.toggleTheme = function() {
             document.documentElement.classList.toggle('dark');
@@ -731,8 +745,7 @@
             productos: JSON.parse(localStorage.getItem('twins_productos_cache')) || [],
             fetchProductos: async function() {
                 try {
-                    const res = await fetch(this.url + "?type=productos", { redirect: 'follow' }); 
-                    const data = await res.json();
+                    const data = await window.safeFetch(this.url + "?type=productos"); 
                     if (data && Array.isArray(data)) {
                         this.productos = data;
                         localStorage.setItem('twins_productos_cache', JSON.stringify(data));
@@ -742,9 +755,7 @@
 
             fetchData: async function(silent = false) {
                 try {
-                    const res = await fetch(this.url, { redirect: 'follow' }); 
-                    if (!res.ok) throw new Error("Error en red");
-                    const data = await res.json();
+                    const data = await window.safeFetch(this.url); 
                     if (data && Array.isArray(data)) {
                         this.raw = data.map(i => {
                             const isC = i["ESTADO"] && i["ESTADO"].toString().toUpperCase() === "COMPLETADO";
@@ -895,12 +906,14 @@
             clearDraft: function() { this.editingKey = null; document.getElementById('dev-form-title').innerText = 'Nueva Devolución'; localStorage.removeItem('twins_dev_draft'); },
             fetchHist: async function(silent = false) {
                 try {
-                    const resp = await fetch(core.url + "?type=historial_dev", { redirect: 'follow' }); const data = await resp.json();
-                    this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3" || i.VENDEDOR !== undefined || i.CLIENTE !== undefined).map(i => { let f = i.FECHA || ""; if (typeof f === 'string' && f.includes('T')) { const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`; } else if (f instanceof Date) { f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`; } else { const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`; } return { ...i, FECHA: f }; });
-                    localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
-                    const uM = new Set(); this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
-                    const selM = document.getElementById('dev-filter-mes'); if(selM) { let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; }); selM.innerHTML = opts; }
-                    this.isLoaded = true; this.renderHistory(); 
+                    const data = await window.safeFetch(core.url + "?type=historial_dev"); 
+                    if(data && Array.isArray(data)) {
+                        this.histMaster = data.filter(i => i.ORIGEN === "HOJA3" || i.SHEET === "HOJA3" || i.VENDEDOR !== undefined || i.CLIENTE !== undefined).map(i => { let f = i.FECHA || ""; if (typeof f === 'string' && f.includes('T')) { const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`; } else if (f instanceof Date) { f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`; } else { const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`; } return { ...i, FECHA: f }; });
+                        localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster));
+                        const uM = new Set(); this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
+                        const selM = document.getElementById('dev-filter-mes'); if(selM) { let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; }); selM.innerHTML = opts; }
+                        this.isLoaded = true; this.renderHistory(); 
+                    }
                 } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; } }
             },
             search: function() { 
@@ -1011,6 +1024,7 @@
             },
             viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             
+            // --- DISEÑO PDF DEVOLUCIONES CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
@@ -1062,33 +1076,33 @@
             clearDraft: function() { this.editingKey = null; document.getElementById('mkg-form-title').innerText = 'Nuevo Pedido Marketing'; localStorage.removeItem('twins_mkg_draft'); },
             fetchHist: async function(silent = false) {
                 try {
-                    const resp = await fetch(core.url + "?type=historial_mkg", { redirect: 'follow' }); 
-                    const data = await resp.json();
-                    
-                    this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => {
-                        let f = i.FECHA || "";
-                        if (typeof f === 'string' && f.includes('T')) {
-                            const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
-                        } else if (f instanceof Date) {
-                            f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
-                        } else {
-                            const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+                    const data = await window.safeFetch(core.url + "?type=historial_mkg"); 
+                    if(data && Array.isArray(data)) {
+                        this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => {
+                            let f = i.FECHA || "";
+                            if (typeof f === 'string' && f.includes('T')) {
+                                const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+                            } else if (f instanceof Date) {
+                                f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
+                            } else {
+                                const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+                            }
+                            return { ...i, FECHA: f };
+                        });
+                        
+                        localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
+
+                        const uM = new Set();
+                        this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
+                        const selM = document.getElementById('mkg-filter-mes');
+                        if(selM) {
+                            let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+                            Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; });
+                            selM.innerHTML = opts;
                         }
-                        return { ...i, FECHA: f };
-                    });
-                    
-                    localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
 
-                    const uM = new Set();
-                    this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
-                    const selM = document.getElementById('mkg-filter-mes');
-                    if(selM) {
-                        let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-                        Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; });
-                        selM.innerHTML = opts;
+                        this.isLoaded = true; this.renderHistory(); 
                     }
-
-                    this.isLoaded = true; this.renderHistory(); 
                 } catch (e) { 
                     if (!silent) console.error("Error historial marketing:", e); 
                     this.isLoaded = true; 
@@ -1327,8 +1341,8 @@
 
         // --- PWA NATIVE INSTALLER ---
         const setupPWA = () => {
-            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2563eb"/><text x="256" y="340" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="#ffffff" text-anchor="middle">TE</text></svg>`;
-            const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgIcon);
+            // El usuario debe subir la imagen a GitHub con el nombre exacto "icon.jpg" en la misma carpeta
+            const iconUrl = 'icon.jpg';
 
             const manifest = {
                 "name": "Twins Elite Pro",
@@ -1338,7 +1352,7 @@
                 "background_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
                 "theme_color": document.documentElement.classList.contains('dark') ? "#020617" : "#F8FAFC",
                 "orientation": "portrait-primary",
-                "icons": [ { "src": iconUrl, "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" } ]
+                "icons": [ { "src": iconUrl, "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" } ]
             };
 
             const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
@@ -1426,21 +1440,34 @@
 
             // Carga secuencial para evitar bloqueos por concurrencia en Google Apps Script
             const startDataSync = async () => {
-                if (typeof core !== 'undefined') {
-                    if (core.raw && core.raw.length > 0) { core.render(); }
-                    await core.fetchData(true); 
-                    await core.fetchProductos();
+                const delay = ms => new Promise(res => setTimeout(res, ms));
+                
+                try {
+                    if (typeof core !== 'undefined') {
+                        if (core.raw && core.raw.length > 0) { core.render(); }
+                        await core.fetchData(true); 
+                        await delay(1000);
+                        await core.fetchProductos();
+                        await delay(1000);
+                    }
+                    if (typeof coreDev !== 'undefined') {
+                        await coreDev.fetchHist(true);
+                        await delay(1000);
+                    }
+                    if (typeof coreMkg !== 'undefined') {
+                        await coreMkg.fetchHist(true);
+                    }
+                } catch(e) {
+                    console.error("Error inicial de carga en red", e);
                 }
-                if (typeof coreDev !== 'undefined') await coreDev.fetchHist(true);
-                if (typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
 
-                // Configurar intervalos desfasados
+                // Configurar intervalos desfasados para no saturar
                 if (typeof core !== 'undefined') {
-                    setInterval(() => { core.fetchData(true); }, 12000);
-                    setInterval(() => { core.fetchProductos(); }, 45000);
+                    setInterval(() => { core.fetchData(true); }, 15000);
+                    setInterval(() => { core.fetchProductos(); }, 50000);
                 }
-                if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 18000); }
-                if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 24000); }
+                if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 25000); }
+                if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 35000); }
             };
             startDataSync();
         });
@@ -1448,9 +1475,12 @@
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') {
                 const reloadData = async () => {
-                    if(typeof core !== 'undefined') { await core.fetchData(true); await core.fetchProductos(); }
-                    if(typeof coreDev !== 'undefined') await coreDev.fetchHist(true);
-                    if(typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
+                    const delay = ms => new Promise(res => setTimeout(res, ms));
+                    try {
+                        if(typeof core !== 'undefined') { await core.fetchData(true); await delay(1000); await core.fetchProductos(); await delay(1000); }
+                        if(typeof coreDev !== 'undefined') { await coreDev.fetchHist(true); await delay(1000); }
+                        if(typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
+                    } catch(e){}
                 };
                 reloadData();
             }
