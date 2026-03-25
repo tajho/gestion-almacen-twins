@@ -2,64 +2,51 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- PWA: Configuración de Pantalla Completa, Zoom Dinámico y Modo Inmersivo -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    
-    <!-- Etiquetas Nativas de Apple (Obligatorias para iPhone) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Twins Elite">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#F8FAFC" id="meta-theme-color">
     <link rel="apple-touch-icon" href="icon.jpg">
     
-    <!-- Etiquetas Nativas Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
-    
-    <!-- INYECCIÓN PWA INMEDIATA (Rutas Absolutas Indestructibles) -->
+    <title>Twins Elite Pro</title>
+
     <script>
         (function() {
             try {
-                // Generar URL base limpia
                 let base = window.location.href.split('?')[0].replace(/#.*$/, '');
                 if (base.endsWith('index.html')) base = base.replace('index.html', '');
                 if (!base.endsWith('/')) base += '/';
-
                 const isDark = localStorage.getItem('twins_theme') === 'dark' || (!('twins_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                const bgColor = isDark ? "#020617" : "#F8FAFC";
+                const bgColor = isDark ? "#000000" : "#F8FAFC";
                 
                 const manifest = {
-                    "name": "Twins Elite Pro",
-                    "short_name": "Twins",
-                    "start_url": base,
-                    "display": "standalone",
-                    "background_color": bgColor,
-                    "theme_color": bgColor,
-                    "orientation": "portrait-primary",
+                    "name": "Twins Elite Pro", "short_name": "Twins", "start_url": base, "display": "standalone",
+                    "background_color": bgColor, "theme_color": bgColor, "orientation": "portrait-primary",
                     "icons": [ 
                         { "src": base + "icon.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": base + "icon.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
-                        { "src": base + "icon.jpg", "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable" }
+                        { "src": base + "icon.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
                     ]
                 };
-
-                const manifestDataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
-                const link = document.createElement('link');
-                link.rel = 'manifest';
-                link.href = manifestDataUri;
+                const link = document.createElement('link'); link.rel = 'manifest';
+                link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(link);
-            } catch(e) { console.error('PWA Error:', e); }
+                
+                if ('serviceWorker' in navigator && !base.startsWith('blob:')) {
+                    const sw = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => e.waitUntil(clients.claim())); self.addEventListener('fetch', e => {});";
+                    const blob = new Blob([sw], { type: 'application/javascript' });
+                    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+                }
+            } catch(e) {}
         })();
     </script>
-
-    <title>Twins Elite Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
-    <!-- Script para inicializar Tema Oscuro sin parpadeos -->
     <script>
         if (localStorage.getItem('twins_theme') === 'dark' || (!('twins_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -67,167 +54,141 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
-        :root { --primary: #0F172A; --accent: #2563EB; --success: #10B981; --bg: #F8FAFC; }
+        :root { --bg: #F8FAFC; --surface: #FFFFFF; --text: #0F172A; --glass: rgba(255, 255, 255, 0.75); }
+        html.dark { --bg: #000000; --surface: #111111; --text: #F8FAFC; --glass: rgba(0, 0, 0, 0.75); }
         
-        /* ZOOM OUT CORPORATIVO: Reduce la interfaz para aprovechar al máximo la pantalla */
-        html { font-size: 13.5px; height: 100%; min-height: 100dvh; background-color: var(--bg); } 
-
-        /* PANTALLA INMERSIVA: Obligamos al body a estirarse infinitamente hacia abajo */
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; transition: background-color 0.3s, color 0.3s; width: 100%; min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        html { font-size: 14px; height: 100%; min-height: 100dvh; background-color: var(--bg); } 
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; width: 100%; min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; transition: background-color 0.4s ease; }
         
-        input, textarea, select { user-select: auto !important; }
-        button, a { touch-action: manipulation !important; cursor: pointer !important; user-select: none; } 
+        /* Modern UI Elements */
+        .glass-effect { background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .glass-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .glass-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; border-top: 1px solid rgba(128,128,128,0.1); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
         
-        .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); position: sticky; top: 0; z-index: 50; }
-        .native-card { background: #FFFFFF; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .native-card:active { transform: scale(0.97); }
-        .search-bar { background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 18px; transition: all 0.2s ease; }
-        .modal-full { display: none; position: fixed; inset: 0; background: #F1F5F9; z-index: 100; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .progress-ring { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 24px 24px; }
+        .modern-card { background: var(--surface); border-radius: 28px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); border: 1px solid rgba(128,128,128,0.05); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modern-card:active { transform: scale(0.98); }
+        
+        .modern-input { background: var(--bg); border: 1px solid rgba(128,128,128,0.1); border-radius: 20px; transition: all 0.3s ease; }
+        .modern-input:focus-within { border-color: #3B82F6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        
+        /* Typography & Utilities */
+        .gradient-text { background: linear-gradient(135deg, #3B82F6, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        #audit-view { display: none; position: fixed; inset: 0; background: #F8FAFC; z-index: 1000; flex-direction: column; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .audit-item-card { background: #FFFFFF; border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid #F1F5F9; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
-
-        /* =========================================
-           AJUSTES NATIVOS 100% MÓVIL (SAFE AREAS Y SCROLL)
-           ========================================= */
+        * { scrollbar-width: none; -ms-overflow-style: none; outline: none !important; }
+        
         .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)) !important; }
-        .safe-pb { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important; }
-        .app-container { flex: 1; padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important; }
+        .app-container { flex: 1; padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important; }
         
-        ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
-        * { scrollbar-width: none; -ms-overflow-style: none; }
-
-        /* =========================================
-           MODO OSCURO CORPORATIVO (ULTRA PREMIUM)
-           ========================================= */
-        html.dark, .dark body { background-color: #020617 !important; color: #F8FAFC !important; }
+        /* Animations */
+        .modal-full { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100; flex-direction: column; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .progress-ring { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 24px 24px; }
         
-        .dark .bg-white, .dark .native-card, .dark .audit-item-card, .dark #twins-menu-panel, .dark #modern-modal-content, .dark #ui-select-content { 
-            background-color: #0F172A !important; border-color: #1E293B !important; 
-        }
-        
-        .dark .bg-slate-50, .dark .bg-slate-100, .dark .search-bar, .dark input, .dark select, .dark textarea { 
-            background-color: #020617 !important; border-color: #1E293B !important; color: #F8FAFC !important; 
-        }
-        
-        .dark .glass-header { background: rgba(2, 6, 23, 0.8) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; }
-        .dark [class*="bg-slate-900/"], .dark .modal-full, .dark #audit-view { background-color: rgba(2, 6, 23, 0.85) !important; }
-        
-        .dark .text-slate-900, .dark .text-slate-800 { color: #F8FAFC !important; }
-        .dark .text-slate-700, .dark .text-slate-600 { color: #94A3B8 !important; }
-        .dark .text-slate-500, .dark .text-slate-400 { color: #64748B !important; }
-        .dark .text-slate-300 { color: #475569 !important; }
-        .dark .text-slate-100 { color: #1E293B !important; stroke: #1E293B !important; } 
-        
-        .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-50 { border-color: #1E293B !important; }
-        .dark .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #1E293B !important; }
-        
-        .dark .bg-slate-900 { background-color: #3B82F6 !important; color: #FFFFFF !important; border: none !important; box-shadow: 0 4px 14px -4px rgba(59, 130, 246, 0.5) !important; }
-        
-        /* Paleta Auditoría y Sistema */
-        .dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15) !important; color: #60A5FA !important; border-color: rgba(59, 130, 246, 0.2) !important; }
-        .dark .text-blue-600, .dark .text-blue-500, .dark .text-blue-700 { color: #60A5FA !important; }
-        
-        /* Paleta Devoluciones */
-        .dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.15) !important; color: #818CF8 !important; border-color: rgba(99, 102, 241, 0.2) !important; }
-        .dark .text-indigo-600, .dark .text-indigo-500, .dark .text-indigo-700, .dark .text-indigo-900 { color: #818CF8 !important; }
-        
-        /* Paleta Marketing (Carbono / Zinc) */
-        .dark .bg-zinc-100 { background-color: rgba(63, 63, 70, 0.2) !important; color: #D4D4D8 !important; border-color: rgba(63, 63, 70, 0.4) !important; }
-        .dark .text-zinc-600, .dark .text-zinc-700, .dark .text-zinc-800, .dark .text-zinc-900 { color: #E4E4E7 !important; }
-
-        /* Colores de Alertas (Verde, Rojo, Naranja) */
-        .dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15) !important; color: #F87171 !important; border-color: rgba(239, 68, 68, 0.2) !important; }
-        .dark .text-red-600, .dark .text-red-500 { color: #F87171 !important; }
-        .dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.15) !important; color: #34D399 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
-        .dark .text-emerald-600, .dark .text-emerald-500, .dark .text-green-500 { color: #34D399 !important; }
-        .dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.15) !important; color: #FB923C !important; border-color: rgba(249, 115, 22, 0.2) !important; }
-        .dark .text-orange-600, .dark .text-orange-500 { color: #FB923C !important; }
-        
-        .dark input::placeholder, .dark textarea::placeholder { color: #475569 !important; }
-        .dark .progress-ring { stroke: #3B82F6 !important; }
-        
-        .dark .shadow-sm, .dark .shadow, .dark .shadow-md, .dark .shadow-lg, .dark .shadow-xl, .dark .shadow-2xl {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-        }
+        /* Dark Mode Tweaks */
+        .dark .modern-card { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5); }
+        .dark .bg-slate-50, .dark .bg-slate-100 { background-color: #111111 !important; color: #F8FAFC !important; }
+        .dark .text-slate-900, .dark .text-slate-800 { color: #FFFFFF !important; }
+        .dark .text-slate-700, .dark .text-slate-600 { color: #A1A1AA !important; }
+        .dark .text-slate-500, .dark .text-slate-400 { color: #71717A !important; }
+        .dark .border-slate-100, .dark .border-slate-200 { border-color: rgba(255,255,255,0.05) !important; }
+        .dark .bg-slate-900 { background-color: #FFFFFF !important; color: #000000 !important; }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <!-- CABECERA GLOBAL -->
-    <div class="glass-header safe-pt px-6 pb-4 mb-2">
+    <div class="glass-effect glass-header safe-pt px-6 pb-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
-            <button type="button" onclick="toggleMenu()" class="mr-4 text-blue-600 bg-blue-50 p-2 rounded-xl shadow-sm border border-blue-100 active:scale-95 transition-transform flex-shrink-0"><i class="ph-bold ph-list text-2xl"></i></button>
             <div class="flex-1">
-                <p class="text-[10px] font-[800] text-blue-600 uppercase tracking-widest">TAJHO</p>
-                <h1 id="header-title" class="text-xl font-[800] text-slate-900 tracking-tight">TWINS AUDITORIA</h1>
+                <p class="text-[9px] font-[900] text-blue-600 uppercase tracking-[0.2em] mb-1">Twins Elite</p>
+                <h1 id="header-title" class="text-2xl font-[900] tracking-tight">Auditoría</h1>
             </div>
-            <div class="relative flex items-center justify-center flex-shrink-0 w-12 h-12" id="header-progress">
+            <div class="relative flex items-center justify-center w-12 h-12" id="header-progress">
                 <svg class="absolute inset-0 w-full h-full" viewBox="0 0 48 48">
-                    <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
+                    <circle class="text-slate-200 dark:text-zinc-800" stroke-width="4" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                     <circle id="global-ring" class="text-blue-600 progress-ring" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24" cy="24"/>
                 </svg>
-                <span id="global-perc" class="absolute text-[11px] font-[900]">0%</span>
+                <span id="global-perc" class="absolute text-[10px] font-[900]">0%</span>
             </div>
+            <button id="theme-toggle-btn" onclick="window.toggleTheme()" class="hidden ml-4 w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform">
+                <i id="theme-icon" class="ph-bold ph-moon text-xl text-slate-600 dark:text-zinc-400"></i>
+            </button>
         </div>
     </div>
 
-    <!-- MÓDULO 1: AUDITORÍA -->
-    <div id="app-shell" class="w-full max-w-md mx-auto px-6 app-container block relative">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-package text-blue-500 text-xl mb-2"></i><p id="stat-containers" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cargas Activas</p></div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm"><i class="ph-fill ph-barcode text-indigo-500 text-xl mb-2"></i><p id="stat-skus" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKUs Registrados</p></div>
+    <div id="app-shell" class="w-full max-w-md mx-auto px-5 app-container block relative">
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="modern-card p-5 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-package text-blue-500 text-2xl mb-3"></i>
+                <p id="stat-containers" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Cargas Activas</p>
+            </div>
+            <div class="modern-card p-5 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-barcode text-indigo-500 text-2xl mb-3"></i>
+                <p id="stat-skus" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">SKUs Totales</p>
+            </div>
         </div>
-        <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-3"></i><input type="text" id="main-search" oninput="core.render()" placeholder="N° Contenedor, SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm text-slate-700" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
-            <div class="w-14 h-14 bg-white border border-slate-100 rounded-[18px] flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform shadow-sm" onclick="openCustomSelect('month-select', 'Filtrar por Mes')">
-                <i class="ph-bold ph-calendar-blank text-slate-400 text-xl"></i>
+        
+        <div class="flex gap-3 mb-6">
+            <div class="flex-1 modern-input flex items-center px-5 py-2">
+                <i class="ph-bold ph-magnifying-glass text-slate-400 text-lg mr-3"></i>
+                <input type="text" id="main-search" oninput="core.render()" placeholder="Buscar contenedor..." class="w-full py-2 bg-transparent text-sm font-bold border-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
+            </div>
+            <button type="button" onclick="openCustomSelect('month-select', 'Filtrar por Mes')" class="w-14 h-14 modern-card flex items-center justify-center flex-shrink-0 text-slate-500">
+                <i class="ph-bold ph-faders text-xl"></i>
                 <select id="month-select" onchange="core.filterMonth(this.value)" class="hidden"></select>
-            </div>
+            </button>
         </div>
-        <div id="container-list" class="space-y-4">
-            <div class="py-20 text-center text-slate-400 font-medium animate-pulse">Cargando inventario...</div>
+        
+        <div id="container-list" class="space-y-5">
+            <div class="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sincronizando Almacén...</div>
         </div>
     </div>
 
-    <!-- VISTAS INTERNAS DE AUDITORÍA -->
-    <div id="audit-view">
-        <div class="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm safe-pt">
-            <div class="px-6 pt-4 pb-4 flex items-center justify-between">
-                <button type="button" onclick="core.requestCloseAudit()" class="text-slate-900 active:scale-90 transition-transform p-2 -ml-2"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
-                <div class="text-center"><h2 id="audit-title" class="text-sm font-black uppercase tracking-widest text-slate-900">CARGA #---</h2><div class="flex items-center justify-center gap-1.5 mt-0.5"><i class="ph-fill ph-clock text-[12px] text-blue-500"></i><span id="audit-timer-display" class="text-[11px] font-bold font-mono tracking-widest text-slate-600">00:00</span></div></div>
-                <button type="button" onclick="core.toggleAuditSearch()" class="text-slate-900 active:scale-90 transition-transform p-2 -mr-2"><i class="ph-bold ph-magnifying-glass text-2xl"></i></button>
+    <div id="audit-view" class="modal-full">
+        <div class="glass-effect glass-header safe-pt px-5 pb-4">
+            <div class="flex items-center justify-between">
+                <button type="button" onclick="core.requestCloseAudit()" class="w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="ph-bold ph-x text-lg"></i></button>
+                <div class="text-center">
+                    <h2 id="audit-title" class="text-sm font-[900] tracking-widest uppercase">CARGA #---</h2>
+                    <div class="flex items-center justify-center gap-1.5 mt-1 text-blue-500">
+                        <i class="ph-fill ph-clock text-[10px]"></i>
+                        <span id="audit-timer-display" class="text-[10px] font-bold font-mono tracking-widest">00:00</span>
+                    </div>
+                </div>
+                <button type="button" onclick="core.toggleAuditSearch()" class="w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="ph-bold ph-magnifying-glass text-lg"></i></button>
             </div>
-            <div id="audit-search-bar" class="hidden px-6 pb-4"><input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar SKU o producto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-blue-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
-            <div class="px-6 pb-4"><div class="flex justify-between items-end mb-1.5"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progreso</span><span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="audit-perc-bar" class="h-full bg-blue-600 transition-all duration-500" style="width:0%"></div></div></div>
+            <div id="audit-search-bar" class="hidden mt-4">
+                <input type="text" id="inner-search" oninput="core.filterAuditItems(this.value)" placeholder="Buscar producto en la carga..." class="w-full modern-input px-5 py-3 text-sm font-bold">
+            </div>
+            <div class="mt-5">
+                <div class="flex justify-between items-end mb-2"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avance del Conteo</span><span id="audit-perc-text" class="text-[10px] font-black text-blue-600">0%</span></div>
+                <div class="h-2 w-full bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden"><div id="audit-perc-bar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500" style="width:0%"></div></div>
+            </div>
         </div>
-        <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 no-scrollbar"></div>
-        <div class="p-6 bg-white border-t border-slate-100 safe-pb flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-            <button type="button" onclick="core.generatePDF(core.activeCont, 'save')" class="w-14 h-14 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center active:scale-95 transition-transform border border-slate-200"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
-            <button type="button" onclick="core.saveAndFinish()" class="flex-1 bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Finalizar Conteo</button>
+        <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 space-y-4 no-scrollbar"></div>
+        <div class="p-5 glass-effect glass-nav flex gap-3">
+            <button type="button" onclick="core.generatePDF(core.activeCont, 'save')" class="w-16 h-16 modern-card flex items-center justify-center text-slate-500 active:scale-90 transition-transform"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
+            <button type="button" onclick="core.saveAndFinish()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-[24px] font-[900] text-sm uppercase tracking-widest shadow-xl shadow-blue-500/30 active:scale-95 transition-transform">Finalizar Carga</button>
         </div>
     </div>
     
     <div id="list-view" class="modal-full">
-        <div class="px-6 py-8 safe-pt flex items-center justify-between bg-white border-b"><button type="button" onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[800] text-slate-900">Contenido</h2><p id="list-cont-id" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
-        <div id="list-items-content" class="flex-1 overflow-y-auto px-6 py-6 space-y-4 no-scrollbar safe-pb"></div>
+        <div class="px-6 py-6 safe-pt flex items-center justify-between glass-effect glass-header"><button type="button" onclick="core.closeModal('list-view')" class="w-12 h-12 bg-slate-100 dark:bg-zinc-800 rounded-full flex items-center justify-center"><i class="ph-bold ph-x text-xl"></i></button><div class="text-center"><h2 class="text-base font-[900]">Contenido</h2><p id="list-cont-id" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">--</p></div><div class="w-12"></div></div>
+        <div id="list-items-content" class="flex-1 overflow-y-auto px-5 py-6 space-y-3 no-scrollbar safe-pb"></div>
     </div>
 
-    <!-- MÓDULO 2: FORMULARIO NUEVA DEVOLUCIÓN -->
-    <div id="module-returns" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
-        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
-            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="dev-form-title">Nueva Devolución</h2>
-            <div class="space-y-3">
-                <input type="text" id="dev-cliente" oninput="coreDev.saveDraft(); coreDev.suggestVendor();" placeholder="Nombre del Cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                
-                <button type="button" onclick="openCustomSelect('dev-vendedor', 'Seleccionar Vendedor')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
-                    <span id="text-dev-vendedor">Seleccionar Vendedor</span>
-                    <i class="ph-bold ph-caret-down text-slate-400"></i>
+    <div id="module-returns" class="hidden w-full max-w-md mx-auto px-5 pt-2 app-container relative">
+        <div class="modern-card p-6 mb-6">
+            <h2 class="text-sm font-[900] uppercase mb-5 tracking-tight gradient-text" id="dev-form-title">Nueva Devolución</h2>
+            <div class="space-y-4">
+                <input type="text" id="dev-cliente" oninput="coreDev.saveDraft(); coreDev.suggestVendor();" placeholder="Nombre del Cliente" class="w-full modern-input px-5 py-3.5 text-sm font-bold" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <button type="button" onclick="openCustomSelect('dev-vendedor', 'Seleccionar Vendedor')" class="w-full modern-input px-5 py-3.5 text-sm font-bold text-left flex justify-between items-center">
+                    <span id="text-dev-vendedor" class="text-slate-500">Vendedor Asignado</span><i class="ph-bold ph-caret-down text-slate-400"></i>
                 </button>
                 <select id="dev-vendedor" onchange="coreDev.saveDraft();" class="hidden">
                     <option value="">Seleccionar Vendedor</option>
@@ -237,30 +198,29 @@
                     <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
                     <option value="PAULA GARCIA">PAULA GARCIA</option>
                 </select>
-
-                <input type="text" id="dev-motivo" oninput="coreDev.saveDraft()" placeholder="Motivo de Devolución" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <input type="text" id="dev-motivo" oninput="coreDev.saveDraft()" placeholder="Motivo (Opcional)" class="w-full modern-input px-5 py-3.5 text-sm font-bold" onkeydown="if(event.key==='Enter') event.preventDefault();">
             </div>
         </div>
-        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+
+        <div class="modern-card p-6 mb-6">
             <div class="relative">
-                <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                <div id="dev-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-56 overflow-y-auto hidden border-slate-100"></div>
+                <input type="text" id="dev-search-prod" oninput="coreDev.search()" placeholder="Añadir SKU o Descripción..." class="w-full modern-input px-5 py-3.5 text-sm font-bold bg-slate-50 dark:bg-zinc-800" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <div id="dev-results" class="absolute z-10 w-full mt-2 modern-card max-h-56 overflow-y-auto hidden"></div>
             </div>
             
-            <div class="grid grid-cols-3 gap-2 mt-4">
-                <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-indigo-500 tracking-widest z-10">C. GUÍA</span>
-                    <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-indigo-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+            <div class="grid grid-cols-3 gap-3 mt-5">
+                <div>
+                    <p class="text-[8px] font-bold text-indigo-500 tracking-widest mb-1 ml-1">CANT. GUÍA</p>
+                    <input type="number" id="dev-cant-guia" oninput="coreDev.saveDraft()" placeholder="0" class="w-full modern-input px-2 py-3 text-sm font-black text-center" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
-                <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-blue-500 tracking-widest z-10">C. REAL</span>
-                    <input type="number" id="dev-cant-real" oninput="coreDev.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black text-center outline-none focus:border-indigo-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <div>
+                    <p class="text-[8px] font-bold text-blue-500 tracking-widest mb-1 ml-1">CANT. REAL</p>
+                    <input type="number" id="dev-cant-real" oninput="coreDev.saveDraft()" placeholder="0" class="w-full modern-input px-2 py-3 text-sm font-black text-center" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
-                <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-bold text-slate-500 tracking-widest z-10">U.M.</span>
-                    <button type="button" onclick="openCustomSelect('dev-um', 'Unidad de Medida')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black outline-none flex justify-center items-center gap-1 transition-colors text-slate-900">
-                        <span id="text-dev-um">UNID</span>
-                        <i class="ph-bold ph-caret-down text-slate-400 text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-bold text-slate-400 tracking-widest mb-1 ml-1">UNIDAD</p>
+                    <button type="button" onclick="openCustomSelect('dev-um', 'Unidad de Medida')" class="w-full modern-input px-2 py-3 text-sm font-black flex justify-center items-center gap-1">
+                        <span id="text-dev-um">UNID</span><i class="ph-bold ph-caret-down text-[10px]"></i>
                     </button>
                     <select id="dev-um" onchange="coreDev.saveDraft();" class="hidden">
                         <option value="U">UNID</option>
@@ -271,9 +231,8 @@
                 </div>
             </div>
             
-            <button type="button" onclick="openCustomSelect('dev-estado', 'Estado del Producto')" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
-                <span id="text-dev-estado">BUEN ESTADO</span>
-                <i class="ph-bold ph-caret-down text-slate-400"></i>
+            <button type="button" onclick="openCustomSelect('dev-estado', 'Estado del Producto')" class="w-full mt-4 modern-input px-5 py-3.5 text-sm font-bold text-left flex justify-between items-center">
+                <span id="text-dev-estado">BUEN ESTADO</span><i class="ph-bold ph-caret-down text-slate-400"></i>
             </button>
             <select id="dev-estado" onchange="coreDev.saveDraft();" class="hidden">
                 <option value="BUEN ESTADO">BUEN ESTADO</option>
@@ -281,228 +240,168 @@
                 <option value="INCOMPLETO">INCOMPLETO</option>
             </select>
 
-            <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones..." class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold h-16 outline-none focus:border-indigo-500"></textarea>
+            <textarea id="dev-obs" oninput="coreDev.saveDraft()" placeholder="Observaciones físicas..." class="w-full mt-4 modern-input px-5 py-3.5 text-sm font-bold h-20"></textarea>
             
-            <button type="button" onclick="coreDev.addItem()" class="w-full mt-4 bg-indigo-600 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+            <button type="button" onclick="coreDev.addItem()" class="w-full mt-5 bg-slate-900 dark:bg-white dark:text-black text-white h-14 rounded-2xl font-[900] text-[10px] uppercase tracking-widest active:scale-95 transition-transform flex justify-center items-center gap-2"><i class="ph-bold ph-plus-circle text-lg"></i> Agregar Producto</button>
         </div>
-        <div id="dev-items-list" class="space-y-2 mb-6"></div>
-        <button type="button" id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-slate-900 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Devolución</button>
+        <div id="dev-items-list" class="space-y-3 mb-6"></div>
+        <button type="button" id="btn-save-dev" onclick="coreDev.save()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-16 rounded-[24px] font-[900] text-sm uppercase tracking-widest hidden active:scale-95 transition-transform shadow-xl shadow-indigo-500/20 mb-10">Guardar Devolución</button>
     </div>
 
-    <!-- MÓDULO 3: HISTORIAL DEVOLUCIONES -->
-    <div id="module-dev-history" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-receipt text-indigo-500 text-xl mb-2"></i><p id="stat-dev-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Tickets</p></div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-dev-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
+    <div id="module-dev-history" class="hidden w-full max-w-md mx-auto px-5 pt-2 app-container relative">
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="modern-card p-5 text-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-receipt text-indigo-500 text-2xl mb-2"></i>
+                <p id="stat-dev-total" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total Tickets</p>
+            </div>
+            <div class="modern-card p-5 text-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-funnel text-blue-500 text-2xl mb-2"></i>
+                <p id="stat-dev-filtrado" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">En Filtro</p>
+            </div>
         </div>
         
-        <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
-            
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('dev-filter-mes', 'Filtrar por Mes')">
-                <i class="ph-bold ph-calendar-blank text-indigo-500 text-lg"></i>
-                <select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
-            </div>
-            
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('dev-filter-vendedor', 'Filtrar por Vendedor')">
-                <i class="ph-bold ph-user-focus text-blue-500 text-lg"></i>
+        <div class="flex gap-3 mb-6">
+            <div class="flex-1 modern-input flex items-center px-4 py-2"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2 text-lg"></i><input type="text" id="dev-hist-search" oninput="coreDev.renderHistory()" placeholder="Cliente o SKU..." class="w-full py-2 bg-transparent font-bold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
+            <button type="button" onclick="openCustomSelect('dev-filter-mes', 'Filtrar por Mes')" class="w-14 h-14 modern-card flex items-center justify-center flex-shrink-0 text-slate-500"><i class="ph-bold ph-calendar-blank text-xl"></i><select id="dev-filter-mes" onchange="coreDev.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select></button>
+            <button type="button" onclick="openCustomSelect('dev-filter-vendedor', 'Filtrar por Vendedor')" class="w-14 h-14 modern-card flex items-center justify-center flex-shrink-0 text-slate-500"><i class="ph-bold ph-user-focus text-xl"></i>
                 <select id="dev-filter-vendedor" onchange="coreDev.renderHistory()" class="hidden">
-                    <option value="TODOS">TODOS</option>
-                    <option value="ELIAS AVILA">ELIAS</option>
-                    <option value="EVELYN MURO">EVELYN</option>
-                    <option value="REGULO ANTEZANA">REGULO</option>
-                    <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option>
-                    <option value="PAULA GARCIA">PAULA GARCIA</option>
+                    <option value="TODOS">TODOS</option> <option value="ELIAS AVILA">ELIAS</option> <option value="EVELYN MURO">EVELYN</option> <option value="REGULO ANTEZANA">REGULO</option> <option value="JHAYRO MAURICIO">JHAYRO MAURICIO</option> <option value="PAULA GARCIA">PAULA GARCIA</option>
                 </select>
-            </div>
+            </button>
         </div>
         
         <div id="dev-history-cards" class="space-y-4"></div>
-        <button type="button" onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-24 w-16 h-16 bg-indigo-600 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+        <button type="button" onclick="window.attemptChangeTab('dev')" class="fixed right-6 bottom-28 w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex flex-col items-center justify-center shadow-xl shadow-indigo-500/30 active:scale-90 transition-transform z-40 text-white"><i class="ph-bold ph-plus text-2xl"></i></button>
     </div>
 
-    <!-- MÓDULO 4: FORMULARIO NUEVO PEDIDO MKTG (Carbono/Zinc) -->
-    <div id="module-mkg-form" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
-        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
-            <h2 class="text-sm font-black uppercase text-slate-900 mb-4 tracking-tighter" id="mkg-form-title">Nuevo Pedido Marketing</h2>
-            <div class="space-y-3">
-                <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-zinc-900">
-                    <span id="text-mkg-personal">Seleccionar Personal</span>
-                    <i class="ph-bold ph-caret-down text-slate-400"></i>
+    <div id="module-mkg-form" class="hidden w-full max-w-md mx-auto px-5 pt-2 app-container relative">
+        <div class="modern-card p-6 mb-6">
+            <h2 class="text-sm font-[900] uppercase mb-5 tracking-tight gradient-text" id="mkg-form-title">Orden de Marketing</h2>
+            <div class="space-y-4">
+                <button type="button" onclick="openCustomSelect('mkg-personal', 'Seleccionar Personal')" class="w-full modern-input px-5 py-3.5 text-sm font-bold text-left flex justify-between items-center">
+                    <span id="text-mkg-personal" class="text-slate-500">Autorizado a...</span><i class="ph-bold ph-caret-down text-slate-400"></i>
                 </button>
                 <select id="mkg-personal" onchange="coreMkg.saveDraft();" class="hidden">
-                    <option value="">Seleccionar Personal</option>
-                    <option value="ABDY">ABDY</option>
-                    <option value="FRANK">FRANK</option>
-                    <option value="YENIFER">YENIFER</option>
-                    <option value="JOHAN">JOHAN</option>
-                    <option value="OFICINA">OFICINA</option>
+                    <option value="">Seleccionar Personal</option> <option value="ABDY">ABDY</option> <option value="FRANK">FRANK</option> <option value="YENIFER">YENIFER</option> <option value="JOHAN">JOHAN</option> <option value="OFICINA">OFICINA</option>
                 </select>
-
-                <input type="text" id="mkg-motivo" oninput="coreMkg.saveDraft()" placeholder="Motivo (Ej. Sorteo, Regalo...)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <input type="text" id="mkg-motivo" oninput="coreMkg.saveDraft()" placeholder="Motivo (Ej. Sorteo, Regalo...)" class="w-full modern-input px-5 py-3.5 text-sm font-bold" onkeydown="if(event.key==='Enter') event.preventDefault();">
             </div>
         </div>
-        <div class="bg-white rounded-[24px] p-6 border shadow-sm mb-6">
+        <div class="modern-card p-6 mb-6">
             <div class="relative">
-                <input type="text" id="mkg-search-prod" oninput="coreMkg.search()" placeholder="Buscar SKU o Descripción..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none" onkeydown="if(event.key==='Enter') event.preventDefault();">
-                <div id="mkg-results" class="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-xl max-h-56 overflow-y-auto hidden border-slate-100"></div>
+                <input type="text" id="mkg-search-prod" oninput="coreMkg.search()" placeholder="Añadir SKU o Descripción..." class="w-full modern-input px-5 py-3.5 text-sm font-bold bg-slate-50 dark:bg-zinc-800" onkeydown="if(event.key==='Enter') event.preventDefault();">
+                <div id="mkg-results" class="absolute z-10 w-full mt-2 modern-card max-h-56 overflow-y-auto hidden"></div>
             </div>
             
-            <div class="grid grid-cols-2 gap-3 mt-4">
-                <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-zinc-600 tracking-widest z-10">CANTIDAD</span>
-                    <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center outline-none focus:border-zinc-500 transition-colors" onkeydown="if(event.key==='Enter') event.preventDefault();">
+            <div class="grid grid-cols-2 gap-4 mt-5">
+                <div>
+                    <p class="text-[8px] font-bold text-slate-500 tracking-widest mb-1 ml-1">CANTIDAD</p>
+                    <input type="number" id="mkg-cant" oninput="coreMkg.saveDraft()" placeholder="0" class="w-full modern-input px-4 py-3.5 text-sm font-black text-center" onkeydown="if(event.key==='Enter') event.preventDefault();">
                 </div>
-                <div class="relative">
-                    <span class="absolute -top-2 left-3 bg-white px-1 text-[9px] font-bold text-slate-500 tracking-widest z-10">U. MEDIDA</span>
-                    <button type="button" onclick="openCustomSelect('mkg-um', 'Unidad de Medida')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-black outline-none flex justify-center items-center gap-1 transition-colors text-slate-900">
-                        <span id="text-mkg-um">UNIDAD</span>
-                        <i class="ph-bold ph-caret-down text-slate-400 text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-bold text-slate-500 tracking-widest mb-1 ml-1">UNIDAD</p>
+                    <button type="button" onclick="openCustomSelect('mkg-um', 'Unidad de Medida')" class="w-full modern-input px-2 py-3.5 text-sm font-black flex justify-center items-center gap-1">
+                        <span id="text-mkg-um">UNIDAD</span><i class="ph-bold ph-caret-down text-[10px]"></i>
                     </button>
                     <select id="mkg-um" onchange="coreMkg.saveDraft();" class="hidden">
-                        <option value="U">UNIDAD</option>
-                        <option value="PAQ">PAQUETE</option>
-                        <option value="CAJA">CAJA</option>
-                        <option value="MILLAR">MILLAR</option>
+                        <option value="U">UNIDAD</option> <option value="PAQ">PAQUETE</option> <option value="CAJA">CAJA</option> <option value="MILLAR">MILLAR</option>
                     </select>
                 </div>
             </div>
             
-            <button type="button" onclick="openCustomSelect('mkg-estado', 'Estado del Pedido')" class="w-full mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none text-left flex justify-between items-center transition-colors text-slate-900">
-                <span id="text-mkg-estado">PENDIENTE</span>
-                <i class="ph-bold ph-caret-down text-slate-400"></i>
+            <button type="button" onclick="openCustomSelect('mkg-estado', 'Estado del Pedido')" class="w-full mt-4 modern-input px-5 py-3.5 text-sm font-bold text-left flex justify-between items-center">
+                <span id="text-mkg-estado">PENDIENTE</span><i class="ph-bold ph-caret-down text-slate-400"></i>
             </button>
             <select id="mkg-estado" onchange="coreMkg.saveDraft();" class="hidden">
-                <option value="PENDIENTE">PENDIENTE</option>
-                <option value="ENTREGADO">ENTREGADO</option>
-                <option value="SAP">REGISTRADO EN SAP</option>
+                <option value="PENDIENTE">PENDIENTE</option> <option value="ENTREGADO">ENTREGADO</option> <option value="SAP">REGISTRADO EN SAP</option>
             </select>
             
-            <button type="button" onclick="coreMkg.addItem()" class="w-full mt-4 bg-zinc-800 text-white h-12 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform">Agregar a la lista</button>
+            <button type="button" onclick="coreMkg.addItem()" class="w-full mt-5 bg-slate-900 dark:bg-white dark:text-black text-white h-14 rounded-2xl font-[900] text-[10px] uppercase tracking-widest active:scale-95 transition-transform flex justify-center items-center gap-2"><i class="ph-bold ph-plus-circle text-lg"></i> Agregar a Lista</button>
         </div>
-        <div id="mkg-items-list" class="space-y-2 mb-6"></div>
-        <button type="button" id="btn-save-mkg" onclick="coreMkg.save()" class="w-full bg-blue-600 text-white h-14 rounded-2xl font-black text-sm uppercase tracking-widest hidden active:scale-95 transition-transform">Guardar Pedido</button>
+        <div id="mkg-items-list" class="space-y-3 mb-6"></div>
+        <button type="button" id="btn-save-mkg" onclick="coreMkg.save()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-16 rounded-[24px] font-[900] text-sm uppercase tracking-widest hidden active:scale-95 transition-transform shadow-xl shadow-blue-500/20 mb-10">Confirmar Orden</button>
     </div>
 
-    <!-- MÓDULO 5: HISTORIAL MARKETING -->
-    <div id="module-marketing-history" class="hidden w-full max-w-md mx-auto px-6 pt-4 app-container relative">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-megaphone text-zinc-600 text-xl mb-2"></i><p id="stat-mkg-total" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Pedidos</p></div>
-            <div class="bg-white p-4 rounded-[22px] border border-slate-100 shadow-sm text-center"><i class="ph-fill ph-funnel text-blue-500 text-xl mb-2"></i><p id="stat-mkg-filtrado" class="text-2xl font-[800] text-slate-900">0</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">En Filtro</p></div>
+    <div id="module-marketing-history" class="hidden w-full max-w-md mx-auto px-5 pt-2 app-container relative">
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="modern-card p-5 text-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-slate-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-megaphone text-slate-500 dark:text-zinc-400 text-2xl mb-2"></i>
+                <p id="stat-mkg-total" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total Órdenes</p>
+            </div>
+            <div class="modern-card p-5 text-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl"></div>
+                <i class="ph-fill ph-funnel text-blue-500 text-2xl mb-2"></i>
+                <p id="stat-mkg-filtrado" class="text-3xl font-[900] leading-none mb-1">0</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">En Filtro</p>
+            </div>
         </div>
         
-        <div class="flex gap-2 mb-8">
-            <div class="flex-1 search-bar flex items-center px-4 py-1 shadow-sm"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2"></i><input type="text" id="mkg-hist-search" oninput="coreMkg.renderHistory()" placeholder="Motivo o SKU..." class="w-full py-3 bg-transparent outline-none font-semibold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
-            
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('mkg-filter-mes', 'Filtrar por Mes')">
-                <i class="ph-bold ph-calendar-blank text-zinc-600 text-lg"></i>
-                <select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select>
-            </div>
-            
-            <div class="w-12 h-12 bg-white border border-slate-100 rounded-[16px] flex items-center justify-center relative shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openCustomSelect('mkg-filter-personal', 'Filtrar por Personal')">
-                <i class="ph-bold ph-users text-blue-500 text-lg"></i>
+        <div class="flex gap-3 mb-6">
+            <div class="flex-1 modern-input flex items-center px-4 py-2"><i class="ph-bold ph-magnifying-glass text-slate-400 mr-2 text-lg"></i><input type="text" id="mkg-hist-search" oninput="coreMkg.renderHistory()" placeholder="Motivo o SKU..." class="w-full py-2 bg-transparent font-bold text-sm" onkeydown="if(event.key==='Enter') event.preventDefault();"></div>
+            <button type="button" onclick="openCustomSelect('mkg-filter-mes', 'Filtrar por Mes')" class="w-14 h-14 modern-card flex items-center justify-center flex-shrink-0 text-slate-500"><i class="ph-bold ph-calendar-blank text-xl"></i><select id="mkg-filter-mes" onchange="coreMkg.renderHistory()" class="hidden"><option value="TODOS">Mes</option></select></button>
+            <button type="button" onclick="openCustomSelect('mkg-filter-personal', 'Filtrar por Personal')" class="w-14 h-14 modern-card flex items-center justify-center flex-shrink-0 text-slate-500"><i class="ph-bold ph-users text-xl"></i>
                 <select id="mkg-filter-personal" onchange="coreMkg.renderHistory()" class="hidden">
-                    <option value="TODOS">TODOS</option>
-                    <option value="ABDY">ABDY</option>
-                    <option value="FRANK">FRANK</option>
-                    <option value="YENIFER">YENIFER</option>
-                    <option value="JOHAN">JOHAN</option>
-                    <option value="OFICINA">OFICINA</option>
+                    <option value="TODOS">TODOS</option> <option value="ABDY">ABDY</option> <option value="FRANK">FRANK</option> <option value="YENIFER">YENIFER</option> <option value="JOHAN">JOHAN</option> <option value="OFICINA">OFICINA</option>
                 </select>
-            </div>
+            </button>
         </div>
         
         <div id="mkg-history-cards" class="space-y-4"></div>
-        <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-24 w-16 h-16 bg-zinc-800 rounded-2xl flex flex-col items-center justify-center shadow-2xl active:scale-90 transition-transform z-50 text-white border-none"><i class="ph-bold ph-plus text-2xl"></i><span class="text-[8px] font-black uppercase mt-1">Registrar</span></button>
+        <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-28 w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex flex-col items-center justify-center shadow-xl shadow-blue-500/30 active:scale-90 transition-transform z-40 text-white"><i class="ph-bold ph-plus text-2xl"></i></button>
     </div>
 
-    <!-- MENÚ LATERAL Y PANTALLAS DE CARGA / MODALES -->
-    <div id="twins-menu" class="fixed inset-0 z-[100] hidden">
-        <div id="twins-menu-backdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0 cursor-pointer" onclick="toggleMenu()"></div>
-        
-        <div class="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[320px] bg-slate-50 flex flex-col transform -translate-x-full transition-transform duration-300 z-10 rounded-r-[32px] overflow-hidden border-r border-slate-200 shadow-[20px_0_40px_rgba(0,0,0,0.1)]" id="twins-menu-panel">
-            <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm safe-pt">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/30">
-                        <i class="ph-bold ph-lightning text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-[8px] font-black text-blue-500 uppercase tracking-[0.2em] mb-0.5">Twins Elite</p>
-                        <h2 class="font-black text-slate-900 text-lg leading-none tracking-tight">TAJHO</h2>
-                    </div>
-                </div>
-                <button type="button" onclick="toggleMenu()" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center active:scale-95 transition-transform border border-slate-100"><i class="ph-bold ph-x text-lg"></i></button>
-            </div>
+    <div class="glass-effect glass-nav">
+        <div class="max-w-md mx-auto px-6 h-16 flex justify-between items-center relative">
+            <button onclick="window.attemptChangeTab('audit')" id="nav-audit" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
+                <i class="ph-fill ph-package text-[26px] mb-0.5"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">Cargas</span>
+            </button>
+            <button onclick="window.attemptChangeTab('dev-history')" id="nav-dev" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
+                <i class="ph-fill ph-arrow-u-down-left text-[26px] mb-0.5"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">Retornos</span>
+            </button>
+            <button onclick="window.attemptChangeTab('marketing')" id="nav-mkg" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
+                <i class="ph-fill ph-megaphone text-[26px] mb-0.5"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">MKTG</span>
+            </button>
+            <button onclick="window.toggleTheme()" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors active:scale-90">
+                <i class="ph-fill ph-moon text-[26px] mb-0.5" id="nav-theme-icon"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">Tema</span>
+            </button>
             
-            <div class="flex-1 p-5 overflow-y-auto relative z-20 space-y-3">
-                <p class="px-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Módulos Logísticos</p>
-                
-                <button type="button" onclick="window.attemptChangeTab('audit')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100"><i class="ph-fill ph-package text-2xl"></i></div>
-                    <div class="flex-1"><h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Auditoría</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Control de Contenedores</p></div>
-                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
-                </button>
-
-                <button type="button" onclick="window.attemptChangeTab('dev-history')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100"><i class="ph-fill ph-arrow-u-down-left text-2xl"></i></div>
-                    <div class="flex-1"><h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Devoluciones</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Retornos y Mermas</p></div>
-                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
-                </button>
-
-                <button type="button" onclick="window.attemptChangeTab('marketing')" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-zinc-100 text-zinc-700 flex items-center justify-center border border-zinc-200"><i class="ph-fill ph-megaphone text-2xl"></i></div>
-                    <div class="flex-1"><h3 class="text-sm font-black text-slate-800 uppercase tracking-tight">Marketing</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Pedidos Publicitarios</p></div>
-                    <i class="ph-bold ph-caret-right text-slate-300 mr-2"></i>
-                </button>
-                
-                <div class="border-t border-slate-200 my-4 mx-2"></div>
-                <p class="px-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Sistema</p>
-                
-                <button type="button" onclick="window.toggleTheme()" class="w-full bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 active:scale-95 transition-transform text-left">
-                    <div class="w-12 h-12 rounded-[14px] bg-slate-100 text-slate-600 flex items-center justify-center border border-slate-200"><i id="theme-icon" class="ph-fill ph-moon text-2xl"></i></div>
-                    <div class="flex-1"><h3 id="theme-text" class="text-sm font-black text-slate-800 uppercase tracking-tight">Modo Oscuro</h3><p class="text-[9px] font-bold text-slate-400 mt-0.5">Cambiar apariencia</p></div>
-                </button>
-            </div>
-            
-            <div class="mt-auto p-5 bg-white border-t border-slate-100 relative z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] safe-pb">
-                <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                    <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500 overflow-hidden shadow-inner"><i class="ph-fill ph-user-circle text-2xl"></i></div>
-                    <div class="flex-1">
-                        <p class="text-xs font-black text-slate-900 leading-tight tracking-tight">J. Angelo Nuñez D.</p>
-                        <p class="text-[8px] font-black text-blue-500 uppercase tracking-widest mt-0.5">Asist. Logístico</p>
-                    </div>
-                </div>
-            </div>
+            <div id="nav-indicator" class="absolute bottom-1 h-1 w-10 bg-blue-600 rounded-full transition-transform duration-300 transform translate-x-2"></div>
         </div>
     </div>
     
-    <!-- MODAL DE CARGA -->
-    <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 z-[200] hidden flex items-center justify-center"><div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center"><i class="ph-bold ph-spinner animate-spin text-5xl text-blue-600 mb-4"></i><h3 class="font-black text-slate-800 text-lg uppercase">Procesando</h3></div></div>
+    <div id="loading-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center transition-opacity"><div class="modern-card p-10 flex flex-col items-center"><i class="ph-bold ph-spinner-gap animate-spin text-5xl text-blue-600 mb-5"></i><h3 class="font-[900] text-lg uppercase tracking-widest">Sincronizando</h3></div></div>
 
-    <!-- CUADRO DE DIÁLOGO ULTRA PREMIUM -->
-    <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/80 px-6 transition-opacity duration-300 opacity-0">
-        <div id="modern-modal-content" class="bg-white rounded-[32px] p-8 w-full max-w-sm shadow-2xl transform scale-95 transition-all duration-300 border border-slate-100 relative overflow-hidden">
-            <div id="modern-modal-glow" class="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, currentColor 0%, transparent 70%);"></div>
-            
-            <div id="modern-modal-icon" class="w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto shadow-inner relative"></div>
-            <h3 id="modern-modal-title" class="text-xl font-[900] text-slate-900 text-center tracking-tight mb-3"></h3>
-            <p id="modern-modal-text" class="text-xs font-bold text-slate-500 text-center mb-8 leading-relaxed px-2"></p>
+    <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm px-6 transition-opacity duration-300 opacity-0">
+        <div id="modern-modal-content" class="modern-card p-8 w-full max-w-sm transform scale-95 transition-all duration-300 relative overflow-hidden">
+            <div id="modern-modal-glow" class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-10 blur-2xl"></div>
+            <div id="modern-modal-icon" class="w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto relative"></div>
+            <h3 id="modern-modal-title" class="text-xl font-[900] text-center tracking-tight mb-3"></h3>
+            <p id="modern-modal-text" class="text-xs font-bold text-slate-500 text-center mb-8 px-2"></p>
             <div id="modern-modal-actions" class="flex gap-3"></div>
         </div>
     </div>
 
-    <!-- CUADRO DE DIÁLOGO PARA SELECTS (BOTTOM SHEET NATIVO) -->
-    <div id="ui-select-modal" class="fixed inset-0 z-[600] hidden flex-col justify-end bg-slate-900/80 transition-opacity duration-300 opacity-0">
+    <div id="ui-select-modal" class="fixed inset-0 z-[600] hidden flex-col justify-end bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
         <div id="ui-select-backdrop" class="absolute inset-0" onclick="closeCustomSelect()"></div>
-        <div id="ui-select-content" class="bg-white w-full rounded-t-[32px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 border-t border-slate-100 safe-pb">
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
-            <h3 id="ui-select-title" class="text-xl font-[900] text-slate-900 text-center mb-4 tracking-tight"></h3>
-            <div id="ui-select-options" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pb-6"></div>
+        <div id="ui-select-content" class="modern-card w-full rounded-b-none p-6 transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 safe-pb">
+            <div class="w-12 h-1.5 bg-slate-200 dark:bg-zinc-800 rounded-full mx-auto mb-6"></div>
+            <h3 id="ui-select-title" class="text-xl font-[900] text-center mb-6 tracking-tight"></h3>
+            <div id="ui-select-options" class="flex-1 overflow-y-auto space-y-3 no-scrollbar pb-6"></div>
         </div>
     </div>
 
     <script>
-        // FUNCION DE RED SEGURA: Evita el error "Failed to fetch" por exceso de peticiones a Google
+        // RED SEGURA
         window.safeFetch = async function(url) {
             for (let i = 0; i < 3; i++) {
                 try {
@@ -516,7 +415,7 @@
             }
         };
 
-        // LOGICA DE TEMA (DARK MODE)
+        // LÓGICA DE TEMA (DARK MODE) ACTUALIZADA AL NUEVO DISEÑO
         window.toggleTheme = function() {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
@@ -527,191 +426,157 @@
         function updateThemeUI() {
             const isDark = document.documentElement.classList.contains('dark');
             const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-            if(icon) icon.className = isDark ? 'ph-fill ph-sun text-2xl' : 'ph-fill ph-moon text-2xl';
-            if(text) text.innerText = isDark ? ' MODO CLARO' : ' MODO OSCURO';
+            const navIcon = document.getElementById('nav-theme-icon');
+            if(icon) icon.className = isDark ? 'ph-bold ph-sun text-xl text-yellow-500' : 'ph-bold ph-moon text-xl text-slate-600';
+            if(navIcon) navIcon.className = isDark ? 'ph-fill ph-sun text-[26px] mb-0.5' : 'ph-fill ph-moon text-[26px] mb-0.5';
             
-            // Actualizar color PWA
-            const themeColorMeta = document.querySelector('meta[name="theme-color"]:not([media])');
-            if(themeColorMeta) themeColorMeta.setAttribute('content', isDark ? '#020617' : '#F8FAFC');
+            const metaColor = document.getElementById('meta-theme-color');
+            if(metaColor) metaColor.setAttribute('content', isDark ? '#000000' : '#F8FAFC');
+        }
+        
+        // ACTUALIZAR ESTADO DEL BOTTOM NAV
+        function updateNavState(tab) {
+            const tabs = ['audit', 'dev', 'mkg'];
+            let mappedTab = tab;
+            if(tab === 'dev-history') mappedTab = 'dev';
+            if(tab === 'mkg-form') mappedTab = 'mkg';
+            
+            tabs.forEach((t, i) => {
+                const el = document.getElementById('nav-' + t);
+                if(el) {
+                    if(mappedTab === t) {
+                        el.classList.add('text-blue-600'); el.classList.remove('text-slate-400');
+                        const indicator = document.getElementById('nav-indicator');
+                        // Calculate position based on percentage + padding
+                        const screenW = window.innerWidth > 448 ? 448 : window.innerWidth;
+                        const offset = (screenW - 48) / 4; // Approx space per section
+                        if(indicator) indicator.style.transform = `translateX(${24 + (i * offset)}px)`;
+                    } else {
+                        el.classList.remove('text-blue-600'); el.classList.add('text-slate-400');
+                    }
+                }
+            });
         }
 
-        // ==========================================
-        // MOTOR DE SELECTS PERSONALIZADOS (BOTTOM SHEET)
-        // ==========================================
+        // MOTOR DE SELECTS PERSONALIZADOS
         window.openCustomSelect = function(selectId, title) {
             const selectEl = document.getElementById(selectId);
             if (!selectEl) return;
-            
-            const options = Array.from(selectEl.options).map(opt => ({
-                value: opt.value,
-                text: opt.text,
-                selected: opt.selected
-            }));
-
+            const options = Array.from(selectEl.options).map(opt => ({ value: opt.value, text: opt.text, selected: opt.selected }));
             const modal = document.getElementById('ui-select-modal');
             const content = document.getElementById('ui-select-content');
             const optionsContainer = document.getElementById('ui-select-options');
-            
             document.getElementById('ui-select-title').innerText = title;
-            
             optionsContainer.innerHTML = options.map(opt => `
                 <button type="button" onclick="closeCustomSelect('${selectId}', '${opt.value}')" 
-                    class="w-full text-left px-5 py-4 rounded-2xl font-bold text-sm transition-transform active:scale-95 flex justify-between items-center border
-                    ${opt.selected 
-                        ? 'bg-blue-50 border-blue-200 text-blue-700' 
-                        : 'bg-white border-slate-100 text-slate-700'}">
+                    class="w-full text-left px-6 py-4 rounded-[20px] font-bold text-sm transition-transform active:scale-95 flex justify-between items-center
+                    ${opt.selected ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600' : 'modern-input border'}">
                     ${opt.text}
                     ${opt.selected ? '<i class="ph-bold ph-check-circle text-xl"></i>' : ''}
                 </button>
             `).join('');
-
             modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('translate-y-full'); }, 10);
         };
 
         window.closeCustomSelect = function(selectId, newValue) {
             const modal = document.getElementById('ui-select-modal');
             const content = document.getElementById('ui-select-content');
-            
             if (selectId && newValue !== undefined) {
-                const selectEl = document.getElementById(selectId);
-                selectEl.value = newValue;
-                window.updateSelectText(selectId);
-                selectEl.dispatchEvent(new Event('change'));
+                const selectEl = document.getElementById(selectId); selectEl.value = newValue;
+                window.updateSelectText(selectId); selectEl.dispatchEvent(new Event('change'));
             }
-
-            content.classList.add('translate-y-full');
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
+            content.classList.add('translate-y-full'); modal.classList.add('opacity-0');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         };
 
         window.updateSelectText = function(id) {
-            const s = document.getElementById(id);
-            const t = document.getElementById('text-' + id);
-            if(s && t && s.selectedIndex >= 0) {
-                t.innerText = s.options[s.selectedIndex].text;
-            }
+            const s = document.getElementById(id); const t = document.getElementById('text-' + id);
+            if(s && t && s.selectedIndex >= 0) { t.innerText = s.options[s.selectedIndex].text; t.classList.remove('text-slate-500'); }
         };
+        window.syncAllSelectTexts = function() { ['dev-vendedor', 'dev-um', 'dev-estado', 'mkg-personal', 'mkg-um', 'mkg-estado'].forEach(id => updateSelectText(id)); };
 
-        window.syncAllSelectTexts = function() {
-            ['dev-vendedor', 'dev-um', 'dev-estado', 'mkg-personal', 'mkg-um', 'mkg-estado'].forEach(id => updateSelectText(id));
-        };
-
-        // CONTROLADOR DEL MODAL ALERTS
+        // ALERTS
         window.uiModal = {
             show: function(type, title, msg, onConfirm, onCancel) {
-                const modal = document.getElementById('modern-modal');
-                const content = document.getElementById('modern-modal-content');
-                const glow = document.getElementById('modern-modal-glow');
-                document.getElementById('modern-modal-title').innerText = title;
-                document.getElementById('modern-modal-text').innerText = msg;
-                const iconBox = document.getElementById('modern-modal-icon');
-                const actionsEl = document.getElementById('modern-modal-actions');
+                const modal = document.getElementById('modern-modal'); const content = document.getElementById('modern-modal-content'); const glow = document.getElementById('modern-modal-glow');
+                document.getElementById('modern-modal-title').innerText = title; document.getElementById('modern-modal-text').innerText = msg;
+                const iconBox = document.getElementById('modern-modal-icon'); const actionsEl = document.getElementById('modern-modal-actions');
 
                 if (type === 'confirm') {
-                    glow.style.color = "#f97316"; 
-                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-orange-50 text-orange-500 border border-orange-100 relative";
-                    iconBox.innerHTML = '<div class="absolute inset-0 bg-orange-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-warning-circle text-4xl relative z-10"></i>';
+                    glow.style.background = "radial-gradient(circle, #f97316 0%, transparent 70%)"; 
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-orange-50 dark:bg-orange-900/30 text-orange-500 relative";
+                    iconBox.innerHTML = '<i class="ph-fill ph-warning-circle text-5xl relative z-10"></i>';
                     actionsEl.innerHTML = `
-                        <button type="button" id="modal-btn-cancel" class="flex-1 bg-slate-50 text-slate-600 font-[900] py-4 rounded-2xl border border-slate-200 active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Descartar</button>
-                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Confirmar</button>
+                        <button type="button" id="modal-btn-cancel" class="flex-1 modern-input font-[900] py-4 rounded-2xl active:scale-95 text-[10px] uppercase tracking-widest">Descartar</button>
+                        <button type="button" id="modal-btn-confirm" class="flex-1 bg-slate-900 dark:bg-white dark:text-black text-white font-[900] py-4 rounded-2xl active:scale-95 text-[10px] uppercase tracking-widest">Confirmar</button>
                     `;
                     document.getElementById('modal-btn-confirm').onclick = () => { this.close(); if(onConfirm) onConfirm(); };
                     document.getElementById('modal-btn-cancel').onclick = () => { this.close(); if(onCancel) onCancel(); };
                 } else if (type === 'success') {
-                    glow.style.color = "#10b981"; 
-                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-emerald-50 text-emerald-500 border border-emerald-100 relative";
-                    iconBox.innerHTML = '<div class="absolute inset-0 bg-emerald-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-check-circle text-4xl relative z-10"></i>';
-                    actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close();" class="w-full bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Entendido</button>
-                    `;
+                    glow.style.background = "radial-gradient(circle, #10b981 0%, transparent 70%)"; 
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 relative";
+                    iconBox.innerHTML = '<i class="ph-fill ph-check-circle text-5xl relative z-10"></i>';
+                    actionsEl.innerHTML = `<button type="button" onclick="uiModal.close();" class="w-full bg-slate-900 dark:bg-white dark:text-black text-white font-[900] py-4 rounded-2xl active:scale-95 text-[10px] uppercase tracking-widest">Entendido</button>`;
                 } else if (type === 'alert') {
-                    glow.style.color = "#3b82f6"; 
-                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-blue-50 text-blue-500 border border-blue-100 relative";
-                    iconBox.innerHTML = '<div class="absolute inset-0 bg-blue-500 opacity-20 rounded-[24px] animate-pulse"></div><i class="ph-fill ph-info text-4xl relative z-10"></i>';
-                    actionsEl.innerHTML = `
-                        <button type="button" onclick="uiModal.close()" class="w-full bg-slate-900 text-white font-[900] py-4 rounded-2xl shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] active:scale-95 transition-transform text-[10px] uppercase tracking-widest">Aceptar</button>
-                    `;
+                    glow.style.background = "radial-gradient(circle, #3b82f6 0%, transparent 70%)"; 
+                    iconBox.className = "w-20 h-20 rounded-[24px] mb-6 flex items-center justify-center mx-auto bg-blue-50 dark:bg-blue-900/30 text-blue-500 relative";
+                    iconBox.innerHTML = '<i class="ph-fill ph-info text-5xl relative z-10"></i>';
+                    actionsEl.innerHTML = `<button type="button" onclick="uiModal.close()" class="w-full bg-slate-900 dark:bg-white dark:text-black text-white font-[900] py-4 rounded-2xl active:scale-95 text-[10px] uppercase tracking-widest">Aceptar</button>`;
                 }
-
                 modal.style.display = 'flex';
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
-                    content.classList.add('scale-100');
-                }, 10);
+                setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
             },
             close: function() {
-                const modal = document.getElementById('modern-modal');
-                const content = document.getElementById('modern-modal-content');
-                modal.classList.add('opacity-0');
-                content.classList.remove('scale-100');
-                content.classList.add('scale-95');
+                const modal = document.getElementById('modern-modal'); const content = document.getElementById('modern-modal-content');
+                modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
                 setTimeout(() => { modal.style.display = 'none'; }, 300);
             }
         };
 
-        // Funciones Globales UI
         window.showLoading = function() { document.getElementById('loading-modal').classList.remove('hidden'); };
         window.hideLoading = function() { document.getElementById('loading-modal').classList.add('hidden'); };
 
         window.changeTab = function(tab) {
-            const audit = document.getElementById('app-shell'); 
-            const devForm = document.getElementById('module-returns'); 
-            const devHist = document.getElementById('module-dev-history');
-            const mkgHist = document.getElementById('module-marketing-history');
-            const mkgForm = document.getElementById('module-mkg-form');
-            
+            const audit = document.getElementById('app-shell'); const devForm = document.getElementById('module-returns'); const devHist = document.getElementById('module-dev-history'); const mkgHist = document.getElementById('module-marketing-history'); const mkgForm = document.getElementById('module-mkg-form');
             if(audit) { audit.style.display = 'none'; audit.classList.add('hidden'); }
             if(devForm) { devForm.style.display = 'none'; devForm.classList.add('hidden'); }
             if(devHist) { devHist.style.display = 'none'; devHist.classList.add('hidden'); }
             if(mkgHist) { mkgHist.style.display = 'none'; mkgHist.classList.add('hidden'); }
             if(mkgForm) { mkgForm.style.display = 'none'; mkgForm.classList.add('hidden'); }
             
-            const tituloEl = document.getElementById('header-title'); 
-            const progEl = document.getElementById('header-progress');
+            const tituloEl = document.getElementById('header-title'); const progEl = document.getElementById('header-progress');
 
             if (tab === 'audit') { 
                 if(audit) { audit.style.display = 'block'; audit.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'TWINS AUDITORIA'; 
+                if(tituloEl) tituloEl.innerText = 'Auditoría'; 
                 if(progEl) progEl.style.display = 'flex'; 
             } 
             else if (tab === 'dev') { 
                 if(devForm) { devForm.style.display = 'block'; devForm.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = document.getElementById('dev-form-title') ? document.getElementById('dev-form-title').innerText : 'NUEVA DEVOLUCIÓN'; 
+                if(tituloEl) tituloEl.innerText = document.getElementById('dev-form-title') ? document.getElementById('dev-form-title').innerText : 'Devoluciones'; 
                 if(progEl) progEl.style.display = 'none'; 
             } 
             else if (tab === 'dev-history') { 
                 if(devHist) { devHist.style.display = 'block'; devHist.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'ARCHIVO DEVOLUCIONES'; 
+                if(tituloEl) tituloEl.innerText = 'Retornos'; 
                 if(progEl) progEl.style.display = 'none'; 
                 if(typeof coreDev !== 'undefined') coreDev.renderHistory(); 
             }
             else if (tab === 'marketing') { 
                 if(mkgHist) { mkgHist.style.display = 'block'; mkgHist.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = 'REGISTRO MARKETING'; 
+                if(tituloEl) tituloEl.innerText = 'Marketing'; 
                 if(progEl) progEl.style.display = 'none'; 
                 if(typeof coreMkg !== 'undefined') coreMkg.renderHistory(); 
             }
             else if (tab === 'mkg-form') { 
                 if(mkgForm) { mkgForm.style.display = 'block'; mkgForm.classList.remove('hidden'); } 
-                if(tituloEl) tituloEl.innerText = document.getElementById('mkg-form-title') ? document.getElementById('mkg-form-title').innerText : 'NUEVO PEDIDO MKTG'; 
+                if(tituloEl) tituloEl.innerText = document.getElementById('mkg-form-title') ? document.getElementById('mkg-form-title').innerText : 'Pedido Mktg'; 
                 if(progEl) progEl.style.display = 'none'; 
             }
-
+            
+            updateNavState(tab);
             window.scrollTo(0, 0); 
-            const menu = document.getElementById('twins-menu'); 
-            const panel = document.getElementById('twins-menu-panel');
-            if (menu && !menu.classList.contains('hidden')) { 
-                if (panel) panel.classList.add('-translate-x-full'); 
-                setTimeout(() => menu.classList.add('hidden'), 300); 
-            }
             localStorage.setItem('twins_memoria_pantalla', tab);
         };
 
@@ -719,61 +584,30 @@
             const currentTab = localStorage.getItem('twins_memoria_pantalla') || 'audit';
             
             if (currentTab === 'dev' && targetTab !== 'dev') {
-                const hasItems = coreDev.items.length > 0;
-                const hasText = document.getElementById('dev-cliente').value.trim() !== '';
-                if (hasItems || hasText) {
-                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso. Si cambias de página, se perderán los datos.', 
-                    () => { 
-                        coreDev.clearDraft(); coreDev.items = [];
-                        document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-obs').value = '';
-                        const searchInput = document.getElementById('dev-search-prod');
-                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
-                        window.syncAllSelectTexts();
-                        coreDev.renderItems(); window.changeTab(targetTab);
-                    }, () => { uiModal.close(); });
+                if (coreDev.items.length > 0 || document.getElementById('dev-cliente').value.trim() !== '') {
+                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una devolución en progreso.', 
+                    () => { coreDev.clearDraft(); coreDev.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-obs').value = ''; document.getElementById('dev-search-prod').value = ''; window.syncAllSelectTexts(); coreDev.renderItems(); window.changeTab(targetTab); }, () => { uiModal.close(); });
                     return;
                 }
             }
             
             if (currentTab === 'mkg-form' && targetTab !== 'mkg-form') {
-                const hasItems = coreMkg.items.length > 0;
-                const hasText = document.getElementById('mkg-motivo').value.trim() !== '';
-                if (hasItems || hasText) {
-                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes un pedido de marketing en progreso. Si cambias de página, se perderán los datos.', 
-                    () => { 
-                        coreMkg.clearDraft(); coreMkg.items = [];
-                        document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE';
-                        const searchInput = document.getElementById('mkg-search-prod');
-                        searchInput.value = ''; searchInput.removeAttribute('data-cod'); searchInput.removeAttribute('data-desc');
-                        window.syncAllSelectTexts();
-                        coreMkg.renderItems(); window.changeTab(targetTab);
-                    }, () => { uiModal.close(); });
+                if (coreMkg.items.length > 0 || document.getElementById('mkg-motivo').value.trim() !== '') {
+                    uiModal.show('confirm', '¿Descartar Borrador?', 'Tienes una orden de marketing en progreso.', 
+                    () => { coreMkg.clearDraft(); coreMkg.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; window.syncAllSelectTexts(); coreMkg.renderItems(); window.changeTab(targetTab); }, () => { uiModal.close(); });
                     return;
                 }
             }
 
             if (currentTab === 'audit' && targetTab !== 'audit' && core.activeCont !== null) {
-                uiModal.show('confirm', '¿Pausar Auditoría?', 'Estás en medio de un conteo físico. Se pausará y guardará tu avance en el dispositivo.', 
+                uiModal.show('confirm', '¿Pausar Auditoría?', 'Estás en medio de un conteo. Se pausará automáticamente.', 
                 () => { core.closeModal('audit-view', true); window.changeTab(targetTab); }, () => { uiModal.close(); });
                 return;
             }
             window.changeTab(targetTab);
         };
-
-        window.toggleMenu = function() {
-            const m = document.getElementById('twins-menu'); 
-            const p = document.getElementById('twins-menu-panel');
-            const b = document.getElementById('twins-menu-backdrop');
-            if (m && p) { 
-                if (m.classList.contains('hidden')) { 
-                    m.classList.remove('hidden'); 
-                    setTimeout(() => { p.classList.remove('-translate-x-full'); if(b) b.classList.remove('opacity-0'); }, 10); 
-                } else { 
-                    p.classList.add('-translate-x-full'); if(b) b.classList.add('opacity-0'); 
-                    setTimeout(() => m.classList.add('hidden'), 300); 
-                } 
-            }
-        };
+        
+        window.toggleMenu = function() { /* Nav is now bottom, but leaving function defined to not break HTML button */ };
 
         // MOTOR 1: AUDITORÍA
         const core = {
@@ -788,10 +622,9 @@
                 try {
                     const data = await window.safeFetch(this.url + "?type=productos"); 
                     if (data && Array.isArray(data)) {
-                        this.productos = data;
-                        localStorage.setItem('twins_productos_cache', JSON.stringify(data));
+                        this.productos = data; localStorage.setItem('twins_productos_cache', JSON.stringify(data));
                     }
-                } catch(e) { console.error("Error catálogo productos:", e); }
+                } catch(e) {}
             },
 
             fetchData: async function(silent = false) {
@@ -837,13 +670,14 @@
                 const e1 = document.getElementById('global-perc'); const e2 = document.getElementById('global-ring');
                 if(e1) e1.innerText = globalP + "%"; if(e2) e2.style.strokeDashoffset = 125.6 - (125.6 * globalP) / 100;
                 const ids = Object.keys(groups);
-                const s1 = document.getElementById('stat-containers'); const s2 = document.getElementById('stat-skus');
-                if(s1) s1.innerText = ids.length; if(s2) s2.innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined).length;
-                if(!list) return; if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400">Sin datos</div>`; return; }
+                document.getElementById('stat-containers').innerText = ids.length; 
+                document.getElementById('stat-skus').innerText = this.raw.filter(i => i.ORIGEN !== "HOJA3" && i.VENDEDOR === undefined).length;
+                if(!list) return; if(ids.length === 0) { list.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Sin datos</div>`; return; }
+                
                 list.innerHTML = ids.map(id => {
                     const items = groups[id]; let t=0, a=0; items.forEach(i => { t+=(parseInt(i["CAJAS"])||0); a+=(i.audit||0); });
                     const perc = t>0 ? Math.round((a/t)*100) : 0; const esP = this.getItemMonth(items[0]) === "EN PROGRAMACIÓN"; const isC = items[0]["ESTADO"] && items[0]["ESTADO"].toString().toUpperCase() === "COMPLETADO";
-                    return `<div class="native-card p-5"><div class="flex justify-between items-start mb-4"><div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase">CARGA #${id}</div><span class="text-[10px] font-bold text-slate-400">${esP ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span></div><div class="flex items-center gap-4 mb-4"><div class="h-12 w-12 bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400"><i class="ph-bold ph-truck text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] text-slate-900 uppercase">Contenedor ${id}</h3><p class="text-[9px] font-bold text-slate-400">${items.length} SKUS</p></div><div class="text-right"><p class="text-xs font-[900] ${perc >= 100 ? 'text-emerald-500' : 'text-slate-900'}">${perc}%</p><p class="text-[8px] font-black text-slate-300 uppercase">AVANCE</p></div></div><div class="flex gap-1.5 mt-2">${!isC ? `<button type="button" onclick="core.openAudit('${id}')" class="flex-[2] bg-slate-900 text-white rounded-[14px] text-[10px] font-bold h-11 tracking-widest active:scale-95 transition-transform flex items-center justify-center"><i class="ph-bold ph-selection-all mr-1 text-[16px]"></i> CONTEO</button>` : ''}<button type="button" onclick="core.viewList('${id}')" class="flex-1 bg-blue-50 text-blue-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[10px] uppercase border border-blue-200 active:scale-95 transition-transform"><i class="ph-bold ph-eye mr-1 text-[16px]"></i> VER</button><button type="button" onclick="core.generatePDF('${id}', 'save')" class="w-12 bg-red-50 text-red-600 h-11 rounded-[14px] flex items-center justify-center border border-red-200 active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-[18px]"></i></button><button type="button" onclick="core.generatePDF('${id}', 'share')" class="w-12 bg-emerald-50 text-emerald-600 h-11 rounded-[14px] flex items-center justify-center border border-emerald-200 active:scale-95 transition-transform shadow-sm"><i class="ph-bold ph-whatsapp-logo text-[18px]"></i></button></div></div>`;
+                    return `<div class="modern-card p-6 mb-4"><div class="flex justify-between items-start mb-5"><div class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 px-3 py-1.5 rounded-lg text-[10px] font-[900] tracking-widest uppercase">CARGA #${id}</div><span class="text-[10px] font-bold text-slate-400">${esP ? 'POR CONFIRMAR' : items[0]["FECHA_LIMPIA"]}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-14 w-14 modern-input rounded-2xl flex justify-center items-center text-blue-500 shadow-inner"><i class="ph-fill ph-truck text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[900] uppercase tracking-tight">Contenedor ${id}</h3><p class="text-[10px] font-bold text-slate-400 mt-1">${items.length} SKUS</p></div><div class="text-right"><p class="text-xl font-[900] ${perc >= 100 ? 'text-emerald-500' : ''}">${perc}%</p><p class="text-[8px] font-black text-slate-300 uppercase tracking-widest">AVANCE</p></div></div><div class="flex gap-2">${!isC ? `<button type="button" onclick="core.openAudit('${id}')" class="flex-[2] bg-slate-900 dark:bg-white dark:text-black text-white rounded-[16px] text-[10px] font-[900] h-12 tracking-widest active:scale-95 transition-transform flex items-center justify-center uppercase shadow-lg"><i class="ph-bold ph-selection-all mr-1 text-lg"></i> CONTEO</button>` : ''}<button type="button" onclick="core.viewList('${id}')" class="flex-1 modern-input h-12 rounded-[16px] flex items-center justify-center font-[900] text-[10px] uppercase active:scale-95 transition-transform"><i class="ph-bold ph-list-dashes text-lg"></i></button><button type="button" onclick="core.generatePDF('${id}', 'save')" class="w-12 modern-input text-red-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-xl"></i></button><button type="button" onclick="core.generatePDF('${id}', 'share')" class="w-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-whatsapp-logo text-xl"></i></button></div></div>`;
                 }).join('');
             },
             startTimer: function(id) { this.stopTimer(); this.timerInterval = setInterval(() => { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); if (items.length > 0) { items[0].auditTime = (items[0].auditTime || 0) + 1; document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime); localStorage.setItem('twins_cache', JSON.stringify(this.raw)); } }, 1000); },
@@ -853,18 +687,41 @@
             toggleAuditSearch: function() { const b = document.getElementById('audit-search-bar'); b.classList.toggle('hidden'); if(!b.classList.contains('hidden')) document.getElementById('inner-search').focus(); },
             openAudit: function(id) { this.activeCont = id; localStorage.setItem('twins_active_cont', id); document.getElementById('audit-title').innerText = "CARGA #" + id; document.getElementById('audit-search-bar').classList.add('hidden'); const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); document.getElementById('audit-timer-display').innerText = this.formatTime(items[0].auditTime || 0); this.startTimer(id); this.renderAuditItems(this.sortAuditItems(items)); this.updateProgress(id); document.getElementById('audit-view').style.display = 'flex'; },
             filterAuditItems: function(val) { const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); const f = items.filter(i => i["CODIGO"].toString().toLowerCase().includes(val.toLowerCase()) || this.getDesc(i).toLowerCase().includes(val.toLowerCase())); this.renderAuditItems(this.sortAuditItems(f)); },
-            renderAuditItems: function(items) { document.getElementById('audit-items-container').innerHTML = items.map(item => { const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } return `<div id="card-${idx}" class="audit-item-card transition-all duration-300"><div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}"></div><div class="pl-2"><div class="flex justify-between items-start mb-2"><span class="text-[9px] font-black text-slate-400">${item.CODIGO}</span><span id="badge-${idx}" class="text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}">${bT}</span></div><h4 class="text-sm font-extrabold text-slate-800 leading-tight uppercase mb-4">${this.getDesc(item)}</h4><div class="flex justify-between items-end mb-4 mt-2"><div><p class="text-[9px] font-bold text-slate-400">TEÓRICO</p><p class="text-xl font-black text-slate-300">${teo}</p></div><div class="text-right"><p class="text-[9px] font-bold text-blue-500 tracking-widest">TOTAL CONTADO</p><p id="total-audit-${idx}" class="text-4xl font-black text-slate-900 leading-none">${aud}</p></div></div><div class="flex items-center gap-3"><button type="button" onclick="core.step(${idx}, -1)" class="w-12 h-12 bg-slate-50 text-slate-500 rounded-xl border active:scale-95"><i class="ph-bold ph-minus text-lg"></i></button><div class="flex-1 flex items-center bg-slate-50 border rounded-xl px-2"><input type="number" id="add-input-${idx}" placeholder="Cant..." class="w-full bg-transparent text-center font-black text-base outline-none py-3" onkeydown="if(event.key==='Enter') { core.addAmount(${idx}); event.preventDefault(); }"><button type="button" onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-lg active:scale-95"><i class="ph-bold ph-plus text-lg"></i></button></div></div><div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="core.setDirect(${idx}, ${teo})" class="py-2.5 bg-emerald-50 text-emerald-600 font-bold text-[10px] rounded-xl tracking-wider">IGUALAR TEÓRICO</button><button type="button" onclick="core.setDirect(${idx}, 0)" class="py-2.5 bg-red-50 text-red-500 font-bold text-[10px] rounded-xl tracking-wider">REINICIAR</button></div></div></div>`; }).join(''); },
+            renderAuditItems: function(items) { 
+                document.getElementById('audit-items-container').innerHTML = items.map(item => { 
+                    const idx = this.raw.indexOf(item); const teo = parseInt(item.CAJAS) || 0; const aud = item.audit || 0; const diff = aud - teo; 
+                    let bC = 'modern-input text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200 dark:bg-zinc-800'; 
+                    if (aud > 0) { 
+                        if (diff === 0) { bC = 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } 
+                        else if (diff > 0) { bC = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } 
+                        else { bC = 'bg-orange-50 text-orange-600 dark:bg-orange-900/30'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } 
+                    } 
+                    return `<div id="card-${idx}" class="modern-card p-5 mb-4 relative overflow-hidden transition-all duration-300"><div id="line-${idx}" class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}"></div><div class="pl-1"><div class="flex justify-between items-start mb-3"><span class="text-[10px] font-[900] text-blue-600 tracking-widest">${item.CODIGO}</span><span id="badge-${idx}" class="text-[9px] font-[900] px-2 py-1 rounded-lg ${bC}">${bT}</span></div><h4 class="text-sm font-[900] leading-tight uppercase mb-5">${this.getDesc(item)}</h4><div class="flex justify-between items-end mb-5"><div><p class="text-[9px] font-bold text-slate-400 tracking-widest mb-0.5">TEÓRICO</p><p class="text-2xl font-[900] text-slate-300">${teo}</p></div><div class="text-right"><p class="text-[9px] font-bold text-blue-500 tracking-widest mb-0.5">FÍSICO</p><p id="total-audit-${idx}" class="text-4xl font-[900] leading-none">${aud}</p></div></div><div class="flex items-center gap-3"><button type="button" onclick="core.step(${idx}, -1)" class="w-14 h-14 modern-input flex items-center justify-center active:scale-90 text-slate-400"><i class="ph-bold ph-minus text-xl"></i></button><div class="flex-1 flex items-center modern-input px-2 h-14"><input type="number" id="add-input-${idx}" placeholder="Ingresar cant..." class="w-full bg-transparent text-center font-[900] text-base" onkeydown="if(event.key==='Enter') { core.addAmount(${idx}); event.preventDefault(); }"><button type="button" onclick="core.addAmount(${idx})" class="w-10 h-10 bg-blue-600 text-white rounded-xl active:scale-90 shadow-lg shadow-blue-500/20"><i class="ph-bold ph-plus text-lg"></i></button></div></div><div class="grid grid-cols-2 gap-3 mt-4"><button type="button" onclick="core.setDirect(${idx}, ${teo})" class="py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 font-[900] text-[9px] rounded-xl tracking-widest uppercase">Igualar Teórico</button><button type="button" onclick="core.setDirect(${idx}, 0)" class="py-3 bg-red-50 dark:bg-red-900/20 text-red-500 font-[900] text-[9px] rounded-xl tracking-widest uppercase">Reiniciar</button></div></div></div>`; 
+                }).join(''); 
+            },
             step: function(idx, v) { this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
             addAmount: function(idx) { const i = document.getElementById(`add-input-${idx}`); const v = parseInt(i.value); if(isNaN(v) || v===0) return; this.raw[idx].audit = Math.max(0, (this.raw[idx].audit || 0) + v); i.value = ''; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
             setDirect: function(idx, v) { this.raw[idx].audit = v; this.refreshItemUI(idx); this.updateProgress(this.activeCont); },
-            refreshItemUI: function(idx) { const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; document.getElementById(`total-audit-${idx}`).innerText = aud; let bC = 'bg-slate-100 text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200'; if (aud > 0) { if (diff === 0) { bC = 'bg-emerald-100 text-emerald-600'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } else if (diff > 0) { bC = 'bg-blue-100 text-blue-600'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } else { bC = 'bg-orange-100 text-orange-600'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } } const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-bold px-2 py-0.5 rounded-md ${bC}`; bdg.innerText = bT; } const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; localStorage.setItem('twins_cache', JSON.stringify(this.raw)); },
+            refreshItemUI: function(idx) { 
+                const i = this.raw[idx]; const aud = i.audit || 0; const teo = parseInt(i.CAJAS) || 0; const diff = aud - teo; 
+                document.getElementById(`total-audit-${idx}`).innerText = aud; 
+                let bC = 'modern-input text-slate-500'; let bT = 'PENDIENTE'; let lC = 'bg-slate-200 dark:bg-zinc-800'; 
+                if (aud > 0) { 
+                    if (diff === 0) { bC = 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30'; bT = 'CORRECTO'; lC = 'bg-emerald-500'; } 
+                    else if (diff > 0) { bC = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30'; bT = `SOBRA (+${diff})`; lC = 'bg-blue-500'; } 
+                    else { bC = 'bg-orange-50 text-orange-600 dark:bg-orange-900/30'; bT = `FALTA (${diff})`; lC = 'bg-orange-500'; } 
+                } 
+                const bdg = document.getElementById(`badge-${idx}`); if(bdg) { bdg.className = `text-[9px] font-[900] px-2 py-1 rounded-lg ${bC}`; bdg.innerText = bT; } 
+                const lin = document.getElementById(`line-${idx}`); if(lin) lin.className = `absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${lC}`; 
+                localStorage.setItem('twins_cache', JSON.stringify(this.raw)); 
+            },
             updateProgress: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR_LIMPIO || i.CONTENEDOR) == id); let t = 0, a = 0; items.forEach(i => { t += (parseInt(i.CAJAS) || 0); a += (i.audit || 0); }); const p = t > 0 ? Math.round((a/t)*100) : 0; document.getElementById('audit-perc-bar').style.width = Math.min(100, p) + "%"; document.getElementById('audit-perc-text').innerText = p + "%"; },
             
             requestCloseAudit: function() { uiModal.show('confirm', '¿Pausar Conteo?', 'Tu avance se guardará en tu dispositivo. Podrás retomarlo luego.', () => { this.closeModal('audit-view', true); }, () => { uiModal.close(); }); },
             closeModal: function(id, skipWarning = false) { if (id === 'audit-view') { this.stopTimer(); localStorage.removeItem('twins_active_cont'); } document.getElementById(id).style.display = 'none'; },
             
             saveAndFinish: async function() { 
-                uiModal.show('confirm', '¿Finalizar Auditoría?', `¿Estás seguro de completar y enviar la Carga #${this.activeCont} al sistema central? No podrás deshacerlo.`, 
+                uiModal.show('confirm', '¿Finalizar Auditoría?', `¿Estás seguro de completar y enviar la Carga #${this.activeCont}? No podrás deshacerlo.`, 
                 () => { 
                     this.stopTimer(); const items = this.raw.filter(i => (i["CONTENEDOR"] || i["CONTENEDOR_LIMPIO"]) == this.activeCont); 
                     let tSeg = 0; items.forEach(i => { if ((i.auditTime || 0) > tSeg) tSeg = i.auditTime; }); 
@@ -873,10 +730,10 @@
                     localStorage.setItem('twins_cache', JSON.stringify(this.raw)); localStorage.removeItem('twins_active_cont'); 
                     fetch(this.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "completar_auditoria", contenedor: this.activeCont, tiempo: tForm, fecha: fD }) }); 
                     this.closeModal('audit-view', true); this.render();
-                    uiModal.show('success', '¡Auditoría Completada!', 'El conteo fue enviado y registrado correctamente.');
+                    uiModal.show('success', '¡Auditoría Completada!', 'El conteo fue enviado y registrado correctamente en tu Excel.');
                 }, () => { uiModal.close(); });
             },
-            viewList: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(i => `<div class="bg-white px-6 py-5 rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1">${i.CODIGO}</p><p class="text-xs font-bold text-slate-800 line-clamp-2">${this.getDesc(i)}</p></div><div class="text-right flex items-center gap-4"><div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : 'text-slate-900'}">${i.audit || 0} / ${i.CAJAS || 0}</span><span class="text-[7px] font-black text-slate-300 uppercase">Auditado</span></div></div></div>`).join(''); document.getElementById('list-view').style.display = 'flex'; },
+            viewList: function(id) { const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); document.getElementById('list-cont-id').innerText = "Ref: " + id; document.getElementById('list-items-content').innerHTML = items.map(i => `<div class="modern-card px-6 py-5 flex justify-between items-center"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-blue-600 mb-1 tracking-widest">${i.CODIGO}</p><p class="text-xs font-[900] line-clamp-2 uppercase">${this.getDesc(i)}</p></div><div class="text-right flex items-center gap-4"><div class="flex flex-col items-end"><span class="text-sm font-[900] ${i.audit >= i.CAJAS ? 'text-emerald-500' : ''}">${i.audit || 0} / ${i.CAJAS || 0}</span><span class="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-1">Auditado</span></div></div></div>`).join(''); document.getElementById('list-view').style.display = 'flex'; },
             
             generatePDF: function(id, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); const items = this.raw.filter(i => (i.CONTENEDOR || i.CONTENEDOR_LIMPIO) == id); if (items.length === 0) return; 
@@ -899,10 +756,7 @@
                 const cDiff = diff === 0 ? [16, 185, 129] : (diff > 0 ? [37, 99, 235] : [220, 38, 38]); doc.setTextColor(...cDiff); doc.setFont("helvetica", "bold"); doc.text(diff === 0 ? "CUADRADO" : `DESCUADRE (${diff > 0 ? '+' : ''}${diff})`, 170, 52);
                 
                 let fSize = 8; let hSize = 8; let pad = 3; let startY = 66;
-                if (items.length > 80) { fSize = 4.5; hSize = 5; pad = 0.5; startY = 64; }
-                else if (items.length > 50) { fSize = 5.5; hSize = 6; pad = 1; startY = 64; }
-                else if (items.length > 35) { fSize = 6.5; hSize = 7; pad = 1.5; startY = 65; }
-                else if (items.length > 25) { fSize = 7; hSize = 8; pad = 2; }
+                if (items.length > 80) { fSize = 4.5; hSize = 5; pad = 0.5; startY = 64; } else if (items.length > 50) { fSize = 5.5; hSize = 6; pad = 1; startY = 64; } else if (items.length > 35) { fSize = 6.5; hSize = 7; pad = 1.5; startY = 65; } else if (items.length > 25) { fSize = 7; hSize = 8; pad = 2; }
 
                 const b = items.map(i => { const teo = parseInt(i.CAJAS) || 0; const aud = i.audit || 0; const d = aud - teo; return [ i.CODIGO || "---", this.getDesc(i), teo, aud, d > 0 ? `+${d}` : d ]; });
                 
@@ -917,9 +771,8 @@
                 
                 let fY = doc.lastAutoTable.finalY + 15; if (fY > 275) fY = 275; 
                 doc.setDrawColor(...border); doc.line(65, fY, 145, fY); 
-                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
                 doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); 
-                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); 
                 
                 const fileName = `Auditoria_${id}.pdf`;
                 if (action === 'share' && navigator.canShare) {
@@ -955,40 +808,31 @@
                         const selM = document.getElementById('dev-filter-mes'); if(selM) { let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; }); selM.innerHTML = opts; }
                         this.isLoaded = true; this.renderHistory(); 
                     }
-                } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones o error de red</div>`; } }
+                } catch (e) { if (!silent) console.error("Error historial:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('dev-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">No hay devoluciones</div>`; } }
             },
             search: function() { 
                 this.saveDraft();
                 const q = document.getElementById('dev-search-prod').value.toLowerCase().trim(); 
                 const r = document.getElementById('dev-results'); 
                 if (q.length < 2) { r.classList.add('hidden'); return; } 
-                
-                const terms = q.split(' ');
-                let exact = []; let partial = []; 
-                const s = new Set(); 
+                const terms = q.split(' '); let exact = []; let partial = []; const s = new Set(); 
                 const catalogo = core.productos && core.productos.length > 0 ? core.productos : core.raw;
                 
                 catalogo.forEach(i => { 
                     if (i.ORIGEN === "HOJA3" || i.VENDEDOR !== undefined) return;
-                    const c = (i.CODIGO || i.SKU || "").toString().trim();
-                    const desc = core.getDesc(i).trim();
-                    const cLow = c.toLowerCase();
-                    const dLow = desc.toLowerCase();
-                    
+                    const c = (i.CODIGO || i.SKU || "").toString().trim(); const desc = core.getDesc(i).trim();
+                    const cLow = c.toLowerCase(); const dLow = desc.toLowerCase();
                     if (!s.has(c)) { 
-                        if (cLow === q) {
-                            exact.push(i); s.add(c);
-                        } else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) {
-                            partial.push(i); s.add(c);
-                        }
+                        if (cLow === q) { exact.push(i); s.add(c); } 
+                        else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) { partial.push(i); s.add(c); }
                     } 
                 }); 
                 
                 const u = [...exact, ...partial].slice(0, 12); 
                 if (u.length > 0) { 
-                    r.innerHTML = u.map(i => `<div onclick="coreDev.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-indigo-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-indigo-400 text-lg"></i></div>`).join(''); 
+                    r.innerHTML = u.map(i => `<div onclick="coreDev.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-4 border-b border-slate-100 hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-indigo-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-[900] truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-indigo-400 text-xl"></i></div>`).join(''); 
                 } else { 
-                    r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; 
+                    r.innerHTML = `<div class="p-4 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; 
                 } 
                 r.classList.remove('hidden'); 
             },
@@ -999,73 +843,47 @@
                 i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; window.updateSelectText('dev-um'); document.getElementById('dev-obs').value = ''; this.saveDraft(); this.renderItems(); 
             },
             renderItems: function() { const l = document.getElementById('dev-items-list'); const b = document.getElementById('btn-save-dev'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => { 
-                return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-indigo-600">${i.codigo}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-indigo-600">GUÍA: ${i.cantGuia} ${i.um}</span> • <span class="text-blue-600">REAL: ${i.cantReal} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`; 
+                return `<div class="modern-card p-5 flex justify-between items-center"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1">${i.codigo}</p><p class="text-xs font-[900] line-clamp-1 uppercase">${i.descripcion}</p><p class="text-[9px] font-[900] text-slate-500 mt-2"><span class="text-indigo-600">GUÍA: ${i.cantGuia} ${i.um}</span> • <span class="text-blue-600">REAL: ${i.cantReal} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreDev.removeItem(${idx})" class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 active:scale-90 flex justify-center items-center"><i class="ph-bold ph-trash text-lg"></i></button></div>`; 
             }).join(''); 
-            b.innerText = this.editingKey ? 'ACTUALIZAR TICKET' : 'GUARDAR DEVOLUCIÓN';
+            b.innerText = this.editingKey ? 'Actualizar Ticket' : 'Guardar Devolución';
             b.classList.remove('hidden'); 
             },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
             editTicket: function(t) { 
-                this.editingKey = t.cliente + "|" + t.fecha;
-                document.getElementById('dev-form-title').innerText = 'Editando Devolución';
+                this.editingKey = t.cliente + "|" + t.fecha; document.getElementById('dev-form-title').innerText = 'Editando Devolución';
                 document.getElementById('dev-cliente').value = t.cliente || ''; document.getElementById('dev-vendedor').value = t.vendedor || ''; document.getElementById('dev-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, obs: i.observaciones || '' })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('dev'); uiModal.show('alert', 'Modo Edición Activo', 'Has cargado el ticket en el formulario. Al guardar, el ticket anterior será reemplazado para no generar duplicados.'); 
             },
             
-            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de llenar el Cliente, seleccionar el Vendedor y agregar al menos un producto a la lista.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
+            save: async function() { const c = document.getElementById('dev-cliente').value.trim(); const v = document.getElementById('dev-vendedor').value; const m = document.getElementById('dev-motivo').value.trim(); if (!c || !v || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Llena el Cliente, Vendedor y agrega al menos un producto.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
                 const d = { action: this.editingKey ? "editar_devolucion" : "guardar_devolucion", oldKey: this.editingKey, cliente: c, vendedor: v, motivo: m || "DEVOLUCIÓN", fecha: f, items: this.items.map(i => ({ codigo: i.codigo, descripcion: i.descripcion, cantGuia: i.cantGuia, cantReal: i.cantReal, um: i.um, estado: i.estado, observaciones: i.obs || "" })) }; 
                 try { 
-                    if (this.editingKey) {
-                        const oldParts = this.editingKey.split('|'); const oldC = oldParts[0]; const oldF = oldParts[1];
-                        this.histMaster = this.histMaster.filter(i => !(i.CLIENTE === oldC && i.FECHA === oldF));
-                    }
+                    if (this.editingKey) { const oldParts = this.editingKey.split('|'); const oldC = oldParts[0]; const oldF = oldParts[1]; this.histMaster = this.histMaster.filter(i => !(i.CLIENTE === oldC && i.FECHA === oldF)); }
                     const p = this.items.map(i => ({ ORIGEN: "HOJA3", FECHA: f, CLIENTE: c, VENDEDOR: v, MOTIVO: m, CODIGO: i.codigo, DESCRIPCION: i.descripcion, CANT_GUIA: i.cantGuia, CANT_REAL: i.cantReal, UM: i.um, ESTADO: i.estado, OBSERVACIONES: i.obs })); 
                     this.histMaster = [...this.histMaster, ...p]; localStorage.setItem('twins_dev_cache', JSON.stringify(this.histMaster)); 
                     fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
-                    
-                    this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Guardada!', 'El ticket ha sido guardado correctamente sin duplicados.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
+                    this.clearDraft(); this.items = []; document.getElementById('dev-cliente').value = ''; document.getElementById('dev-vendedor').value = ''; document.getElementById('dev-motivo').value = ''; document.getElementById('dev-obs').value = ''; document.getElementById('dev-cant-guia').value = ''; document.getElementById('dev-cant-real').value = ''; document.getElementById('dev-um').value = 'U'; document.getElementById('dev-estado').value = 'BUEN ESTADO'; document.getElementById('dev-search-prod').value = ''; document.getElementById('dev-search-prod').removeAttribute('data-cod'); document.getElementById('dev-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Devolución Guardada!', 'El ticket ha sido guardado correctamente en tu Excel.', () => { window.changeTab('dev-history'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
             },
-            renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Registros...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; } const t = {}; 
+            renderHistory: function() { const c = document.getElementById('dev-history-cards'); if (!c) return; const bI = document.getElementById('dev-hist-search'); const fV = document.getElementById('dev-filter-vendedor'); const fM = document.getElementById('dev-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const f = fV ? fV.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sincronizando...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay devoluciones registradas aún</div>`; return; } const t = {}; 
                 
                 this.histMaster.forEach(i => { 
                     const k = i.CLIENTE + "_" + i.FECHA; 
                     if (!t[k]) t[k] = { fecha: i.FECHA, cliente: i.CLIENTE, vendedor: i.VENDEDOR, motivo: i.MOTIVO, items: [] }; 
-                    
-                    const getV = (keys) => {
-                        for(let key of keys) {
-                            const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key);
-                            if (found && i[found] !== "" && i[found] !== undefined) return i[found];
-                        }
-                        return null;
-                    };
-
+                    const getV = (keys) => { for(let key of keys) { const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key); if (found && i[found] !== "" && i[found] !== undefined) return i[found]; } return null; };
                     let cantGuia = getV(['CANTGUIA']); let cantReal = getV(['CANTREAL']); let umStr = getV(['UM', 'UNIDADMEDIDA']);
-                    if (cantGuia === null) cantGuia = i.CANTIDAD ? i.CANTIDAD.toString().split('|')[0] : 0;
-                    if (cantReal === null) cantReal = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[1] || i.CANTIDAD.toString().split('|')[0]) : 0;
-                    if (umStr === null) umStr = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[2] || 'U') : 'U';
-                    
+                    if (cantGuia === null) cantGuia = i.CANTIDAD ? i.CANTIDAD.toString().split('|')[0] : 0; if (cantReal === null) cantReal = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[1] || i.CANTIDAD.toString().split('|')[0]) : 0; if (umStr === null) umStr = i.CANTIDAD ? (i.CANTIDAD.toString().split('|')[2] || 'U') : 'U';
                     const existingIdx = t[k].items.findIndex(item => item.codigo === i.CODIGO); 
-                    if (existingIdx > -1) { 
-                        t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: umStr, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; 
-                    } else { 
-                        t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: umStr, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); 
-                    } 
+                    if (existingIdx > -1) { t[k].items[existingIdx] = { codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: umStr, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }; } 
+                    else { t[k].items.push({ codigo: i.CODIGO, descripcion: i.DESCRIPCION, cantGuia: cantGuia, cantReal: cantReal, um: umStr, estado: i.ESTADO, observaciones: i.OBSERVACIONES || i.OBS || i.OBSERVACION || "" }); } 
                 }); 
                 
                 const fil = Object.values(t).filter(tk => { const mB = tk.cliente.toLowerCase().includes(b) || tk.items.some(i => (i.codigo||"").toString().toLowerCase().includes(b)); const mV = (f === "TODOS") || (tk.vendedor === f); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mV && mMes; }).reverse(); const iT = document.getElementById('stat-dev-total'); const iF = document.getElementById('stat-dev-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (f === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } 
                 c.innerHTML = fil.map(tk => { 
                     const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
-                    return `<div class="native-card p-5 mb-4 border-l-4 border-indigo-500 shadow-sm bg-white rounded-2xl"><div class="flex justify-between items-start mb-4"><div class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-4"><div class="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">VEND: ${tk.vendedor}</p></div></div>
-                    <div class="flex gap-1.5 mt-2">
-                        <button type="button" onclick='coreDev.editTicket(${j})' class="flex-[2] bg-slate-900 text-white h-11 rounded-[14px] flex items-center justify-center font-bold text-[10px] uppercase tracking-widest active:scale-95 transition-transform"><i class="ph-bold ph-pencil-simple mr-1 text-[16px]"></i> EDIT</button>
-                        <button type="button" onclick='coreDev.viewTicketItems(${j})' class="flex-1 bg-blue-50 text-blue-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[10px] uppercase border border-blue-200 active:scale-95 transition-transform"><i class="ph-bold ph-eye mr-1 text-[16px]"></i> VER</button>
-                        <button type="button" onclick='coreDev.generatePDF(${j}, "save")' class="w-12 bg-red-50 text-red-600 h-11 rounded-[14px] flex items-center justify-center border border-red-200 active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-[18px]"></i></button>
-                        <button type="button" onclick='coreDev.generatePDF(${j}, "share")' class="w-12 bg-emerald-50 text-emerald-600 h-11 rounded-[14px] flex items-center justify-center border border-emerald-200 active:scale-95 transition-transform shadow-sm"><i class="ph-bold ph-whatsapp-logo text-[18px]"></i></button>
-                    </div></div>`; 
+                    return `<div class="modern-card p-6 mb-5 border-l-4 border-indigo-500 relative overflow-hidden"><div class="flex justify-between items-start mb-5"><div class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 px-3 py-1.5 rounded-lg text-[10px] font-[900] tracking-widest uppercase">DEVOLUCIÓN</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-14 w-14 rounded-2xl modern-input flex items-center justify-center text-indigo-500 shadow-inner"><i class="ph-bold ph-user text-2xl"></i></div><div class="flex-1"><h3 class="text-sm font-[900] uppercase leading-tight">${tk.cliente}</h3><p class="text-[9px] font-[900] tracking-widest text-slate-400 mt-2 uppercase">VEND: ${tk.vendedor}</p></div></div><div class="flex gap-2"><button type="button" onclick='coreDev.editTicket(${j})' class="flex-[2] bg-slate-900 dark:bg-white dark:text-black text-white h-12 rounded-[16px] flex items-center justify-center font-[900] text-[10px] uppercase tracking-widest active:scale-95 transition-transform shadow-lg"><i class="ph-bold ph-pencil-simple mr-1 text-lg"></i> EDITAR</button><button type="button" onclick='coreDev.viewTicketItems(${j})' class="flex-1 modern-input h-12 rounded-[16px] flex items-center justify-center font-[900] text-[10px] uppercase active:scale-95 transition-transform"><i class="ph-bold ph-list-dashes mr-1 text-lg"></i></button><button type="button" onclick='coreDev.generatePDF(${j}, "save")' class="w-12 modern-input text-red-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-xl"></i></button><button type="button" onclick='coreDev.generatePDF(${j}, "share")' class="w-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-whatsapp-logo text-xl"></i></button></div></div>`; 
                 }).join(''); 
             },
-            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
+            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "CLIENTE: " + t.cliente; l.innerHTML = t.items.map(i => { return `<div class="modern-card px-6 py-5 flex justify-between items-center"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-indigo-600 tracking-widest mb-1 uppercase">${i.codigo}</p><p class="text-xs font-[900] line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-[900] text-slate-400 mt-2 tracking-widest uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-[10px] font-[900] text-indigo-600">G: ${i.cantGuia} <span class="text-[8px]">${i.um}</span></span><span class="text-[10px] font-[900] text-blue-600 mt-1">R: ${i.cantReal} <span class="text-[8px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             
-            // --- DISEÑO PDF DEVOLUCIONES CORPORATIVO (ECO-PRINT + SHARE) ---
             generatePDF: function(d, action = 'save') { 
                 const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
                 const dark = [15, 23, 42]; const border = [203, 213, 225];
@@ -1093,9 +911,8 @@
                 });
                 
                 const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(...border); doc.line(65, fY, 145, fY); 
-                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
                 doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); 
-                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); 
                 
                 const fileName = `Devolucion_${d.cliente.replace(/\s+/g,'_')}.pdf`;
                 if (action === 'share' && navigator.canShare) {
@@ -1114,285 +931,118 @@
                 const draft = { personal: document.getElementById('mkg-personal').value, motivo: document.getElementById('mkg-motivo').value, cant: document.getElementById('mkg-cant').value, um: document.getElementById('mkg-um').value, estado: document.getElementById('mkg-estado').value, searchVal: searchInput.value, searchCod: searchInput.dataset.cod || "", searchDesc: searchInput.dataset.desc || "", items: this.items, editingKey: this.editingKey };
                 localStorage.setItem('twins_mkg_draft', JSON.stringify(draft));
             },
-            clearDraft: function() { this.editingKey = null; document.getElementById('mkg-form-title').innerText = 'Nuevo Pedido Marketing'; localStorage.removeItem('twins_mkg_draft'); },
+            clearDraft: function() { this.editingKey = null; document.getElementById('mkg-form-title').innerText = 'Orden de Marketing'; localStorage.removeItem('twins_mkg_draft'); },
             fetchHist: async function(silent = false) {
                 try {
                     const data = await window.safeFetch(core.url + "?type=historial_mkg"); 
                     if(data && Array.isArray(data)) {
-                        this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => {
-                            let f = i.FECHA || "";
-                            if (typeof f === 'string' && f.includes('T')) {
-                                const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
-                            } else if (f instanceof Date) {
-                                f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`;
-                            } else {
-                                const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
-                            }
-                            return { ...i, FECHA: f };
-                        });
-                        
+                        this.histMaster = data.filter(i => (i.PERSONAL && String(i.PERSONAL).trim() !== '') || (i.SKU && String(i.SKU).trim() !== '') || (i.CODIGO && String(i.CODIGO).trim() !== '')).map(i => { let f = i.FECHA || ""; if (typeof f === 'string' && f.includes('T')) { const d = new Date(f); f = `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`; } else if (f instanceof Date) { f = `${String(f.getUTCDate()).padStart(2, '0')}/${String(f.getUTCMonth() + 1).padStart(2, '0')}/${f.getUTCFullYear()}`; } else { const p = f.toString().split('/'); if(p.length === 3) f = `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`; } return { ...i, FECHA: f }; });
                         localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
-
-                        const uM = new Set();
-                        this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
-                        const selM = document.getElementById('mkg-filter-mes');
-                        if(selM) {
-                            let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-                            Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; });
-                            selM.innerHTML = opts;
-                        }
-
+                        const uM = new Set(); this.histMaster.forEach(i => { if(i.FECHA && i.FECHA.includes('/')) { const p = i.FECHA.split('/'); if(p.length >= 3) uM.add(`${p[1]}/${p[2]}`); } });
+                        const selM = document.getElementById('mkg-filter-mes'); if(selM) { let opts = `<option value="TODOS">Mes</option>`; const mesesN = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; Array.from(uM).sort((a,b) => { const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/'); return new Date(ya, parseInt(ma)-1) - new Date(yb, parseInt(mb)-1); }).reverse().forEach(my => { const [m, y] = my.split('/'); opts += `<option value="${my}">${mesesN[parseInt(m)-1]} ${y}</option>`; }); selM.innerHTML = opts; }
                         this.isLoaded = true; this.renderHistory(); 
                     }
-                } catch (e) { 
-                    if (!silent) console.error("Error historial marketing:", e); 
-                    this.isLoaded = true; 
-                    if (this.histMaster.length === 0) {
-                        const c = document.getElementById('mkg-history-cards'); 
-                        if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">No hay registros de marketing aún</div>`; 
-                    }
-                }
+                } catch (e) { if (!silent) console.error("Error historial marketing:", e); this.isLoaded = true; if (this.histMaster.length === 0) { const c = document.getElementById('mkg-history-cards'); if(c) c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">No hay registros de marketing</div>`; } }
             },
             search: function() { 
                 this.saveDraft();
-                const q = document.getElementById('mkg-search-prod').value.toLowerCase().trim(); 
-                const r = document.getElementById('mkg-results'); 
+                const q = document.getElementById('mkg-search-prod').value.toLowerCase().trim(); const r = document.getElementById('mkg-results'); 
                 if (q.length < 2) { r.classList.add('hidden'); return; } 
-                
-                const terms = q.split(' ');
-                let exact = []; let partial = []; 
-                const s = new Set(); 
+                const terms = q.split(' '); let exact = []; let partial = []; const s = new Set(); 
                 const catalogo = core.productos && core.productos.length > 0 ? core.productos : core.raw;
                 
                 catalogo.forEach(i => { 
                     if (i.ORIGEN === "HOJA3") return;
-                    const c = (i.CODIGO || i.SKU || "").toString().trim();
-                    const desc = core.getDesc(i).trim();
-                    const cLow = c.toLowerCase();
-                    const dLow = desc.toLowerCase();
-                    
+                    const c = (i.CODIGO || i.SKU || "").toString().trim(); const desc = core.getDesc(i).trim();
+                    const cLow = c.toLowerCase(); const dLow = desc.toLowerCase();
                     if (!s.has(c)) { 
-                        if (cLow === q) {
-                            exact.push(i); s.add(c);
-                        } else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) {
-                            partial.push(i); s.add(c);
-                        }
+                        if (cLow === q) { exact.push(i); s.add(c); } 
+                        else if (terms.every(t => cLow.includes(t) || dLow.includes(t))) { partial.push(i); s.add(c); }
                     } 
                 }); 
                 
                 const u = [...exact, ...partial].slice(0, 12); 
                 if (u.length > 0) { 
-                    r.innerHTML = u.map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-zinc-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-bold text-slate-700 truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-zinc-400 text-lg"></i></div>`).join(''); 
-                } else { 
-                    r.innerHTML = `<div class="p-3 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; 
-                } 
+                    r.innerHTML = u.map(i => `<div onclick="coreMkg.selectItem('${i.CODIGO||i.SKU}', '${core.getDesc(i).replace(/'/g, "\\'")}')" class="p-4 border-b border-slate-100 hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between"><div class="flex-1 pr-2"><p class="text-[10px] font-black text-zinc-600">${i.CODIGO||i.SKU}</p><p class="text-xs font-[900] truncate">${core.getDesc(i)}</p></div><i class="ph-bold ph-plus-circle text-zinc-400 text-xl"></i></div>`).join(''); 
+                } else { r.innerHTML = `<div class="p-4 text-xs text-slate-400 font-bold text-center">Sin resultados</div>`; } 
                 r.classList.remove('hidden'); 
             },
-            selectItem: function(c, d) { 
-                const i = document.getElementById('mkg-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('mkg-results').classList.add('hidden'); 
-                this.saveDraft();
-            },
-            addItem: function() { 
-                const i = document.getElementById('mkg-search-prod'); const c = parseInt(document.getElementById('mkg-cant').value); const u = document.getElementById('mkg-um').value; const e = document.getElementById('mkg-estado').value; 
-                if (!i.dataset.cod || isNaN(c) || c <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y especifica la cantidad.'); return; } 
-                
+            selectItem: function(c, d) { const i = document.getElementById('mkg-search-prod'); i.value = `${c} - ${d}`; i.dataset.cod = c; i.dataset.desc = d; document.getElementById('mkg-results').classList.add('hidden'); this.saveDraft(); },
+            
+            addItem: function() { const i = document.getElementById('mkg-search-prod'); const c = parseInt(document.getElementById('mkg-cant').value); const u = document.getElementById('mkg-um').value; const e = document.getElementById('mkg-estado').value; if (!i.dataset.cod || isNaN(c) || c <= 0) { uiModal.show('alert', 'Datos Faltantes', 'Por favor, agrega el producto y especifica la cantidad.'); return; } 
                 this.items.push({ sku: i.dataset.cod, descripcion: i.dataset.desc, cantidad: c, um: u, estado: e }); 
-                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; window.updateSelectText('mkg-um');
-                this.saveDraft();
-                this.renderItems(); 
+                i.value = ''; i.removeAttribute('data-cod'); i.removeAttribute('data-desc'); document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; window.updateSelectText('mkg-um'); this.saveDraft(); this.renderItems(); 
             },
-            renderItems: function() { 
-                const l = document.getElementById('mkg-items-list'); const b = document.getElementById('btn-save-mkg'); 
-                if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } 
-                l.innerHTML = this.items.map((i, idx) => {
-                    return `<div class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm"><div class="flex-1 pr-4"><p class="text-[10px] font-black text-zinc-600">${i.sku}</p><p class="text-xs font-bold line-clamp-1">${i.descripcion}</p><p class="text-[9px] font-bold text-slate-500 mt-1"><span class="text-zinc-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-8 h-8 rounded-lg bg-red-50 text-red-500"><i class="ph-bold ph-trash"></i></button></div>`;
+            renderItems: function() { const l = document.getElementById('mkg-items-list'); const b = document.getElementById('btn-save-mkg'); if (this.items.length === 0) { l.innerHTML = ''; b.classList.add('hidden'); return; } l.innerHTML = this.items.map((i, idx) => {
+                    return `<div class="modern-card p-5 flex justify-between items-center"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-zinc-600 tracking-widest mb-1">${i.sku}</p><p class="text-xs font-[900] line-clamp-1 uppercase">${i.descripcion}</p><p class="text-[9px] font-[900] text-slate-500 mt-2"><span class="text-zinc-600">${i.cantidad} ${i.um}</span> • ${i.estado}</p></div><button type="button" onclick="coreMkg.removeItem(${idx})" class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 active:scale-90 flex justify-center items-center"><i class="ph-bold ph-trash text-lg"></i></button></div>`;
                 }).join(''); 
-                b.innerText = this.editingKey ? 'ACTUALIZAR PEDIDO' : 'GUARDAR PEDIDO';
-                b.classList.remove('hidden'); 
+                b.innerText = this.editingKey ? 'Actualizar Orden' : 'Confirmar Orden'; b.classList.remove('hidden'); 
             },
             removeItem: function(idx) { this.items.splice(idx, 1); this.saveDraft(); this.renderItems(); },
-            editTicket: function(t) {
-                this.editingKey = t.personal + "|" + t.fecha + "|" + t.motivo;
-                document.getElementById('mkg-form-title').innerText = 'Editando Pedido';
-                document.getElementById('mkg-personal').value = t.personal || ''; document.getElementById('mkg-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado }));
-                window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('mkg-form');
-                uiModal.show('alert', 'Modo Edición Activo', 'Has cargado el pedido en el formulario. Al guardar, el registro anterior será reemplazado para no generar duplicados.');
-            },
-            save: async function() { 
-                const p = document.getElementById('mkg-personal').value; const m = document.getElementById('mkg-motivo').value.trim(); 
-                if (!p || !m || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Asegúrate de seleccionar el Personal, ingresar el Motivo y agregar productos a la lista.'); return; } 
-                
-                window.showLoading(); 
-                const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
-                
+            editTicket: function(t) { this.editingKey = t.personal + "|" + t.fecha + "|" + t.motivo; document.getElementById('mkg-form-title').innerText = 'Editando Orden'; document.getElementById('mkg-personal').value = t.personal || ''; document.getElementById('mkg-motivo').value = t.motivo || ''; this.items = t.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado })); window.syncAllSelectTexts(); this.saveDraft(); this.renderItems(); window.changeTab('mkg-form'); uiModal.show('alert', 'Modo Edición Activo', 'Has cargado el pedido en el formulario. Al guardar, el registro anterior será reemplazado para no generar duplicados.'); },
+            save: async function() { const p = document.getElementById('mkg-personal').value; const m = document.getElementById('mkg-motivo').value.trim(); if (!p || !m || this.items.length === 0) { uiModal.show('alert', 'Formulario Incompleto', 'Selecciona Personal, Motivo y agrega productos.'); return; } window.showLoading(); const h = new Date(); const f = `${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`; 
                 const d = { action: this.editingKey ? "editar_mkg" : "guardar_mkg", oldKey: this.editingKey, personal: p, motivo: m, fecha: f, items: this.items.map(i => ({ sku: i.sku, descripcion: i.descripcion, cantidad: i.cantidad, um: i.um, estado: i.estado })) }; 
-                
                 try { 
-                    if (this.editingKey) {
-                        const oldParts = this.editingKey.split('|'); const oldP = oldParts[0]; const oldF = oldParts[1]; const oldM = oldParts[2];
-                        this.histMaster = this.histMaster.filter(i => !(i.PERSONAL === oldP && i.FECHA === oldF && i.MOTIVO === oldM));
-                    }
+                    if (this.editingKey) { const oldParts = this.editingKey.split('|'); const oldP = oldParts[0]; const oldF = oldParts[1]; const oldM = oldParts[2]; this.histMaster = this.histMaster.filter(i => !(i.PERSONAL === oldP && i.FECHA === oldF && i.MOTIVO === oldM)); }
                     const arr = this.items.map(i => ({ FECHA: f, PERSONAL: p, MOTIVO: m, SKU: i.sku, DESCRIPCION: i.descripcion, CANTIDAD: i.cantidad, UM: i.um, ESTADO: i.estado })); 
-                    this.histMaster = [...this.histMaster, ...arr]; 
-                    localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster));
-                    
-                    fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
-                    
-                    this.clearDraft(); this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); 
-                    window.syncAllSelectTexts(); this.renderItems(); window.hideLoading();
-                    uiModal.show('success', '¡Pedido Guardado!', 'El pedido de marketing fue guardado con éxito sin generar duplicados.', () => { window.changeTab('marketing'); this.renderHistory(); });
-                } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
+                    this.histMaster = [...this.histMaster, ...arr]; localStorage.setItem('twins_mkg_cache', JSON.stringify(this.histMaster)); fetch(core.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }); 
+                    this.clearDraft(); this.items = []; document.getElementById('mkg-personal').value = ''; document.getElementById('mkg-motivo').value = ''; document.getElementById('mkg-cant').value = ''; document.getElementById('mkg-um').value = 'U'; document.getElementById('mkg-estado').value = 'PENDIENTE'; document.getElementById('mkg-search-prod').value = ''; document.getElementById('mkg-search-prod').removeAttribute('data-cod'); document.getElementById('mkg-search-prod').removeAttribute('data-desc'); window.syncAllSelectTexts(); this.renderItems(); window.hideLoading(); uiModal.show('success', '¡Pedido Guardado!', 'El pedido de marketing fue guardado en tu Excel sin duplicados.', () => { window.changeTab('marketing'); this.renderHistory(); }); } catch(e) { window.hideLoading(); uiModal.show('alert', 'Error', 'Ocurrió un error guardando el registro.'); } 
             },
-            renderHistory: function() { 
-                const c = document.getElementById('mkg-history-cards'); if (!c) return; 
-                const bI = document.getElementById('mkg-hist-search'); const fP = document.getElementById('mkg-filter-personal'); const fM = document.getElementById('mkg-filter-mes'); 
-                const b = bI ? bI.value.toLowerCase().trim() : ""; const pers = fP ? fP.value : "TODOS"; const mes = fM ? fM.value : "TODOS";
-                
-                if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] animate-pulse">Cargando Hoja 4...</div>`; return; }
-                if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase text-[10px]">No hay registros de marketing aún</div>`; return; }
-                
-                const t = {}; 
+            renderHistory: function() { const c = document.getElementById('mkg-history-cards'); if (!c) return; const bI = document.getElementById('mkg-hist-search'); const fP = document.getElementById('mkg-filter-personal'); const fM = document.getElementById('mkg-filter-mes'); const b = bI ? bI.value.toLowerCase().trim() : ""; const pers = fP ? fP.value : "TODOS"; const mes = fM ? fM.value : "TODOS"; if (!this.isLoaded && this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sincronizando...</div>`; return; } if (this.histMaster.length === 0) { c.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">No hay registros aún</div>`; return; } const t = {}; 
                 this.histMaster.forEach(i => { 
                     if (!i.PERSONAL && !i.SKU && !i.CODIGO) return;
-
-                    const personal = i.PERSONAL || "SIN ASIGNAR";
-                    const fecha = i.FECHA || "---";
-                    const motivo = i.MOTIVO || "PEDIDO DE MARKETING";
-                    const k = personal + "_" + fecha + "_" + motivo; 
-                    
-                    const getV = (keys) => {
-                        for(let key of keys) {
-                            const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key);
-                            if (found && i[found] !== "" && i[found] !== undefined) return i[found];
-                        }
-                        return null;
-                    };
-
-                    const cantVal = getV(['CANTIDAD', 'CANT']) !== null ? getV(['CANTIDAD', 'CANT']) : 0;
-                    const umVal = getV(['UM', 'UNIDADMEDIDA']) !== null ? getV(['UM', 'UNIDADMEDIDA']) : 'U';
-
+                    const personal = i.PERSONAL || "SIN ASIGNAR"; const fecha = i.FECHA || "---"; const motivo = i.MOTIVO || "PEDIDO DE MARKETING"; const k = personal + "_" + fecha + "_" + motivo; 
+                    const getV = (keys) => { for(let key of keys) { const found = Object.keys(i).find(kx => kx.toUpperCase().replace(/[\s\._]/g,'') === key); if (found && i[found] !== "" && i[found] !== undefined) return i[found]; } return null; };
+                    const cantVal = getV(['CANTIDAD', 'CANT']) !== null ? getV(['CANTIDAD', 'CANT']) : 0; const umVal = getV(['UM', 'UNIDADMEDIDA']) !== null ? getV(['UM', 'UNIDADMEDIDA']) : 'U';
                     if (!t[k]) t[k] = { fecha: fecha, personal: personal, motivo: motivo, items: [] }; 
-                    
                     const existingIdx = t[k].items.findIndex(item => item.sku === (i.SKU || i.CODIGO));
-                    if (existingIdx > -1) {
-                        t[k].items[existingIdx] = { sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: cantVal, um: umVal, estado: i.ESTADO || "PENDIENTE" };
-                    } else {
-                        t[k].items.push({ sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: cantVal, um: umVal, estado: i.ESTADO || "PENDIENTE" }); 
-                    }
+                    if (existingIdx > -1) { t[k].items[existingIdx] = { sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: cantVal, um: umVal, estado: i.ESTADO || "PENDIENTE" }; } 
+                    else { t[k].items.push({ sku: i.SKU || i.CODIGO || "S/N", descripcion: i.DESCRIPCION || i.PRODUCTO || "---", cantidad: cantVal, um: umVal, estado: i.ESTADO || "PENDIENTE" }); }
                 }); 
-                
-                const fil = Object.values(t).filter(tk => { 
-                    const mB = tk.motivo.toLowerCase().includes(b) || tk.items.some(i => (i.sku||"").toString().toLowerCase().includes(b) || (i.descripcion||"").toLowerCase().includes(b)); 
-                    const mP = (pers === "TODOS") || (tk.personal.toUpperCase() === pers.toUpperCase()); 
-                    let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } 
-                    return mB && mP && mMes; 
-                }).reverse(); 
-                
-                const iT = document.getElementById('stat-mkg-total'); const iF = document.getElementById('stat-mkg-filtrado'); 
-                if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (pers === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; 
-                
-                if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } 
-                
+                const fil = Object.values(t).filter(tk => { const mB = tk.motivo.toLowerCase().includes(b) || tk.items.some(i => (i.sku||"").toString().toLowerCase().includes(b) || (i.descripcion||"").toLowerCase().includes(b)); const mP = (pers === "TODOS") || (tk.personal.toUpperCase() === pers.toUpperCase()); let mMes = true; if(mes !== "TODOS") { const p = tk.fecha.split('/'); if(p.length >= 3) { mMes = (`${p[1]}/${p[2]}` === mes); } else mMes = false; } return mB && mP && mMes; }).reverse(); const iT = document.getElementById('stat-mkg-total'); const iF = document.getElementById('stat-mkg-filtrado'); if(iT) iT.innerText = Object.keys(t).length; if(iF) iF.innerText = (pers === "TODOS" && mes === "TODOS") ? "Gral" : fil.length; if (fil.length === 0) { c.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold uppercase text-[10px]">Sin coincidencias</div>`; return; } 
                 c.innerHTML = fil.map(tk => { 
-                    const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP');
-                    const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
-                    return `<div class="native-card p-5 mb-4 border-l-4 border-zinc-500 shadow-sm bg-white rounded-2xl relative overflow-hidden">
-                        <div class="flex flex-wrap justify-between items-start mb-4 gap-2">
-                            <div class="flex items-center gap-2">
-                                <div class="bg-zinc-100 text-zinc-700 px-3 py-1 rounded-lg text-[10px] font-[900] uppercase italic dark:bg-zinc-900/30 dark:text-zinc-400">MKTG: ${tk.motivo}</div>
-                                ${isSAP ? `<div class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest flex items-center gap-1 shadow-sm"><i class="ph-bold ph-check-circle"></i> SAP</div>` : ''}
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-400 mt-1">${tk.fecha}</span>
-                        </div>
-                        <div class="flex items-center gap-4 mb-4"><div class="h-12 w-12 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-600 border border-zinc-200"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[800] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-bold text-slate-400 mt-1">${tk.items.length} PRODUCTOS</p></div></div>
-                        <div class="flex gap-1.5 mt-2">
-                            <button type="button" onclick='coreMkg.editTicket(${j})' class="flex-[2] bg-zinc-800 text-white h-11 rounded-[14px] flex items-center justify-center font-bold text-[10px] uppercase tracking-widest active:scale-95 transition-transform"><i class="ph-bold ph-pencil-simple mr-1 text-[16px]"></i> EDIT</button>
-                            <button type="button" onclick='coreMkg.viewTicketItems(${j})' class="flex-1 bg-blue-50 text-blue-600 h-11 rounded-[14px] flex items-center justify-center font-bold text-[10px] uppercase border border-blue-200 active:scale-95 transition-transform"><i class="ph-bold ph-eye mr-1 text-[16px]"></i> VER</button>
-                            <button type="button" onclick='coreMkg.generatePDF(${j}, "save")' class="w-12 bg-red-50 text-red-600 h-11 rounded-[14px] flex items-center justify-center border border-red-200 active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-[18px]"></i></button>
-                            <button type="button" onclick='coreMkg.generatePDF(${j}, "share")' class="w-12 bg-emerald-50 text-emerald-600 h-11 rounded-[14px] flex items-center justify-center border border-emerald-200 active:scale-95 transition-transform shadow-sm"><i class="ph-bold ph-whatsapp-logo text-[18px]"></i></button>
-                        </div></div>`; 
+                    const isSAP = tk.items.some(i => i.estado && i.estado.toString().toUpperCase() === 'SAP'); const j = JSON.stringify(tk).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
+                    return `<div class="modern-card p-6 mb-5 border-l-4 border-zinc-500 relative overflow-hidden"><div class="flex flex-wrap justify-between items-start mb-5 gap-2"><div class="flex items-center gap-2"><div class="bg-zinc-100 dark:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300 px-3 py-1.5 rounded-lg text-[10px] font-[900] tracking-widest uppercase">MKTG: ${tk.motivo}</div>${isSAP ? `<div class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest flex items-center gap-1 shadow-sm"><i class="ph-bold ph-check-circle"></i> SAP</div>` : ''}</div><span class="text-[10px] font-bold text-slate-400">${tk.fecha}</span></div><div class="flex items-center gap-4 mb-6"><div class="h-14 w-14 rounded-2xl modern-input flex items-center justify-center text-zinc-600 shadow-inner"><i class="ph-bold ph-megaphone text-2xl"></i></div><div class="flex-1 pr-12"><h3 class="text-sm font-[900] uppercase leading-tight">${tk.personal}</h3><p class="text-[9px] font-[900] tracking-widest text-slate-400 mt-2 uppercase">${tk.items.length} PRODUCTOS</p></div></div><div class="flex gap-2"><button type="button" onclick='coreMkg.editTicket(${j})' class="flex-[2] bg-slate-900 dark:bg-white dark:text-black text-white h-12 rounded-[16px] flex items-center justify-center font-[900] text-[10px] uppercase tracking-widest active:scale-95 transition-transform shadow-lg"><i class="ph-bold ph-pencil-simple mr-1 text-lg"></i> EDITAR</button><button type="button" onclick='coreMkg.viewTicketItems(${j})' class="flex-1 modern-input h-12 rounded-[16px] flex items-center justify-center font-[900] text-[10px] uppercase active:scale-95 transition-transform"><i class="ph-bold ph-list-dashes mr-1 text-lg"></i></button><button type="button" onclick='coreMkg.generatePDF(${j}, "save")' class="w-12 modern-input text-red-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-file-pdf text-xl"></i></button><button type="button" onclick='coreMkg.generatePDF(${j}, "share")' class="w-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 h-12 rounded-[16px] flex items-center justify-center active:scale-95 transition-transform"><i class="ph-bold ph-whatsapp-logo text-xl"></i></button></div></div>`; 
                 }).join(''); 
             },
-            viewTicketItems: function(t) { 
-                const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); 
-                if(!l || !m || !mo) return; m.innerText = "PERSONAL: " + t.personal; 
-                l.innerHTML = t.items.map(i => {
-                    return `<div class="bg-white px-6 py-5 rounded-[24px] border flex justify-between shadow-sm mb-2 border-slate-100"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-zinc-600 tracking-widest mb-1 uppercase">${i.sku}</p><p class="text-xs font-bold text-slate-800 line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-sm font-[900] text-zinc-600">${i.cantidad} <span class="text-[10px]">${i.um}</span></span></div></div>`
-                }).join(''); 
-                mo.style.display = 'flex'; 
-            },
-            
+            viewTicketItems: function(t) { const l = document.getElementById('list-items-content'); const m = document.getElementById('list-cont-id'); const mo = document.getElementById('list-view'); if(!l || !m || !mo) return; m.innerText = "PERSONAL: " + t.personal; l.innerHTML = t.items.map(i => { return `<div class="modern-card px-6 py-5 flex justify-between items-center"><div class="flex-1 pr-4"><p class="text-[10px] font-[900] text-zinc-600 tracking-widest mb-1 uppercase">${i.sku}</p><p class="text-xs font-[900] line-clamp-2 uppercase">${i.descripcion}</p><p class="text-[8px] font-[900] text-slate-400 mt-2 tracking-widest uppercase">ESTADO: ${i.estado || 'OK'}</p></div><div class="text-right flex flex-col items-end justify-center"><span class="text-sm font-[900] text-zinc-600">${i.cantidad} <span class="text-[10px]">${i.um}</span></span></div></div>` }).join(''); mo.style.display = 'flex'; },
             generatePDF: function(d, action = 'save') { 
-                const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-                const dark = [15, 23, 42]; const border = [203, 213, 225];
-                
+                const { jsPDF } = window.jspdf; const doc = new jsPDF(); const dark = [15, 23, 42]; const border = [203, 213, 225];
                 doc.setTextColor(245, 245, 245); doc.setFontSize(100); doc.setFont("helvetica", "bold"); doc.text("TWINS", 105, 160, { align: "center", angle: 45 });
-                
                 doc.setTextColor(...dark); doc.setFontSize(22); doc.text("TWINS", 14, 22); 
                 doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 116, 139); doc.text("LOGÍSTICA", 14, 27);
                 doc.setFontSize(16); doc.setTextColor(...dark); doc.setFont("helvetica", "bold"); doc.text("ORDEN DE MARKETING", 196, 22, { align: "right" }); 
                 doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(`REF: ${d.motivo.substring(0, 20).toUpperCase()}`, 196, 27, { align: "right" });
                 doc.setDrawColor(...border); doc.setLineWidth(0.5); doc.line(14, 32, 196, 32);
-                
                 doc.setDrawColor(...border); doc.setFillColor(255, 255, 255); doc.roundedRect(14, 38, 182, 22, 3, 3, 'D');
                 doc.setTextColor(...dark); doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.text("FECHA", 20, 46); doc.text("PERSONAL AUTORIZADO", 70, 46); doc.text("MOTIVO DE SALIDA", 130, 46);
                 doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.fecha || "---", 20, 52); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(d.personal || "---", 70, 52); doc.setFont("helvetica", "normal"); doc.setTextColor(71, 85, 105); doc.text(d.motivo || "---", 130, 52);
-                
                 const tableBody = d.items.map(i => [ i.sku, i.descripcion, `${i.cantidad} ${i.um}`, i.estado || '---' ]);
-                doc.autoTable({ 
-                    startY: 66, head: [['SKU', 'PRODUCTO', 'CANTIDAD', 'ESTADO']], body: tableBody, theme: 'grid', 
-                    headStyles: { fillColor: [241, 245, 249], textColor: dark, fontSize: 8, fontStyle: 'bold', halign: 'center', lineColor: border, lineWidth: 0.1 }, 
-                    bodyStyles: { fontSize: 7, textColor: [51, 65, 85], lineColor: border }, 
-                    columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 3: { cellWidth: 35, halign: 'center', fontStyle: 'bold' } }, 
-                    alternateRowStyles: { fillColor: [250, 250, 250] }, 
-                    didParseCell: function(data) { if(data.section === 'body' && data.column.index === 3) { const v = data.cell.raw.toString().toUpperCase(); if(v === 'SAP') data.cell.styles.textColor = [16, 185, 129]; else if(v === 'ENTREGADO') data.cell.styles.textColor = [37, 99, 235]; else data.cell.styles.textColor = [245, 158, 11]; } } 
-                });
-                
+                doc.autoTable({ startY: 66, head: [['SKU', 'PRODUCTO', 'CANTIDAD', 'ESTADO']], body: tableBody, theme: 'grid', headStyles: { fillColor: [241, 245, 249], textColor: dark, fontSize: 8, fontStyle: 'bold', halign: 'center', lineColor: border, lineWidth: 0.1 }, bodyStyles: { fontSize: 7, textColor: [51, 65, 85], lineColor: border }, columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' }, 3: { cellWidth: 35, halign: 'center', fontStyle: 'bold' } }, alternateRowStyles: { fillColor: [250, 250, 250] }, didParseCell: function(data) { if(data.section === 'body' && data.column.index === 3) { const v = data.cell.raw.toString().toUpperCase(); if(v === 'SAP') data.cell.styles.textColor = [16, 185, 129]; else if(v === 'ENTREGADO') data.cell.styles.textColor = [37, 99, 235]; else data.cell.styles.textColor = [245, 158, 11]; } } });
                 const fY = doc.lastAutoTable.finalY + 35; doc.setDrawColor(...border); doc.line(65, fY, 145, fY); 
-                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...dark); doc.text("Revisión autorizada por J. Angelo Nuñez Durand", 105, fY + 6, { align: "center" }); 
                 doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("Asist. Inventario Logístico", 105, fY + 11, { align: "center" }); 
-                doc.setFont("helvetica", "italic"); doc.text("Revisión autorizada", 105, fY + 16, { align: "center" }); 
-                
                 const fileName = `Mktg_${d.personal.replace(/\s+/g,'_')}.pdf`;
-                if (action === 'share' && navigator.canShare) {
-                    const blob = doc.output('blob'); const file = new File([blob], fileName, { type: 'application/pdf' });
-                    if (navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: fileName, text: `Adjunto reporte de Marketing de ${d.personal}` }).catch(err => console.log(err)); } else { doc.save(fileName); }
-                } else { doc.save(fileName); }
+                if (action === 'share' && navigator.canShare) { const blob = doc.output('blob'); const file = new File([blob], fileName, { type: 'application/pdf' }); if (navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: fileName, text: `Adjunto reporte de Marketing de ${d.personal}` }).catch(err => console.log(err)); } else { doc.save(fileName); } } else { doc.save(fileName); }
             }
         };
 
-        // BLOQUEO DE NAVEGADOR CONTRA CIERRES O ACTUALIZACIONES ACCIDENTALES
         window.addEventListener('beforeunload', (e) => {
-            const isAuditing = !!localStorage.getItem('twins_active_cont');
-            let isDevolving = false; let isMkg = false;
-            try {
-                const draftStr = localStorage.getItem('twins_dev_draft');
-                const draft = JSON.parse(draftStr);
-                isDevolving = draft && (draft.items.length > 0 || draft.cliente || draft.motivo || draft.searchVal || draft.cg || draft.cr || draft.obs);
-                
-                const draftMkgStr = localStorage.getItem('twins_mkg_draft');
-                const draftMkg = JSON.parse(draftMkgStr);
-                isMkg = draftMkg && (draftMkg.items.length > 0 || draftMkg.personal || draftMkg.motivo || draftMkg.searchVal || draftMkg.cant);
-            } catch(err){}
-
-            if (isAuditing || isDevolving || isMkg) {
-                e.preventDefault(); e.returnValue = ''; 
-            }
+            const isAuditing = !!localStorage.getItem('twins_active_cont'); let isDevolving = false; let isMkg = false;
+            try { const draft = JSON.parse(localStorage.getItem('twins_dev_draft')); isDevolving = draft && (draft.items.length > 0 || draft.cliente || draft.motivo || draft.searchVal || draft.cg || draft.cr || draft.obs); const draftMkg = JSON.parse(localStorage.getItem('twins_mkg_draft')); isMkg = draftMkg && (draftMkg.items.length > 0 || draftMkg.personal || draftMkg.motivo || draftMkg.searchVal || draftMkg.cant); } catch(err){}
+            if (isAuditing || isDevolving || isMkg) { e.preventDefault(); e.returnValue = ''; }
         });
 
         // ARRANQUE PRINCIPAL
         window.addEventListener('DOMContentLoaded', () => {
             const activeAudit = localStorage.getItem('twins_active_cont');
-            
             let activeDevDraft = null; let activeMkgDraft = null;
             try { activeDevDraft = JSON.parse(localStorage.getItem('twins_dev_draft')); } catch(e){}
             try { activeMkgDraft = JSON.parse(localStorage.getItem('twins_mkg_draft')); } catch(e){}
-            
             const hasDevDraft = activeDevDraft && (activeDevDraft.items?.length > 0 || activeDevDraft.cliente || activeDevDraft.vendedor || activeDevDraft.motivo || activeDevDraft.cg || activeDevDraft.cr || activeDevDraft.obs || activeDevDraft.searchVal);
             const hasMkgDraft = activeMkgDraft && (activeMkgDraft.items?.length > 0 || activeMkgDraft.personal || activeMkgDraft.motivo || activeMkgDraft.cant || activeMkgDraft.searchVal);
             
             const p = localStorage.getItem('twins_memoria_pantalla') || 'audit';
-
             if (activeAudit) { window.changeTab('audit'); } 
             else if (hasDevDraft && p === 'dev') { window.changeTab('dev'); } 
             else if (hasMkgDraft && p === 'mkg-form') { window.changeTab('mkg-form'); } 
@@ -1403,80 +1053,31 @@
 
             if (hasDevDraft) {
                 const restoreDraft = () => {
-                    if (activeDevDraft.editingKey) coreDev.editingKey = activeDevDraft.editingKey;
-                    if (activeDevDraft.cliente !== undefined) document.getElementById('dev-cliente').value = activeDevDraft.cliente;
-                    if (activeDevDraft.vendedor !== undefined) document.getElementById('dev-vendedor').value = activeDevDraft.vendedor;
-                    if (activeDevDraft.motivo !== undefined) document.getElementById('dev-motivo').value = activeDevDraft.motivo;
-                    if (activeDevDraft.cg !== undefined) document.getElementById('dev-cant-guia').value = activeDevDraft.cg;
-                    if (activeDevDraft.cr !== undefined) document.getElementById('dev-cant-real').value = activeDevDraft.cr;
-                    if (activeDevDraft.um !== undefined) document.getElementById('dev-um').value = activeDevDraft.um;
-                    if (activeDevDraft.estado !== undefined) document.getElementById('dev-estado').value = activeDevDraft.estado;
-                    if (activeDevDraft.obs !== undefined) document.getElementById('dev-obs').value = activeDevDraft.obs;
-                    
-                    const searchInput = document.getElementById('dev-search-prod');
-                    if (activeDevDraft.searchVal !== undefined) searchInput.value = activeDevDraft.searchVal;
-                    if (activeDevDraft.searchCod) searchInput.dataset.cod = activeDevDraft.searchCod;
-                    if (activeDevDraft.searchDesc) searchInput.dataset.desc = activeDevDraft.searchDesc;
-                    
-                    window.syncAllSelectTexts();
-                    coreDev.items = activeDevDraft.items || []; coreDev.renderItems();
-                };
-                restoreDraft(); setTimeout(restoreDraft, 300); 
+                    if (activeDevDraft.editingKey) coreDev.editingKey = activeDevDraft.editingKey; if (activeDevDraft.cliente !== undefined) document.getElementById('dev-cliente').value = activeDevDraft.cliente; if (activeDevDraft.vendedor !== undefined) document.getElementById('dev-vendedor').value = activeDevDraft.vendedor; if (activeDevDraft.motivo !== undefined) document.getElementById('dev-motivo').value = activeDevDraft.motivo; if (activeDevDraft.cg !== undefined) document.getElementById('dev-cant-guia').value = activeDevDraft.cg; if (activeDevDraft.cr !== undefined) document.getElementById('dev-cant-real').value = activeDevDraft.cr; if (activeDevDraft.um !== undefined) document.getElementById('dev-um').value = activeDevDraft.um; if (activeDevDraft.estado !== undefined) document.getElementById('dev-estado').value = activeDevDraft.estado; if (activeDevDraft.obs !== undefined) document.getElementById('dev-obs').value = activeDevDraft.obs;
+                    const searchInput = document.getElementById('dev-search-prod'); if (activeDevDraft.searchVal !== undefined) searchInput.value = activeDevDraft.searchVal; if (activeDevDraft.searchCod) searchInput.dataset.cod = activeDevDraft.searchCod; if (activeDevDraft.searchDesc) searchInput.dataset.desc = activeDevDraft.searchDesc;
+                    window.syncAllSelectTexts(); coreDev.items = activeDevDraft.items || []; coreDev.renderItems();
+                }; restoreDraft(); setTimeout(restoreDraft, 300); 
             }
             
             if (hasMkgDraft) {
                 const restoreMkgDraft = () => {
-                    if (activeMkgDraft.editingKey) coreMkg.editingKey = activeMkgDraft.editingKey;
-                    if (activeMkgDraft.personal !== undefined) document.getElementById('mkg-personal').value = activeMkgDraft.personal;
-                    if (activeMkgDraft.motivo !== undefined) document.getElementById('mkg-motivo').value = activeMkgDraft.motivo;
-                    if (activeMkgDraft.cant !== undefined) document.getElementById('mkg-cant').value = activeMkgDraft.cant;
-                    if (activeMkgDraft.um !== undefined) document.getElementById('mkg-um').value = activeMkgDraft.um;
-                    if (activeMkgDraft.estado !== undefined) document.getElementById('mkg-estado').value = activeMkgDraft.estado;
-                    
-                    const searchInput = document.getElementById('mkg-search-prod');
-                    if (activeMkgDraft.searchVal !== undefined) searchInput.value = activeMkgDraft.searchVal;
-                    if (activeMkgDraft.searchCod) searchInput.dataset.cod = activeMkgDraft.searchCod;
-                    if (activeMkgDraft.searchDesc) searchInput.dataset.desc = activeMkgDraft.searchDesc;
-                    
-                    window.syncAllSelectTexts();
-                    coreMkg.items = activeMkgDraft.items || []; coreMkg.renderItems();
-                };
-                restoreMkgDraft(); setTimeout(restoreMkgDraft, 300); 
+                    if (activeMkgDraft.editingKey) coreMkg.editingKey = activeMkgDraft.editingKey; if (activeMkgDraft.personal !== undefined) document.getElementById('mkg-personal').value = activeMkgDraft.personal; if (activeMkgDraft.motivo !== undefined) document.getElementById('mkg-motivo').value = activeMkgDraft.motivo; if (activeMkgDraft.cant !== undefined) document.getElementById('mkg-cant').value = activeMkgDraft.cant; if (activeMkgDraft.um !== undefined) document.getElementById('mkg-um').value = activeMkgDraft.um; if (activeMkgDraft.estado !== undefined) document.getElementById('mkg-estado').value = activeMkgDraft.estado;
+                    const searchInput = document.getElementById('mkg-search-prod'); if (activeMkgDraft.searchVal !== undefined) searchInput.value = activeMkgDraft.searchVal; if (activeMkgDraft.searchCod) searchInput.dataset.cod = activeMkgDraft.searchCod; if (activeMkgDraft.searchDesc) searchInput.dataset.desc = activeMkgDraft.searchDesc;
+                    window.syncAllSelectTexts(); coreMkg.items = activeMkgDraft.items || []; coreMkg.renderItems();
+                }; restoreMkgDraft(); setTimeout(restoreMkgDraft, 300); 
             }
 
             if (activeAudit) { core.openAudit(activeAudit); }
-
-            // Sincronizar todos los textos iniciales de los selects ocultos
             window.syncAllSelectTexts();
 
-            // Carga secuencial para evitar bloqueos por concurrencia en Google Apps Script
             const startDataSync = async () => {
                 const delay = ms => new Promise(res => setTimeout(res, ms));
-                
                 try {
-                    if (typeof core !== 'undefined') {
-                        if (core.raw && core.raw.length > 0) { core.render(); }
-                        await core.fetchData(true); 
-                        await delay(1000);
-                        await core.fetchProductos();
-                        await delay(1000);
-                    }
-                    if (typeof coreDev !== 'undefined') {
-                        await coreDev.fetchHist(true);
-                        await delay(1000);
-                    }
-                    if (typeof coreMkg !== 'undefined') {
-                        await coreMkg.fetchHist(true);
-                    }
-                } catch(e) {
-                    console.error("Error inicial de carga en red", e);
-                }
-
-                // Configurar intervalos desfasados para no saturar
-                if (typeof core !== 'undefined') {
-                    setInterval(() => { core.fetchData(true); }, 15000);
-                    setInterval(() => { core.fetchProductos(); }, 50000);
-                }
+                    if (typeof core !== 'undefined') { if (core.raw && core.raw.length > 0) { core.render(); } await core.fetchData(true); await delay(1000); await core.fetchProductos(); await delay(1000); }
+                    if (typeof coreDev !== 'undefined') { await coreDev.fetchHist(true); await delay(1000); }
+                    if (typeof coreMkg !== 'undefined') { await coreMkg.fetchHist(true); }
+                } catch(e) {}
+                if (typeof core !== 'undefined') { setInterval(() => { core.fetchData(true); }, 15000); setInterval(() => { core.fetchProductos(); }, 50000); }
                 if (typeof coreDev !== 'undefined') { setInterval(() => { coreDev.fetchHist(true); }, 25000); }
                 if (typeof coreMkg !== 'undefined') { setInterval(() => { coreMkg.fetchHist(true); }, 35000); }
             };
@@ -1492,8 +1093,7 @@
                         if(typeof coreDev !== 'undefined') { await coreDev.fetchHist(true); await delay(1000); }
                         if(typeof coreMkg !== 'undefined') await coreMkg.fetchHist(true);
                     } catch(e){}
-                };
-                reloadData();
+                }; reloadData();
             }
         });
     </script>
