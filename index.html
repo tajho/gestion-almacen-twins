@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- PWA NATIVE SETTINGS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,6 +13,7 @@
     
     <title>Twins Elite Pro</title>
 
+    <!-- PWA INSTALLER -->
     <script>
         (function() {
             try {
@@ -63,9 +65,8 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; width: 100%; min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; transition: background-color 0.4s ease; }
         
         /* Modern UI Elements */
-        .glass-effect { background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .glass-effect { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
         .glass-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(128,128,128,0.1); }
-        .glass-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; border-top: 1px solid rgba(128,128,128,0.1); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
         
         .modern-card { background: var(--surface); border-radius: 28px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); border: 1px solid rgba(128,128,128,0.05); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .modern-card:active { transform: scale(0.98); }
@@ -79,7 +80,7 @@
         * { scrollbar-width: none; -ms-overflow-style: none; outline: none !important; }
         
         .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)) !important; }
-        .app-container { flex: 1; padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important; }
+        .app-container { flex: 1; padding-bottom: calc(7.5rem + env(safe-area-inset-bottom)) !important; }
         
         /* Animations */
         .modal-full { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100; flex-direction: column; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -96,8 +97,39 @@
         .dark .bg-slate-900 { background-color: #FFFFFF !important; color: #000000 !important; }
     </style>
 </head>
-<body>
+<body id="app-body">
 
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
+    <div id="login-view" class="fixed inset-0 z-[9999] bg-slate-50 dark:bg-black flex flex-col items-center justify-center px-6 transition-opacity duration-500">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-10">
+                <div class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-blue-500/30 mb-6 relative overflow-hidden">
+                    <div class="absolute -right-2 -top-2 w-12 h-12 bg-white/20 rounded-full blur-md"></div>
+                    <i class="ph-bold ph-shield-check text-5xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white mb-2">Twins Elite</h1>
+                <p class="text-sm font-bold text-slate-500 tracking-widest uppercase">Acceso Restringido</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="relative">
+                    <i class="ph-fill ph-user absolute left-5 top-1/2 -translate-y-1/2 text-xl text-slate-400"></i>
+                    <input type="text" id="login-user" placeholder="Usuario" class="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[20px] py-4 pl-14 pr-5 text-sm font-[900] outline-none focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm uppercase">
+                </div>
+                <div class="relative">
+                    <i class="ph-fill ph-lock-key absolute left-5 top-1/2 -translate-y-1/2 text-xl text-slate-400"></i>
+                    <input type="password" id="login-pass" placeholder="Contraseña" class="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[20px] py-4 pl-14 pr-5 text-sm font-[900] outline-none focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm" onkeydown="if(event.key==='Enter') attemptLogin();">
+                </div>
+                <p id="login-error" class="text-red-500 text-xs font-bold text-center h-4 opacity-0 transition-opacity">Credenciales incorrectas</p>
+                
+                <button type="button" onclick="attemptLogin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-[20px] h-14 font-[900] text-sm uppercase tracking-widest shadow-xl shadow-blue-500/30 active:scale-95 transition-transform mt-2">
+                    Iniciar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABECERA GLOBAL -->
     <div class="glass-effect glass-header safe-pt px-6 pb-4 mb-2">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex-1">
@@ -111,9 +143,6 @@
                 </svg>
                 <span id="global-perc" class="absolute text-[10px] font-[900]">0%</span>
             </div>
-            <button id="theme-toggle-btn" onclick="window.toggleTheme()" class="hidden ml-4 w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform">
-                <i id="theme-icon" class="ph-bold ph-moon text-xl text-slate-600 dark:text-zinc-400"></i>
-            </button>
         </div>
     </div>
 
@@ -152,7 +181,7 @@
     <div id="audit-view" class="modal-full">
         <div class="glass-effect glass-header safe-pt px-5 pb-4">
             <div class="flex items-center justify-between">
-                <button type="button" onclick="core.requestCloseAudit()" class="w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="ph-bold ph-x text-lg"></i></button>
+                <button type="button" onclick="core.requestCloseAudit()" class="w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="ph-bold ph-arrow-left text-lg"></i></button>
                 <div class="text-center">
                     <h2 id="audit-title" class="text-sm font-[900] tracking-widest uppercase">CARGA #---</h2>
                     <div class="flex items-center justify-center gap-1.5 mt-1 text-blue-500">
@@ -171,7 +200,7 @@
             </div>
         </div>
         <div id="audit-items-container" class="flex-1 overflow-y-auto px-5 py-6 space-y-4 no-scrollbar"></div>
-        <div class="p-5 glass-effect glass-nav flex gap-3">
+        <div class="p-5 glass-effect fixed bottom-0 left-0 right-0 flex gap-3 safe-pb border-t border-slate-200/50 dark:border-slate-800/50">
             <button type="button" onclick="core.generatePDF(core.activeCont, 'save')" class="w-16 h-16 modern-card flex items-center justify-center text-slate-500 active:scale-90 transition-transform"><i class="ph-bold ph-file-pdf text-2xl"></i></button>
             <button type="button" onclick="core.saveAndFinish()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-[24px] font-[900] text-sm uppercase tracking-widest shadow-xl shadow-blue-500/30 active:scale-95 transition-transform">Finalizar Carga</button>
         </div>
@@ -356,29 +385,29 @@
         <button type="button" onclick="window.attemptChangeTab('mkg-form')" class="fixed right-6 bottom-28 w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex flex-col items-center justify-center shadow-xl shadow-blue-500/30 active:scale-90 transition-transform z-40 text-white"><i class="ph-bold ph-plus text-2xl"></i></button>
     </div>
 
-    <div class="glass-effect glass-nav">
-        <div class="max-w-md mx-auto px-6 h-16 flex justify-between items-center relative">
-            <button onclick="window.attemptChangeTab('audit')" id="nav-audit" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
-                <i class="ph-fill ph-package text-[26px] mb-0.5"></i>
-                <span class="text-[8px] font-black uppercase tracking-widest">Cargas</span>
+    <!-- EL NUEVO MENÚ INFERIOR (FLOATING PILL 2026 DESIGN) -->
+    <div class="fixed bottom-6 left-0 right-0 z-[60] flex justify-center px-5 pointer-events-none">
+        <div class="glass-effect rounded-[32px] p-2 flex justify-between items-center w-full max-w-[380px] border border-slate-200/50 dark:border-slate-700/50 shadow-2xl shadow-slate-300/30 dark:shadow-black/80 pointer-events-auto">
+            <button onclick="window.attemptChangeTab('audit')" id="nav-audit" class="nav-item relative flex flex-col items-center justify-center w-1/4 h-14 rounded-[24px] text-slate-400 transition-all duration-300">
+                <i class="ph-fill ph-package text-[24px] mb-1 z-10 transition-transform duration-300"></i>
+                <span class="text-[7px] font-[900] uppercase tracking-widest z-10">Cargas</span>
             </button>
-            <button onclick="window.attemptChangeTab('dev-history')" id="nav-dev" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
-                <i class="ph-fill ph-arrow-u-down-left text-[26px] mb-0.5"></i>
-                <span class="text-[8px] font-black uppercase tracking-widest">Retornos</span>
+            <button onclick="window.attemptChangeTab('dev-history')" id="nav-dev" class="nav-item relative flex flex-col items-center justify-center w-1/4 h-14 rounded-[24px] text-slate-400 transition-all duration-300">
+                <i class="ph-fill ph-arrow-u-down-left text-[24px] mb-1 z-10 transition-transform duration-300"></i>
+                <span class="text-[7px] font-[900] uppercase tracking-widest z-10">Retornos</span>
             </button>
-            <button onclick="window.attemptChangeTab('marketing')" id="nav-mkg" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors">
-                <i class="ph-fill ph-megaphone text-[26px] mb-0.5"></i>
-                <span class="text-[8px] font-black uppercase tracking-widest">MKTG</span>
+            <button onclick="window.attemptChangeTab('marketing')" id="nav-mkg" class="nav-item relative flex flex-col items-center justify-center w-1/4 h-14 rounded-[24px] text-slate-400 transition-all duration-300">
+                <i class="ph-fill ph-megaphone text-[24px] mb-1 z-10 transition-transform duration-300"></i>
+                <span class="text-[7px] font-[900] uppercase tracking-widest z-10">MKTG</span>
             </button>
-            <button onclick="window.toggleTheme()" class="flex flex-col items-center justify-center w-14 h-full text-slate-400 transition-colors active:scale-90">
-                <i class="ph-fill ph-moon text-[26px] mb-0.5" id="nav-theme-icon"></i>
-                <span class="text-[8px] font-black uppercase tracking-widest">Tema</span>
+            <button onclick="window.toggleTheme()" class="nav-item relative flex flex-col items-center justify-center w-1/4 h-14 rounded-[24px] text-slate-400 transition-all duration-300 active:scale-90">
+                <i class="ph-fill ph-moon text-[24px] mb-1 z-10" id="nav-theme-icon"></i>
+                <span class="text-[7px] font-[900] uppercase tracking-widest z-10">Tema</span>
             </button>
-            
-            <div id="nav-indicator" class="absolute bottom-1 h-1 w-10 bg-blue-600 rounded-full transition-transform duration-300 transform translate-x-2"></div>
         </div>
     </div>
     
+    <!-- MODAL DE CARGA Y ALERTAS -->
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center transition-opacity"><div class="modern-card p-10 flex flex-col items-center"><i class="ph-bold ph-spinner-gap animate-spin text-5xl text-blue-600 mb-5"></i><h3 class="font-[900] text-lg uppercase tracking-widest">Sincronizando</h3></div></div>
 
     <div id="modern-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm px-6 transition-opacity duration-300 opacity-0">
@@ -391,6 +420,7 @@
         </div>
     </div>
 
+    <!-- CUADRO DE DIÁLOGO PARA SELECTS (BOTTOM SHEET) -->
     <div id="ui-select-modal" class="fixed inset-0 z-[600] hidden flex-col justify-end bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
         <div id="ui-select-backdrop" class="absolute inset-0" onclick="closeCustomSelect()"></div>
         <div id="ui-select-content" class="modern-card w-full rounded-b-none p-6 transform translate-y-full transition-transform duration-300 max-h-[85vh] flex flex-col relative z-10 safe-pb">
@@ -401,6 +431,28 @@
     </div>
 
     <script>
+        // LÓGICA DE INICIO DE SESIÓN
+        function attemptLogin() {
+            const user = document.getElementById('login-user').value.trim().toUpperCase();
+            const pass = document.getElementById('login-pass').value.trim();
+            const err = document.getElementById('login-error');
+            
+            if (user === 'TAJHO' && pass === '1994') {
+                localStorage.setItem('twins_auth', 'true');
+                err.style.opacity = '0';
+                
+                const loginView = document.getElementById('login-view');
+                loginView.classList.add('opacity-0');
+                setTimeout(() => {
+                    loginView.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Permitir scroll
+                }, 500);
+            } else {
+                err.style.opacity = '1';
+                setTimeout(() => err.style.opacity = '0', 3000);
+            }
+        }
+
         // RED SEGURA
         window.safeFetch = async function(url) {
             for (let i = 0; i < 3; i++) {
@@ -415,7 +467,7 @@
             }
         };
 
-        // LÓGICA DE TEMA (DARK MODE) ACTUALIZADA AL NUEVO DISEÑO
+        // LÓGICA DE TEMA (DARK MODE)
         window.toggleTheme = function() {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
@@ -425,34 +477,31 @@
 
         function updateThemeUI() {
             const isDark = document.documentElement.classList.contains('dark');
-            const icon = document.getElementById('theme-icon');
             const navIcon = document.getElementById('nav-theme-icon');
-            if(icon) icon.className = isDark ? 'ph-bold ph-sun text-xl text-yellow-500' : 'ph-bold ph-moon text-xl text-slate-600';
-            if(navIcon) navIcon.className = isDark ? 'ph-fill ph-sun text-[26px] mb-0.5' : 'ph-fill ph-moon text-[26px] mb-0.5';
+            if(navIcon) navIcon.className = isDark ? 'ph-fill ph-sun text-[24px] mb-1 z-10 text-yellow-500' : 'ph-fill ph-moon text-[24px] mb-1 z-10 text-slate-400';
             
             const metaColor = document.getElementById('meta-theme-color');
             if(metaColor) metaColor.setAttribute('content', isDark ? '#000000' : '#F8FAFC');
         }
         
-        // ACTUALIZAR ESTADO DEL BOTTOM NAV
+        // ACTUALIZAR ESTADO DEL BOTTOM NAV (FLOATING PILL)
         function updateNavState(tab) {
             const tabs = ['audit', 'dev', 'mkg'];
             let mappedTab = tab;
             if(tab === 'dev-history') mappedTab = 'dev';
             if(tab === 'mkg-form') mappedTab = 'mkg';
             
-            tabs.forEach((t, i) => {
+            tabs.forEach((t) => {
                 const el = document.getElementById('nav-' + t);
                 if(el) {
                     if(mappedTab === t) {
-                        el.classList.add('text-blue-600'); el.classList.remove('text-slate-400');
-                        const indicator = document.getElementById('nav-indicator');
-                        // Calculate position based on percentage + padding
-                        const screenW = window.innerWidth > 448 ? 448 : window.innerWidth;
-                        const offset = (screenW - 48) / 4; // Approx space per section
-                        if(indicator) indicator.style.transform = `translateX(${24 + (i * offset)}px)`;
+                        el.classList.add('text-blue-600', 'bg-blue-50', 'dark:bg-blue-900/30', 'dark:text-blue-400'); 
+                        el.classList.remove('text-slate-400');
+                        el.querySelector('i').classList.add('-translate-y-1'); 
                     } else {
-                        el.classList.remove('text-blue-600'); el.classList.add('text-slate-400');
+                        el.classList.remove('text-blue-600', 'bg-blue-50', 'dark:bg-blue-900/30', 'dark:text-blue-400'); 
+                        el.classList.add('text-slate-400');
+                        el.querySelector('i').classList.remove('-translate-y-1');
                     }
                 }
             });
@@ -1033,8 +1082,15 @@
             if (isAuditing || isDevolving || isMkg) { e.preventDefault(); e.returnValue = ''; }
         });
 
-        // ARRANQUE PRINCIPAL
+        // ARRANQUE PRINCIPAL Y LOGIN CHECK
         window.addEventListener('DOMContentLoaded', () => {
+            // Verificar Login
+            if (localStorage.getItem('twins_auth') === 'true') {
+                document.getElementById('login-view').style.display = 'none';
+            } else {
+                document.body.style.overflow = 'hidden'; // Prevenir scroll si no está logueado
+            }
+
             const activeAudit = localStorage.getItem('twins_active_cont');
             let activeDevDraft = null; let activeMkgDraft = null;
             try { activeDevDraft = JSON.parse(localStorage.getItem('twins_dev_draft')); } catch(e){}
